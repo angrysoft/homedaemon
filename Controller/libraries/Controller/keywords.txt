@@ -1,0 +1,7 @@
+Controller KEYWORD1
+
+listen KEYWORD2
+command KEYWORD2
+
+LED13	KEYWORD1
+led	KEYWORD2
