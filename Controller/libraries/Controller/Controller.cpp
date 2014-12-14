@@ -1,3 +1,17 @@
+// Copyright 2014 Sebastian Zwierzchowski <sebastian.zwierzchowski<at>gmail<dot>com>
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 #include "Controller.h"
 
 
@@ -20,9 +34,12 @@ Controller::Controller() {
 }
 
 void Controller::setupCtrl() {
-	//RemoteReceiver::init(0, 3, getCode);
-	this->rgbLed("0.0.0");
+	this->red = 0;
+	this->green = 0;
+	this->blue = 0;
+	this->setRGB(0,0,0);
 	wSwitch.enableTransmit(WIRELESS_TRANSMITER_PIN);
+	wSwitch.enableReceive(WIRELESS_RECIVER_PIN);
 }
 
 
@@ -33,9 +50,10 @@ void Controller::setupCtrl() {
 int Controller::sendIR(String code) {
 	Serial.print("Sending signal IR : ");
 	Serial.println(code);
-	/*	code  mode.code
-		mode = sony,panasonic,raw,jvc.....
+	/*	code.mode.bits
+		mode = SONY,NEC,OTHER,JVC
 		code = ir code
+		bits 
 	*/
 	return 0;
 }
@@ -78,19 +96,20 @@ int Controller::sendWireless(String code) {
 	return 0;
 }
 
-int Controller::getCode(unsigned long receivedCode, unsigned int period) {
-    Serial.print("Code: ");
-    Serial.print(receivedCode);
-    Serial.print(", period duration: ");
-    Serial.print(period);
-    Serial.println("us.");
-	
+int Controller::getCode() {
+	unsigned long value = wSwitch.getReceivedValue();
+	if (value != 0) {
+		Serial.print("W.");
+    	Serial.println(value);
+	}
+	wSwitch.resetAvailable();
+	return 0;
 }
+
 
 /*
  * Get temperature from sensor
  */
-
 int Controller::getTemp(int num) {
 	// T.thermometr_num.temp
 	sensors.requestTemperatures();
@@ -102,10 +121,12 @@ int Controller::getTemp(int num) {
 	return 0;
 }
 
+
 /*
  * Get the light sensor state
  */
 int Controller::getLight(int num) {
+	//L.light_sensor_num
 	int light = 0;
 	for ( int i = 0; i<=2; i++) {
 		light += analogRead(LIGHTPIN);
@@ -118,36 +139,97 @@ int Controller::getLight(int num) {
 	return light; 
 }
 
-void Controller::rgbLed (String colors) {
-	int red   = 0;
-	int green = 0;
-	int blue  = 0;
-	Serial.println("color : "+colors);
+
+/*
+ * Set color on rgb stirp used by oteher method.Do not set color var
+ */
+void Controller::setRGB(int r, int g, int b) {
+	Driver.begin();
+	Driver.SetColor(r, g, b);
+	Driver.end();
+}
+
+
+/*
+ * Set color on rgb strip
+ */
+void Controller::setColor(String colors) {
+	int r = 0;
+	int g = 0;
+	int b = 0;
+	
+	int idx = colors.indexOf('.');
+	int idxOld = idx+1;
+	
+	String tmp;
+	//Red
+	tmp = colors.substring(0, idx);
+	r = tmp.toInt();
+	
+	//Green
+	idx = colors.indexOf('.',idxOld);
+	tmp = colors.substring(idxOld,idx);
+	g = tmp.toInt();
+	
+	//Blue
+	tmp = colors.substring(idx+1);
+	b = tmp.toInt();
+	
+	this->red   = r;
+	this->green = g;
+	this->blue  = b;
+	this->setRGB(r,g,b);
+}
+
+/*
+ * Set color on rgb strip with fade
+ */
+
+void Controller::setFadeColor (String colors) {
+	int r = 0;
+	int g = 0;
+	int b = 0;
 	int idx = colors.indexOf('.');
 	int idxOld = idx+1;
 	//if (idx == -1) {return};
 	String tmp;
+	
 	//Red
 	tmp = colors.substring(0, idx);
-	Serial.println(tmp);
-	red = tmp.toInt();
+	r = tmp.toInt();
+	
 	//Green
 	idx = colors.indexOf('.',idxOld);
 	tmp = colors.substring(idxOld,idx);
-	Serial.println(tmp);
-	green = tmp.toInt();
+	g = tmp.toInt();
+	
 	//Blue
 	tmp = colors.substring(idx+1);
-	Serial.println(tmp);
-	blue = tmp.toInt();
-	/*
-	Serial.println(red);
-	Serial.println(green);
-	Serial.println(blue);
-	*/
-	Driver.begin();
-	Driver.SetColor(red, green, blue);
-	Driver.end();
+	b = tmp.toInt();
+
+	int change = 0;
+	
+	while (r != this->red or g != this->green or b != this->blue) {
+		if (r != this->red) {
+			if (r < this->red) {this->red--;} else {this->red++;}
+		}
+		if (g != this->green) {
+			if (g < this->green) {this->green--;} else {this->green++;}
+		}
+		if (b != this->blue) {
+			if (b < this->blue) {this->blue--;} else {this->blue++;}
+		}
+
+		if (change == 4) {
+			this->setRGB(this->red,this->green,this->blue);
+			change = 0;
+		} else {
+			change++;
+		}
+
+		
+	}
+	this->setRGB(r,g,b);
 	
 }
 
@@ -180,9 +262,13 @@ int Controller::command(String s) {
 	  		break;
 	  	
 		case 'C':
-			this->rgbLed(code);
+			this->setColor(code);
       		break;
-	  	
+			
+		case 'F':
+			this->setFadeColor(code);
+			break;
+			
 		case 'T':
 	  		this->getTemp(code.toInt());
 	  		break;
@@ -196,6 +282,10 @@ int Controller::command(String s) {
 }
 
 void Controller::listen(bool echo) {
+	if (wSwitch.available()) {
+		this->getCode();
+	}
+	
 	while (Serial.available()) {
 		char inC = Serial.read();
 		

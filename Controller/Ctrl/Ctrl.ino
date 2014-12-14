@@ -1,4 +1,4 @@
-// Copyright 2014 Sebastian Zwierzchowski <sebastian.zwierzchowski@gmail.com>
+// Copyright 2014 Sebastian Zwierzchowski <sebastian.zwierzchowski<at>gmail<dot>com>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ void setup() {
     
 }
 void loop() {
-  ctrl.listen(true);
+  ctrl.listen(false);
 }
 
 

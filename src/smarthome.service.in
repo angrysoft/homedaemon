@@ -1,0 +1,11 @@
+[Unit]
+Description=SmartHome
+Requires=network.target local-fs.target
+
+[Service]
+Type=idle
+ExecStart=/usr/local/bin/SmartHome.py start
+ExecStop=/usr/local/bin/SmartHome.py stop
+
+[Install]
+WantedBy=multi-user.target
