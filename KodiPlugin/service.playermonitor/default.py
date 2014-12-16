@@ -31,24 +31,27 @@ class PlayerMonitor(xbmc.Player):
     
     def onPlayBackStarted(self):
         """docstring for onPlayBackStarted"""
-        self.sendEvent('')
-        xbmc.log("Play")
+        if self.isPlayingVideo():
+            self.sendEvent('set.scene.KodiPlay')
     
     def onPlayBackResumed(self):
         """docstring for onPlayBackResumed"""
-        xbmc.log('resumed')
+        if self.isPlayingVideo():
+            self.sendEvent('set.scene.KodiResumed')
     
     def onPlayBackPaused(self):
         """docstring for onPlayBackPaused"""
-        xbmc.log("paused")
+        #if self.isPlayingVideo():
+        self.sendEvent('set.scene.KodiPaused')
     
     def onPlayBackStopped(self):
         """docstring for onPlayBackStopped"""
-        xbmc.log("Stop")
+        #if self.isPlayingVideo():
+        self.sendEvent('set.scene.KodiStop')
     
     def onPlayBackEnded(self):
         """docstring for onPlayBackEnded"""
-        xbmc.log("end")
+        self.sendEvent('set.scene.KodiStop')
     
         
     

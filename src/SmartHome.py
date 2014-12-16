@@ -24,7 +24,6 @@ __version__='0.2'
 
 import getopt
 import signal
-import sys
 import os
 import socket
 from threading import Thread
@@ -69,6 +68,7 @@ class Config(dict):
         self['port']    = '9999'
         self['bufsize'] = '1024'
         self['serial']  = '/dev/ttyUSB0'
+        self['scenedir']= '/etc/SmartHome/Scenes'
         
     
     def writeDefaultConfig(self,infile):
@@ -100,25 +100,25 @@ class Config(dict):
 
 class TcpServer(Thread):
     """docstring for TcpServer"""
-    def __init__(self, queue,answer,host='127.0.0.1',port='9999',bufsize='1024'):
+    def __init__(self, queue, answer, host='127.0.0.1', port='9999', bufsize='1024'):
         Thread.__init__(self)
         self.queue = queue
-        self.answer = answer
-        
+        self.getAnswer = answer
+
         if host == 'auto':
             self.host = socket.gethostbyname(socket.gethostname())
         else:
             self.host = host
+
         self.port = int(port)
         self.bufsize = int(bufsize)
-        self.addres = (self.host, self.port)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.loop = True
         self.conn = None
     
     def run(self):
         """docstring for serve_forever"""
-        self.sock.bind((self.addres))
+        self.sock.bind((self.host, self.port))
         self.sock.listen(1)
         while self.loop:
             print('tcp ready')
@@ -130,9 +130,12 @@ class TcpServer(Thread):
                 continue
             data = data.decode()
             data = data.rstrip()
-            self.sock.sendall(self.answer.encode())
-            self.conn.close()
             self.queue.put(data)
+            sleep(1)
+            self.conn.sendall(self.getAnswer())
+            print('ans : {0}'.format(self.getAnswer()))
+            self.conn.close()
+
             
     def close(self):
         """docstring for close"""
@@ -191,23 +194,24 @@ class SerialServer(Thread):
     def close(self):
         """docstring for close"""
         self.loop = False
-        
+
+
 
 class SmartHome:
     """docstring for SmartHome"""
-    def __init__(self,configFile='/etc/SmartHome.conf'):
-        # zmienic na fifo
+    def __init__(self, configFile):
         self.queue = Queue()
         #
         self.config = Config()
         self.config.loadFromFile(configFile)
         self.loop = True
-        self.tcpSrv = TcpServer(self.queue,self.config['host'],self.config['port'])  
-        self.serialSrv = SerialServer(self.queue,self.config['serial'])  
+        self.answer = '\n'
+        self.tcpSrv = TcpServer(self.queue, self.getAnswer, self.config['host'], self.config['port'])
+        self.serialSrv = SerialServer(self.queue, self.config['serial'])
+        self.sceneDir = self.config['scenedir']
         self.scenes = {}
-        self.answer = ''  
         
-    def debug(self,msg):
+    def debug(self, msg):
         if self.config['debug'] == "False": return
         #colors
         green="\x1b[;32m"
@@ -215,62 +219,80 @@ class SmartHome:
         default="\x1b[;00m"
         # end colors
         sys.stderr.write('{0}>>> {1}DEBUG: {2}{3}\n'.format(green,yellow,default,msg))
-    
-    def setRGB(self,s,fade=True):
+
+    def setAnswer(self, ans):
+        """setAnswer"""
+        self.answer = '{0}\n'.format(ans)
+
+    def getAnswer(self):
+        """getAnswer"""
+        return self.answer.encode()
+
+    def loadScenes(self):
+        """loadScenes"""
+        for s in os.listdir(self.config['scenedir']):
+            if s.endswith('.sc'):
+                self.debug('Load scene: {0}'.format(s))
+                with (open('{0}/{1}'.format(self.config['scenedir'],s),'r')) as f:
+                    self.scenes[s.rsplit('.',1)[0]] = f.read()
+
+    def setRGB(self, s, fade=True):
         """docstring for setColor"""
         r,g,b = s.split('.')
         if fade:
             self.serialSrv.writeSerial('F.{0}.{1}.{2}'.format(r,g,b))
         else:
             self.serialSrv.writeSerial('C.{0}.{1}.{2}'.format(r,g,b))
-        self.answer = 'OK'
+        self.setAnswer('OK')
         
     def sendWireless(self,s):
         """docstring for sendWireless"""
         self.serialSrv.writeSerial('W.{0}'.format(code))
-        self.answer = 'OK'
+        self.setAnswer('OK')
     
-    def kodi(self,b):
+    def kodi(self, b):
         """docstring for startKodi"""
         if b:
             os.system('systemctl start kodi')
         else:
             os.system('systemctl stop kodi')
-        self.answer = 'OK'
+        self.setAnswer('OK')
     
-    def transmission(self,b):
+    def transmission(self, b):
         """docstring for startTransmission"""
         if b:
             os.system('Transmission.sh start')
         else:
             os.system('Transmission.sh stop')
-        self.answer = 'OK'
+        self.setAnswer('OK')
         
-    def getTemp(self,s):
+    def getTemp(self, s):
         """docstring for getTemp"""
 
         self.serialSrv.writeSerial('T.{0}'.format(s))
         sleep(0.2)
         ret = self.queue.pop()
         self.debug('temp : {0}'.format(ret))
-        self.answer = ret
+        self.setAnswer(ret)
         return ret
         
-    def getLight(self,s):
+    def getLight(self, s):
         """docstring for getTemp"""
 
         self.serialSrv.writeSerial('L.{0}'.format(s))
         sleep(0.2)
         ret = self.queue.pop()
         self.debug('temp : {0}'.format(ret))
-        self.answer = ret
+        self.setAnswer(ret)
         return ret    
         
-    def runScene(self,s):
+    def runScene(self, sc):
         """docstring for runScene"""
-        pass
+        print(sc)
+        if sc in self.scenes:
+            exec(self.scenes[sc])
     
-    def runCmd(self,s):
+    def runCmd(self, s):
         """docstring for runCmd"""
         if s == 'exit':
             self.stop()
@@ -281,18 +303,18 @@ class SmartHome:
         elif s == 'starttranssmision':
             self.transmission(True)
     
-    def parseEvent(self,s):
+    def parseEvent(self, s):
         """docstring for parseEvent"""
         
         self.debug(s)
-        self.answer = ''
+        self.setAnswer('')
         s = s.strip()
         args = s.split('.',2)
         if len(args) == 3:
             pcmd = args[0]
             cmd = args[1]
             arg = args[2]
-        else :
+        else:
             return
         
         if pcmd == 'set':
@@ -312,29 +334,21 @@ class SmartHome:
                 self.getTemp(arg)
         
                     
-    def exit(self,status=0):
+    def exit(self, status=0):
         """docstring for exit"""
         self.debug('exit status = {0}'.format(status))
         sys.exit(status)
     
     def start(self):
         """main loop"""
+        self.loadScenes()
         self.tcpSrv.daemon = True
         self.tcpSrv.start()
         self.serialSrv.daemon = True
         self.serialSrv.start()
-        #sleep(2)
-        #self.setColor('setcolor.255.0.0')
-        #sleep(0.5)
-        #self.setColor('setcolor.0.255.0')
-        #sleep(0.5)
-        #self.setColor('setcolor.0.0.255')
-        #sleep(0.5)
-        #self.getTemp('gettemp.0')
-        #self.getTemp('gettemp.0')
-        
+
         while self.loop:
-            if len(self.queue) > 0:
+            if self.queue.len() > 0:
                 self.parseEvent(self.queue.pop())
             else:
                 sleep(1)
@@ -342,7 +356,6 @@ class SmartHome:
     def stop(self,*args):
         """stop mainloop"""
         self.tcpSrv.close()
-        #self.tcpSrv.stop()
         self.serialSrv.close()
         self.loop = False
         self.exit()
@@ -359,7 +372,7 @@ def print_help():
     print('-c --config   : path to config file')
     sys.exit(0)
 
-def stop_app(configFile='/etc/SmartHome.conf'):
+def stop_app(configFile):
     """docstring for stop_app"""
     config = Config()
     config.loadFromFile(configFile)
@@ -374,6 +387,8 @@ def stop_app(configFile='/etc/SmartHome.conf'):
         # Receive data from the server and shut down
         received = sock.recv(1024)
         sock.close()
+    except:
+        sys.stderr.write('SmartHome is not running\n')
     finally:
         sock.close()
     
@@ -381,13 +396,13 @@ def stop_app(configFile='/etc/SmartHome.conf'):
 if  __name__ == "__main__":
   
     try:
-        opts, args = getopt.gnu_getopt(sys.argv[1:], 'hc:', ['help','config:'])
+        opts, args = getopt.gnu_getopt(sys.argv[1:], 'hc:', ['help', 'config:'])
     except getopt.GetoptError as error:
         print(str(error))
         usage()
         sys.exit(1)
     #change assert to somting better :) 
-    configFile = '/etc/SmartHome.conf'
+    configFile = '/etc/SmartHome/SmartHome.conf'
     for o,a in opts:
         if o in ('-h', '--help'):
             print_help()
@@ -402,16 +417,16 @@ if  __name__ == "__main__":
     
     
     srv = SmartHome(configFile)
-    signal.signal(signal.SIGINT,srv.stop)
-    signal.signal(signal.SIGHUP,srv.stop)
-    signal.signal(signal.SIGQUIT,srv.stop)
-    signal.signal(signal.SIGTERM,srv.stop)
+    signal.signal(signal.SIGINT, srv.stop)
+    signal.signal(signal.SIGHUP, srv.stop)
+    signal.signal(signal.SIGQUIT, srv.stop)
+    signal.signal(signal.SIGTERM, srv.stop)
     
     for a in args:
-        if a == "start" :
+        if a == "start":
             srv.start()
         elif a == "stop":
-            stop_app()
+            stop_app(configFile)
         else:
             assert False, "unhandled option"
             
