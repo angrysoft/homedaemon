@@ -30,6 +30,7 @@ from threading import Thread
 from time import sleep
 import serial
 import sys
+import json
 
 #colors
 black="\x1b[;30m"
@@ -96,6 +97,47 @@ class Config(dict):
                 self[argv] = value
                 
         return
+
+class RF433:
+    """Class RF433 send rf Code"""
+
+    def __init__(self, rfCongFile):
+        """Constructor for RF433"""
+        self.rf = {}
+        self.rfconf = rfCongFile
+
+    def loadConfig(self):
+        """loadConfig: load json config file"""
+        with open(self.rfconf, 'r') as jdata:
+            self.rf = json.load(jdata)
+
+    def sendCode(self):
+        """sendCode: send rf code to serial device"""
+        pass
+
+    def buttonOn(self, btnname):
+        """buttonOn: get button on code and run sendCode"""
+        if btnname in self.rf:
+            self.sendCode(self.rf[btnname]['On'])
+
+    def buttonOff(self, btnname):
+        """buttonOff: get button off code and run sendCode"""
+        if btnname in self.rf:
+            self.sendCode(self.rf[btnname]['Off'])
+
+class IR:
+    """Class IR: Sendign IR codes"""
+
+    def __init__(self, irConfFile):
+        """Constructor for IR"""
+        self.ir = {}
+        self.ifconf = irConfFile
+
+    def loadConfig(self):
+        """loadConfig"""
+        with open(self.irconf, 'r') as jdata:
+            self.ir = json.load(jdata)
+
 
 
 class TcpServer(Thread):
@@ -210,6 +252,8 @@ class SmartHome:
         self.serialSrv = SerialServer(self.queue, self.config['serial'])
         self.sceneDir = self.config['scenedir']
         self.scenes = {}
+        self.rf = RF433()
+        self.ir = IR()
         
     def debug(self, msg):
         if self.config['debug'] == "False": return
@@ -237,16 +281,24 @@ class SmartHome:
                     self.scenes[s.rsplit('.',1)[0]] = f.read()
 
     def setRGB(self, s, fade=True):
-        """docstring for setColor"""
-        r,g,b = s.split('.')
+        """setRGB"""
+        r, g, b = s.split('.')
         if fade:
             self.serialSrv.writeSerial('F.{0}.{1}.{2}'.format(r,g,b))
         else:
             self.serialSrv.writeSerial('C.{0}.{1}.{2}'.format(r,g,b))
         self.setAnswer('OK')
-        
-    def sendWireless(self,s):
-        """docstring for sendWireless"""
+
+    def sendIR(self):
+        """sendIR"""
+        # code.mode.bits
+		# mode = SONY,NEC,OTHER,JVC
+		# code = ir code
+		# bits
+        pass
+
+    def sendRF(self,s):
+        """docstring for sendRF"""
         self.serialSrv.writeSerial('W.{0}'.format(code))
         self.setAnswer('OK')
     
@@ -324,8 +376,8 @@ class SmartHome:
                 self.setRGB(arg)
             elif cmd == 'scene':
                 self.runScene(arg)
-            elif cmd == 'wireless':
-                self.sendWireless(arg)
+            elif cmd == 'rf':
+                self.sendRF(arg)
             
         elif pcmd == 'get':
             if cmd == 'light':
@@ -393,7 +445,7 @@ def stop_app(configFile):
         sock.close()
     
 
-if  __name__ == "__main__":
+if __name__ == "__main__":
   
     try:
         opts, args = getopt.gnu_getopt(sys.argv[1:], 'hc:', ['help', 'config:'])
