@@ -64,12 +64,14 @@ class Config(dict):
     
     def __init__(self):
         # default value
-        self['debug']   = "False"
-        self['host']    = 'localhost'
-        self['port']    = '9999'
+        self['debug'] = "False"
+        self['host'] = 'localhost'
+        self['port'] = '9999'
         self['bufsize'] = '1024'
-        self['serial']  = '/dev/ttyUSB0'
+        self['serial'] = '/dev/ttyUSB0'
         self['scenedir']= '/etc/SmartHome/Scenes'
+        self['rfconfigfile'] = '/etc/SmartHome/rf433.json'
+        self['irconfigfile'] = '/ect/SmartHome/IR.json'
         
     
     def writeDefaultConfig(self,infile):
@@ -98,6 +100,27 @@ class Config(dict):
                 
         return
 
+class Scenes:
+    """Class Scenes"""
+
+    def __init__(self,scneDirectory):
+        """Constructor for Scenes"""
+        self.sceneDir = scneDirectory
+        self.scenes = {}
+
+    def loadScenes(self):
+        """loadScenes"""
+        for s in os.listdir(self.sceneDir):
+            if s.endswith('.sc'):
+                print('Load scene: {0}'.format(s))
+                with (open('{0}/{1}'.format(self.sceneDir, s), 'r')) as f:
+                    self.scenes[s.rsplit('.', 1)[0]] = f.read()
+
+    def runScene(self, scene):
+        """runScene"""
+        if scene in self.scenes:
+            exec(self.scenes[scene])
+
 class RF433:
     """Class RF433 send rf Code"""
 
@@ -111,32 +134,35 @@ class RF433:
         with open(self.rfconf, 'r') as jdata:
             self.rf = json.load(jdata)
 
-    def sendCode(self):
-        """sendCode: send rf code to serial device"""
-        pass
 
     def buttonOn(self, btnname):
         """buttonOn: get button on code and run sendCode"""
         if btnname in self.rf:
-            self.sendCode(self.rf[btnname]['On'])
+            return self.rf[btnname]['On']
 
     def buttonOff(self, btnname):
         """buttonOff: get button off code and run sendCode"""
         if btnname in self.rf:
-            self.sendCode(self.rf[btnname]['Off'])
+            return self.rf[btnname]['Off']
 
 class IR:
     """Class IR: Sendign IR codes"""
 
-    def __init__(self, irConfFile):
+    def __init__(self, irConfigFile):
         """Constructor for IR"""
         self.ir = {}
-        self.ifconf = irConfFile
+        self.irconf = irConfigFile
 
     def loadConfig(self):
-        """loadConfig"""
+        """loadConfig: load json config file with IR codes"""
         with open(self.irconf, 'r') as jdata:
             self.ir = json.load(jdata)
+
+    def button(self, device, btnName):
+        """button: return button code,mode,bits. device-device name e.g. tv ,btnName - name of button e.g. power, >> """
+        if device in self.ir:
+            if btnName in self.ir[device]['buttons']:
+                return self.ir[device]['buttons'][btnName], self.ir[device]['mode'], self.ir[device]['bits']
 
 
 
@@ -250,10 +276,10 @@ class SmartHome:
         self.answer = '\n'
         self.tcpSrv = TcpServer(self.queue, self.getAnswer, self.config['host'], self.config['port'])
         self.serialSrv = SerialServer(self.queue, self.config['serial'])
-        self.sceneDir = self.config['scenedir']
-        self.scenes = {}
-        self.rf = RF433()
-        self.ir = IR()
+        #self.sceneDir = self.config['scenedir']
+        self.scenes = Scenes(self.config['scenedir'])
+        self.rf = RF433(self.config['rfconfigfile'])
+        self.ir = IR(self.config['irconfigfile'])
         
     def debug(self, msg):
         if self.config['debug'] == "False": return
@@ -272,30 +298,19 @@ class SmartHome:
         """getAnswer"""
         return self.answer.encode()
 
-    def loadScenes(self):
-        """loadScenes"""
-        for s in os.listdir(self.config['scenedir']):
-            if s.endswith('.sc'):
-                self.debug('Load scene: {0}'.format(s))
-                with (open('{0}/{1}'.format(self.config['scenedir'],s),'r')) as f:
-                    self.scenes[s.rsplit('.',1)[0]] = f.read()
-
     def setRGB(self, s, fade=True):
         """setRGB"""
         r, g, b = s.split('.')
         if fade:
-            self.serialSrv.writeSerial('F.{0}.{1}.{2}'.format(r,g,b))
+            self.serialSrv.writeSerial('F.{0}.{1}.{2}'.format(r, g, b))
         else:
-            self.serialSrv.writeSerial('C.{0}.{1}.{2}'.format(r,g,b))
+            self.serialSrv.writeSerial('C.{0}.{1}.{2}'.format(r, g, b))
         self.setAnswer('OK')
 
-    def sendIR(self):
+    def sendIR(self, code, mode, bits):
         """sendIR"""
-        # code.mode.bits
-		# mode = SONY,NEC,OTHER,JVC
-		# code = ir code
-		# bits
-        pass
+        self.serialSrv.writeSerial('I.{0}.{1}.{2}'.format(code, mode, bits))
+        self.setAnswer('OK')
 
     def sendRF(self,s):
         """docstring for sendRF"""
@@ -393,7 +408,9 @@ class SmartHome:
     
     def start(self):
         """main loop"""
-        self.loadScenes()
+        self.scenes.loadScenes()
+        self.rf.loadConfig()
+        self.ir.loadConfig()
         self.tcpSrv.daemon = True
         self.tcpSrv.start()
         self.serialSrv.daemon = True
