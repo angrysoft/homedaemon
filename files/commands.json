@@ -1,0 +1,11 @@
+{
+	"kodi": {
+		"start": "systemctl start kodi",
+		"stop": "systemctl stop kodi"
+	},
+	"transmission": {
+		"start": "Transmission.sh start",
+		"stop": "Transmission.sh stop"
+	}
+	
+}

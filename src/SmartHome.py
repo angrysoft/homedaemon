@@ -31,33 +31,46 @@ from time import sleep
 import serial
 import sys
 import json
+from random import randint
 
-#colors
-black="\x1b[;30m"
-red="\x1b[;31m"
-green="\x1b[;32m"
-yellow="\x1b[;33m"
-blue="\x1b[;34m"
-default="\x1b[;00m"
-# end colors
 
-#niby można użyć collections.deque 
 class Queue:
-    """docstring for Queue fifo list"""
+    """Queue fifo list"""
     def __init__(self):
-        self.l = []
+        self.q = []
         
-    def put(self,arg):
-        """docstring for put arg on end of list"""
-        self.l.insert(0,arg)
+    def put(self, arg):
+        """put arg on end of list"""
+        self.q.insert(0, arg)
     
     def pop(self):
-        """docstring for pop"""
-        return self.l.pop()
+        """pop"""
+        return self.q.pop()
     
     def len(self):
-        """docstring for len"""
-        return len(self.l)
+        """len return size of queue"""
+        return len(self.q)
+
+    def notEmpty(self):
+        """notEmpty"""
+        if len(self.q) > 0:
+            return True
+        else:
+            return False
+
+
+class JsonConfig():
+    """Class JsonConfig"""
+
+    def __init__(self):
+        """Constructor for JsonConfig"""
+        self.data = {}
+
+    def loadConfig(self,configFile):
+        """loadConfig"""
+        self.data  = {}
+        with open(configFile, 'r') as jdata:
+            self.data = json.load(jdata)
 
 
 class Config(dict):
@@ -70,10 +83,11 @@ class Config(dict):
         self['bufsize'] = '1024'
         self['serial'] = '/dev/ttyUSB0'
         self['scenedir']= '/etc/SmartHome/Scenes'
-        self['rfconfigfile'] = '/etc/SmartHome/rf433.json'
-        self['irconfigfile'] = '/ect/SmartHome/IR.json'
-        
-    
+        self['rf_config'] = '/etc/SmartHome/rf433.json'
+        self['ir_config'] = '/ect/SmartHome/IR.json'
+        self['colors_config'] = '/etc/SmartHome/colors.json'
+        self['commands_config'] = '/etc/SmartHome/commands.json'
+
     def writeDefaultConfig(self,infile):
         """docstring for writeDefaultConfig"""
         with open(infile,'w') as f:
@@ -100,6 +114,12 @@ class Config(dict):
                 
         return
 
+    def getKey(self, key):
+        """getKey"""
+        if key in self:
+            return self[key]
+
+
 class Scenes:
     """Class Scenes"""
 
@@ -121,57 +141,60 @@ class Scenes:
         if scene in self.scenes:
             exec(self.scenes[scene])
 
-class RF433:
+
+class RF433(JsonConfig):
     """Class RF433 send rf Code"""
-
-    def __init__(self, rfCongFile):
-        """Constructor for RF433"""
-        self.rf = {}
-        self.rfconf = rfCongFile
-
-    def loadConfig(self):
-        """loadConfig: load json config file"""
-        with open(self.rfconf, 'r') as jdata:
-            self.rf = json.load(jdata)
-
 
     def buttonOn(self, btnname):
         """buttonOn: get button on code and run sendCode"""
-        if btnname in self.rf:
-            return self.rf[btnname]['On']
+        if btnname in self.data:
+            return self.data[btnname]['On']
 
     def buttonOff(self, btnname):
         """buttonOff: get button off code and run sendCode"""
-        if btnname in self.rf:
-            return self.rf[btnname]['Off']
+        if btnname in self.data:
+            return self.data[btnname]['Off']
 
-class IR:
+
+class IR(JsonConfig):
     """Class IR: Sendign IR codes"""
-
-    def __init__(self, irConfigFile):
-        """Constructor for IR"""
-        self.ir = {}
-        self.irconf = irConfigFile
-
-    def loadConfig(self):
-        """loadConfig: load json config file with IR codes"""
-        with open(self.irconf, 'r') as jdata:
-            self.ir = json.load(jdata)
 
     def button(self, device, btnName):
         """button: return button code,mode,bits. device-device name e.g. tv ,btnName - name of button e.g. power, >> """
-        if device in self.ir:
-            if btnName in self.ir[device]['buttons']:
-                return self.ir[device]['buttons'][btnName], self.ir[device]['mode'], self.ir[device]['bits']
+        if device in self.data:
+            if btnName in self.data[device]['buttons']:
+                return self.data[device]['buttons'][btnName], self.data[device]['mode'], self.data[device]['bits']
 
+
+class Colors(JsonConfig):
+    """Class Colors"""
+
+    def getColor(self, colorName, dimmer=100):
+        """color"""
+        if colorName in self.data:
+            return self.data[colorName]
+
+    def getRandomColor(self):
+        """randomColor"""
+        lc = list(self.data)
+        return self.getColor(lc[randint(0, len(lc)-1)])
+
+
+class Commands(JsonConfig):
+    """Class Commands"""
+
+    def runCmd(self, cmd, state):
+        """runCmd"""
+        if cmd in self.data:
+            if state in self.data[cmd]:
+                return os.system(self.data[cmd][state])
 
 
 class TcpServer(Thread):
     """docstring for TcpServer"""
-    def __init__(self, queue, answer, host='127.0.0.1', port='9999', bufsize='1024'):
+    def __init__(self, queue, host='127.0.0.1', port='9999', bufsize='1024'):
         Thread.__init__(self)
         self.queue = queue
-        self.getAnswer = answer
 
         if host == 'auto':
             self.host = socket.gethostbyname(socket.gethostname())
@@ -199,12 +222,10 @@ class TcpServer(Thread):
             data = data.decode()
             data = data.rstrip()
             self.queue.put(data)
-            sleep(1)
-            self.conn.sendall(self.getAnswer())
-            print('ans : {0}'.format(self.getAnswer()))
+            # self.conn.sendall(self.getAnswer())
+            # print('ans : {0}'.format(self.getAnswer()))
             self.conn.close()
 
-            
     def close(self):
         """docstring for close"""
         self.loop = False
@@ -212,8 +233,6 @@ class TcpServer(Thread):
         self.sock.close()
         
 
-        
-        
 class SerialServer(Thread):
     """docstring for SerialServer"""
     def __init__(self, queue,serialPort,brate=9600):
@@ -264,23 +283,34 @@ class SerialServer(Thread):
         self.loop = False
 
 
-
 class SmartHome:
     """docstring for SmartHome"""
     def __init__(self, configFile):
-        self.queue = Queue()
-        #
         self.config = Config()
         self.config.loadFromFile(configFile)
+        self.queue = Queue()
         self.loop = True
-        self.answer = '\n'
-        self.tcpSrv = TcpServer(self.queue, self.getAnswer, self.config['host'], self.config['port'])
+        self.tcpSrv = TcpServer(self.queue, self.config['host'], self.config['port'])
         self.serialSrv = SerialServer(self.queue, self.config['serial'])
-        #self.sceneDir = self.config['scenedir']
         self.scenes = Scenes(self.config['scenedir'])
-        self.rf = RF433(self.config['rfconfigfile'])
-        self.ir = IR(self.config['irconfigfile'])
-        
+        self.rf = RF433()
+        self.ir = IR()
+        self.color = Colors()
+        self.command = Commands()
+
+    def __setup(self):
+        """__setup"""
+        self.scenes.loadScenes()
+        self.rf.loadConfig(self.config['rf_config'])
+        self.ir.loadConfig(self.config['ir_config'])
+        self.color.loadConfig(self.config['colors_config'])
+        self.command.loadConfig(self.config['commands_config'])
+
+        self.tcpSrv.daemon = True
+        self.tcpSrv.start()
+        self.serialSrv.daemon = True
+        self.serialSrv.start()
+
     def debug(self, msg):
         if self.config['debug'] == "False": return
         #colors
@@ -290,14 +320,6 @@ class SmartHome:
         # end colors
         sys.stderr.write('{0}>>> {1}DEBUG: {2}{3}\n'.format(green,yellow,default,msg))
 
-    def setAnswer(self, ans):
-        """setAnswer"""
-        self.answer = '{0}\n'.format(ans)
-
-    def getAnswer(self):
-        """getAnswer"""
-        return self.answer.encode()
-
     def setRGB(self, s, fade=True):
         """setRGB"""
         r, g, b = s.split('.')
@@ -305,34 +327,15 @@ class SmartHome:
             self.serialSrv.writeSerial('F.{0}.{1}.{2}'.format(r, g, b))
         else:
             self.serialSrv.writeSerial('C.{0}.{1}.{2}'.format(r, g, b))
-        self.setAnswer('OK')
 
     def sendIR(self, code, mode, bits):
         """sendIR"""
         self.serialSrv.writeSerial('I.{0}.{1}.{2}'.format(code, mode, bits))
-        self.setAnswer('OK')
 
     def sendRF(self,s):
         """docstring for sendRF"""
         self.serialSrv.writeSerial('W.{0}'.format(code))
-        self.setAnswer('OK')
-    
-    def kodi(self, b):
-        """docstring for startKodi"""
-        if b:
-            os.system('systemctl start kodi')
-        else:
-            os.system('systemctl stop kodi')
-        self.setAnswer('OK')
-    
-    def transmission(self, b):
-        """docstring for startTransmission"""
-        if b:
-            os.system('Transmission.sh start')
-        else:
-            os.system('Transmission.sh stop')
-        self.setAnswer('OK')
-        
+
     def getTemp(self, s):
         """docstring for getTemp"""
 
@@ -355,20 +358,11 @@ class SmartHome:
         
     def runScene(self, sc):
         """docstring for runScene"""
-        print(sc)
-        if sc in self.scenes:
-            exec(self.scenes[sc])
+        self.debug(sc)
     
     def runCmd(self, s):
         """docstring for runCmd"""
-        if s == 'exit':
-            self.stop()
-        elif s == 'startkodi':
-            self.kodi(True)
-        elif s == 'stopkodi':
-            self.kodi(False)
-        elif s == 'starttranssmision':
-            self.transmission(True)
+        self.debug(s)
     
     def parseEvent(self, s):
         """docstring for parseEvent"""
@@ -385,7 +379,9 @@ class SmartHome:
             return
         
         if pcmd == 'set':
-            if cmd == 'cmd':
+            if cmd == 'exit':
+                self.stop()
+            elif cmd == 'cmd':
                 self.runCmd(arg)
             elif cmd == 'rgb':
                 self.setRGB(arg)
@@ -399,8 +395,7 @@ class SmartHome:
                 self.getLight(arg)
             elif cmd == 'temp':
                 self.getTemp(arg)
-        
-                    
+
     def exit(self, status=0):
         """docstring for exit"""
         self.debug('exit status = {0}'.format(status))
@@ -408,16 +403,10 @@ class SmartHome:
     
     def start(self):
         """main loop"""
-        self.scenes.loadScenes()
-        self.rf.loadConfig()
-        self.ir.loadConfig()
-        self.tcpSrv.daemon = True
-        self.tcpSrv.start()
-        self.serialSrv.daemon = True
-        self.serialSrv.start()
+        self.__setup()
 
         while self.loop:
-            if self.queue.len() > 0:
+            if self.queue.notEmpty():
                 self.parseEvent(self.queue.pop())
             else:
                 sleep(1)
@@ -440,6 +429,7 @@ def print_help():
     print('-h --help     : print help screen')
     print('-c --config   : path to config file')
     sys.exit(0)
+
 
 def stop_app(configFile):
     """docstring for stop_app"""
@@ -483,8 +473,7 @@ if __name__ == "__main__":
     if args == []:
         usage()
         sys.exit(1)
-    
-    
+
     srv = SmartHome(configFile)
     signal.signal(signal.SIGINT, srv.stop)
     signal.signal(signal.SIGHUP, srv.stop)
@@ -498,8 +487,3 @@ if __name__ == "__main__":
             stop_app(configFile)
         else:
             assert False, "unhandled option"
-            
-
-        
-    
-
