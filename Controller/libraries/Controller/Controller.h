@@ -19,10 +19,12 @@
 #define DIO 10
 //Light sensor
 #define LIGHTPIN A0
+
 //OneWire thermometr pin
 #define ONE_WIRE_BUS 7
+
 //Arduino Uno pin 3
-//Arduino Mega pin 
+//Arduino Mega pin 5
 // to change edit IRremoteIn.h
 //#define IROUTPIN 3
 //Irda modes
@@ -30,8 +32,7 @@
 #define NEC  1;
 #define SONY 2;
 #define PANASONIC 3;
-#define JVC 
-
+#define JVC 4;
 
 //
 #define WIRELESS_TRANSMITER_PIN 11

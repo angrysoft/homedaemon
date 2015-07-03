@@ -20,7 +20,7 @@
 __author__='Sebastian Zwierzchowski'
 __copyright__='Copyright 2014 Sebastian Zwierzchowski'
 __license__='GPL2'
-__version__='0.2'
+__version__='0.3'
 
 import getopt
 import signal
@@ -133,13 +133,16 @@ class Scenes:
         for s in os.listdir(self.sceneDir):
             if s.endswith('.sc'):
                 print('Load scene: {0}'.format(s))
-                with (open('{0}/{1}'.format(self.sceneDir, s), 'r')) as f:
+                with (open(os.path.join(self.sceneDir, s), 'r')) as f:
                     self.scenes[s.rsplit('.', 1)[0]] = f.read()
 
     def runScene(self, scene):
         """runScene"""
         if scene in self.scenes:
-            exec(self.scenes[scene])
+            try:
+                exec(self.scenes[scene])
+            except:
+                sys.stderr.write('Run scene : {0} : failure')
 
 
 class RF433(JsonConfig):
@@ -189,6 +192,18 @@ class Commands(JsonConfig):
             if state in self.data[cmd]:
                 return os.system(self.data[cmd][state])
 
+class Sensors(JsonConfig):
+    """Class Sensors"""
+    def getLight(self, num):
+        """getLight"""
+        if num in self.data['Light']:
+            return self.data['Light'][num]
+
+    def getTemp(self, num):
+        """getTemp"""
+        if num in self.data['Temp']:
+            return self.data['Temp'][num]
+
 
 class TcpServer(Thread):
     """docstring for TcpServer"""
@@ -233,7 +248,7 @@ class TcpServer(Thread):
         self.sock.close()
         
 
-class SerialServer(Thread):
+class Controller(Thread):
     """docstring for SerialServer"""
     def __init__(self, queue,serialPort,brate=9600):
         Thread.__init__(self)
@@ -245,7 +260,7 @@ class SerialServer(Thread):
         
     
     def __connect(self):
-        """docstring for __reconnect"""
+        """docstring for __connect"""
         while True:
             if os.path.exists(self.serialPort):
                 self.controller = serial.Serial(port=self.serialPort, baudrate=9600)
@@ -254,17 +269,14 @@ class SerialServer(Thread):
                 
     def readSerial(self):
         """docstring for openSerial"""
-         
-        while self.loop:
-            try:
-                if self.controller.readable():
-                    print('serial ready')
-                    data = self.controller.readline()
-                    data = data.decode()
-                    data = data.rstrip()
-                    self.queue.put(data)
-            except:
-                self.__connect()
+        try:
+            if self.controller.readable():
+                data = self.controller.readline()
+                data = data.decode()
+                data = data.rstrip()
+                return data
+        except:
+            pass
                 
     
     def writeSerial(self,data):
@@ -272,6 +284,10 @@ class SerialServer(Thread):
         if self.controller.writable():
             data = '{0}\n'.format(data)
             self.controller.write(bytearray(data,'ascii'))
+
+    def sendRF(self, code):
+        """docstring for sendRF"""
+        self.writeSerial('W.{0}'.format(code))
         
     def run(self):
         """docstring for run"""
@@ -291,7 +307,7 @@ class SmartHome:
         self.queue = Queue()
         self.loop = True
         self.tcpSrv = TcpServer(self.queue, self.config['host'], self.config['port'])
-        self.serialSrv = SerialServer(self.queue, self.config['serial'])
+        # self.serialSrv = SerialServer(self.queue, self.config['serial'])
         self.scenes = Scenes(self.config['scenedir'])
         self.rf = RF433()
         self.ir = IR()
@@ -307,9 +323,7 @@ class SmartHome:
         self.command.loadConfig(self.config['commands_config'])
 
         self.tcpSrv.daemon = True
-        self.tcpSrv.start()
         self.serialSrv.daemon = True
-        self.serialSrv.start()
 
     def debug(self, msg):
         if self.config['debug'] == "False": return
@@ -331,10 +345,6 @@ class SmartHome:
     def sendIR(self, code, mode, bits):
         """sendIR"""
         self.serialSrv.writeSerial('I.{0}.{1}.{2}'.format(code, mode, bits))
-
-    def sendRF(self,s):
-        """docstring for sendRF"""
-        self.serialSrv.writeSerial('W.{0}'.format(code))
 
     def getTemp(self, s):
         """docstring for getTemp"""
@@ -368,7 +378,6 @@ class SmartHome:
         """docstring for parseEvent"""
         
         self.debug(s)
-        self.setAnswer('')
         s = s.strip()
         args = s.split('.',2)
         if len(args) == 3:
@@ -404,6 +413,8 @@ class SmartHome:
     def start(self):
         """main loop"""
         self.__setup()
+        self.tcpSrv.start()
+        self.serialSrv.start()
 
         while self.loop:
             if self.queue.notEmpty():
