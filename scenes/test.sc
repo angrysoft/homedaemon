@@ -1,3 +1,5 @@
 print('test_scene')
-self.setRGB('255.0.0')
+sleep(3)
+print('dupa i cycki')
+#setLedRGB('255.0.0')
 

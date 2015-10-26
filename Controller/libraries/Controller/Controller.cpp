@@ -111,7 +111,7 @@ int Controller::getCode() {
  * Get temperature from sensor
  */
 int Controller::getTemp(int num) {
-	// T.thermometr_num.temp
+  //return T.thermometr_num.temp
 	sensors.requestTemperatures();
 	delay(50);
 	Serial.print("T.");

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Scenes</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="static/styles.css">
+</head>
+<body>
+<script>
+function makeHttpObject() {
+  try {return new XMLHttpRequest();}
+  catch (error) {}
+  try {return new ActiveXObject("Msxml2.XMLHTTP");}
+  catch (error) {}
+  try {return new ActiveXObject("Microsoft.XMLHTTP");}
+  catch (error) {}
+
+  throw new Error("Could not create HTTP request object.");
+}
+
+function sendScene(s) {
+  var request = makeHttpObject();
+  var url = 'scenes?'+ s;
+  request.open("POST", url, false);
+  request.send(null);
+}
+
+</script>
+
+{% for s in scenes %}
+<div id="scenes">
+    <button type="button" name="{{ s }}" onclick="sendScene('{{ s }}')">Scene {{ s }}</button>
+</div>
+{% endfor %}
+
+</body>
+</html>

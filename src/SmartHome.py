@@ -142,7 +142,7 @@ class Scenes:
             try:
                 exec(self.scenes[scene])
             except:
-                sys.stderr.write('Run scene : {0} : failure')
+                sys.stderr.write('Run scene : {0} : failure'.format(scene))
 
 
 class RF433(JsonConfig):
@@ -191,6 +191,7 @@ class Commands(JsonConfig):
         if cmd in self.data:
             if state in self.data[cmd]:
                 return os.system(self.data[cmd][state])
+
 
 class Sensors(JsonConfig):
     """Class Sensors"""
@@ -283,7 +284,7 @@ class Controller(Thread):
         """docstring for writeSerial"""
         if self.controller.writable():
             data = '{0}\n'.format(data)
-            self.controller.write(bytearray(data,'ascii'))
+            self.controller.write(bytearray(data, 'ascii'))
 
     def sendRF(self, code):
         """docstring for sendRF"""
