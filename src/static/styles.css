@@ -1,0 +1,133 @@
+span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+
+
+body {
+	background-color:#000000;
+	margin: 0 auto;
+	color: #DD741F;
+}
+
+
+header {
+	padding:5px;
+	/*border-bottom: 2px dashed #474747;*/
+	/*background-image: url('static/b4.png');*/
+}
+
+
+
+#logo {
+	text-align:left;
+	margin-left:200px;
+}
+
+#logo h1 {
+	/*font-family: 'Graduate';*/
+	font-style: normal;
+	font-size: 60px;
+	text-decoration:none;
+	color: #FFFFFF;
+}
+
+#menu {
+	padding-top: 10px;
+	text-align: center;
+}
+
+#menu ul{
+	list-style: none;
+	display: inline-block;
+}
+
+#menu li {
+	float:left;
+}
+
+#menu a {
+	font-size: 13px;
+	font-weight: normal;
+	text-transform: uppercase;
+	display: block;
+	width: 120px;
+	color: white;
+	padding:10px;
+	text-decoration:none;
+	-webkit-transition: color 200ms;
+	-moz-transition: color 200ms;
+	transition: color 200ms;
+}
+
+#menu a:hover, #menu a:active {
+	color: #DD741F;
+}
+
+/* small screens */
+@media screen and (max-width: 44em) {
+
+  nav[role="full-horizontal"] ul > li {
+    width: 100%;
+	zoom:1.5;
+  }
+
+}
+
+#content {
+	width: 85%;
+	margin-left: auto;
+	margin-right: auto;
+	border: 2px dashed #474747;
+	text-align : center;
+}
+
+#content button {
+	width : 250px;
+	height : 30px;
+	margin : 5px;
+}
+
+button.buttonOn {
+	background-color : rgb(10,200,0);
+}
+
+button.buttonOff {
+	background-color : rgb(200,10,0);
+}
+
+div.clear {
+	clear : both;
+}
+
+footer {
+	clear:both;
+	text-align:center;
+	font-size: 80%;
+	/*border-top: 2px dashed #474747;*/
+	padding: 3px;
+}
+
+footer a:link, footer a:visited {
+	color: #474747;
+}
+
+a {
+	color: #999999;
+}

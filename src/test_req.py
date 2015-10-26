@@ -14,7 +14,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_colors(self):
         l = {'RGB': '255.0.0', 'name': 'alice blue'}
-        req = requests.post('http://127.0.0.1:5000/led', params=l)
+        req = requests.post('http://127.0.0.1:5000/leds', params=l)
         print(req.url)
         print(req.text)
 

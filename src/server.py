@@ -103,7 +103,10 @@ class Colors(JsonConfig):
 
     def getAllColors(self):
         """getAllColors"""
-        return self.data.keys()
+        ret = {}
+        for x in self.data:
+            ret[x] =  self.data[x].replace('.', ',')
+        return ret
 
 
 class Scenes:
@@ -252,19 +255,20 @@ def scenes():
         return render_template('scenes.html', scenes=ctrl.scenes.getAllScenes())
 
 
-@app.route('/led', methods=['GET', 'POST'])
-def led():
+@app.route('/leds', methods=['GET', 'POST'])
+def leds():
     """led"""
     if request.method == 'POST':
         for color, val in request.args.items():
+            print(color, val)
             if color == 'RGB':
-                setLedRGB(val)
+                ctrl.setLedRGB(val)
             elif color == 'name':
-                setLedColor(val)
+                ctrl.setLedColor(val)
         return 'ok'
     else:
         print('Led color')
-        return render_template('led.html', scenes=ctrl.color.getAllColors())
+        return render_template('leds.html', colors=ctrl.color.getAllColors())
 
 if __name__ == '__main__':
 

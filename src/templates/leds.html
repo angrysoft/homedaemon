@@ -18,9 +18,9 @@ function makeHttpObject() {
   throw new Error("Could not create HTTP request object.");
 }
 
-function sendScene(s) {
+function setColor(c,n) {
   var request = makeHttpObject();
-  var url = 'scenes?'+ s;
+  var url = 'leds?'+ n + '=' + c;
   request.open("POST", url, false);
   request.send(null);
 }
@@ -42,8 +42,8 @@ function sendScene(s) {
 		</div>
 	</header>
     <div id="content">
-        {% for s in scenes %}
-            <button type="button" name="{{ s }}" onclick="sendScene('{{ s }}')">Scene {{ s }}</button>
+        {% for c in colors %}
+            <button style="background-color:rgb({{ colors[c] }})" type="button" name="{{ c }}" onclick="setColor('{{ c }}', 'name')">Color : {{ c }}</button>
         {% endfor %}
     </div>
 	<footer>

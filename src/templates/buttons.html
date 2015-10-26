@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Scenes</title>
+    <title>Buttons</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="static/styles.css">
 </head>
@@ -18,9 +18,9 @@ function makeHttpObject() {
   throw new Error("Could not create HTTP request object.");
 }
 
-function sendScene(s) {
+function sendButton(b,s) {
   var request = makeHttpObject();
-  var url = 'scenes?'+ s;
+  var url = 'buttons?'+ b + '=' + s;
   request.open("POST", url, false);
   request.send(null);
 }
@@ -42,8 +42,11 @@ function sendScene(s) {
 		</div>
 	</header>
     <div id="content">
-        {% for s in scenes %}
-            <button type="button" name="{{ s }}" onclick="sendScene('{{ s }}')">Scene {{ s }}</button>
+        {% for b in buttons %}
+            <div>
+                <button class="buttonOn" type="button" name="{{ b }}" onclick="sendButton('{{ b }}', 'On')">Button {{ b }} On</button>
+                <button class="buttonOff" type="button" name="{{ b }}" onclick="sendButton('{{ b }}', 'Off')">Button {{ b }} Off</button>
+            </div>
         {% endfor %}
     </div>
 	<footer>
