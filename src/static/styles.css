@@ -29,8 +29,6 @@ body {
 
 header {
 	padding:5px;
-	/*border-bottom: 2px dashed #474747;*/
-	/*background-image: url('static/b4.png');*/
 }
 
 
@@ -41,7 +39,6 @@ header {
 }
 
 #logo h1 {
-	/*font-family: 'Graduate';*/
 	font-style: normal;
 	font-size: 60px;
 	text-decoration:none;

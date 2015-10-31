@@ -199,7 +199,8 @@ class Controller(Thread):
         self.scenes = Scenes('../scenes')
         self.color = Colors()
         self.commands = Commands()
-        self.status = 'Not Connected'
+        self.status = {}
+        self.status['connection'] = 'Not Connected'
 
     def __setup(self):
         """__setup"""
@@ -214,7 +215,7 @@ class Controller(Thread):
         while True:
             if os.path.exists(self.serialPort):
                 self.controller = serial.Serial(port=self.serialPort, baudrate=9600)
-                self.status = 'Connected'
+                self.status['connection'] = 'Connected'
                 break
             sleep(3)
 
@@ -240,10 +241,10 @@ class Controller(Thread):
         self.writeSerial('ping')
         sleep(0.2)
         if self.readSerial() == 'pong':
-            self.status = "Connected"
+            self.status['connection'] = "Connected"
             return True
         else:
-            self.status = "Not Connected"
+            self.status['connection'] = "Not Connected"
             return False
 
     def sendRF(self, code):
