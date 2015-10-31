@@ -1,7 +1,7 @@
 from distutils.core import setup
 
 setup(name='SmartHome',
-      version='0.2',
+      version='0.4',
       description='Home Automatization',
       url='https://bitbucket.org/angrysoft/SmartHome',
       author='Sebastian Zwierzchwoski',
