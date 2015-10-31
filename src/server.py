@@ -31,7 +31,7 @@ from time import sleep
 import serial
 import sys
 import os
-import signal
+# import signal
 from random import randint
 
 app = Flask(__name__)
