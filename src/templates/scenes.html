@@ -6,41 +6,9 @@
     <link rel="stylesheet" href="static/styles.css">
 </head>
 <body>
-<script>
-function makeHttpObject() {
-  try {return new XMLHttpRequest();}
-  catch (error) {}
-  try {return new ActiveXObject("Msxml2.XMLHTTP");}
-  catch (error) {}
-  try {return new ActiveXObject("Microsoft.XMLHTTP");}
-  catch (error) {}
+<script src="static/funct.js"></script>
 
-  throw new Error("Could not create HTTP request object.");
-}
-
-function sendScene(s) {
-  var request = makeHttpObject();
-  var url = 'scenes?'+ s;
-  request.open("POST", url, false);
-  request.send(null);
-}
-
-</script>
-	<header>
-		<div id="logo">
-			<h1>Smart Home</h1>
-		</div>
-		<div id="menu">
-			<nav role="full-horizontal">
-				<ul>
-					<li><a href="/">HOME</a></li>
-					<li><a href="/leds">LEDS</a></li>
-					<li><a href="/buttons">BUTTONS</a></li>
-					<li><a href="/scenes">SCENES</a></li>
-				</ul>
-			</nav>
-		</div>
-	</header>
+{% include "header.html" %}
     <div id="content">
         {% for s in scenes %}
             <button type="button" name="{{ s }}" onclick="sendScene('{{ s }}')">Scene {{ s }}</button>

@@ -131,3 +131,14 @@ footer a:link, footer a:visited {
 a {
 	color: #999999;
 }
+
+div#RGB  {
+    border-bottom: 2px dashed #474747;
+    padding : 10px;
+}
+
+#RGB p {
+    text-align: right;
+    width: 210px;
+    margin: auto;
+}

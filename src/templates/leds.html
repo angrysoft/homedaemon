@@ -1,49 +1,34 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Scenes</title>
+    <title>Led Strip</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="static/styles.css">
 </head>
-<body>
+<body onload="onLoadFunct()">
+<script src="static/funct.js"></script>
+
 <script>
-function makeHttpObject() {
-  try {return new XMLHttpRequest();}
-  catch (error) {}
-  try {return new ActiveXObject("Msxml2.XMLHTTP");}
-  catch (error) {}
-  try {return new ActiveXObject("Microsoft.XMLHTTP");}
-  catch (error) {}
-
-  throw new Error("Could not create HTTP request object.");
-}
-
-function setColor(c,n) {
-  var request = makeHttpObject();
-  var url = 'leds?'+ n + '=' + c;
-  request.open("POST", url, false);
-  request.send(null);
+function onLoadFunct() {
+    setRGB();
+    var rgbForm = document.getElementById("rgbForm");
+    rgbForm.addEventListener("input", setRGB);
 }
 
 </script>
-	<header>
-		<div id="logo">
-			<h1>Smart Home</h1>
-		</div>
-		<div id="menu">
-			<nav role="full-horizontal">
-				<ul>
-					<li><a href="/">HOME</a></li>
-					<li><a href="/leds">LEDS</a></li>
-					<li><a href="/buttons">BUTTONS</a></li>
-					<li><a href="/scenes">SCENES</a></li>
-				</ul>
-			</nav>
-		</div>
-	</header>
+{% include "header.html" %}
     <div id="content">
+        <div id="RGB">
+            <form id="rgbForm">
+                <p>Led RGB Settings:</p>
+                <p style="color:red">RED: <input type="range" id="r" name="r" value="0" min="0" max="255"></p>
+                <p style="color:green">GREEN: <input type="range" id="g" name="g" value="0" min="0" max="255"></p>
+                <p style="color:blue">BLUE: <input type="range" id="b" name="b" value="0" min="0" max="255"></p>
+                <button id="sentBtn" type="button" name="rgb" onclick="sendRGB()">Sent RGB : 0.0.0</button>
+            </form>
+        </div>
         {% for c in colors %}
-            <button style="background-color:rgb({{ colors[c] }})" type="button" name="{{ c }}" onclick="setColor('{{ c }}', 'name')">Color : {{ c }}</button>
+            <button style="background-color:rgb({{ colors[c] }})" type="button" name="{{ c }}" onclick="sendColor('{{ c }}')">Color : {{ c }}</button>
         {% endfor %}
     </div>
 	<footer>

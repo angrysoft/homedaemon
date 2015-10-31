@@ -1,7 +1,7 @@
 {
 	"kodi": {
-		"start": "systemctl start kodi",
-		"stop": "systemctl stop kodi"
+		"start": "kodi.sh start",
+		"stop": "kodi.sh stop"
 	},
 	"transmission": {
 		"start": "Transmission.sh start",

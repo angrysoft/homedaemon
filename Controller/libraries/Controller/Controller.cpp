@@ -111,7 +111,7 @@ int Controller::getCode() {
  * Get temperature from sensor
  */
 int Controller::getTemp(int num) {
-  //return T.thermometr_num.temp
+	//return T.thermometr_num.temp
 	sensors.requestTemperatures();
 	delay(50);
 	Serial.print("T.");
@@ -240,6 +240,11 @@ void Controller::powerOff(int sek) {
 
 int Controller::command(String s) {
 	//Serial.println(s);
+	if (s == "ping") {
+		Serial.println("pong");
+		return 0;
+	}
+	
 	int idx = s.indexOf('.');
 	if (idx == -1) {return 0;}
 	String cmd = "";
@@ -278,7 +283,7 @@ int Controller::command(String s) {
 			break;
 	}
       
-  return 0;
+  	return 0;
 }
 
 void Controller::listen(bool echo) {

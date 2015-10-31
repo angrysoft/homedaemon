@@ -1,11 +1,13 @@
-from setuptools import setup
+from distutils.core import setup
 
 setup(name='SmartHome',
-      version='0.1',
+      version='0.2',
       description='Home Automatization',
       url='https://bitbucket.org/angrysoft/SmartHome',
       author='Sebastian Zwierzchwoski',
       author_email='sebastian.zwierzchowski@gmail.com',
       license='GPL2',
-      packages=['src'],
-      zip_safe=False)
+      packages_dir=['src'],
+      scripts=['src'],
+      install_requires=["flask", "pyserial"]
+      )

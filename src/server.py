@@ -31,9 +31,11 @@ from time import sleep
 import serial
 import sys
 import os
+import signal
 from random import randint
 
 app = Flask(__name__)
+
 
 class Queue:
     """Queue fifo list"""
@@ -67,11 +69,25 @@ class JsonConfig():
         """Constructor for JsonConfig"""
         self.data = {}
 
-    def loadConfig(self,configFile):
+    def loadConfig(self, configFile):
         """loadConfig"""
         self.data  = {}
         with open(configFile, 'r') as jdata:
             self.data = json.load(jdata)
+
+    def nSort(self, l):
+        """Sort list of digits and text"""
+        digit = []
+        text = []
+        for i in l:
+            if i.isdigit():
+                digit.append(i)
+            else:
+                text.append(i)
+        digit.sort(key=int)
+        text.sort()
+        digit.extend(text)
+        return digit
 
 
 class RF433(JsonConfig):
@@ -85,7 +101,7 @@ class RF433(JsonConfig):
 
     def getAllButtons(self):
         """getButtons"""
-        return sorted(list(self.data.keys()))
+        return self.nSort(list(self.data.keys()))
 
 
 class Colors(JsonConfig):
@@ -133,16 +149,48 @@ class Scenes:
             except:
                 sys.stderr.write('Run scene : {0} : failure'.format(scene))
 
+    def tescik(self):
+        """tescik"""
+        print('tescik sceny bla bla')
+
     def getAllScenes(self):
         """getAllScenes"""
         return self.scenes.keys()
 
 
+class Commands(JsonConfig):
+    """Class Commands"""
+
+    def runCmd(self, cmd, state):
+        """runCmd"""
+        if cmd in self.data:
+            if state in self.data[cmd]:
+                return os.system(self.data[cmd][state])
+
+    def getAllCommands(self):
+        """getAllCommands"""
+        return sorted(self.data.keys())
+
+
+class Sensors(JsonConfig):
+    """Class Sensors"""
+    def getLight(self, num):
+        """getLight"""
+        if num in self.data['Light']:
+            return self.data['Light'][num]
+
+    def getTemp(self, num):
+        """getTemp"""
+        if num in self.data['Temp']:
+            return self.data['Temp'][num]
+
+
 class Controller(Thread):
     """docstring for SerialServer"""
-    def __init__(self, queue, serialPort, brate=9600):
+    def __init__(self, serialPort, brate=9600):
         Thread.__init__(self)
-        self.queue = queue
+        self.queue = Queue()
+        self.answer = Queue()
         self.serialPort = serialPort
         self.baudrate = brate
         self.controller = None
@@ -150,6 +198,8 @@ class Controller(Thread):
         self.rf = RF433()
         self.scenes = Scenes('../scenes')
         self.color = Colors()
+        self.commands = Commands()
+        self.status = 'Not Connected'
 
     def __setup(self):
         """__setup"""
@@ -157,13 +207,14 @@ class Controller(Thread):
         self.rf.loadConfig('../files/rf433.json')
         # self.ir.loadConfig(self.config['ir_config'])
         self.color.loadConfig('../files/colors.json')
-        # self.command.loadConfig(self.config['commands_config'])
+        self.commands.loadConfig('../files/commands.json')
 
     def __connect(self):
         """docstring for __connect"""
         while True:
             if os.path.exists(self.serialPort):
                 self.controller = serial.Serial(port=self.serialPort, baudrate=9600)
+                self.status = 'Connected'
                 break
             sleep(3)
 
@@ -184,13 +235,33 @@ class Controller(Thread):
             data = '{0}\n'.format(data)
             self.controller.write(bytearray(data, 'ascii'))
 
+    def checkConnection(self):
+        """checkConnection"""
+        self.writeSerial('ping')
+        sleep(0.2)
+        if self.readSerial() == 'pong':
+            self.status = "Connected"
+            return True
+        else:
+            self.status = "Not Connected"
+            return False
+
     def sendRF(self, code):
         """docstring for sendRF"""
         self.writeSerial('W.{0}'.format(code))
 
-    def parseEvent(self, e):
+    def parseCommand(self, cmd):
         """parseEvent"""
-        print(e)
+        print(cmd)
+        if type(cmd) == tuple:
+            if cmd[0] == 'scene':
+                self.scenes.runScene(cmd[1])
+            elif cmd[0] == 'button':
+                self.sendRF(self.rf.getButton(cmd[1], cmd[2]))
+            elif cmd[0] == 'ledRGB':
+                self.writeSerial('F.{0}'.format(cmd[1]))
+            elif cmd[0] == 'ledcolor':
+                self.writeSerial('F.{0}'.format(self.color.getColor(cmd[1])))
 
     def run(self):
         """docstring for run"""
@@ -198,37 +269,23 @@ class Controller(Thread):
         self.__connect()
 
         while self.loop:
+            # if not self.checkConnection():
+            #    self.__connect()
+            #    continue
             if self.queue.notEmpty():
-                self.parseEvent(self.queue.pop())
+                self.parseCommand(self.queue.pop())
             else:
-                sleep(1)
+                sleep(0.5)
 
-    def close(self):
+    def close(self, *args):
         """docstring for close"""
         self.loop = False
-
-    def pushButton(self, b, f):
-        """push_button"""
-        print("set {0} {1}".format(b, f))
-        print(self.rf.getButton(b, f))
-
-    def runScene(self, sc):
-        """runSecene"""
-        print("Run scen {0}".format(sc))
-        self.scenes.runScene(sc)
-
-    def setLedRGB(self, rgb):
-        """setLedRGB"""
-        print(rgb)
-
-    def setLedColor(self, cn):
-        print(self.color.getColor(cn))
 
 
 @app.route('/')
 def start_page():
     print('Hello World!')
-    return render_template('index.html')
+    return render_template('index.html', status=ctrl.status)
 
 
 @app.route('/buttons', methods=['GET', 'POST'])
@@ -236,7 +293,7 @@ def buttons():
     """"""
     if request.method == 'POST':
         for button, func in request.args.items():
-            ctrl.pushButton(button, func)
+            ctrl.queue.put(('button', button, func))
         return 'ok'
     else:
         print('show buttons')
@@ -248,7 +305,7 @@ def scenes():
     """"""
     if request.method == 'POST':
         for sc in request.args.keys():
-            ctrl.runScene(sc)
+            ctrl.queue.put(('scene', sc))
         return 'ok'
     else:
         print('show scenes')
@@ -260,19 +317,32 @@ def leds():
     """led"""
     if request.method == 'POST':
         for color, val in request.args.items():
-            print(color, val)
             if color == 'RGB':
-                ctrl.setLedRGB(val)
+                ctrl.queue.put(('ledRGB', val))
             elif color == 'name':
-                ctrl.setLedColor(val)
+                ctrl.queue.put(('ledcolor', val))
         return 'ok'
     else:
         print('Led color')
         return render_template('leds.html', colors=ctrl.color.getAllColors())
 
-if __name__ == '__main__':
 
-    q = Queue()
-    ctrl = Controller(q, '/dev/ttyACM0')
+@app.route('/commands', methods=['GET', 'POST'])
+def commands():
+    """"""
+    if request.method == 'POST':
+        for button, func in request.args.items():
+            ctrl.queue.put(('command', cmd, func))
+        return 'ok'
+    else:
+        print('show buttons')
+        return render_template('commands.html', buttons=ctrl.commands.getAllCommands())
+
+if __name__ == '__main__':
+    ctrl = Controller('/dev/ttyACM0')
     ctrl.start()
+    #signal.signal(signal.SIGINT, ctrl.close)
+    #signal.signal(signal.SIGHUP, ctrl.close)
+    #signal.signal(signal.SIGQUIT, ctrl.close)
+    #signal.signal(signal.SIGTERM, ctrl.close)
     app.run(debug=True)
