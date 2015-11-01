@@ -31,7 +31,6 @@ from time import sleep
 import serial
 import sys
 import os
-# import signal
 from random import randint
 
 app = Flask(__name__)
@@ -269,9 +268,6 @@ class Controller(Thread):
         self.__connect()
 
         while self.loop:
-            # if not self.checkConnection():
-            #    self.__connect()
-            #    continue
             if self.queue.notEmpty():
                 self.parseCommand(self.queue.pop())
             else:
