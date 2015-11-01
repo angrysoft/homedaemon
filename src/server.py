@@ -74,6 +74,13 @@ class JsonConfig():
         with open(configFile, 'r') as jdata:
             self.data = json.load(jdata)
 
+    def get(self, key):
+        """get"""
+        if key in self.data:
+            return self.data[key]
+        else:
+            return None
+
     def nSort(self, l):
         """Sort list of digits and text"""
         digit = []
@@ -186,27 +193,28 @@ class Sensors(JsonConfig):
 
 class Controller(Thread):
     """docstring for SerialServer"""
-    def __init__(self, serialPort, brate=9600):
+    def __init__(self):
         Thread.__init__(self)
         self.queue = Queue()
-        self.answer = Queue()
-        self.serialPort = serialPort
-        self.baudrate = brate
+        self.config = JsonConfig()
+        self.config.loadConfig('../files/SmartHome.json')
+        self.serialPort = self.config.get('serialPort')
         self.controller = None
         self.loop = True
         self.rf = RF433()
-        self.scenes = Scenes('../scenes')
+        self.scenes = Scenes(self.config.get('scenesDir'))
         self.color = Colors()
         self.commands = Commands()
         self.status = 'Not Connected'
 
+
     def __setup(self):
         """__setup"""
         self.scenes.loadScenes()
-        self.rf.loadConfig('../files/rf433.json')
-        # self.ir.loadConfig(self.config['ir_config'])
-        self.color.loadConfig('../files/colors.json')
-        self.commands.loadConfig('../files/commands.json')
+        self.rf.loadConfig(os.path.join(self.config.get('configDir', 'rf433.json')))
+        self.ir.loadConfig(os.path.join(self.config.get('configDir', 'IR.json')))
+        self.color.loadConfig(os.path.join(self.config.get('configDir', 'colors.json')))
+        self.commands.loadConfig(os.path.join(self.config.get('configDir','ommands.json')))
 
     def __connect(self):
         """docstring for __connect"""
@@ -335,7 +343,7 @@ def commands():
         return render_template('commands.html', buttons=ctrl.commands.getAllCommands())
 
 if __name__ == '__main__':
-    ctrl = Controller('/dev/ttyACM0')
+    ctrl = Controller()
     ctrl.start()
     #signal.signal(signal.SIGINT, ctrl.close)
     #signal.signal(signal.SIGHUP, ctrl.close)

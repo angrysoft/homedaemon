@@ -1,0 +1,7 @@
+{
+  'debug': 'True'
+  'serialPort': '/dev/ttyACM0'
+  'scenesDir': '../scenes'
+  'configDir': '../files'
+}
+
