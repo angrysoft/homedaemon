@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# server.py
+# SmartHouse.py
 # Copyright (C) 2014  Sebastian Zwierzchowski <sebastian.zwierzchowski@gmail.com>
 #
 # This program is free software; you can redistribute it and/or
@@ -211,10 +211,10 @@ class Controller(Thread):
     def __setup(self):
         """__setup"""
         self.scenes.loadScenes()
-        self.rf.loadConfig(os.path.join(self.config.get('configDir', 'rf433.json')))
-        self.ir.loadConfig(os.path.join(self.config.get('configDir', 'IR.json')))
-        self.color.loadConfig(os.path.join(self.config.get('configDir', 'colors.json')))
-        self.commands.loadConfig(os.path.join(self.config.get('configDir','ommands.json')))
+        self.rf.loadConfig(os.path.join(self.config.get('configDir'), 'rf433.json'))
+        # self.ir.loadConfig(os.path.join(self.config.get('configDir'), 'IR.json'))
+        self.color.loadConfig(os.path.join(self.config.get('configDir'), 'colors.json'))
+        self.commands.loadConfig(os.path.join(self.config.get('configDir'),'commands.json'))
 
     def __connect(self):
         """docstring for __connect"""
@@ -349,4 +349,4 @@ if __name__ == '__main__':
     #signal.signal(signal.SIGHUP, ctrl.close)
     #signal.signal(signal.SIGQUIT, ctrl.close)
     #signal.signal(signal.SIGTERM, ctrl.close)
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0') #, port=80)

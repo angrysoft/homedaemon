@@ -1,10 +1,10 @@
 from distutils.core import setup
 
-setup(name='SmartHome',
+setup(name='SmartHouse',
     version='0.4',
     description='Home Automatization',
     url='https://bitbucket.org/angrysoft/SmartHome',
-    author='Sebastian Zwierzchwoski',
+    author='Sebastian Zwierzchowski',
     author_email='sebastian.zwierzchowski@gmail.com',
     license='GPL2',
     data_files=[('/etc/SmartHome', ['files/colors.json',
@@ -20,7 +20,7 @@ setup(name='SmartHome',
                                                     'src/templates/index.html',
                                                     'src/templates/leds.html',
                                                     'src/templates/scenes.html']),
-                ('/usr/lib/systemd/system/', 'smarthome.service')],
-    scripts=['src/server.py'],
+                ('/usr/lib/systemd/system/', 'smarthouse.service')],
+    scripts=['src/SmartHouse.py'],
     install_requires=["flask", "pyserial"]
     )
