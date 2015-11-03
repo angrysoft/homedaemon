@@ -1,13 +1,26 @@
 from distutils.core import setup
 
-setup(name='SmartHome',
-      version='0.4',
-      description='Home Automatization',
-      url='https://bitbucket.org/angrysoft/SmartHome',
-      author='Sebastian Zwierzchwoski',
-      author_email='sebastian.zwierzchowski@gmail.com',
-      license='GPL2',
-      packages_dir=['src'],
-      scripts=['src'],
-      install_requires=["flask", "pyserial"]
-      )
+setup(name='SmartHouse',
+    version='0.4',
+    description='Home Automatization',
+    url='https://bitbucket.org/angrysoft/SmartHome',
+    author='Sebastian Zwierzchowski',
+    author_email='sebastian.zwierzchowski@gmail.com',
+    license='GPL2',
+    data_files=[('/etc/SmartHome', ['files/colors.json',
+                                    'files/commands.json',
+                                    'files/IR.json',
+                                    'files/rf433.json',
+                                    'files/sensors.json']),
+                ('/usr/share/SmartHome/static', ['src/static/styles.css',
+                                                 'src/static/funct.js']),
+                ('/usr/share/SmartHome/templates', ['src/templates/buttons.html',
+                                                    'src/templates/commands.html',
+                                                    'src/templates/header.html',
+                                                    'src/templates/index.html',
+                                                    'src/templates/leds.html',
+                                                    'src/templates/scenes.html']),
+                ('/usr/lib/systemd/system/', 'smarthouse.service')],
+    scripts=['src/SmartHouse.py'],
+    install_requires=["flask", "pyserial"]
+    )

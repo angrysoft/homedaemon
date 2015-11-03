@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# server.py
+# SmartHouse.py
 # Copyright (C) 2014  Sebastian Zwierzchowski <sebastian.zwierzchowski@gmail.com>
 #
 # This program is free software; you can redistribute it and/or
@@ -31,7 +31,6 @@ from time import sleep
 import serial
 import sys
 import os
-# import signal
 from random import randint
 
 app = Flask(__name__)
@@ -74,6 +73,13 @@ class JsonConfig():
         self.data  = {}
         with open(configFile, 'r') as jdata:
             self.data = json.load(jdata)
+
+    def get(self, key):
+        """get"""
+        if key in self.data:
+            return self.data[key]
+        else:
+            return None
 
     def nSort(self, l):
         """Sort list of digits and text"""
@@ -187,28 +193,29 @@ class Sensors(JsonConfig):
 
 class Controller(Thread):
     """docstring for SerialServer"""
-    def __init__(self, serialPort, brate=9600):
+    def __init__(self):
         Thread.__init__(self)
         self.queue = Queue()
-        self.answer = Queue()
-        self.serialPort = serialPort
-        self.baudrate = brate
+        self.config = JsonConfig()
+        self.config.loadConfig('../files/SmartHome.json')
+        self.serialPort = self.config.get('serialPort')
         self.controller = None
         self.loop = True
         self.rf = RF433()
-        self.scenes = Scenes('../scenes')
+        self.scenes = Scenes(self.config.get('scenesDir'))
         self.color = Colors()
         self.commands = Commands()
         self.status = {}
         self.status['connection'] = 'Not Connected'
 
+
     def __setup(self):
         """__setup"""
         self.scenes.loadScenes()
-        self.rf.loadConfig('../files/rf433.json')
-        # self.ir.loadConfig(self.config['ir_config'])
-        self.color.loadConfig('../files/colors.json')
-        self.commands.loadConfig('../files/commands.json')
+        self.rf.loadConfig(os.path.join(self.config.get('configDir'), 'rf433.json'))
+        # self.ir.loadConfig(os.path.join(self.config.get('configDir'), 'IR.json'))
+        self.color.loadConfig(os.path.join(self.config.get('configDir'), 'colors.json'))
+        self.commands.loadConfig(os.path.join(self.config.get('configDir'),'commands.json'))
 
     def __connect(self):
         """docstring for __connect"""
@@ -270,9 +277,6 @@ class Controller(Thread):
         self.__connect()
 
         while self.loop:
-            # if not self.checkConnection():
-            #    self.__connect()
-            #    continue
             if self.queue.notEmpty():
                 self.parseCommand(self.queue.pop())
             else:
@@ -340,10 +344,10 @@ def commands():
         return render_template('commands.html', buttons=ctrl.commands.getAllCommands())
 
 if __name__ == '__main__':
-    ctrl = Controller('/dev/ttyACM0')
+    ctrl = Controller()
     ctrl.start()
     #signal.signal(signal.SIGINT, ctrl.close)
     #signal.signal(signal.SIGHUP, ctrl.close)
     #signal.signal(signal.SIGQUIT, ctrl.close)
     #signal.signal(signal.SIGTERM, ctrl.close)
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0') #, port=80)
