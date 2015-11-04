@@ -191,11 +191,22 @@ class Sensors(JsonConfig):
             return self.data['Temp'][num]
 
 
+class eventListner(Thread):
+    """Class eventListner"""
+
+    def __init__(self, controller, retQueue):
+        """Constructor for eventListner"""
+        Thread.__init__(self)
+
+
+
 class Controller(Thread):
     """docstring for SerialServer"""
     def __init__(self):
         Thread.__init__(self)
         self.queue = Queue()
+        self.retQueue = Queue()
+        self.events = eventListner()
         self.config = JsonConfig()
         self.config.loadConfig('../files/SmartHome.json')
         self.serialPort = self.config.get('serialPort')
@@ -223,6 +234,7 @@ class Controller(Thread):
             if os.path.exists(self.serialPort):
                 self.controller = serial.Serial(port=self.serialPort, baudrate=9600)
                 self.status['connection'] = 'Connected'
+                self.events.start()
                 break
             sleep(3)
 
@@ -350,4 +362,4 @@ if __name__ == '__main__':
     #signal.signal(signal.SIGHUP, ctrl.close)
     #signal.signal(signal.SIGQUIT, ctrl.close)
     #signal.signal(signal.SIGTERM, ctrl.close)
-    app.run(debug=True, host='0.0.0.0') #, port=80)
+    app.run(debug=True, host='0.0.0.0', use_reloader=False) #, port=80)
