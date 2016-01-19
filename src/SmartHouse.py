@@ -66,11 +66,11 @@ class JsonConfig():
 
     def __init__(self):
         """Constructor for JsonConfig"""
-        self.data = {}
+        self.data = dict()
 
     def loadConfig(self, configFile):
         """loadConfig"""
-        self.data  = {}
+        self.data.clear()
         with open(configFile, 'r') as jdata:
             self.data = json.load(jdata)
 
@@ -83,8 +83,8 @@ class JsonConfig():
 
     def nSort(self, l):
         """Sort list of digits and text"""
-        digit = []
-        text = []
+        digit = list()
+        text = list()
         for i in l:
             if i.isdigit():
                 digit.append(i)
@@ -137,7 +137,7 @@ class Scenes:
     def __init__(self, scneDirectory):
         """Constructor for Scenes"""
         self.sceneDir = scneDirectory
-        self.scenes = {}
+        self.scenes = dict()
 
     def loadScenes(self):
         """loadScenes"""
@@ -194,9 +194,36 @@ class Sensors(JsonConfig):
 class eventListner(Thread):
     """Class eventListner"""
 
-    def __init__(self, controller, retQueue):
+    def __init__(self, controller, retQueue, evnetDir):
         """Constructor for eventListner"""
         Thread.__init__(self)
+        self.eventDir = evnetDir
+        self.events = dict()
+        self.controller = controller
+
+    def loadEvents(self):
+        """loadEvents"""
+        for e in os.listdir(self.eventDir):
+            if e.endswith('.ev'):
+                print('Load event: {0}'.format(s))
+                with (open(os.path.join(self.eventDir, e), 'r')) as f:
+                    self.events[e.rsplit('.', 1)[0]] = f.read()
+
+    def readSerial(self):
+        """docstring for openSerial"""
+        try:
+            if self.controller.readable():
+                data = self.controller.readline()
+                data = data.decode()
+                data = data.rstrip()
+                return data
+        except:
+            pass
+
+    def run(self):
+        """run"""
+        while True:
+            print(self.readSerial())
 
 
 
@@ -206,11 +233,11 @@ class Controller(Thread):
         Thread.__init__(self)
         self.queue = Queue()
         self.retQueue = Queue()
-        self.events = eventListner()
         self.config = JsonConfig()
         self.config.loadConfig('../files/SmartHome.json')
         self.serialPort = self.config.get('serialPort')
-        self.controller = None
+        self.controller = serial.Serial()
+        self.events = eventListner(self.controller, self.retQueue, self.config.get('eventDir'))
         self.loop = True
         self.rf = RF433()
         self.scenes = Scenes(self.config.get('scenesDir'))
@@ -227,12 +254,15 @@ class Controller(Thread):
         # self.ir.loadConfig(os.path.join(self.config.get('configDir'), 'IR.json'))
         self.color.loadConfig(os.path.join(self.config.get('configDir'), 'colors.json'))
         self.commands.loadConfig(os.path.join(self.config.get('configDir'),'commands.json'))
+        self.controller.baudrate = 9600
+        self.controller.port = self.serialPort
 
     def __connect(self):
         """docstring for __connect"""
         while True:
             if os.path.exists(self.serialPort):
-                self.controller = serial.Serial(port=self.serialPort, baudrate=9600)
+                #self.controller = serial.Serial(port=self.serialPort, baudrate=9600)
+                self.controller.open()
                 self.status['connection'] = 'Connected'
                 self.events.start()
                 break
@@ -282,6 +312,11 @@ class Controller(Thread):
                 self.writeSerial('F.{0}'.format(cmd[1]))
             elif cmd[0] == 'ledcolor':
                 self.writeSerial('F.{0}'.format(self.color.getColor(cmd[1])))
+            elif cmd[0] == 'temp':
+                self.writeSerial('T.{0}'.format(cmd[1]))
+            elif cmd[0] == 'light':
+                self.writeSerial('L.{0}'.format(cmd[1]))
+
 
     def run(self):
         """docstring for run"""
@@ -302,6 +337,8 @@ class Controller(Thread):
 @app.route('/')
 def start_page():
     print('Hello World!')
+    ctrl.queue.put(('temp', '0'))
+    ctrl.queue.put(('light', '0'))
     return render_template('index.html', status=ctrl.status)
 
 
