@@ -191,23 +191,35 @@ class Sensors(JsonConfig):
             return self.data['Temp'][num]
 
 
-class eventListner(Thread):
+class eventListner():
     """Class eventListner"""
 
-    def __init__(self, controller, retQueue, evnetDir):
+    def __init__(self, evnetDir):
         """Constructor for eventListner"""
-        Thread.__init__(self)
         self.eventDir = evnetDir
         self.events = dict()
-        self.controller = controller
 
     def loadEvents(self):
         """loadEvents"""
         for e in os.listdir(self.eventDir):
             if e.endswith('.ev'):
-                print('Load event: {0}'.format(s))
+                print('Load event: {0}'.format(e))
                 with (open(os.path.join(self.eventDir, e), 'r')) as f:
+                    #nazwa zdarzenai to nzawa pliku zawartość to rzeczy do wykonania
                     self.events[e.rsplit('.', 1)[0]] = f.read()
+
+    def doEvent(self, e):
+        """doEvent"""
+        print(e)
+
+class SerialWatcher(Thread):
+    """Class serialWatcher"""
+
+    def __init__(self, controller, ev):
+        """Constructor for serialWatcher"""
+        Thread.__init__(self)
+        self.controller = controller
+        self.event = ev
 
     def readSerial(self):
         """docstring for openSerial"""
@@ -220,11 +232,24 @@ class eventListner(Thread):
         except:
             pass
 
+    def checkEvent(self, e):
+        """checkEvent"""
+        if e.startswith('T.'):
+            n, num , tempVal = e.split('.', 2)
+            self.event.doEvent(('temp', num, tempVal))
+        elif e.startswith("L."):
+            n, num , lightVal = e.split('.', 2)
+            self.event.doEvent(('temp', num, lightVal))
+        elif e.startswith('W.'):
+            n, code = e.split('.', 1)
+            self.event.doEvent("rfrecive", code)
+
     def run(self):
         """run"""
         while True:
-            print(self.readSerial())
-
+            data = self.readSerial()
+            if data:
+                self.checkEvent(data)
 
 
 class Controller(Thread):
@@ -237,17 +262,17 @@ class Controller(Thread):
         self.config.loadConfig('../files/SmartHome.json')
         self.serialPort = self.config.get('serialPort')
         self.controller = serial.Serial()
-        self.events = eventListner(self.controller, self.retQueue, self.config.get('eventDir'))
+        self.events = eventListner(self.config.get('eventDir'))
+        self.serialWatcher = SerialWatcher(self.controller, self.events)
         self.loop = True
         self.rf = RF433()
         self.scenes = Scenes(self.config.get('scenesDir'))
         self.color = Colors()
         self.commands = Commands()
-        self.status = {}
+        self.status = dict()
         self.status['connection'] = 'Not Connected'
 
-
-    def __setup(self):
+    def _setup(self):
         """__setup"""
         self.scenes.loadScenes()
         self.rf.loadConfig(os.path.join(self.config.get('configDir'), 'rf433.json'))
@@ -257,14 +282,15 @@ class Controller(Thread):
         self.controller.baudrate = 9600
         self.controller.port = self.serialPort
 
-    def __connect(self):
+    def _connect(self):
         """docstring for __connect"""
         while True:
             if os.path.exists(self.serialPort):
                 #self.controller = serial.Serial(port=self.serialPort, baudrate=9600)
                 self.controller.open()
                 self.status['connection'] = 'Connected'
-                self.events.start()
+                #self.events.start()
+                self.serialWatcher.start()
                 break
             sleep(3)
 
@@ -317,11 +343,10 @@ class Controller(Thread):
             elif cmd[0] == 'light':
                 self.writeSerial('L.{0}'.format(cmd[1]))
 
-
     def run(self):
         """docstring for run"""
-        self.__setup()
-        self.__connect()
+        self._setup()
+        self._connect()
 
         while self.loop:
             if self.queue.notEmpty():
@@ -334,11 +359,10 @@ class Controller(Thread):
         self.loop = False
 
 
+# www
 @app.route('/')
 def start_page():
     print('Hello World!')
-    ctrl.queue.put(('temp', '0'))
-    ctrl.queue.put(('light', '0'))
     return render_template('index.html', status=ctrl.status)
 
 
@@ -386,7 +410,7 @@ def commands():
     """"""
     if request.method == 'POST':
         for button, func in request.args.items():
-            ctrl.queue.put(('command', cmd, func))
+            ctrl.queue.put(('command', button, func))
         return 'ok'
     else:
         print('show buttons')
