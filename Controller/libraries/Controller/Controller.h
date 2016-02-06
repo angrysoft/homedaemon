@@ -28,12 +28,13 @@
 // to change edit IRremoteIn.h
 //#define IROUTPIN 3
 //Irda modes
+/*
 #define OTHER 0;
 #define NEC  1;
 #define SONY 2;
 #define PANASONIC 3;
 #define JVC 4;
-
+*/
 //
 #define WIRELESS_TRANSMITER_PIN 11
 #define WIRELESS_RECIVER_PIN 0 //Reciver on inerrupt 0 => that is on pin #2

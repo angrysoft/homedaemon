@@ -304,7 +304,5 @@ void Controller::listen(bool echo) {
 		}
 		this->inS += inC;
 	}
-	
-
 }
 
