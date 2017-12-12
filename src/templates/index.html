@@ -1,20 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>SmartHome</title>
-    <meta charset="UTF-8" http-equiv="refresh" content="5">
-    <link rel="stylesheet" href="static/styles.css">
-</head>
-<body>
-{% include 'header.html' %}
-    <div id="content">
-		<p>Status połączenia : {{ status['connection'] }}</p>
-        <span>Temperatura w Domu : ??</span>
-        <span>Temperatura na zewnątrz : ??</span>
-     </div>
-	<footer>
-		<p>Copyright © 2015 Angrysoft . All Rights Reserved.</p>
-		<p>Design by <a target="_blank" href="http://www.angrysoft.eu">Angrysoft</p>
-	</footer>
-</body>
-</html>
+{% extends 'layout.html' %}
+{% block content %}
+  <div id="content">
+    <p>Status połączenia : {{ status }}</p>
+    <span>Temperatura w Domu : ??</span>
+    <span>Temperatura na zewnątrz : ??</span>
+  </div>
+{% endblock %}

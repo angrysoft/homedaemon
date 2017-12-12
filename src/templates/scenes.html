@@ -1,22 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Scenes</title>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="static/styles.css">
-</head>
-<body>
-<script src="static/funct.js"></script>
-
-{% include "header.html" %}
+{% extends 'layout.html' %}
+{% block content %}
     <div id="content">
-        {% for s in scenes %}
-            <button type="button" name="{{ s }}" onclick="sendScene('{{ s }}')">Scene {{ s }}</button>
-        {% endfor %}
+      {% for s in scenes %}
+      <button type="button" name="{{ s }}" onclick="sendScene('{{ s }}')">Scene {{ s }}</button>
+      {% endfor %}
     </div>
-	<footer>
-		<p>Copyright © 2015 Angrysoft . All Rights Reserved.</p>
-		<p>Design by <a target="_blank" href="http://www.angrysoft.eu">Angrysoft</p>
-	</footer>
-</body>
-</html>
+{% endblock %}

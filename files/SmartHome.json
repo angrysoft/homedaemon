@@ -2,6 +2,8 @@
   "debug": "True",
   "serialPort": "/dev/ttyACM0",
   "scenesDir": "../scenes",
-  "configDir": "../files"
+  "configDir": "../files",
+  "evnetDir": "../events",
+  "socketFile": "/tmp/housed.sock"
 }
 

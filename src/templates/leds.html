@@ -1,39 +1,17 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Led Strip</title>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="static/styles.css">
-</head>
-<body onload="onLoadFunct()">
-<script src="static/funct.js"></script>
-
-<script>
-function onLoadFunct() {
-    setRGB();
-    var rgbForm = document.getElementById("rgbForm");
-    rgbForm.addEventListener("input", setRGB);
-}
-
-</script>
-{% include "header.html" %}
-    <div id="content">
-        <div id="RGB">
-            <form id="rgbForm">
-                <p>Led RGB Settings:</p>
-                <p style="color:red">RED: <input type="range" id="r" name="r" value="0" min="0" max="255"></p>
-                <p style="color:green">GREEN: <input type="range" id="g" name="g" value="0" min="0" max="255"></p>
-                <p style="color:blue">BLUE: <input type="range" id="b" name="b" value="0" min="0" max="255"></p>
-                <button id="sentBtn" type="button" name="rgb" onclick="sendRGB()">Sent RGB : 0.0.0</button>
-            </form>
-        </div>
-        {% for c in colors %}
-            <button style="background-color:rgb({{ colors[c] }})" type="button" name="{{ c }}" onclick="sendColor('{{ c }}')">Color : {{ c }}</button>
-        {% endfor %}
+{% extends 'layout.html' %}
+{% block head %}
+{{ super() }}
+  <script async type="application/dart" src="/static/leds.dart"></script>
+{% endblock %}
+{% block content %}
+<div class="row center-xs">
+    <div class="col-xs-12 col-md-4 txt-center">
+        <label class="label">Wybierz kolor: </label>
     </div>
-	<footer>
-		<p>Copyright © 2015 Angrysoft . All Rights Reserved.</p>
-		<p>Design by <a target="_blank" href="http://www.angrysoft.eu">Angrysoft</p>
-	</footer>
-</body>
-</html>
+</div>
+<div class="row center-xs">
+    <div class="col-xs-12 col-md-4">
+        <input id="ledPicker" type="color">
+    </div>
+</div>
+{% endblock %}

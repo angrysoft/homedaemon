@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+{% block head %}
+{{ super() }}
+  <script async type="application/dart" src="/static/rf.dart"></script>
+{% endblock %}
+{% block content %}
+{% for b in buttons %}
+<div class="row center-xs">
+  <div class="col-xs-6 col-md-3 txt-center">
+    <button class="btn green rf-btn" data-rf-code="{{ b.get('on') }}">{{ b.get('name') }} On</button>
+  </div>
+  <div class="col-xs-6 col-md-3 txt-center">
+    <button class="btn red rf-btn" data-rf-code="{{ b.get('off') }}">{{ b.get('name') }} Off</button>
+  </div>
+</div>
+{% endfor %}
+{% endblock %}
