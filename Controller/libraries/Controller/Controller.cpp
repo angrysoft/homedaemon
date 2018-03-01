@@ -51,10 +51,56 @@ int Controller::sendIR(String code) {
 	Serial.print("Sending signal IR : ");
 	Serial.println(code);
 	/*	code.mode.bits
-		mode = SONY,NEC,OTHER,JVC
+		mode =
+		0 - SONY
+		1 - NEC
+		2 - OTHER
+		3 - JVC
 		code = ir code
 		bits 
 	*/
+
+	String tmp = "";
+	unsigned long btnCode;
+	int mode = 0;
+	int bits = 12;
+	//get valu form code
+	int idx = code.indexOf('.');
+	int idxOld = idx+1;
+	tmp = code.substring(0,idx);
+	btnCode = tmp.toInt();
+	Serial.println(String("code " + btnCode));
+	idx = code.indexOf('.', idxOld);
+	tmp = code.substring(idxOld, idx);
+	mode = tmp.toInt();
+	Serial.println(String("mode " + tmp));
+	tmp = code.substring(idx+1);
+	bits = tmp.toInt();
+	Serial.println(String("bits " + tmp));
+	switch( mode ) {
+		case 0:
+		for (int i = 0; i < 3; i++) {
+			irsend.sendSony(0x490, bits);
+			delay(40);
+		}
+		//String ret = String(btnCode + "-" + bits);
+		break;
+
+		case 1:
+		/*
+		for (int i = 0; i < 3; i++) {
+			irsend.sendNEC(btnCode, bits);
+			delay(40);
+		}
+		*/
+		Serial.println("nec");
+		break;
+
+		default:
+		Serial.println("OI:unsuported");
+		break;
+    	}
+
 	return 0;
 }
 
@@ -80,7 +126,7 @@ int Controller::sendWireless(String code) {
 	sendCode = tmp.toInt();
 	tmp = code.substring(idx+1);
 	p = tmp.toInt();
-	
+
 	if ( p == 1) {
 		bit = 24;
 		wSwitch.setProtocol(1);
@@ -92,14 +138,14 @@ int Controller::sendWireless(String code) {
 		wSwitch.setProtocol(2);
 		wSwitch.send(sendCode,32);
 	}
-	
+
 	return 0;
 }
 
 int Controller::getCode() {
 	unsigned long value = wSwitch.getReceivedValue();
 	if (value != 0) {
-		Serial.print("W.");
+		Serial.print("OW.");
     	Serial.println(value);
 	}
 	wSwitch.resetAvailable();
@@ -114,7 +160,7 @@ int Controller::getTemp(int num) {
 	//return T.thermometr_num.temp
 	sensors.requestTemperatures();
 	delay(50);
-	Serial.print("T.");
+	Serial.print("OT:");
 	Serial.print(num);
 	Serial.print('.');
 	Serial.println(sensors.getTempCByIndex(num));
@@ -132,7 +178,7 @@ int Controller::getLight(int num) {
 		light += analogRead(LIGHTPIN);
 	}
 	light = light/3;
-	Serial.print("L.");
+	Serial.print("OL:");
 	Serial.print(num);
 	Serial.print('.');
 	Serial.println(light);

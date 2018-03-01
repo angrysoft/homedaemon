@@ -3,6 +3,7 @@ import "dart:html";
 
 class Led {
   InputElement ledPicker;
+  ButtonElement btnOff;
 
   Led() {
 
@@ -10,6 +11,10 @@ class Led {
     this.ledPicker.onChange.listen((e) {
       String rgbColor = this.hexToRgb(this.ledPicker.value);
       HttpRequest.request('/leds/changeColor/${rgbColor}', method: 'POST');
+    });
+    this.btnOff = querySelector('#btn-off');
+    this.btnOff.onClick.listen((Event e) {
+      HttpRequest.request('/leds/changeColor/0.0.0', method: 'POST');
     });
   }
 

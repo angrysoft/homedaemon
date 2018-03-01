@@ -80,7 +80,7 @@
 		}
 	},
 	"tvsat": {
-		"mode": "unknown",
+		"mode": "NEC",
 		"bits": "32",
 		"buttons": {
 			"Power": "0x446117B3",

@@ -20,7 +20,7 @@
 __author__ = 'Sebastian Zwierzchowski'
 __copyright__ = 'Copyright 2014 Sebastian Zwierzchowski'
 __license__ = 'GPL2'
-__version__ = '0.4'
+__version__ = '0.5'
 
 import socket
 import os
@@ -69,6 +69,10 @@ class Queue:
 #             elif cmd[0] == 'light':
 #                 self.writeSerial('L.{0}'.format(cmd[1]))
 
+class Sensors():
+    def __init__(self):
+        temp = list()
+        light = list()
 
 class HouseDeamon:
     """Class eventListner"""
@@ -98,7 +102,7 @@ class HouseDeamon:
                     print('Serial is writable')
                 self.status['connection'] = 'Connected'
                 print('connectetd serial')
-                self.loop.add_reader(self.controller, self.getSerialEvent())
+                self.loop.add_reader(self.controller, self.getSerialEvent)
                 break
             sleep(3)
 
@@ -155,12 +159,17 @@ class HouseDeamon:
     def getSerialEvent(self):
         """getSerialEvent"""
         try:
-            data = self.controller.readline()
-            data = data.decode('utf-8')
-            data = data.rstrip()
+            b = self.controller.read().decode()
+            data = ''
+            while not b == '\n':
+                data += b
+                b = self.controller.read().decode()
+            #data = self.controller.read()
+            #data = data.decode('utf-8')
+            #data = data.rstrip()
             print("debug getSerialEv: ", data)  # TODO: remove
         except:
-            pass
+            return
 
     def loadEvents(self):
         """loadEvents"""
@@ -179,6 +188,10 @@ class HouseDeamon:
             cmd = 'F.{0}\n'.format(eventVale)
         elif eventName == 'rf':
             cmd = 'W.{0}\n'.format(eventVale)
+        elif eventName == 'temp':
+            cmd = 'T.{0}\n'.format(eventVale)
+        elif eventName == 'light':
+            cmd = 'L.{0}\n'.format(eventVale)
         print(cmd)
         self.controller.write(cmd.encode())
 

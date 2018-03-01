@@ -1,8 +1,8 @@
 {% extends 'layout.html' %}
 {% block content %}
-  <div id="content">
+  <div class="row">
     <p>Status połączenia : {{ status }}</p>
-    <span>Temperatura w Domu : ??</span>
-    <span>Temperatura na zewnątrz : ??</span>
+    <p>Temperatura w Domu : <span id="temp-home">??</span></p>
+    <p>Temperatura na zewnątrz : <span id="temp-out-side"></span></p>
   </div>
 {% endblock %}

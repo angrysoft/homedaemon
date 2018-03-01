@@ -48,7 +48,6 @@ def sendEvent(msg, socketFile='/tmp/housed.sock'):
 # www
 @app.route('/')
 def index():
-    print('Hello World!')
     return render_template('index.html', status='brak')
 
 
@@ -82,6 +81,20 @@ def changeColor(rgb):
     elif request.method == 'POST':
         status = sendEvent('rgb:{}'.format(rgb))
     return redirect('/leds/changeColor/{}?status={}'.format(rgb, status))
+
+
+@app.route('/temp/<number>')
+def getTemp(number):
+    """getTemp"""
+    sendEvent('temp:{}'.format(number))
+    return 'ok'
+
+
+@app.route('/light/<number>')
+def getLight(number):
+    """getTemp"""
+    sendEvent('light:{}'.format(number))
+    return 'ok'
 
 
 if __name__ == '__main__':
