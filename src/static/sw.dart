@@ -56,13 +56,13 @@ Future _initCache() async {
   _log('Init cache...');
   Cache cache = await caches.open('offline-v1');
   await cache.addAll([
-    '/',
-    '/main.dart',
-    '/main.dart.js',
-    '/sw.dart',
-    '/sw.dart.js',
-    '/styles/styles.min.css',
-    '/styles/angry.min.css'
+    '/rf/pilot'
+    '/static/main.dart',
+    '/static/main.dart.js',
+    '/static/sw.dart',
+    '/static/sw.dart.js',
+    '/static/rfpilot.min.css',
+    '/static/angry.min.css'
   ]);
   _log('Cache initialized.');
 }

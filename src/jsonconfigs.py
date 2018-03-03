@@ -62,9 +62,10 @@ class JsonConfig():
 class RF433(JsonConfig):
     """Class RF433 send rf Code"""
 
-    def getButton(self, btnname, func='On'):
-        """buttonOn: get button on code and run sendCode"""
-        if btnname in self.data:
+    def getBtnByName(self, btnname, func='On'):
+        """getButton: return button code"""
+        if str(btnname) in self.data:
+            func = func.capitalize()
             if func in self.data[btnname]:
                 return self.data[btnname][func]
 

@@ -45,17 +45,30 @@
 </head>
 <body>
   <div class="container">
-    <div class="tabs">
+    <div class="buttons">
     </div>
-    <div class="tab" id="tab1-4">
-      <div class="row center-xs txt-center">
-        <div class="col-xs-4">
-          <button class="btn green" data-btn-no="1">1</button>
-        </div>
-        <div class="col-xs-4">
-          <button class="btn red" id="btn-1-off">1</button>
-        </div>
+    <div class="row center-xs txt-center">
+      <div class="col-xs-3">
+        <button class="btn tab-btn active" data-tab="0">1-4</button>
       </div>
+      <div class="col-xs-3">
+        <button class="btn tab-btn" data-tab="4">5-8</button>
+      </div>
+      <div class="col-xs-3">
+        <button class="btn tab-btn" data-tab="8">9-12</button>
+      </div>
+      <div class="col-xs-3">
+        <button class="btn tab-btn" data-tab="12">13-16</button>
+      </div>
+    </div>
+    <div class="row center-xs txt-center">
+      <div class="col-xs-6">
+        <button class="btn green btn-all" data-btn="all" data-btn-func="on">All On</button>
+      </div>
+      <div class="col-xs-6">
+        <button class="btn red btn-all" data-btn="all" data-btn-func="off">All Off</button>
+      </div>
+    </div>
   </div>
 </body>
 </html>

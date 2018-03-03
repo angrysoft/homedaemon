@@ -65,8 +65,7 @@ class TabButtons {
     } else {
       btnNo = btn.dataset['btn'];
     }
-    print('127.0.0.1:5000/rf/button${btnNo}?func=${btn.dataset['btnFunc']}');
-    HttpRequest.request('http://127.0.0.1:5000/rf/button/${btnNo}?func=${btn.dataset['btnFunc']}', method: 'POST')
+    HttpRequest.request('/rf/pilot/button/${btnNo}?func=${btn.dataset['btnFunc']}', method: 'POST')
     .then((HttpRequest resp) {
       print(resp);
     });
@@ -81,7 +80,7 @@ Future main() async {
     return;
   }
 
-  await sw.register('sw.dart.js');
+  await sw.register('/static/sw.dart.js');
   _log('registered');
 
   sw.ServiceWorkerRegistration registration = await sw.ready;
