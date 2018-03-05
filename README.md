@@ -1,3 +1,3 @@
 # README #
-Python script form home automatization.
+Python script for home automatization.
 
