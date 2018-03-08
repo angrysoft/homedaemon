@@ -40,4 +40,5 @@ install:
 	install -D -m 755 src/housed.py $(DESTDIR)/usr/bin
 	install -D -m 655 housed.service $(DESTDIR)/usr/lib/systemd/system
 	# config files
-	install -D -m 755 files/*.json $(DESTDIR)/etc/smarthouse
+	install -d -m 755 $(DESTDIR)/etc/smarthouse
+	install -m 755 files/*.json $(DESTDIR)/etc/smarthouse/
