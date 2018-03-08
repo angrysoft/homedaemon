@@ -1,6 +1,7 @@
 path = src/static
 dart = dart2js -m -o
 sasss = sassc -t compressed
+INSTALL=instal -C
 
 all: alldart allcss
 
@@ -28,19 +29,19 @@ rfpilotcss: $(path)/rfpilot.scss
 	sassc -t compressed $(path)/rfpilot.scss $(path)/rfpilot.min.css
 
 install:
-	install -d -m 755 $(DESTDIR)/var/www/smarthome/{static,templates}
-	install -g http -o http src/static/*.dart $(DESTDIR)/var/www/smarthome/static/
-	install -g http -o http src/static/*.dart.js $(DESTDIR)/var/www/smarthome/static/
-	install -g http -o http src/static/*.css $(DESTDIR)/var/www/smarthome/static/
+	$(INSTALL) -d -m 755 $(DESTDIR)/var/www/smarthome/{static,templates}
+	$(INSTALL) -g http -o http src/static/*.dart $(DESTDIR)/var/www/smarthome/static/
+	$(INSTALL) -g http -o http src/static/*.dart.js $(DESTDIR)/var/www/smarthome/static/
+	$(INSTALL) -g http -o http src/static/*.css $(DESTDIR)/var/www/smarthome/static/
 	# templates
-	install -g http -o http src/templates/*.html $(DESTDIR)/var/www/smarthome/templates/
+	$(INSTALL) -g http -o http src/templates/*.html $(DESTDIR)/var/www/smarthome/templates/
 	# server file
-	install -g http -o http -m 755 src/SmartHouse.py $(DESTDIR)/var/www/smarthome/
+	$(INSTALL) -g http -o http -m 755 src/SmartHouse.py $(DESTDIR)/var/www/smarthome/
 	# daemon files
-	install -d -m 755 $(DESTDIR)/usr/bin
-	install -d -m 755 $(DESTDIR)/usr/lib/systemd/system
-	install -m 755 src/housed.py $(DESTDIR)/usr/bin
-	install -m 655 housed.service $(DESTDIR)/usr/lib/systemd/system
+	$(INSTALL) -d -m 755 $(DESTDIR)/usr/bin
+	$(INSTALL) -d -m 755 $(DESTDIR)/usr/lib/systemd/system
+	$(INSTALL) -m 755 src/housed.py $(DESTDIR)/usr/bin
+	$(INSTALL) -m 655 housed.service $(DESTDIR)/usr/lib/systemd/system
 	# config files
-	install -d -m 755 $(DESTDIR)/etc/smarthouse
-	install -m 755 files/*.json $(DESTDIR)/etc/smarthouse/
+	$(INSTALL) -d -m 755 $(DESTDIR)/etc/smarthouse
+	$(INSTALL) -m 755 files/*.json $(DESTDIR)/etc/smarthouse/
