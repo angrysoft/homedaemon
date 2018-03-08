@@ -29,7 +29,7 @@ from flask import render_template
 from flask import redirect
 import socket
 import os
-from jsonconfigs import RF433, Colors
+from jsonconfigs import RF433
 
 app = Flask(__name__)
 
@@ -118,7 +118,5 @@ def getLight(number):
 if __name__ == '__main__':
     rf = RF433()
     rf.loadConfig('../files/rf433.json')
-    col = Colors()
-    col.loadConfig('../files/colors.json')
 
     app.run(debug=True, host='0.0.0.0', use_reloader=False) #, port=80)

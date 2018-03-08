@@ -20,9 +20,8 @@
 import os
 import sys
 import json
-from random import randint
 
-__all__ = ['JsonConfig', 'RF433', 'Colors', 'Sensors']
+__all__ = ['JsonConfig', 'RF433', 'Sensors']
 
 class JsonConfig():
     """Class JsonConfig"""
@@ -85,27 +84,6 @@ class RF433(JsonConfig):
                             'off': offCode
                             })
         return buttons
-
-
-class Colors(JsonConfig):
-    """Class Colors"""
-
-    def getColor(self, colorName, dimmer=100):
-        """color"""
-        if colorName in self.data:
-            return self.data[colorName]
-
-    def getRandomColor(self):
-        """randomColor"""
-        lc = list(self.data)
-        return self.getColor(lc[randint(0, len(lc)-1)])
-
-    def getAllColors(self):
-        """getAllColors"""
-        ret = {}
-        for x in self.data:
-            ret[x] =  self.data[x].replace('.', ',')
-        return ret
 
 
 class Scenes:
