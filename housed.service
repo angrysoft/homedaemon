@@ -2,8 +2,6 @@
 Description=Smart house Service
 
 [Service]
-User=http
-Group=http
 ExecStart=/usr/bin/housed.py
 
 [Install]

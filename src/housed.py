@@ -29,6 +29,7 @@ import serial
 import signal
 import asyncio
 import argparse
+from shutils import chown
 
 class Queue:
     """Queue fifo list"""
@@ -112,6 +113,7 @@ class HouseDeamon:
             os.unlink(self.socketFile)
         self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
         self.sock.bind(self.socketFile)
+        chown(self.socketFile, group='http')
         self.loop.add_reader(self.sock, self.getSocketEvent)
 
     def _disconnectSocket(self):
