@@ -29,7 +29,7 @@ import serial
 import signal
 import asyncio
 import argparse
-from shutils import chown
+from shutil import chown
 
 class Queue:
     """Queue fifo list"""
