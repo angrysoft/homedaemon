@@ -19,5 +19,5 @@ setup(name='SmartHouse',
                 ('/var/www/smarthome', 'src/SmartHome.py'),
                 ('/usr/lib/systemd/system', 'housed.service')],
     scripts=['src/housed.py'],
-    install_requires=["flask", "pyserial"]
+    requires=["flask", "pyserial"]
     )
