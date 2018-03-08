@@ -30,9 +30,10 @@ rfpilotcss: $(path)/rfpilot.scss
 
 install:
 	$(INSTALL) -d -m 755 $(DESTDIR)/var/www/smarthouse/{static,templates}
-	$(INSTALL) -g http -o http src/static/*.dart $(DESTDIR)/var/www/smarthouse/static/
-	$(INSTALL) -g http -o http src/static/*.dart.js $(DESTDIR)/var/www/smarthouse/static/
-	$(INSTALL) -g http -o http src/static/*.css $(DESTDIR)/var/www/smarthouse/static/
+	$(INSTALL) -g http -o http src/static/* $(DESTDIR)/var/www/smarthouse/static/
+	#$(INSTALL) -g http -o http src/static/*.dart $(DESTDIR)/var/www/smarthouse/static/
+	#$(INSTALL) -g http -o http src/static/*.dart.js $(DESTDIR)/var/www/smarthouse/static/
+	#$(INSTALL) -g http -o http src/static/*.css $(DESTDIR)/var/www/smarthouse/static/
 	# templates
 	$(INSTALL) -g http -o http src/templates/*.html $(DESTDIR)/var/www/smarthouse/templates/
 	# server file
