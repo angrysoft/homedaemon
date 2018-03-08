@@ -29,9 +29,71 @@ from flask import render_template
 from flask import redirect
 import socket
 import os
-from jsonconfigs import RF433
+import json
 
 app = Flask(__name__)
+
+class JsonConfig():
+    """Class JsonConfig"""
+
+    def __init__(self):
+        """Constructor for JsonConfig"""
+        self.data = dict()
+
+    def loadConfig(self, configFile):
+        """loadConfig"""
+        self.data.clear()
+        with open(configFile, 'r') as jdata:
+            self.data = json.load(jdata)
+
+    def get(self, key):
+        """get"""
+        if key in self.data:
+            return self.data[key]
+        else:
+            return None
+
+    def nSort(self, l):
+        """Sort list of digits and text"""
+        digit = list()
+        text = list()
+        for i in l:
+            if i.isdigit():
+                digit.append(i)
+            else:
+                text.append(i)
+        digit.sort(key=int)
+        text.sort()
+        digit.extend(text)
+        return digit
+
+
+class RF433(JsonConfig):
+    """Class RF433 send rf Code"""
+
+    def getBtnByName(self, btnname, func='On'):
+        """getButton: return button code"""
+        if str(btnname) in self.data:
+            func = func.capitalize()
+            if func in self.data[btnname]:
+                return self.data[btnname][func]
+
+    def getAllButtons(self):
+        """getButtons"""
+        buttons = list()
+        for b in self.nSort(list(self.data)):
+            but = self.data.get(b)
+            if but.get('alias'):
+                name = but.get('alias')
+            else:
+                name = b
+            onCode = but.get('On')
+            offCode = but.get('Off')
+            buttons.append({'name': name,
+                            'on': onCode,
+                            'off': offCode
+                            })
+        return buttons
 
 
 def sendEvent(msg, socketFile='/tmp/housed.sock'):
