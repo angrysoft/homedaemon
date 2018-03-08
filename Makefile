@@ -1,7 +1,7 @@
 path = src/static
 dart = dart2js -m -o
 sasss = sassc -t compressed
-INSTALL=instal -C
+INSTALL=install -C
 
 all: alldart allcss
 
