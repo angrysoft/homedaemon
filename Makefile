@@ -29,14 +29,14 @@ rfpilotcss: $(path)/rfpilot.scss
 	sassc -t compressed $(path)/rfpilot.scss $(path)/rfpilot.min.css
 
 install:
-	$(INSTALL) -d -m 755 $(DESTDIR)/var/www/smarthome/{static,templates}
-	$(INSTALL) -g http -o http src/static/*.dart $(DESTDIR)/var/www/smarthome/static/
-	$(INSTALL) -g http -o http src/static/*.dart.js $(DESTDIR)/var/www/smarthome/static/
-	$(INSTALL) -g http -o http src/static/*.css $(DESTDIR)/var/www/smarthome/static/
+	$(INSTALL) -d -m 755 $(DESTDIR)/var/www/smarthouse/{static,templates}
+	$(INSTALL) -g http -o http src/static/*.dart $(DESTDIR)/var/www/smarthouse/static/
+	$(INSTALL) -g http -o http src/static/*.dart.js $(DESTDIR)/var/www/smarthouse/static/
+	$(INSTALL) -g http -o http src/static/*.css $(DESTDIR)/var/www/smarthouse/static/
 	# templates
-	$(INSTALL) -g http -o http src/templates/*.html $(DESTDIR)/var/www/smarthome/templates/
+	$(INSTALL) -g http -o http src/templates/*.html $(DESTDIR)/var/www/smarthouse/templates/
 	# server file
-	$(INSTALL) -g http -o http -m 755 src/SmartHouse.py $(DESTDIR)/var/www/smarthome/
+	$(INSTALL) -g http -o http -m 755 src/SmartHouse.py $(DESTDIR)/var/www/smarthouse/
 	# daemon files
 	$(INSTALL) -d -m 755 $(DESTDIR)/usr/bin
 	$(INSTALL) -d -m 755 $(DESTDIR)/usr/lib/systemd/system
@@ -47,6 +47,6 @@ install:
 	$(INSTALL) -m 755 files/*.json $(DESTDIR)/etc/smarthouse/
 
 unistall:
-	rm -rf $(DESTDIR)/var/www/smarthome
+	rm -rf $(DESTDIR)/var/www/smarthouse
 	rm -f $(DESTDIR)/usr/lib/systemd/system/housed.service
 	rm -f $(DESTDIR)/usr/bin/housed.py
