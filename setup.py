@@ -16,8 +16,8 @@ setup(name='SmartHouse',
     data_files=[('/etc/marthome', confFile),
                 ('/var/www/smarthome/static', wwwStatic),
                 ('/var/www/smarthome/templates', wwwTemp),
-                ('/var/www/smarthome/', 'src/SmartHome.py')
-                ('/usr/lib/systemd/system/', 'housed.service')],
+                ('/var/www/smarthome', 'src/SmartHome.py')
+                ('/usr/lib/systemd/system', 'housed.service')],
     scripts=['src/housed.py'],
     install_requires=["flask", "pyserial"]
     )
