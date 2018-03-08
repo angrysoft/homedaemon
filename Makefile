@@ -46,7 +46,7 @@ install:
 	$(INSTALL) -d -m 755 $(DESTDIR)/etc/smarthouse
 	$(INSTALL) -m 755 files/*.json $(DESTDIR)/etc/smarthouse/
 
-unistall:
+uninstall:
 	rm -rf $(DESTDIR)/var/www/smarthouse
 	rm -f $(DESTDIR)/usr/lib/systemd/system/housed.service
 	rm -f $(DESTDIR)/usr/bin/housed.py

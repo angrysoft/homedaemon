@@ -177,8 +177,10 @@ def getLight(number):
     return 'ok'
 
 
+rf = RF433()
+rf.loadConfig('/etc/samrthous/rf433.json')
+
 if __name__ == '__main__':
-    rf = RF433()
-    rf.loadConfig('/etc/samrthouse/rf433.json')
+
 
     app.run(debug=True, host='0.0.0.0', use_reloader=False) #, port=80)
