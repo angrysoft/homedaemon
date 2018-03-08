@@ -37,8 +37,10 @@ install:
 	# server file
 	install -g http -o http -m 755 src/SmartHouse.py $(DESTDIR)/var/www/smarthome/
 	# daemon files
-	install -D -m 755 src/housed.py $(DESTDIR)/usr/bin
-	install -D -m 655 housed.service $(DESTDIR)/usr/lib/systemd/system
+	install -d -m 755 $(DESTDIR)/usr/bin
+	install -d -m 755 $(DESTDIR)/usr/lib/systemd/system
+	install -m 755 src/housed.py $(DESTDIR)/usr/bin
+	install -m 655 housed.service $(DESTDIR)/usr/lib/systemd/system
 	# config files
 	install -d -m 755 $(DESTDIR)/etc/smarthouse
 	install -m 755 files/*.json $(DESTDIR)/etc/smarthouse/
