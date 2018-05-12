@@ -125,6 +125,7 @@ def rfSend(code):
         status = sendEvent('rf:{}'.format(code))
     return redirect('/rf/send/{}?status={}'.format(code, status))
 
+
 @app.route('/rf/pilot')
 def rfPilot():
     return render_template('rfpilot.html', buttons=rf.getAllButtons())
@@ -141,7 +142,6 @@ def rfButton(no):
         print(no, request.args.get('func'), code)
         status = sendEvent('rf:{}'.format(code))
     return redirect('/rf/pilot/button/{}?status={}'.format(no, status))
-
 
 
 @app.route('/leds')
