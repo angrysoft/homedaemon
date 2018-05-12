@@ -83,10 +83,7 @@ class RF433(JsonConfig):
         buttons = list()
         for b in self.nSort(list(self.data)):
             but = self.data.get(b)
-            if but.get('alias'):
-                name = but.get('alias')
-            else:
-                name = b
+            name = but.get('alias', b)
             onCode = but.get('On')
             offCode = but.get('Off')
             buttons.append({'name': name,
