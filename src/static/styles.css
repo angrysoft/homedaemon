@@ -1,5 +1,5 @@
 body {
-	background-color:#87ceeb;
+    background-color: #aaaaaa;
 }
 
 .navbar {
@@ -12,4 +12,8 @@ body {
 input#ledPicker {
     width: 100%;
     min-height: 4rem;
+}
+
+button.btn.rf-btn {
+    width: 100%;
 }

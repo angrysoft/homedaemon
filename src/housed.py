@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# SmartHouse.py
-# Copyright (C) 2014  Sebastian Zwierzchowski <sebastian.zwierzchowski@gmail.com>
+# housed.py
+# Copyright (C) 2014-2018  Sebastian Zwierzchowski <sebastian.zwierzchowski@gmail.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -29,7 +29,9 @@ import serial
 import signal
 import asyncio
 import argparse
+import importlib
 from shutil import chown
+
 
 class Queue:
     """Queue fifo list"""
@@ -54,25 +56,6 @@ class Queue:
             return True
         else:
             return False
-#         self.writeSerial('W.{0}'.format(code))
-#
-#             if cmd[0] == 'scene':
-#                 self.scenes.runScene(cmd[1])
-#             elif cmd[0] == 'button':
-#                 self.sendRF(self.rf.getButton(cmd[1], cmd[2]))
-#             elif cmd[0] == 'ledRGB':
-#                 self.writeSerial('F.{0}'.format(cmd[1]))
-#             elif cmd[0] == 'ledcolor':
-#                 self.writeSerial('F.{0}'.format(self.color.getColor(cmd[1])))
-#             elif cmd[0] == 'temp':
-#                 self.writeSerial('T.{0}'.format(cmd[1]))
-#             elif cmd[0] == 'light':
-#                 self.writeSerial('L.{0}'.format(cmd[1]))
-
-class Sensors():
-    def __init__(self):
-        temp = list()
-        light = list()
 
 class HouseDeamon:
     """Class eventListner"""
@@ -86,6 +69,7 @@ class HouseDeamon:
         self.controller.port = self.serialPort
         self.controller.timeout = 0
         self.status = dict()
+        self.events = dict()
 
     def _connectSerial(self):
         """docstring for __connect"""
@@ -139,6 +123,8 @@ class HouseDeamon:
         self._connectSerial()
         # add Signals handle
         self._signals()  # TODO: do poprawki coś się jebie
+        # Load events
+        self._loadEvents()
 
     def getSocketEvent(self):
         """getSocketEvent"""
@@ -162,46 +148,34 @@ class HouseDeamon:
             while not b == '\n':
                 data += b
                 b = self.controller.read().decode()
-            #data = self.controller.read()
-            #data = data.decode('utf-8')
-            #data = data.rstrip()
             print("debug getSerialEv: ", data)  # TODO: remove
         except:
             return
 
-    def loadEvents(self):
+    def _loadEvents(self):
         """loadEvents"""
-        for e in os.listdir(self.eventDir):
-            if e.endswith('.ev'):
-                print('Load event: {0}'.format(e))
-                with (open(os.path.join(self.eventDir, e), 'r')) as f:
-                    # nazwa zdarzenai to nzawa pliku zawartość to rzeczy do wykonania
-                    self.events[e.rsplit('.', 1)[0]] = f.read()
+        eventList = list()
+        for e in os.listdir('events'):
+            if e.endswith('.py') and not e.startswith('__'):
+                if e == 'event.py':
+                    continue
+                e = '.' + e.replace('.py', '')
+                eventList.append(e)
+
+        importlib.import_module('events')
+
+        for event in eventList:
+            ev = importlib.import_module(event, package="events")
+            inst = ev.Event()
+            self.events[inst.name] = inst
+            print('Load event: {0}'.format(inst.name))
 
     def emitEvent(self, e):
         """doEvent"""
-        eventName, eventVale = e.split(':', 1)
-
-        if eventName == 'rgb':
-            cmd = 'F.{0}\n'.format(eventVale)
-        elif eventName == 'rf':
-            cmd = 'W.{0}\n'.format(eventVale)
-        elif eventName == 'temp':
-            cmd = 'T.{0}\n'.format(eventVale)
-        elif eventName == 'light':
-            cmd = 'L.{0}\n'.format(eventVale)
-        print(cmd)
-        self.controller.write(cmd.encode())
-
-    def addEmiter(self, emiter):
-        """addEmiter"""
-        if not emiter in self.emiters:
-            self.emiters.append(emiter)
-
-    def delEmiter(self, emiter):
-        """delEmiter"""
-        if emiter in self.emiters:
-            self.emiters.remove(emiter)
+        eventName, eventValue = e.split(':', 1)
+        ev = self.events.get(eventName)
+        if ev:
+            ev.run(self.controller, args=eventValue)
 
     def watchEmiter(self):
         """watchEmiter"""
@@ -219,6 +193,5 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(usage='%(prog)s [options] [packagees]')
     parser.add_argument('-p', '--port', default='/dev/ttyACM0',  help='Serial port')
     parser.add_argument('-s', '--socket', default='/tmp/housed.sock',  help='Socket file')
-    # args = parser.parse_args()
     d = HouseDeamon(parser.parse_args())
     d.watchEmiter()
