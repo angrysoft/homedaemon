@@ -22,10 +22,25 @@ __copyright__ = 'Copyright 2014 Sebastian Zwierzchowski'
 __license__ = 'GPL2'
 __version__ = '0.4'
 
-import serial
+# import serial
+#
+# import serial
+# ser = serial.Serial('/dev/ttyUSB0')  # open serial port
+# print(ser.name)         # check which port was really used
+# ser.write(b'F)     # write a string
+# ser.close()
+from event import Rf
+from event import RGB
 
-import serial
-ser = serial.Serial('/dev/ttyUSB0')  # open serial port
-print(ser.name)         # check which port was really used
-ser.write(b'F)     # write a string
-ser.close()
+r = Rf(config='../files/rf433.json')
+print(r.on('1'))
+print(r.on('Salon Lampka'))
+
+rgb = RGB()
+rgb.red = 255
+rgb.green = 50
+rgb.blue = 100
+rgb.dimmer = 250
+print(rgb.red, rgb.green, rgb.blue)
+# rgb.green = '10'
+print(rgb.color())

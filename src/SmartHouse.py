@@ -33,7 +33,8 @@ import json
 
 app = Flask(__name__)
 
-class JsonConfig():
+
+class RF433:
     """Class JsonConfig"""
 
     def __init__(self):
@@ -66,10 +67,6 @@ class JsonConfig():
         text.sort()
         digit.extend(text)
         return digit
-
-
-class RF433(JsonConfig):
-    """Class RF433 send rf Code"""
 
     def getBtnByName(self, btnname, func='On'):
         """getButton: return button code"""
@@ -175,9 +172,9 @@ def getLight(number):
 
 
 rf = RF433()
-rf.loadConfig('/etc/smarthouse/rf433.json')
 
 if __name__ == '__main__':
-
-
+    rf.loadConfig('../files/rf433.json')
     app.run(debug=True, host='0.0.0.0', use_reloader=False) #, port=80)
+else:
+    rf.loadConfig('/etc/smarthouse/rf433.json')
