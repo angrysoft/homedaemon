@@ -31,6 +31,7 @@ __version__ = '0.4'
 # ser.close()
 from event import Rf
 from event import RGB
+from bravia import Bravia
 
 r = Rf(config='../files/rf433.json')
 print(r.on('1'))
@@ -44,3 +45,7 @@ rgb.dimmer = 250
 print(rgb.red, rgb.green, rgb.blue)
 # rgb.green = '10'
 print(rgb.color())
+
+b = Bravia('192.168.1.129')
+
+print(b.getAllCommands())
