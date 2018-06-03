@@ -1,5 +1,6 @@
 import json
 
+
 class EventBase:
     def __init__(self):
         self._event = 'event'
@@ -55,6 +56,7 @@ class Rf:
         for b in self.buttons:
             if b.name == btn or b.alias == btn:
                 return 'W.{}'.format(b.off)
+
 
 class RGB:
     def __init__(self):
