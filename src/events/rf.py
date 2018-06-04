@@ -1,4 +1,5 @@
-from event import EventBase
+from house.event import EventBase
+from house.rf import Rf
 
 
 class Event(EventBase):
@@ -8,7 +9,7 @@ class Event(EventBase):
         self._type = 'command'
 
     def start(self):
-        self.send('W.{}'.format(self.args))
-        print('W.{}'.format(self.args))
+        self.send(Rf.code(self.args))
+        print(Rf.code(self.args))
 
 

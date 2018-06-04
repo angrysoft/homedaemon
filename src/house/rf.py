@@ -28,3 +28,7 @@ class Rf:
         for b in self.buttons:
             if b.name == btn or b.alias == btn:
                 return 'W.{}'.format(b.off)
+
+    @staticmethod
+    def code(val):
+        return 'W.{}'.format(val)
