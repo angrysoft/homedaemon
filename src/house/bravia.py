@@ -34,7 +34,8 @@ class Bravia:
             raise ValueError('Incorrect MAC address format')
 
     def isOn(self):
-        ret = json.loads(self._send('/sony/system', data=self._jsonCmd("getPowerStatus")))
+        ret = json.loads(self._send('/sony/system', data=self._jsonCmd("getPowerStatus", pId='1')))
+        print(ret)
         error = ret.get('error')
         ret = ret.get('result')[1]
         if ret:
@@ -70,10 +71,11 @@ class Bravia:
     def sendCommand(self, cmd):
         if not self.commands:
             self.commands = self.getAllCommands()
-
         if cmd in self.commands:
-            header = {'SOAPACTION': 'urn:schemas-sony-com:service:IRCC:1#X_SendIRCC',
-                      'X-Auth-PSK': self.psk}
+            print(self.commands.get(cmd))
+            header = {'SOAPACTION': '"urn:schemas-sony-com:service:IRCC:1#X_SendIRCC"',
+                      'X-Auth-PSK': '{}'.format(self.psk),
+                      'Content-Type': 'text/xml; charset=UTF-8'}
             data = '''
                         <?xml version="1.0"?>
                             <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
@@ -82,7 +84,7 @@ class Bravia:
                                         <IRCCCode>{}</IRCCCode>
                                     </u:X_SendIRCC>
                                 </s:Body>
-                            </s:Envelope>'''.format(cmd)
+                            </s:Envelope>'''.format(self.commands.get(cmd))
             return self._send('sony/IRCC', header=header, data=data)
 
     def _jsonCmd(self, cmd, params=[], pId=10, version='1.0'):
@@ -93,6 +95,7 @@ class Bravia:
 
     def _send(self, url, header={}, data=None):
         _url = '{}/{}'.format(self.host, url)
+        print(_url, header, data)
         if data:
             data = data.encode()
         req = urllib.request.Request(_url, headers=header, method='POST', data=data)

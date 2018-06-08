@@ -29,9 +29,9 @@ __version__ = '0.4'
 # print(ser.name)         # check which port was really used
 # ser.write(b'F)     # write a string
 # ser.close()
-from event import Rf
-from event import RGB
-from bravia import Bravia
+from house.rf import Rf
+from house.rgb import RGB
+from house.bravia import Bravia
 
 r = Rf(config='../files/rf433.json')
 print(r.on('1'))
@@ -47,5 +47,7 @@ print(rgb.red, rgb.green, rgb.blue)
 print(rgb.color())
 
 b = Bravia('192.168.1.129')
+cmds = b.getAllCommands()
 
-print(b.getAllCommands())
+print(cmds)
+b.sendCommand('VolumeDown')

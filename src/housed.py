@@ -97,7 +97,8 @@ class HouseDeamon:
             os.unlink(self.socketFile)
         self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
         self.sock.bind(self.socketFile)
-        chown(self.socketFile, group='uwsgi')
+        chown(self.socketFile, group='uwsg'
+                                     '')
         os.chmod(self.socketFile, 664)
         self.loop.add_reader(self.sock, self.getSocketEvent)
 
