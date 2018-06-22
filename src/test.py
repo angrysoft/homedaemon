@@ -32,6 +32,7 @@ __version__ = '0.4'
 from house.rf import Rf
 from house.rgb import RGB
 from house.bravia import Bravia
+import pprint
 
 r = Rf(config='../files/rf433.json')
 print(r.on('1'))
@@ -47,7 +48,14 @@ print(rgb.red, rgb.green, rgb.blue)
 print(rgb.color())
 
 b = Bravia('192.168.1.129')
+b.macAddress = 'fc:f1:52:2a:9b:1e'
 cmds = b.getAllCommands()
+print('power', b.isOn())
+b.sendCommand('Stop')
+b.powerOff()
 
-print(cmds)
-b.sendCommand('VolumeDown')
+
+#
+# pprint.pprint(cmds)
+# print('test send command', b.sendCommand('Stop'))
+

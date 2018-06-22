@@ -34,12 +34,13 @@ class Bravia:
             raise ValueError('Incorrect MAC address format')
 
     def isOn(self):
-        ret = json.loads(self._send('/sony/system', data=self._jsonCmd("getPowerStatus", pId='1')))
+        ret = json.loads(self._send('sony/system', data=self._jsonCmd("getPowerStatus"), timeout=2)) # , pId='1')))
         print(ret)
         error = ret.get('error')
-        ret = ret.get('result')[1]
+        if 'result' in ret:
+            ret = ret.get('result')[0]
         if ret:
-            status = ret[0].get('status')
+            status = ret.get('status')
             try:
                 if status == 'standby':
                     return False
@@ -72,19 +73,17 @@ class Bravia:
         if not self.commands:
             self.commands = self.getAllCommands()
         if cmd in self.commands:
-            print(self.commands.get(cmd))
             header = {'SOAPACTION': '"urn:schemas-sony-com:service:IRCC:1#X_SendIRCC"',
                       'X-Auth-PSK': '{}'.format(self.psk),
                       'Content-Type': 'text/xml; charset=UTF-8'}
-            data = '''
-                        <?xml version="1.0"?>
-                            <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
-                                <s:Body>
-                                    <u:X_SendIRCC xmlns:u="urn:schemas-sony-com:service:IRCC:1">
-                                        <IRCCCode>{}</IRCCCode>
-                                    </u:X_SendIRCC>
-                                </s:Body>
-                            </s:Envelope>'''.format(self.commands.get(cmd))
+
+            data = "<?xml version=\"1.0\"?>" \
+                 "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">" \
+                 "<s:Body><u:X_SendIRCC xmlns:u=\"urn:schemas-sony-com:service:IRCC:1\">" \
+                 "<IRCCCode>{}</IRCCCode>" \
+                 "</u:X_SendIRCC>" \
+                 "</s:Body>" \
+                 "</s:Envelope>".format(self.commands.get(cmd))
             return self._send('sony/IRCC', header=header, data=data)
 
     def _jsonCmd(self, cmd, params=[], pId=10, version='1.0'):
@@ -93,34 +92,36 @@ class Bravia:
                            'id': pId,
                            'version': version})
 
-    def _send(self, url, header={}, data=None):
+    def _send(self, url, header={}, data=None, timeout=10):
         _url = '{}/{}'.format(self.host, url)
         print(_url, header, data)
         if data:
             data = data.encode()
         req = urllib.request.Request(_url, headers=header, method='POST', data=data)
 
-        with urllib.request.urlopen(req) as response:
+        with urllib.request.urlopen(req, timeout=timeout) as response:
             data = response.read()
             data = data.decode()
             return data
 
     def powerOn(self):
-        if self.isOn():
+        # if self.isOn():
+        if False:
             return 'Power is on'
         else:
-            data = ''.join(['FFFFFFFFFFFF', self.macAddress * 20])
-            send_data = ''
+            print(self.macAddress)
+            data = b'FFFFFFFFFFFF' + (self.macAddress * 20).encode()
+            send_data = b''
 
             # Split up the hex values and pack.
             for i in range(0, len(data), 2):
-                send_data = ''.join([send_data,
-                                     struct.pack('B', int(data[i: i + 2], 16))])
+                send_data += struct.pack('B', int(data[i: i + 2], 16))
 
             # Broadcast it to the LAN.
+            print(send_data)
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-            sock.sendto(send_data, ('', 7))
+            sock.sendto(send_data, ('255.255.255.255', 7))
 
     def powerOff(self):
-        self.sendCommand('PowerOn')
+        self.sendCommand('PowerOff')
