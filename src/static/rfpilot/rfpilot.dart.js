@@ -4817,7 +4817,7 @@ r=$.$get$bF()
 if(r==null){P.R("  MAIN: ServiceWorkers are not supported.")
 z=1
 break}z=3
-return P.cf(r.el(0,"/static/sw.dart.js",null),$async$bj)
+return P.cf(r.el(0,"/static/rfpilot/sw.dart.js",null),$async$bj)
 case 3:P.R("  MAIN: registered")
 r=$.$get$bF()
 z=4

@@ -4616,7 +4616,7 @@ v=J
 z=3
 return P.bz(x.dX(0,"offline-v1"),$async$b8)
 case 3:z=2
-return P.bz(v.e5(b,["/rf/pilot/static/main.dart","/static/main.dart.js","/static/sw.dart","/static/sw.dart.js","/static/rfpilot.min.css","/static/angry.min.css"]),$async$b8)
+return P.bz(v.e5(b,["/rf/pilot/static/main.dart","/static/main.dart.js","/static/rfpilot/sw.dart","/static/rfpilot/sw.dart.js","/static/rfpilot/rfpilot.min.css","/static/angry.min.css"]),$async$b8)
 case 2:P.I("WORKER: Cache initialized.")
 return P.dA(null,y)}})
 return P.dB($async$b8,y)},

@@ -18,17 +18,17 @@ main: $(path)/main.dart
 rf: $(path)/rf.dart
 	$(dart) $(path)/leds.dart.js $(path)/leds.dart
 
-rfpilot: $(path)/rfpilot.dart
-	$(dart) $(path)/rfpilot.dart.js $(path)/rfpilot.dart
-	$(dart) $(path)/sw.dart.js $(path)/sw.dart
+rfpilot: $(path)/rfpilot/rfpilot.dart
+	$(dart) $(path)/rfpilot/rfpilot.dart.js $(path)/rfpilot/rfpilot.dart
+	$(dart) $(path)/rfpilot/sw.dart.js $(path)/rfpilot/sw.dart
 
 allcss: stylescss rfpilotcss
 
 stylescss: $(path)/styles.css
 	sassc -t compressed $(path)/styles.css $(path)/styles.min.css
 
-rfpilotcss: $(path)/rfpilot.scss
-	sassc -t compressed $(path)/rfpilot.scss $(path)/rfpilot.min.css
+rfpilotcss: $(path)/rfpilot/rfpilot.scss
+	sassc -t compressed $(path)/rfpilot/rfpilot.scss $(path)/rfpilot/rfpilot.min.css
 
 install:
 	$(INSTALL) -d -m 755 $(DESTDIR)/var/www/smarthouse/{static,templates}

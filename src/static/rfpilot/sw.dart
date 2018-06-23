@@ -1,7 +1,6 @@
 library sw;
 
 import 'dart:async';
-
 import 'package:service_worker/worker.dart';
 
 void _log(Object o) => print('WORKER: $o');
@@ -59,9 +58,9 @@ Future _initCache() async {
     '/rf/pilot'
     '/static/main.dart',
     '/static/main.dart.js',
-    '/static/sw.dart',
-    '/static/sw.dart.js',
-    '/static/rfpilot.min.css',
+    '/static/rfpilot/sw.dart',
+    '/static/rfpilot/sw.dart.js',
+    '/static/rfpilot/rfpilot.min.css',
     '/static/angry.min.css'
   ]);
   _log('Cache initialized.');

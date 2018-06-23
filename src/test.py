@@ -49,10 +49,7 @@ print(rgb.color())
 
 b = Bravia('192.168.1.129')
 b.macAddress = 'fc:f1:52:2a:9b:1e'
-cmds = b.getAllCommands()
 print('power', b.isOn())
-b.sendCommand('Stop')
-b.powerOff()
 
 
 #
