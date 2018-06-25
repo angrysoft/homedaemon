@@ -57,6 +57,7 @@ class Queue:
         else:
             return False
 
+
 class HouseDeamon:
     """Class eventListner"""
     def __init__(self, config):
@@ -97,7 +98,7 @@ class HouseDeamon:
             os.unlink(self.socketFile)
         self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
         self.sock.bind(self.socketFile)
-        chown(self.socketFile, group='uwsg'
+        chown(self.socketFile, group='uwsgi'
                                      '')
         os.chmod(self.socketFile, 664)
         self.loop.add_reader(self.sock, self.getSocketEvent)
