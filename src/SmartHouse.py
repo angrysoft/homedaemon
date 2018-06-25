@@ -141,6 +141,22 @@ def rfButton(no):
     return redirect('/rf/pilot/button/{}?status={}'.format(no, status))
 
 
+@app.route('/tv/pilot')
+def tvPilot():
+    return render_template('tvpilot.html')
+
+
+@app.route('/tv/pilot/button/<name>', methods=['GET', 'POST'])
+def tvButton(name):
+    """rfSend"""
+    if request.method == 'GET':
+        return request.args.get('status', 'ooops something is wrong')
+    elif request.method == 'POST':
+        print(name)
+        status = sendEvent('tv:{}'.format(name))
+    return redirect('/tv/pilot/button/{}?status={}'.format(name, status))
+
+
 @app.route('/leds')
 def leds():
     """led"""

@@ -1,6 +1,6 @@
 {
-    "name": "SmartHouse",
-    "short_name": "SmartHouse",
+    "name": "RF Pilot",
+    "short_name": "RF",
     "icons": [
         {
             "src": "/static/android-chrome-192x192.png",

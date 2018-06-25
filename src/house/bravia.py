@@ -34,30 +34,33 @@ class Bravia:
             raise ValueError('Incorrect MAC address format')
 
     def isOn(self):
-        ret = json.loads(self._send('sony/system', data=self._jsonCmd("getPowerStatus"), timeout=2)) # , pId='1')))
+        try:
+            ret = json.loads(self._send('sony/system', data=self._jsonCmd("getPowerStatus"), timeout=2)) # , pId='1')))
+        except socket.timeout:
+            return False
+        except:
+            return False
+
         print(ret)
         error = ret.get('error')
         if 'result' in ret:
             ret = ret.get('result')[0]
         if ret:
             status = ret.get('status')
-            try:
-                if status == 'standby':
-                    return False
-                elif status == 'active':
-                    return True
-                elif error:
-                    if error == 404:
-                        # TV is probably booting at this point - so not available yet
-                        return False
-                    elif error == 403:
-                        # A 403 Forbidden is acceptable here, because it means the TV is responding to requests
-                        return True
-                    else:
-                        print("Uncaught error")
-                        return False
-            except:
+            if status == 'standby':
                 return False
+            elif status == 'active':
+                return True
+            elif error:
+                if error == 404:
+                    # TV is probably booting at this point - so not available yet
+                    return False
+                elif error == 403:
+                    # A 403 Forbidden is acceptable here, because it means the TV is responding to requests
+                    return True
+                else:
+                    print("Uncaught error")
+                    return False
 
     def getAllCommands(self):
         ret = json.loads(self._send('sony/system', data=self._jsonCmd('getRemoteControllerInfo')))

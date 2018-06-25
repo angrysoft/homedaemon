@@ -47,12 +47,15 @@ print(rgb.red, rgb.green, rgb.blue)
 # rgb.green = '10'
 print(rgb.color())
 
+
 b = Bravia('192.168.1.129')
 b.macAddress = 'fc:f1:52:2a:9b:1e'
-print('power', b.isOn())
+if not b.isOn():
+    b.powerOn()
 
 
-#
-# pprint.pprint(cmds)
+cmds = b.getAllCommands()
+pprint.pprint(cmds)
+# b.sendCommand('Play')
 # print('test send command', b.sendCommand('Stop'))
 
