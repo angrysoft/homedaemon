@@ -7,4 +7,4 @@ if os.path.exists('files.txt'):
         for f in ff.readline():
             if os.path.exists(f):
                 print('Remove {}'.format(f))
-                os.unlink(f)
+                //os.unlink(f)
