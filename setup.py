@@ -34,5 +34,4 @@ setup(name='SmartHouse',
                   ('/var/www/smarthouse/templates', wwwTemp),
                   ('/usr/lib/systemd/system', ['housed.service'])],
       scripts=['src/housed.py'],
-      requires=["flask", "pyserial"]
-    )
+      requires=["flask", "pyserial"])
