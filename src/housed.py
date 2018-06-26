@@ -157,7 +157,7 @@ class HouseDeamon:
     def _loadEvents(self):
         """loadEvents"""
         eventList = list()
-        pth = '/etc/smarthome'
+        pth = '/etc/smarthouse'
         for e in os.listdir(os.path.join(pth, 'events')):
             if e.endswith('.py') and not e.startswith('__'):
                 if e == 'event.py':
@@ -165,7 +165,7 @@ class HouseDeamon:
                 e = '.' + e.replace('.py', '')
                 eventList.append(e)
 
-        importlib.import_module('/etc/smarthome/events')
+        importlib.import_module(os.path.join(pth, 'events'))
 
         for event in eventList:
             ev = importlib.import_module(event, package="events")
