@@ -31,6 +31,8 @@ import asyncio
 import argparse
 import importlib
 from shutil import chown
+import sys
+sys.path.append('/etc/smarthouse')
 
 
 class Queue:
@@ -165,7 +167,7 @@ class HouseDeamon:
                 e = '.' + e.replace('.py', '')
                 eventList.append(e)
 
-        importlib.import_module(os.path.join(pth, 'events'))
+        importlib.import_module('events')
 
         for event in eventList:
             ev = importlib.import_module(event, package="events")
