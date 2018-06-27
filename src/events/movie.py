@@ -1,4 +1,4 @@
-from event import EventBase
+from house.event import EventBase
 
 class Event(EventBase):
     def __init__(self):
