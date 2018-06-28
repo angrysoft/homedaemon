@@ -189,7 +189,7 @@ def getLight(number):
 rf = RF433()
 
 if __name__ == '__main__':
-    rf.loadConfig('../files/rf433.json')
+    rf.loadConfig('/etc/smarthouse/rf433.json')
     app.run(debug=True, host='0.0.0.0', use_reloader=False) #, port=80)
 else:
     rf.loadConfig('/etc/smarthouse/rf433.json')

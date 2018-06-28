@@ -12,10 +12,10 @@ def get_files(name):
 
 
 confFile = glob('files/*.json')
-wwwStatic = get_files('src/static')
-wwwStaticRf = get_files('src/static/rfpilot')
-wwwStaticTv = get_files('src/static/tvpilot')
-wwwTemp = get_files('src/templates')
+wwwStatic = get_files('www/static')
+wwwStaticRf = get_files('www/static/rfpilot')
+wwwStaticTv = get_files('www/static/tvpilot')
+wwwTemp = get_files('www/templates')
 
 setup(name='SmartHouse',
       version='0.5',
@@ -24,15 +24,15 @@ setup(name='SmartHouse',
       author='Sebastian Zwierzchowski',
       author_email='sebastian.zwierzchowski@gmail.com',
       license='GPL2',
-      package_dir={'house': 'src/house'},
+      package_dir={'': 'lib'},
       packages=['house'],
       data_files=[('/etc/smarthouse', confFile),
-                  ('/etc/smarthouse/events', get_files('src/events')),
-                  ('/var/www/smarthouse', ['src/SmartHouse.py']),
+                  ('/etc/smarthouse/events', get_files('events')),
+                  ('/var/www/smarthouse', ['www/SmartHouse.py']),
                   ('/var/www/smarthouse/static', wwwStatic),
                   ('/var/www/smarthouse/static/rfpilot', wwwStaticRf),
                   ('/var/www/smarthouse/static/tvpilot', wwwStaticTv),
                   ('/var/www/smarthouse/templates', wwwTemp),
                   ('/usr/lib/systemd/system', ['housed.service'])],
-      scripts=['src/housed.py'],
+      scripts=['scripts/housed.py'],
       requires=["flask", "pyserial"])

@@ -153,6 +153,7 @@ class HouseDeamon:
                 data += b
                 b = self.controller.read().decode()
             print("debug getSerialEv: ", data)  # TODO: remove
+            self.emitEvent(data)
         except:
             return
 
