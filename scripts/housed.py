@@ -178,6 +178,8 @@ class HouseDeamon:
 
     def emitEvent(self, e):
         """doEvent"""
+        if e.find(':') < 0:
+            return
         eventName, eventValue = e.split(':', 1)
         ev = self.events.get(eventName)
         if ev:

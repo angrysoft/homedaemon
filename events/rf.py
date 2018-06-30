@@ -10,6 +10,5 @@ class Event(EventBase):
 
     def start(self):
         self.send(Rf.code(self.args))
-        print(Rf.code(self.args))
 
 

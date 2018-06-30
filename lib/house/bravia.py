@@ -41,7 +41,6 @@ class Bravia:
         except:
             return False
 
-        print(ret)
         error = ret.get('error')
         if 'result' in ret:
             ret = ret.get('result')[0]
@@ -97,22 +96,25 @@ class Bravia:
 
     def _send(self, url, header={}, data=None, timeout=10):
         _url = '{}/{}'.format(self.host, url)
-        print(_url, header, data)
         if data:
             data = data.encode()
-        req = urllib.request.Request(_url, headers=header, method='POST', data=data)
+        try:
+            req = urllib.request.Request(_url, headers=header, method='POST', data=data)
 
-        with urllib.request.urlopen(req, timeout=timeout) as response:
-            data = response.read()
-            data = data.decode()
-            return data
+            with urllib.request.urlopen(req, timeout=timeout) as response:
+                data = response.read()
+                data = data.decode()
+                return data
+        except OSError as err:
+            print(err)
+        except urllib.error.URLError as err:
+            print(err)
 
     def powerOn(self):
         # if self.isOn():
         if False:
             return 'Power is on'
         else:
-            print(self.macAddress)
             data = b'FFFFFFFFFFFF' + (self.macAddress * 20).encode()
             send_data = b''
 
@@ -121,7 +123,6 @@ class Bravia:
                 send_data += struct.pack('B', int(data[i: i + 2], 16))
 
             # Broadcast it to the LAN.
-            print(send_data)
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
             sock.sendto(send_data, ('255.255.255.255', 7))
