@@ -1,4 +1,4 @@
-path = src/static
+path = www/static
 dart = dart2js -m -o
 sasss = sassc -t compressed
 INSTALL=install -C
