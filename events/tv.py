@@ -14,6 +14,8 @@ class Event(EventBase):
         print(self.args)
         if self.args == 'PowerOn':
             b.powerOn()
+        elif self.args == 'PowerOff':
+            b.powerOff()
         else:
             if b.isOn():
                 b.sendCommand(self.args)
