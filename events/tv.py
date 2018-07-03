@@ -11,11 +11,8 @@ class Event(EventBase):
     def start(self):
         b = Bravia('192.168.1.129')
         b.macAddress = 'fc:f1:52:2a:9b:1e'
-        print(self.args)
         if self.args == 'PowerOn':
             b.powerOn()
-        elif self.args == 'PowerOff':
-            b.powerOff()
         else:
             if b.isOn():
                 b.sendCommand(self.args)
