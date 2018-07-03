@@ -4,6 +4,7 @@ sasss = sassc -t compressed
 INSTALL=install -C
 USR=nginx
 GRP=uwsgi
+PREFIX = /usr
 
 all: alldart allcss
 
@@ -38,23 +39,7 @@ tvpilotcss: $(path)/tvpilot/tvpilot.scss
 	sassc -t compressed $(path)/tvpilot/tvpilot.scss $(path)/tvpilot/tvpilot.min.css
 
 install:
-	$(INSTALL) -d -m 755 $(DESTDIR)/var/www/smarthouse/{static,templates}
-	$(INSTALL) -g $(USR) -o $(GRP) src/static/* $(DESTDIR)/var/www/smarthouse/static/
-	#$(INSTALL) -g $(USR) -o $(GRP) src/static/*.dart $(DESTDIR)/var/www/smarthouse/static/
-	#$(INSTALL) --g $(USR) -o $(GRP) src/static/*.dart.js $(DESTDIR)/var/www/smarthouse/static/
-	#$(INSTALL) -g $(USR) -o $(GRP) src/static/*.css $(DESTDIR)/var/www/smarthouse/static/
-	# templates
-	$(INSTALL) -g $(USR) -o $(GRP) src/templates/*.html $(DESTDIR)/var/www/smarthouse/templates/
-	# server file
-	$(INSTALL) -g $(USR) -o $(GRP) -m 755 src/SmartHouse.py $(DESTDIR)/var/www/smarthouse/
-	# daemon files
-	$(INSTALL) -d -m 755 $(DESTDIR)/usr/bin
-	$(INSTALL) -d -m 755 $(DESTDIR)/usr/lib/systemd/system
-	$(INSTALL) -m 755 src/housed.py $(DESTDIR)/usr/bin
-	$(INSTALL) -m 644 housed.service $(DESTDIR)/usr/lib/systemd/system
-	# config files
-	$(INSTALL) -d -m 755 $(DESTDIR)/etc/smarthouse
-	$(INSTALL) -m 755 files/*.json $(DESTDIR)/etc/smarthouse/
+	python3 setup.py install --prefix=$(PREFIX) --record=files.txt
 
 uninstall:
 	rm -rf $(DESTDIR)/var/www/smarthouse
