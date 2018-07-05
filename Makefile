@@ -39,7 +39,7 @@ tvpilotcss: $(path)/tvpilot/tvpilot.scss
 	sassc -t compressed $(path)/tvpilot/tvpilot.scss $(path)/tvpilot/tvpilot.min.css
 
 install:
-	python3 setup.py install --prefix=$(PREFIX) --record=files.txt
+	python3 setup.py -v install --prefix=$(PREFIX) --record files.txt
 
 uninstall:
 	rm -rf $(DESTDIR)/var/www/smarthouse
