@@ -71,7 +71,6 @@ class Controller {
 		void setRGB(int r, int g, int b);
 		void setColor(String colors);
 		void setFadeColor(String colors);
-		void powerOff(int sek);
 		int command(String s);
 		int getCode();
 };

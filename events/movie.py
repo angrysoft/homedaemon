@@ -14,7 +14,6 @@ class Event(EventBase):
 
     def on(self):
         self.send('F.{}'.format('0.0.255'))
-        self.send('W')
 
     def off(self):
         pass

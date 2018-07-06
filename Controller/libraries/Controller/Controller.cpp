@@ -40,6 +40,7 @@ void Controller::setupCtrl() {
 	this->setRGB(0,0,0);
 	wSwitch.enableTransmit(WIRELESS_TRANSMITER_PIN);
 	wSwitch.enableReceive(WIRELESS_RECIVER_PIN);
+	sensors.requestTemperatures();
 }
 
 
@@ -111,8 +112,6 @@ int Controller::sendIR(String code) {
 
 int Controller::sendWireless(String code) {
 	//code.protocol
-	Serial.print("Sendign wirless :  ");
- 	Serial.println(code);
 	String tmp = "";
 	//code to send
 	unsigned long sendCode;
@@ -160,7 +159,7 @@ int Controller::getTemp(int num) {
 	//return T.thermometr_num.temp
 	sensors.requestTemperatures();
 	delay(50);
-	Serial.print("OT:");
+	Serial.print("temp:");
 	Serial.print(num);
 	Serial.print('.');
 	Serial.println(sensors.getTempCByIndex(num));
@@ -178,7 +177,7 @@ int Controller::getLight(int num) {
 		light += analogRead(LIGHTPIN);
 	}
 	light = light/3;
-	Serial.print("OL:");
+	Serial.print("light:");
 	Serial.print(num);
 	Serial.print('.');
 	Serial.println(light);
@@ -237,7 +236,6 @@ void Controller::setFadeColor (String colors) {
 	int b = 0;
 	int idx = colors.indexOf('.');
 	int idxOld = idx+1;
-	//if (idx == -1) {return};
 	String tmp;
 	
 	//Red
@@ -279,10 +277,6 @@ void Controller::setFadeColor (String colors) {
 	
 }
 
-void Controller::powerOff(int sek) {
-	delay(sek*1000);
-	this->sendWireless(this->offCode);
-}
 
 int Controller::command(String s) {
 	//Serial.println(s);
@@ -299,10 +293,10 @@ int Controller::command(String s) {
 	cmd = s.substring(0,idx);
   	code = s.substring(idx+1);
 	
-	if (cmd == "" or code == "") {
+	if (cmd == "" or code == "" or cmd.length() > 1) {
   	  return -1;
 	}
-  
+  	
 	switch (cmd[0]) {
 		case 'I':
 	  		this->sendIR(code);
@@ -333,10 +327,11 @@ int Controller::command(String s) {
 }
 
 void Controller::listen(bool echo) {
+/*	
 	if (wSwitch.available()) {
 		this->getCode();
 	}
-	
+*/	
 	while (Serial.available()) {
 		char inC = Serial.read();
 		

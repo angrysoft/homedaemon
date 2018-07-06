@@ -3,18 +3,16 @@ class RGB:
         self._red = 0
         self._green = 0
         self._blue = 0
-        self._dimmer = 0
+        self._dimmer = 255
 
     def setRgb(self, arg):
         col = arg.split('.')
-        if len(col) == 3:
+        if len(col) >= 3:
             self.red = col[0]
             self.green = col[1]
             self.blue = col[2]
         if len(col) == 4:
             self.dimmer = col[3]
-        # TODO do poprawy obsluga blędów
-
 
     @property
     def red(self):
@@ -26,8 +24,7 @@ class RGB:
 
     @red.setter
     def red(self, val):
-        self.isInt(val)
-        self._red = val
+        self._red = self.toInt(val)
 
     @property
     def green(self):
@@ -39,8 +36,7 @@ class RGB:
 
     @green.setter
     def green(self, val):
-        self.isInt(val)
-        self._green = val
+        self._green = self.toInt(val)
 
     @property
     def blue(self):
@@ -52,8 +48,7 @@ class RGB:
 
     @blue.setter
     def blue(self, val):
-        self.isInt(val)
-        self._blue = val
+        self._blue = self.toInt(val)
 
     @property
     def dimmer(self):
@@ -61,20 +56,15 @@ class RGB:
 
     @red.setter
     def dimmer(self, val):
-        self.isInt(val)
-        self._dimmer = val
+        self._dimmer = self.toInt(val)
 
-    def rgb(self, col):
-        r, g, b = col.split('.')
-        self.red = int(r)
-        self.green = int(g)
-        self.blue = int(b)
-
-    def color(self):
+    def toSend(self):
         return 'F.{}.{}.{}'.format(self.red, self.green, self.blue)
 
-    def isInt(self, v):
+    @staticmethod
+    def toInt(v):
         if not type(v) == int:
-            raise TypeError('expected integer')
+            v = int(v)
         if v < 0 or v > 255:
-            raise ValueError('rang 0 > 255')
+            v = 0
+        return v

@@ -8,7 +8,7 @@ PREFIX = /usr
 
 all: alldart allcss
 
-alldart: leds main rf rfpilot
+alldart: leds main rf rfpilot tvpilot
 
 leds: $(path)/leds.dart
 	$(dart) $(path)/leds.dart.js $(path)/leds.dart
@@ -27,7 +27,7 @@ tvpilot: $(path)/tvpilot/tvpilot.dart
 	$(dart) $(path)/tvpilot/tvpilot.dart.js $(path)/tvpilot/tvpilot.dart
 	$(dart) $(path)/tvpilot/sw.dart.js $(path)/tvpilot/sw.dart
 
-allcss: stylescss rfpilotcss
+allcss: stylescss rfpilotcss tvpilotcss
 
 stylescss: $(path)/styles.css
 	sassc -t compressed $(path)/styles.css $(path)/styles.min.css
@@ -43,5 +43,4 @@ install:
 
 uninstall:
 	rm -rf $(DESTDIR)/var/www/smarthouse
-	rm -f $(DESTDIR)/usr/lib/systemd/system/housed.service
-	rm -f $(DESTDIR)/usr/bin/housed.py
+	./uninstall.py
