@@ -30,6 +30,7 @@ from flask import redirect
 import socket
 import os
 import json
+import sqlite3
 
 app = Flask(__name__)
 
@@ -104,7 +105,12 @@ def sendEvent(msg, socketFile='/tmp/housed.sock'):
 # www
 @app.route('/')
 def index():
-    return render_template('index.html', status='brak')
+    conn = sqlite3.connect('/tmp/sensors.db', check_same_thread=False)
+    cur = conn.cursor()
+    cur.execute('CREATE TABLE IF NOT EXISTS sensors (number INT, value TEXT)')
+    cur.execute('SELECT number,value FROM sensors')
+    sensors = cur.fetchall()
+    return render_template('index.html', status='brak', sensors=sensors)
 
 
 @app.route('/rf')
