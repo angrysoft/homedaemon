@@ -168,6 +168,11 @@ def leds():
     return render_template('leds.html')
 
 
+@app.route('/leds/pilot')
+def ledsPilot():
+    return render_template('ledpilot.html')
+
+
 @app.route('/leds/changeColor/<rgb>', methods=['GET', 'POST'])
 def changeColor(rgb):
     """changeColor"""
