@@ -8,7 +8,7 @@ PREFIX = /usr
 
 all: alldart allcss
 
-alldart: leds main rf rfpilot tvpilot
+alldart: leds main rf rfpilot tvpilot ledpilot
 
 leds: $(path)/leds.dart
 	$(dart) $(path)/leds.dart.js $(path)/leds.dart
@@ -27,7 +27,11 @@ tvpilot: $(path)/tvpilot/tvpilot.dart
 	$(dart) $(path)/tvpilot/tvpilot.dart.js $(path)/tvpilot/tvpilot.dart
 	$(dart) $(path)/tvpilot/sw.dart.js $(path)/tvpilot/sw.dart
 
-allcss: stylescss rfpilotcss tvpilotcss
+ledpilot: $(path)/ledpilot/ledpilot.dart
+	$(dart) $(path)/ledpilot/ledpilot.dart.js $(path)/ledpilot/ledpilot.dart
+	$(dart) $(path)/ledpilot/sw.dart.js $(path)/ledpilot/sw.dart
+
+allcss: stylescss rfpilotcss tvpilotcss ledpilotcss
 
 stylescss: $(path)/styles.css
 	sassc -t compressed $(path)/styles.css $(path)/styles.min.css
@@ -37,6 +41,9 @@ rfpilotcss: $(path)/rfpilot/rfpilot.scss
 
 tvpilotcss: $(path)/tvpilot/tvpilot.scss
 	sassc -t compressed $(path)/tvpilot/tvpilot.scss $(path)/tvpilot/tvpilot.min.css
+
+ledpilotcss: $(path)/ledpilot/ledpilot.scss
+	sassc -t compressed $(path)/ledpilot/ledpilot.scss $(path)/ledpilot/ledpilot.min.css
 
 install:
 	python3 setup.py -v install --prefix=$(PREFIX) --record files.txt

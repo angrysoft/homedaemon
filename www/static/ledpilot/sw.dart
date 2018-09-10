@@ -60,7 +60,7 @@ Future _initCache() async {
     '/static/main.dart.js',
     '/static/ledpilot/sw.dart',
     '/static/ledpilot/sw.dart.js',
-    '/static/ledpilot/tvpilot.min.css',
+    '/static/ledpilot/ledpilot.min.css',
     '/static/angry.min.css'
   ]);
   _log('Cache initialized.');

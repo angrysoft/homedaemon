@@ -34,28 +34,26 @@ var X=map()
 var Y=map()
 var Z=map()
 function I(){}init()
-function setupProgram(a,b){"use strict"
-function processStatics(a2,a3){var h=Object.keys(a2)
+function setupProgram(a,b,c){"use strict"
+function processStatics(a3,a4){var h=Object.keys(a3)
 for(var g=0;g<h.length;g++){var f=h[g]
 if(f==="^")continue
-var e=a2[f]
+var e=a3[f]
 var d=f.charCodeAt(0)
-var c
-if(d===43){w[c]=f.substring(1)
-var a0=a2[f]
-if(a0>0)a2[c].$reflectable=a0
-if(e&&e.length)init.typeInformation[c]=e}else if(d===42){n[c].$D=e
-var a1=a2.$methodsWithOptionalArguments
-if(!a1)a2.$methodsWithOptionalArguments=a1={}
-a1[f]=c}else if(typeof e==="function"){n[c=f]=e
-i.push(f)
-init.globalFunctions[f]=e}else if(e.constructor===Array){}else{}}}var z=0
+var a0
+if(d===43){w[a0]=f.substring(1)
+var a1=a3[f]
+if(a1>0)a3[a0].$reflectable=a1
+if(e&&e.length)init.typeInformation[a0]=e}else if(d===42){n[a0].$D=e
+var a2=a3.$methodsWithOptionalArguments
+if(!a2)a3.$methodsWithOptionalArguments=a2={}
+a2[f]=a0}else if(typeof e==="function"){n[a0=f]=e
+i.push(f)}else if(e.constructor===Array){}else{}}}var z=0
 if(!init.libraries)init.libraries=[]
 if(!init.mangledNames)init.mangledNames=map()
 if(!init.mangledGlobalNames)init.mangledGlobalNames=map()
 if(!init.statics)init.statics=map()
 if(!init.typeInformation)init.typeInformation=map()
-if(!init.globalFunctions)init.globalFunctions=map()
 var y=init.libraries
 var x=init.mangledNames
 var w=init.mangledGlobalNames
@@ -81,16 +79,19 @@ processStatics(m,t)
 y.push([q,p,j,i,o,k,l,n])}}I.a=function(){}
 var dart=[["","",,F,{"^":"",
 b:function(){}},1]]
-setupProgram(dart,0)
+setupProgram(dart,0,0)
 var $=I.p
 $=null
 init.isHunkLoaded=function(a){return!!$dart_deferred_initializers$[a]}
 init.deferredInitialized=new Object(null)
 init.isHunkInitialized=function(a){return init.deferredInitialized[a]}
-init.initializeLoadedHunk=function(a){$dart_deferred_initializers$[a]($globals$,$)
+init.initializeLoadedHunk=function(a){var z=$dart_deferred_initializers$[a]
+if(z==null)throw"DeferredLoading state error: code with hash '"+a+"' was not loaded"
+z($globals$,$)
 init.deferredInitialized[a]=true}
-init.deferredLibraryUris={}
-init.deferredLibraryHashes={}
+init.deferredLibraryParts={}
+init.deferredPartUris=[]
+init.deferredPartHashes=[]
 I=I.$finishIsolateConstructor(I)
 $=new I()
 init.metadata=[]

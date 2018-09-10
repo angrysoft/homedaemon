@@ -22,25 +22,27 @@
 <body>
   <div class="container">
     
-    <div class="row center-xs">
-      <div class="col-xs-6"></div>
-    </div>
-    
-    <div class="row center-xs">
-      <div class="col-xs-12">
-        <input class="color-range" id="red" type="range" step="1" min="0" max="255" value="255">
+    <div class="row center-xs btn-group">
+      <div class="col-xs-6">
+         <button id="btn-set" class="btn" data-btn="set">SET</button>
       </div>
     </div>
     
-    <div class="row center-xs">
+    <div class="row center-xs btn-group">
       <div class="col-xs-12">
-        <input class="color-range" id="green" type="range" step="1" min="0" max="255" value="255">
+        <input class="color-range led-red" id="red" type="range" step="1" min="0" max="255" value="0">
       </div>
     </div>
     
-    <div class="row center-xs">
+    <div class="row center-xs btn-group">
       <div class="col-xs-12">
-        <input class="color-range" id="blue" type="range" step="1" min="0" max="255" value="255">
+        <input class="color-range led-green" id="green" type="range" step="1" min="0" max="255" value="0">
+      </div>
+    </div>
+    
+    <div class="row center-xs btn-group">
+      <div class="col-xs-12">
+        <input class="color-range led-blue" id="blue" type="range" step="1" min="0" max="255" value="0">
       </div>
     </div>
     
@@ -67,19 +69,15 @@
       </div>
     </div>
     
-    <div class="row center-xs">
+    <div class="row center-xs btn-group">
       <div class="col-xs-12">
-        <input class="color-range" id="dim" type="range" step="1" min="0" max="255" value="255">
+        <input class="color-range" id="dimm" type="range" step="1" min="0" max="255" value="255">
       </div>
     </div>
     
     <div class="row center-xs btn-group">
       <div class="col-xs-6">
-        <button class="btn white" data-btn="set">SET</button>
-      </div>
-      
-      <div class="col-xs-6">
-        <button class="btn red" data-btn="off">OFF</button>
+        <button id="btn-off" class="btn red" data-btn="off">OFF</button>
       </div>
       
     </div>

@@ -108,3 +108,19 @@ input[type=range].color-range:focus::-ms-fill-lower {
 input[type=range].color-range:focus::-ms-fill-upper {
   background: #7794c1;
 }
+
+input[type=range].color-range.led-red::-webkit-slider-thumb {
+  background: red !important;
+}
+
+input[type=range].led-green::-webkit-slider-thumb {
+  background: green !important;
+}
+
+input[type=range].led-blue::-webkit-slider-thumb {
+  background: blue !important;
+}
+
+#btn-set {
+  height: 10rem;
+}

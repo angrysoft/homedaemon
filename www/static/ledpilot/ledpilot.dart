@@ -5,20 +5,58 @@ import 'package:service_worker/window.dart' as sw;
 
 void _log(Object o) => print('  MAIN: $o');
 
-class TvButtons {
+class Led {
+  InputElement inputRed;
+  InputElement inputGreen;
+  InputElement inputBlue;
+  InputElement inputDimm;
+  ButtonElement btnOff;
+  ButtonElement btnSet;
 
-  TvButtons() {
-    querySelectorAll('.btn').onClick.listen((Event e) => this.clickBtn(e));
+  Led() {
+    inputRed = querySelector('#red');
+    inputGreen = querySelector('#green');
+    inputBlue = querySelector('#blue');
+    inputDimm = querySelector('#dimm');
+    btnOff = querySelector('#btn-off');
+    btnSet = querySelector('#btn-set');
+    
+    this.inputRed.onChange.listen((e) => this.setColorPreview());
+    this.inputGreen.onChange.listen((e) => this.setColorPreview());
+    this.inputBlue.onChange.listen((e) => this.setColorPreview());
+
+    this.btnSet.onClick.listen((Event e) {
+      String rgbColor = this.getColor();
+       HttpRequest.request('/leds/changeColor/${rgbColor}', method: 'POST');
+    });
+
+    this.btnOff.onClick.listen((Event e) {
+      HttpRequest.request('/leds/changeColor/0.0.0', method: 'POST');
+    });
   }
 
-  void clickBtn(Event e) {
-    ButtonElement btn = e.target;
-    HttpRequest.request('/tv/pilot/button/${btn.dataset['btn']}', method: 'POST');
+  String getColor() {
+    return "${inputRed.value}.${inputGreen.value}.${inputBlue.value}.${inputDimm.value}";
   }
+
+  void setColorPreview() {
+    this.btnSet.style.background = "rgb(${inputRed.value},${inputGreen.value},${inputBlue.value})";
+  }
+
+//  String hexToRgb(String hexCode) {
+//    if (hexCode.startsWith('#')) {
+//      hexCode = hexCode.substring(1);
+//    }
+//    List<String> hexDigits = hexCode.split('');
+//    int r = int.parse(hexDigits.sublist(0, 2).join(), radix: 16);
+//    int g = int.parse(hexDigits.sublist(2, 4).join(), radix: 16);
+//    int b = int.parse(hexDigits.sublist(4).join(), radix: 16);
+//    return "${r}.${g}.${b}";
+//  }
 }
 
 Future main() async {
-  new TvButtons();
+  new Led();
 
   if (sw.isNotSupported) {
     _log('ServiceWorkers are not supported.');

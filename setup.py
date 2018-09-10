@@ -15,6 +15,7 @@ confFile = glob('files/*.json')
 wwwStatic = get_files('www/static')
 wwwStaticRf = get_files('www/static/rfpilot')
 wwwStaticTv = get_files('www/static/tvpilot')
+wwwStaticLed = get_files('www/static/ledpilot')
 wwwTemp = get_files('www/templates')
 
 setup(name='SmartHouse',
@@ -32,6 +33,7 @@ setup(name='SmartHouse',
                   ('/var/www/smarthouse/static', wwwStatic),
                   ('/var/www/smarthouse/static/rfpilot', wwwStaticRf),
                   ('/var/www/smarthouse/static/tvpilot', wwwStaticTv),
+                  ('/var/www/smarthouse/static/ledpilot', wwwStaticLed),
                   ('/var/www/smarthouse/templates', wwwTemp),
                   ('/usr/lib/systemd/system', ['housed.service'])],
       scripts=['scripts/housed.py'],

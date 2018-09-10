@@ -12,5 +12,3 @@ class Event(EventBase):
     def start(self):
         self.rgb.setRgb(self.args)
         self.send(self.rgb.toSend())
-
-
