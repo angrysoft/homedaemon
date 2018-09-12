@@ -21,6 +21,6 @@ class Event(EventBase):
         if ret[0] == 0:
             cur.execute('INSERT INTO leds (number,value) VALUES (?,?)', (0, self.args))
         elif ret[0] == 1:
-            cur.execute('UPDATE sensors SET value=? WHERE number=?', (self.args, 0))
+            cur.execute('UPDATE leds SET value=? WHERE number=?', (self.args, 0))
         conn.commit()
         conn.close()
