@@ -33,6 +33,20 @@ class Led {
     btnColor3 = querySelector('#color3');
     btnColor4 = querySelector('#color4');
     btnColor5 = querySelector('#color5');
+    HttpRequest.getString('/leds/color').then((String ret) {
+      if (ret.isNotEmpty) {
+        List<String> colors = ret.split('.');
+        this.inputRed.value = colors[0];
+        this.inputGreen.value = colors[1];
+        this.inputBlue.value = colors[2];
+        this.inputDimm.value = colors[3];
+      }
+    })
+    .catchError((Error error) {
+      print(error.toString());
+    });
+
+
     btns = [btnColor1, btnColor2, btnColor3, btnColor4, btnColor5];
     this.updateFavorite();
     

@@ -12,7 +12,7 @@ class Event(EventBase):
         if self.args.find('.') < 0:
             return
         num, val = self.args.split('.', 1)
-        conn = sqlite3.connect('/tmp/sensors.db', check_same_thread=False)
+        conn = sqlite3.connect('/tmp/smarthome.db', check_same_thread=False)
         cur = conn.cursor()
         cur.execute('CREATE TABLE IF NOT EXISTS sensors (number INT, value TEXT)')
         cur.execute('SELECT COUNT(1) FROM sensors WHERE number=?', (num,))
@@ -22,3 +22,4 @@ class Event(EventBase):
         elif ret[0] == 1:
             cur.execute('UPDATE sensors SET value=? WHERE number=?', (val, num))
         conn.commit()
+        conn.close()

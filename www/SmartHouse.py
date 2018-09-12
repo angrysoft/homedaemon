@@ -105,11 +105,12 @@ def sendEvent(msg, socketFile='/tmp/housed.sock'):
 # www
 @app.route('/')
 def index():
-    conn = sqlite3.connect('/tmp/sensors.db', check_same_thread=False)
+    conn = sqlite3.connect('/tmp/smarthome.db', check_same_thread=False)
     cur = conn.cursor()
     cur.execute('CREATE TABLE IF NOT EXISTS sensors (number INT, value TEXT)')
     cur.execute('SELECT number,value FROM sensors')
     sensors = cur.fetchall()
+    conn.close()
     return render_template('index.html', status='brak', sensors=sensors)
 
 
@@ -166,6 +167,22 @@ def tvButton(name):
 def leds():
     """led"""
     return render_template('leds.html')
+
+
+@app.route('/leds/color/<num>')
+def ledsColor(num):
+    """led"""
+    conn = sqlite3.connect('/tmp/smarthome.db', check_same_thread=False)
+    cur = conn.cursor()
+    cur.execute('CREATE TABLE IF NOT EXISTS leds (number INT, value TEXT)')
+    cur.execute('SELECT value FROM leds where number=?', (num,))
+    color = cur.fetchone()
+    conn.close()
+    if color:
+        color = color[0]
+    else:
+        color = '0.0.0.0'
+    return color
 
 
 @app.route('/leds/pilot')
