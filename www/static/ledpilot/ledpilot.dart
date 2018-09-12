@@ -41,6 +41,7 @@ class Led {
         this.inputGreen.value = colors[1];
         this.inputBlue.value = colors[2];
         this.inputDimm.value = colors[3];
+        this.setColorPreview();
       }
     })
     .catchError((Error error) {
@@ -54,11 +55,10 @@ class Led {
     this.inputRed.onChange.listen((e) => this.setColorPreview());
     this.inputGreen.onChange.listen((e) => this.setColorPreview());
     this.inputBlue.onChange.listen((e) => this.setColorPreview());
+    this.inputDimm.onChange.listen((e) => this.setLedColor());
 
     this.btnSet.onClick.listen((Event e) {
-      String rgbColor = this.getColor();
-      String dimmer = this.getDimmer();
-       HttpRequest.request('/leds/changeColor/${rgbColor}.${dimmer}', method: 'POST');
+      this.setLedColor();
     });
 
     this.btnAdd.onClick.listen((Event e) {
@@ -67,12 +67,19 @@ class Led {
     });
 
     this.btnOff.onClick.listen((Event e) {
-      HttpRequest.request('/leds/changeColor/0.0.0', method: 'POST');
+      this.inputDimm.value = "0";
+      this.setLedColor();
     });
     
     btns.forEach((Element btn) {
       btn.onClick.listen((Event e) => this.sendFavoriteColor(e));
     });
+  }
+
+  void setLedColor() {
+    String rgbColor = this.getColor();
+    String dimmer = this.getDimmer();
+    HttpRequest.request('/leds/changeColor/${rgbColor}.${dimmer}', method: 'POST');
   }
 
   void addToFavorite() {
