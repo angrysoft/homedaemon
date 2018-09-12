@@ -33,8 +33,9 @@ class Led {
     btnColor3 = querySelector('#color3');
     btnColor4 = querySelector('#color4');
     btnColor5 = querySelector('#color5');
-    HttpRequest.getString('/leds/color').then((String ret) {
+    HttpRequest.getString('/leds/color/0').then((String ret) {
       if (ret.isNotEmpty) {
+        print(ret);
         List<String> colors = ret.split('.');
         this.inputRed.value = colors[0];
         this.inputGreen.value = colors[1];
@@ -89,7 +90,6 @@ class Led {
 
   void updateFavorite() {
     for (int i = 1; i < 6; i++) {
-      print("updateing ${i}");
       String color = "0.0.0";
       String dimmer = "0";
       if (window.localStorage.containsKey("color${i}")) {
