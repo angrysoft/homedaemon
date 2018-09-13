@@ -65,6 +65,7 @@ class HouseDeamon:
     def __init__(self, config):
         """Constructor for eventListner"""
         self.loop = asyncio.get_event_loop()
+        self.task = self.loop.create_task(self.timers())
         self.socketFile = config.socket
         self.serialPort = config.port
         self.controller = serial.Serial()
@@ -184,6 +185,11 @@ class HouseDeamon:
         ev = self.events.get(eventName)
         if ev:
             ev.run(self.controller, args=eventValue)
+
+    async def timers(self):
+        while True:
+            self.emitEvent('timers:all')
+            await asyncio.sleep(60)
 
     def watchEmiter(self):
         """watchEmiter"""

@@ -1,13 +1,19 @@
 {% extends 'layout.html' %}
 {% block content %}
-  <div class="row">
-    <div class="col-xs-4 panel">
+  <div class="row center-xs start-md">
+    <div class="col-md-4 col-xs-12 panel">
       <header>Temperatura</header>
         <section>
-          <p>Temperatura w Domu : <span id="temp-home">??</span></p>
+          <p>Temperatura w Domu : <span id="temp-home"></span></p>
           <p>Temperatura na zewnątrz : <span id="temp-out-side"></span></p>
         </section>
     </div>
-    <p>Status połączenia : {{ status }}</p>
+    
+    <div class="col-md-4 col-xs-12 panel">
+      <header>Server</header>
+        <section>
+          <p>Status połączenia : {{ status }}</p>
+        </section>
+    </div>
   </div>
 {% endblock %}

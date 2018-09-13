@@ -90,6 +90,39 @@ class RF433:
                             })
         return buttons
 
+class DB:
+    def __init__(self):
+        self.conn = sqlite3.connect('/tmp/smarthome.db', check_same_thread=False)
+        self.cur = self.conn.cursor()
+
+    def getColor(self, num):
+        self.cur.execute('SELECT value FROM leds WHERE number=?', (num,))
+        color = self.cur.fetchone()
+        if color:
+            color = color[0]
+        else:
+            color = '0.0.0.0'
+
+        return color
+
+    def getTemp(self, num):
+        self.cur.execute('SELECT value FROM temperature WHERE number=?', (num,))
+        temp = self.cur.fetchone()
+        if temp:
+            temp = temp[0]
+        else:
+            temp = None
+        return temp
+
+    def getLight(self, num):
+        self.cur.execute('SELECT value FROM light WHERE number=?', (num,))
+        light = self.cur.fetchone()
+        if light:
+            light = light[0]
+        else:
+            light = None
+        return light
+
 
 def sendEvent(msg, socketFile='/tmp/housed.sock'):
     if os.path.exists(socketFile):
@@ -107,7 +140,7 @@ def sendEvent(msg, socketFile='/tmp/housed.sock'):
 def index():
     conn = sqlite3.connect('/tmp/smarthome.db', check_same_thread=False)
     cur = conn.cursor()
-    cur.execute('CREATE TABLE IF NOT EXISTS sensors (number INT, value TEXT)')
+    # cur.execute('CREATE TABLE IF NOT EXISTS sensors (number INT, value TEXT)')
     cur.execute('SELECT number,value FROM sensors')
     sensors = cur.fetchall()
     conn.close()
@@ -172,17 +205,8 @@ def leds():
 @app.route('/leds/color/<num>')
 def ledsColor(num):
     """led"""
-    conn = sqlite3.connect('/tmp/smarthome.db', check_same_thread=False)
-    cur = conn.cursor()
-    cur.execute('CREATE TABLE IF NOT EXISTS leds (number INT, value TEXT)')
-    cur.execute('SELECT value FROM leds where number=?', (num,))
-    color = cur.fetchone()
-    conn.close()
-    if color:
-        color = color[0]
-    else:
-        color = '0.0.0.0'
-    return color
+
+    return db.getColor(num)
 
 
 @app.route('/leds/pilot')
@@ -203,18 +227,17 @@ def changeColor(rgb):
 @app.route('/temp/<number>')
 def getTemp(number):
     """getTemp"""
-    sendEvent('temp:{}'.format(number))
-    return 'ok'
+    return db.getTemp(number)
 
 
 @app.route('/light/<number>')
 def getLight(number):
     """getTemp"""
-    sendEvent('light:{}'.format(number))
-    return 'ok'
+    return getLight(number)
 
 
 rf = RF433()
+db = DB()
 
 if __name__ == '__main__':
     rf.loadConfig('/etc/smarthouse/rf433.json')
