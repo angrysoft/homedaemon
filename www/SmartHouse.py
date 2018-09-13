@@ -138,12 +138,9 @@ def sendEvent(msg, socketFile='/tmp/housed.sock'):
 # www
 @app.route('/')
 def index():
-    conn = sqlite3.connect('/tmp/smarthome.db', check_same_thread=False)
-    cur = conn.cursor()
-    # cur.execute('CREATE TABLE IF NOT EXISTS sensors (number INT, value TEXT)')
-    cur.execute('SELECT number,value FROM sensors')
-    sensors = cur.fetchall()
-    conn.close()
+    sensors = list()
+    sensors.append(db.getTemp(0))
+    sensors.append(db.getTemp(1))
     return render_template('index.html', status='brak', sensors=sensors)
 
 
