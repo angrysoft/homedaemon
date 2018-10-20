@@ -34,30 +34,8 @@ from shutil import chown
 import sys
 sys.path.append('/etc/smarthouse')
 
-
-class Queue:
-    """Queue fifo list"""
-    def __init__(self):
-        self.q = []
-
-    def put(self, arg):
-        """put arg on end of list"""
-        self.q.insert(0, arg)
-
-    def pop(self):
-        """pop"""
-        return self.q.pop()
-
-    def len(self):
-        """len return size of queue"""
-        return len(self.q)
-
-    def notEmpty(self):
-        """notEmpty"""
-        if len(self.q) > 0:
-            return True
-        else:
-            return False
+# TODO zmienić controller na pluginy z rożnymi interfejsami np arduiono, xiomi aquara,
+# TODO dodać logowanie zdarzeń
 
 
 class HouseDeamon:
