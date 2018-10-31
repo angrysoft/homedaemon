@@ -30,33 +30,74 @@ from flask import redirect
 import os
 import json
 import sqlite3
-import jwt
+# import jwt
+import urllib.parse
+import string
+import random
 
 app = Flask(__name__)
 
-client_id = '386751861706-082sa86m5ak3vtp3999eabd6e4eijjgu.apps.googleusercontent.com'
-secret = 'WW_AKiWaz35Sc4IFAGT69eH9'
-logging.basicConfig(filename='gast.log', filemode='w', format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+logging.basicConfig(filename='gast.log', filemode='w', format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %H:%M:%S')
 logging.warning('app starts')
 
-#
+
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     """rfSend"""
     if request.method == 'GET':
-        logging.warning('request get {}, {}, {}, {}'.format(request.args,
+        logging.warning('index get {}, {}, {}, {}'.format(request.args,
                                                           request.form,
                                                           request.data,
                                                           request.headers))
         return request.args.get('status', 'ooops something is wrong')
     elif request.method == 'POST':
-        logging.warning('request post {}, {}, {}, {}'.format(request.args,
+        logging.warning('index post {}, {}, {}, {}'.format(request.args,
                                                           request.form,
                                                           request.data,
                                                           request.headers))
         status = 'ok'
         # print(jwt.decode(data, secret, algorithms=['HS256']))
     return redirect('/?status={}'.format(status))
+
+
+@app.route('/auth', methods=['GET', 'POST'])
+def auth():
+    """rfSend"""
+    if request.method == 'GET':
+        logging.warning('auth get {}, {}, {}, {}'.format(request.args,
+                                                         request.form,
+                                                         request.data,
+                                                         request.headers))
+        if request.args.get('response_type', '') == 'code':
+            client_id = request.args.get('client_id', '')
+            uri = request.args.get('redirect_uri', '')
+            state = request.args.get('state', '')
+
+            url = uri + '?' + urllib.parse.urlencode({'code': code, 'state': state})
+            logging.warning('url :' + url)
+
+        return redirect(url)
+
+
+@app.route('/auth/token', methods=['GET', 'POST'])
+def token():
+    """rfSend"""
+    if request.method == 'GET':
+        logging.warning('token get {}, {}, {}, {}'.format(request.args,
+                                                          request.form,
+                                                          request.data,
+                                                          request.headers))
+        return request.args.get('status', 'ooops something is wrong')
+    elif request.method == 'POST':
+        logging.warning('token post {}, {}, {}, {}'.format(request.args,
+                                                           request.form,
+                                                           request.data,
+                                                           request.headers))
+        status = 'ok'
+        # print(jwt.decode(data, secret, algorithms=['HS256']))
+
+    return redirect('/auth/token?status={}'.format(status))
 
 
 if __name__ == '__main__':
