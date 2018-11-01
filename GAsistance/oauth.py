@@ -50,6 +50,7 @@ class OAuth:
         if user_id and self.verify_code(user_id, args.get('code', '')):
             self.db.delete(Tokens).where(Tokens.user_id == user_id).all()
             token = Tokens()
+            token.user_id = user_id
             token.access_token = self._token(20)
             token.refresh_token = self._token(20)
             self.db.insert(token)
@@ -59,8 +60,8 @@ class OAuth:
                 "access_token": token.access_token,
                 "refresh_token": token.refresh_token,
                 "expires_in": token.expires_in})
-        return 400, f'{user_id}'
-        #return 400, '{"error": "invalid_grant"}'
+
+        return 400, '{"error": "invalid_grant"}'
 
     def refresh_token(self, args):
         user_id = self.verify_client_secret(args.get('client_id', ''), args.get('redirect_uri', ''))
@@ -85,34 +86,27 @@ class OAuth:
         return False
 
     def verify_redirect_uri(self, client_id, redirect_uri):
-
         user = self.db.select(Users).where(Users.google_client_id == client_id).first()
-        print('ver_url', client_id, redirect_uri, user)
         if user and user.redirect_uri == redirect_uri:
             return user.user_id
         return None
 
     def verify_client_secret(self, client_id, client_secret):
-        print('ver_sec', client_id, client_secret)
         user = self.db.select(Users).where(Users.google_client_id == client_id).first()
         if user and user.google_client_secret == client_secret:
             return user.user_id
         return None
 
     def gen_code(self, user_id, expire=600):
-        user_code = self.db.select(Codes).where(Codes.user_id == user_id).first()
+        self.db.delete(Codes).where(Codes.user_id == user_id).all()
         new_code = self._token()
         time2expire = int(datetime.now().timestamp()) + expire
 
-        if user_code:
-            user_code.code = new_code
-            user_code.expire = time2expire
-            self.db.update(user_code).where(Codes.user_id == user_id).all()
-        else:
-            new_user_code = Codes()
-            new_user_code.code = new_code
-            new_user_code.expire = time2expire
-            self.db.insert(new_user_code)
+        new_user_code = Codes()
+        new_user_code.user_id = user_id
+        new_user_code.code = new_code
+        new_user_code.expire = time2expire
+        self.db.insert(new_user_code)
         self.db.commit()
         return new_code
 
