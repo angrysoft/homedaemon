@@ -46,7 +46,7 @@ class OAuth:
         return url
 
     def get_new_token(self, args):
-        user_id = self.verify_client_secret(args.get('client_id', ''), args.get('redirect_uri', ''))
+        user_id = self.verify_client_secret(args.get('client_id', ''), args.get('client_secret', ''))
         if not user_id:
             err = 'user_id'
         elif self.verify_code(user_id, args.get('code', '')):
@@ -69,7 +69,7 @@ class OAuth:
         return 400, json.dumps({"error": "invalid_grant", "erro_msg": f"{err}"})
 
     def refresh_token(self, args):
-        user_id = self.verify_client_secret(args.get('client_id', ''), args.get('redirect_uri', ''))
+        user_id = self.verify_client_secret(args.get('client_id', ''), args.get('client_secret', ''))
         if user_id:
             token = self.db.select(Tokens).where(Tokens.user_id == user_id).first()
             if token and token.refresh_token == args.get('refresh_token'):
