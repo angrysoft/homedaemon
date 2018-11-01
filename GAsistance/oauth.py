@@ -59,8 +59,8 @@ class OAuth:
                 "access_token": token.access_token,
                 "refresh_token": token.refresh_token,
                 "expires_in": token.expires_in})
-
-        return 400, '{"error": "invalid_grant"}'
+        return 400, f'{user_id}'
+        #return 400, '{"error": "invalid_grant"}'
 
     def refresh_token(self, args):
         user_id = self.verify_client_secret(args.get('client_id', ''), args.get('redirect_uri', ''))
