@@ -82,6 +82,8 @@ def token():
     elif request.form.get('grant_type') == 'urn:ietf:params:oauth:grant-type:jwt-bearer':
         pass
 
+    logging.warning(f'token: {status}, {data}')
+
     return app.response_class(response=data,
                               status=status,
                               mimetype='application/json')
