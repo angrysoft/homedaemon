@@ -89,5 +89,22 @@ def token():
                               mimetype='application/json')
 
 
+@app.route('/status', methods=['GET', 'POST'])
+def status():
+    """rfSend"""
+    if request.method == 'GET':
+        logging.warning('status get {}, {}, {}, {}'.format(request.args,
+                                                          request.form,
+                                                          request.data,
+                                                          request.headers))
+        return request.args.get('status', 'ooops something is wrong')
+    elif request.method == 'POST':
+        logging.warning('status post {}, {}, {}, {}'.format(request.args,
+                                                          request.form,
+                                                          request.data,
+                                                          request.headers))
+        status = 'ok'
+    return redirect('/status?status={}'.format(status))
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', use_reloader=False) #, port=80)
