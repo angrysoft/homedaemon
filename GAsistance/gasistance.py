@@ -65,7 +65,7 @@ def auth():
         if request.args.get('response_type', '') == 'code':
             g_auth = OAuth()
             url = g_auth.auth(request.args)
-
+            logging.warning(url)
         return render_template('auth.html', uri=url)
 
 
