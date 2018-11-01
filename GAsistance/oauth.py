@@ -11,7 +11,7 @@ class Users(BaseModel):
     google_user_id = Column(String(), unique=True, nullable=False)
     password = Column(String(), nullable=False)
     email = Column(String(255), unique=True)
-    home_uri = Column(String())
+    home_uri = Column(String(),nullable=False)
     refresh_token = Column(String())
     signed = Column(Integer(), default=0)
 
@@ -34,7 +34,9 @@ class OAuth:
         url = '/user.html'
         if user and user.home_uri == args.get('redirect_uri', ''):
             code = self.gen_code(user.user_id)
-            url = '{}?code={}&state={}'.format(code, args.get('state'))
+            url = '{}?code={}&state={}'.format(args.get('redirect_uri', '/usrs.html'),
+                                               code,
+                                               args.get('state'))
         return url
 
     def gen_code(self, user_id, expire=600):
