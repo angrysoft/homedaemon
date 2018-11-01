@@ -65,8 +65,7 @@ class OAuth:
             return 200, json.dumps({
                 "token_type": token.token_type,
                 "access_token": token.access_token,
-                "refresh_token": token.refresh_token,
-                "expires_in": token.expires_in})
+                "refresh_token": token.refresh_token})
 
         return 400, json.dumps({"error": "invalid_grant", "erro_msg": f"{err}"})
 
