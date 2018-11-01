@@ -9,8 +9,8 @@ class Users(BaseModel):
     user_id = Column(Integer(), primary_key=True)
     google_client_id = Column(String(), unique=True, nullable=False)
     google_client_secret = Column(String(), nullable=False)
-    redirect_uri = Column(String(),nullable=False)
-    signed = Column(Integer(), default=0)
+    redirect_uri = Column(String(), nullable=False)
+    signin = Column(Integer(), default='0')
 
 
 class Codes(BaseModel):
@@ -58,6 +58,7 @@ class OAuth:
             token.user_id = user_id
             token.access_token = self._token(20)
             token.refresh_token = self._token(20)
+            token.expires_in = 3600
             self.db.insert(token)
             self.db.commit()
             return 200, json.dumps({

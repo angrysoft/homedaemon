@@ -9,7 +9,7 @@ with open('users.json', 'r') as jfile:
     users = json.load(jfile)
 
 
-db = Connection({'dbfile': 'db/users.db'})
+db = Connection({'dbfile': 'db/users.db'}, echo=True)
 db.create_tables(Users)
 
 for u in users:
