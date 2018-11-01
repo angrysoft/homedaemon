@@ -32,7 +32,7 @@ class Tokens(BaseModel):
 class OAuth:
     def __init__(self):
         self.db = Connection({'dbfile': 'db/users.db'}, echo=True)
-        self.db.create_tables(Users, Codes)
+        self.db.create_tables(Users, Codes, Tokens)
         self.codes = dict()
 
     def auth(self, args):
