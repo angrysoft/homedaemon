@@ -26,20 +26,13 @@ from flask import Flask
 from flask import request
 from flask import render_template
 from flask import redirect
+from oauth import OAuth
 # import websockets
-import os
-import json
-import sqlite3
-# import jwt
-import urllib.parse
-import string
-import random
 
 app = Flask(__name__)
 
 logging.basicConfig(filename='gast.log', filemode='w', format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %H:%M:%S')
 logging.warning('app starts')
-
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -57,7 +50,6 @@ def index():
                                                           request.data,
                                                           request.headers))
         status = 'ok'
-        # print(jwt.decode(data, secret, algorithms=['HS256']))
     return redirect('/?status={}'.format(status))
 
 
@@ -69,15 +61,12 @@ def auth():
                                                          request.form,
                                                          request.data,
                                                          request.headers))
+        url = '/auth'
         if request.args.get('response_type', '') == 'code':
-            client_id = request.args.get('client_id', '')
-            uri = request.args.get('redirect_uri', '')
-            state = request.args.get('state', '')
+            g_auth = OAuth()
+            url = g_auth.auth(request.args)
 
-            url = uri + '?' + urllib.parse.urlencode({'code': code, 'state': state})
-            logging.warning('url :' + url)
-
-        return redirect(url)
+        return render_template('auth.html', uri=url)
 
 
 @app.route('/auth/token', methods=['GET', 'POST'])
