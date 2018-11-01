@@ -85,12 +85,14 @@ class OAuth:
         return False
 
     def verify_redirect_uri(self, client_id, redirect_uri):
+        print('ver_url',client_id, redirect_uri)
         user = self.db.select(Users).where(Users.google_client_id == client_id).first()
         if user and user.redirect_uri == redirect_uri:
             return user.user_id
         return None
 
     def verify_client_secret(self, client_id, client_secret):
+        print('ver_sec', client_id, client_secret)
         user = self.db.select(Users).where(Users.google_client_id == client_id).first()
         if user and user.google_client_secret == client_secret:
             return user.user_id
