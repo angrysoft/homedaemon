@@ -59,6 +59,7 @@ class OAuth:
             token.access_token = self._token(20)
             token.refresh_token = self._token(20)
             token.expires_in = 3600
+            print(token.expires_in)
             self.db.insert(token)
             self.db.commit()
             return 200, json.dumps({
