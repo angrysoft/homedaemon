@@ -99,10 +99,7 @@ def status():
                                                           request.headers))
         return request.args.get('status', 'ooops something is wrong')
     elif request.method == 'POST':
-        logging.warning('status post {}, {}, {}, {}'.format(request.args,
-                                                          request.form,
-                                                          request.data,
-                                                          request.headers))
+        logging.warning('status post {}, {}'.format(request.data, request.headers.get('Authorization')))
         status = 'ok'
     return redirect('/status?status={}'.format(status))
 
