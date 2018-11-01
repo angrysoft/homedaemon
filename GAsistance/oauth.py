@@ -47,6 +47,11 @@ class OAuth:
 
     def get_new_token(self, args):
         user_id = self.verify_client_secret(args.get('client_id', ''), args.get('redirect_uri', ''))
+        if not user_id:
+            err = 'user_id'
+        elif self.verify_code(user_id, args.get('code', '')):
+            err = 'user_code'
+
         if user_id and self.verify_code(user_id, args.get('code', '')):
             self.db.delete(Tokens).where(Tokens.user_id == user_id).all()
             token = Tokens()
@@ -61,7 +66,7 @@ class OAuth:
                 "refresh_token": token.refresh_token,
                 "expires_in": token.expires_in})
 
-        return 400, '{"error": "invalid_grant"}'
+        return 400, json.dumps({"error": "invalid_grant", "erro_msg": f"{err}"})
 
     def refresh_token(self, args):
         user_id = self.verify_client_secret(args.get('client_id', ''), args.get('redirect_uri', ''))
@@ -76,7 +81,7 @@ class OAuth:
                     "access_token": token.access_token,
                     "expires_in": token.expires_in})
 
-        return 400, '{"error": "invalid_grant"}'
+        return 400, json.dumps({"error": "invalid_grant", "erro_msg": f"{err}"})
 
     def verify_code(self, user_id, code):
         times = int(datetime.now().timestamp())
