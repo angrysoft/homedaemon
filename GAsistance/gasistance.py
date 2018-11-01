@@ -53,13 +53,11 @@ def index():
     return redirect('/?status={}'.format(status))
 
 
-@app.route('/auth', methods=['GET', 'POST'])
+@app.route('/auth')
 def auth():
     """rfSend"""
     if request.method == 'GET':
-        logging.warning('auth get {}, {}, {}, {}'.format(request.args,
-                                                         request.form,
-                                                         request.data,
+        logging.warning('auth get {}, {}'.format(request.args,
                                                          request.headers))
         url = '/auth'
         if request.args.get('response_type', '') == 'code':
@@ -69,24 +67,24 @@ def auth():
         return render_template('auth.html', uri=url)
 
 
-@app.route('/auth/token', methods=['GET', 'POST'])
+@app.route('/auth/token', methods=['POST'])
 def token():
     """rfSend"""
-    if request.method == 'GET':
-        logging.warning('token get {}, {}, {}, {}'.format(request.args,
-                                                          request.form,
-                                                          request.data,
-                                                          request.headers))
-        return request.args.get('status', 'ooops something is wrong')
-    elif request.method == 'POST':
-        logging.warning('token post {}, {}, {}, {}'.format(request.args,
-                                                           request.form,
-                                                           request.data,
-                                                           request.headers))
-        status = 'ok'
-        # print(jwt.decode(data, secret, algorithms=['HS256']))
+    logging.warning('token post {}, {}'.format(request.form,
+                                                       request.headers))
+    g_auth = OAuth()
+    status = 400
+    data = '{"error": "invalid_grant"}'
+    if request.form.get('grant_type') == 'authorization_code':
+        status, data = g_auth.get_new_token(request.form)
+    elif request.form.get('grant_type') == 'refresh_token':
+        status, data = g_auth.refresh_token(request.form)
+    elif request.form.get('grant_type') == 'urn:ietf:params:oauth:grant-type:jwt-bearer':
+        pass
 
-    return redirect('/auth/token?status={}'.format(status))
+    return app.response_class(response=data,
+                              status=status,
+                              mimetype='application/json')
 
 
 if __name__ == '__main__':
