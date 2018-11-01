@@ -56,16 +56,17 @@ class OAuth:
             self.db.delete(Tokens).where(Tokens.user_id == user_id).all()
             token = Tokens()
             token.user_id = user_id
+            token.token_type = 'Bearer'
             token.access_token = self._token(20)
             token.refresh_token = self._token(20)
             token.expires_in = 3600
-            print(token.expires_in)
             self.db.insert(token)
             self.db.commit()
             return 200, json.dumps({
                 "token_type": token.token_type,
                 "access_token": token.access_token,
-                "refresh_token": token.refresh_token})
+                "refresh_token": token.refresh_token,
+                "expires_in": token.expires_in})
 
         return 400, json.dumps({"error": "invalid_grant", "erro_msg": f"{err}"})
 
