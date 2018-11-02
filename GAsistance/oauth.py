@@ -85,6 +85,14 @@ class OAuth:
 
         return 400, json.dumps({"error": "invalid_grant", "erro_msg": f"{err}"})
 
+    def log_by_token(self, auth):
+        if auth.find(' ') > 0:
+            token_type, token = auth.split(' ', 1)
+            user_token = self.db.select(Tokens).where(Tokens.access_token == token).first()
+            if user_token:
+                return True
+        return False
+
     def verify_code(self, user_id, code):
         times = int(datetime.now().timestamp())
         user_code = self.db.select(Codes).where(Codes.user_id == user_id).first()

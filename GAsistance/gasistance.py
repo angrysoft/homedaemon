@@ -92,15 +92,20 @@ def token():
 @app.route('/status', methods=['GET', 'POST'])
 def status():
     """rfSend"""
+    g_auth = OAuth()
+
     if request.method == 'GET':
         logging.warning('status get {}, {}, {}, {}'.format(request.args,
                                                           request.form,
                                                           request.data,
                                                           request.headers))
         return request.args.get('status', 'ooops something is wrong')
+
     elif request.method == 'POST':
         logging.warning('status post {}, {}'.format(request.data, request.headers.get('Authorization')))
-        status = 'ok'
+        if g_auth.log_by_token(request.headers.get('Authorization', '')):
+            
+
     return redirect('/status?status={}'.format(status))
 
 
