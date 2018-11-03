@@ -1,5 +1,9 @@
+import json
+# https://developers.google.com/actions/reference/smarthome/errors-exceptions
+
+
 class Devices:
-    id = None
+    id = -1
     type = ''
     traits = list()
     name = {
@@ -25,4 +29,6 @@ class Outlet(Devices):
 
 class Actions:
     pass
+
+
 

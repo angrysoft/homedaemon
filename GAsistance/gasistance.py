@@ -27,6 +27,7 @@ from flask import request
 from flask import render_template
 from flask import redirect
 from oauth import OAuth
+from devices import Actions
 # import websockets
 
 app = Flask(__name__)
@@ -93,7 +94,8 @@ def token():
 def status():
     """rfSend"""
     g_auth = OAuth()
-
+    _response = ''
+    _status = 200
     if request.method == 'GET':
         logging.warning('status get {}, {}, {}, {}'.format(request.args,
                                                           request.form,
@@ -103,10 +105,17 @@ def status():
 
     elif request.method == 'POST':
         logging.warning('status post {}, {}'.format(request.data, request.headers.get('Authorization')))
-        if g_auth.log_by_token(request.headers.get('Authorization', '')):
-            
 
-    return redirect('/status?status={}'.format(status))
+        if g_auth.log_by_token(request.headers.get('Authorization', '')):
+            g_action = Actions(request.data)
+            _response = g_action.response
+        else:
+            _response = '{"error":"user_not_found"}'
+            _status = 401
+
+        return app.response_class(response=_response,
+                                  status=_status,
+                                  mimetype='application/json')
 
 
 if __name__ == '__main__':
