@@ -1,5 +1,6 @@
 from house.event import EventBase
 
+
 class Event(EventBase):
     def __init__(self):
         super(Event, self).__init__()
