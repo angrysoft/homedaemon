@@ -46,6 +46,7 @@ class Attributes(BaseModel):
     value = Column(String())
     device_id = Column(Integer(), foreignkey='devices.id')
 
+
 class _Devices:
     def __init__(self):
         self.id = -1
