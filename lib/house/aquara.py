@@ -5,7 +5,7 @@ from Crypto.Cipher import AES
 
 
 class Gateway:
-    def __init__(self, ip='auto', sid=''):
+    def __init__(self, ip='auto', sid='', gwpasswd=''):
         self.aes_key_iv = bytes([0x17, 0x99, 0x6d, 0x09, 0x3d, 0x28, 0xdd, 0xb3, 0xba, 0x69, 0x5a, 0x2e, 0x6f, 0x58, 0x56, 0x2e])
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
         self.multicast = ('224.0.0.50', 4321)
@@ -16,6 +16,7 @@ class Gateway:
         else:
             self.unicast = (ip, 9898)
             self.sid = sid
+        self.gwpassword = gwpasswd
 
     def whois(self):
         """Discover the gateway device multicast (IP: 224.0.0.50 peer_port: 4321 protocal: UDP)"""
@@ -38,6 +39,11 @@ class Gateway:
         and the gateway returns all the attribute information associated with the device."""
 
         return self._send_unicast(cmd='read', sid=sid)
+
+    def write_device(self, _model, _sid, _params):
+        """Send the "write" command via unicast to the gateway's UDP 9898 port.
+        When users need to control the device, the user can use the "write" command."""
+        return self._send_unicast(cmd='write', model=_model, sid=_sid, params=_params, key=self.get_key())
 
     def read_all_devices(self):
         id_list = self.get_id_list()
@@ -80,7 +86,7 @@ class Gateway:
 
 
 if __name__ == '__main__':
-    gw = Gateway()
+    gw = Gateway(gwpasswd='cjvt7wr3q7df72rq')
     print(gw.whois())
     # print(gw.get_id_list())
     print(gw.get_device_list())
