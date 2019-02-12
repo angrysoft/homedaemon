@@ -141,8 +141,9 @@ class Gateway:
         """Stop playing any sound from speaker"""
         return self.write_device('gateway', self.sid, 0, {'mid': 10000})
 
-    def set_color(self, value):
-        return self.write_device('gateway', self.sid, 0, {'rgb': value})
+    def set_color(self, red, green, blue):
+        color = (int(red) << 16) + (int(green) << 8) + blue
+        return self.write_device('gateway', self.sid, 0, {'rgb': color})
 
     def set_ilumination(self, value):
         """Gateway brightness value from 300 to 1300"""
