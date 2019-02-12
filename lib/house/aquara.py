@@ -117,6 +117,37 @@ class Gateway:
         encrypted = cipher.encrypt(self.token)
         return binascii.hexlify(encrypted)
 
+    def test(self):
+        """Send the "write" command via unicast to the gateway's UDP 9898 port.
+        When users need to control the device, the user can use the "write" command."""
+        _data = dict()
+        _data['key'] = self.get_key().decode()
+        return self._send_unicast(cmd='write',
+                                  model='gateway',
+                                  sid=self.sid,
+                                  short_id=0,
+                                  data=_data)
+
+    def play_sound(self, sound_id, volume=20):
+        """
+        Play one of standard ringtones or user-defined sound.
+        `sound_id` - 0-8, 10, 13, 20-29 - standard ringtones; >= 10001 - user-defined ringtones uploaded to your gateway via MiHome app
+        `volume` - level from 1 to 100
+        Check the reference to get more about sound_id value: https://github.com/louisZL/lumi-gateway-local-api/blob/master/%E7%BD%91%E5%85%B3.md
+        """
+        return self.write_device('gateway', self.sid, 0, {'mid': sound_id, 'vol': volume})
+
+    def stop_sound(self):
+        """Stop playing any sound from speaker"""
+        return self.write_device('gateway', self.sid, 0, {'mid': 10000})
+
+    def set_color(self, value):
+        return self.write_device('gateway', self.sid, 0, {'rgb': value})
+
+    def set_ilumination(self, value):
+        """Gateway brightness value from 300 to 1300"""
+        return self.write_device('gateway', self.sid, 0, {'illumination': value})
+
     def __del__(self):
         self.sock.close()
 
@@ -132,5 +163,7 @@ if __name__ == '__main__':
     print(gw.write_device(model="ctrl_neutral2",
                           sid="158d00029b1929",
                           short_id=44507,
-                          data={"channel_1": "off"}))
-    print(gw.token)
+                          data={"channel_0": "off"}))
+    import time
+    print(gw.set_color(0))
+
