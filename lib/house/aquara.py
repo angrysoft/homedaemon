@@ -141,15 +141,13 @@ class Gateway:
         """Stop playing any sound from speaker"""
         return self.write_device('gateway', self.sid, 0, {'mid': 10000})
 
-    def set_color(self, red=0, green=0, blue=0):
+    def set_color(self, red=0, green=0, blue=0, dimm=100):
         color = (int(red) << 16) + (int(green) << 8) + blue
         dimm = 360
-        value=100
-        if len(value) > 1:
-            color = value[2:]
-        rgb = level + color.decode()
-        print(rgb)
-        return self.write_device('gateway', self.sid, 0, {'rgb': f'{color}{dimm}'})
+        level=100
+        rgb = int(level << 32) + color
+        print(int(str(color), 16))
+        # return self.write_device('gateway', self.sid, 0, {'rgb': f'{color}{dimm}'})
 
     def set_ilumination(self, value):
         """Gateway brightness value from 300 to 1300"""
@@ -160,17 +158,17 @@ class Gateway:
 
 
 if __name__ == '__main__':
-    gw = Gateway(gwpasswd='cjvt7wr3q7df72rq')
-    print(gw.whois())
+    gw = Gateway(gwpasswd='cjvt7wr3q7df72rq', ip='192.168.1.10')
+    # print(gw.whois())
     # print(gw.get_id_list())
-    print(gw.get_device_list())
-    print(gw.read_all_devices())
-    gw.refresh_token()
-    devs = gw.read_all_devices()
-    print(gw.write_device(model="ctrl_neutral2",
-                          sid="158d00029b1929",
-                          short_id=44507,
-                          data={"channel_0": "off"}))
+    # print(gw.get_device_list())
+    # print(gw.read_all_devices())
+    # gw.refresh_token()
+    # devs = gw.read_all_devices()
+    # print(gw.write_device(model="ctrl_neutral2",
+    #                       sid="158d00029b1929",
+    #                       short_id=44507,
+    #                       data={"channel_0": "off"}))
     import time
     print(gw.set_color(red=0, green=255, blue=0))
 
