@@ -2,6 +2,8 @@ import socket
 import json
 import binascii
 from Crypto.Cipher import AES
+from colors import RGB
+
 
 class Device:
     _model = ''
@@ -141,24 +143,22 @@ class Gateway:
         """Stop playing any sound from speaker"""
         return self.write_device('gateway', self.sid, 0, {'mid': 10000})
 
-    def set_color(self, red=0, green=0, blue=0, dimm=100):
-        color = (int(red) << 16) + (int(green) << 8) + blue
-        dimm = 360
-        level=100
-        rgb = int(level << 32) + color
-        print(int(str(color), 16))
-        # return self.write_device('gateway', self.sid, 0, {'rgb': f'{color}{dimm}'})
+    def set_led_color(self, red=0, green=0, blue=0, dimmer=255):
+        color = RGB(red=red, green=green, blue=blue, dimmer=dimmer)
+        return self.write_device('gateway', self.sid, 0, {'rgb': color.get_rgb_int()})
 
-    def set_ilumination(self, value):
-        """Gateway brightness value from 300 to 1300"""
-        return self.write_device('gateway', self.sid, 0, {'illumination': value})
+    def get_led_color(self):
+        pass
+
+    def off_led(self):
+        return self.write_device('gateway', self.sid, 0, {'rgb': 0})
 
     def __del__(self):
         self.sock.close()
 
 
 if __name__ == '__main__':
-    gw = Gateway(gwpasswd='cjvt7wr3q7df72rq', ip='192.168.1.10')
+    gw = Gateway(gwpasswd='cjvt7wr3q7df72rq') # , ip='192.168.1.10')
     # print(gw.whois())
     # print(gw.get_id_list())
     # print(gw.get_device_list())
@@ -170,5 +170,7 @@ if __name__ == '__main__':
     #                       short_id=44507,
     #                       data={"channel_0": "off"}))
     import time
-    print(gw.set_color(red=0, green=255, blue=0))
+    print(gw.set_led_color(red=255, green=0, blue=0, dimmer=100))
+    time.sleep(2)
+    print(gw.off_led())
 
