@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # housed.py
-# Copyright (C) 2014-2018  Sebastian Zwierzchowski <sebastian.zwierzchowski@gmail.com>
+# Copyright (C) 2014-2019  Sebastian Zwierzchowski <sebastian.zwierzchowski@gmail.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,9 +18,9 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 __author__ = 'Sebastian Zwierzchowski'
-__copyright__ = 'Copyright 2014 Sebastian Zwierzchowski'
+__copyright__ = 'Copyright 2014-2019 Sebastian Zwierzchowski'
 __license__ = 'GPL2'
-__version__ = '0.5'
+__version__ = '0.6'
 
 import socket
 import os
@@ -38,7 +38,7 @@ sys.path.append('/etc/smarthouse')
 # TODO dodać logowanie zdarzeń
 
 
-class HouseDeamon:
+class HomeDeamon:
     """Class eventListner"""
     def __init__(self, config):
         """Constructor for eventListner"""
@@ -52,6 +52,9 @@ class HouseDeamon:
         self.controller.timeout = 0
         self.status = dict()
         self.events = dict()
+
+    def loadControllers(self):
+        pass
 
     def _connectSerial(self):
         """docstring for __connect"""
@@ -101,11 +104,12 @@ class HouseDeamon:
     def _setup(self):
         """_setup"""
         # Socket listener
-        self._connectSocket()
+        # self._connectSocket()
         # Serial listener
-        self._connectSerial()
+        # self._connectSerial()
         # add Signals handle
         self._signals()  # TODO: do poprawki coś się jebie
+        self.loadControllers()
         # Load events
         self._loadEvents()
 
@@ -185,5 +189,5 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(usage='%(prog)s [options] [packagees]')
     parser.add_argument('-p', '--port', default='/dev/ttyACM0',  help='Serial port')
     parser.add_argument('-s', '--socket', default='/tmp/housed.sock',  help='Socket file')
-    d = HouseDeamon(parser.parse_args())
+    d = HomeDeamon(parser.parse_args())
     d.watchEmiter()
