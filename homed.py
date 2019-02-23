@@ -35,3 +35,6 @@ class HomeDaemon:
     def event_watcher(self, ev):
         """This method is """
         print(ev)
+
+    def run(self):
+        self.loop.run_forever()

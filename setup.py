@@ -20,8 +20,8 @@ wwwTemp = get_files('www/templates')
 
 setup(name='SmartHouse',
       version='0.5',
-      description='House Automatization',
-      url='https://bitbucket.org/angrysoft/Smarthouse',
+      description='Home Automatization',
+      url='https://bitbucket.org/angrysoft/angryhome',
       author='Sebastian Zwierzchowski',
       author_email='sebastian.zwierzchowski@gmail.com',
       license='GPL2',
