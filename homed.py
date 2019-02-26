@@ -24,17 +24,44 @@ __version__ = '0.7'
 
 
 import asyncio
+import signal
 import sys
 sys.path.append('/etc/smarthouse')
 
 
 class HomeDaemon:
-    def __init__(self):
-        self.loop = asyncio.get_event_loop()
+    def __init__(self, host='127.0.0.1', port=6666):
+        self.server = None
+        self.loop = None
+        self.host = host
+        self.port = port
+        self.buffer_size = 1024
 
-    def event_watcher(self, ev):
+    async def run(self):
+        self.server = await asyncio.start_server(self.event_watcher,
+                                                 self.host,
+                                                 self.port)
+        addr = self.server.sockets[0].getsockname()
+        print(f'Serving on {addr}')
+        self.loop = self.server.get_loop()
+        self.loop.add_signal_handler(signal.SIGINT, self.stop)
+        self.loop.run_until_complete(self.server.wait_closed())
+        async with self.server:
+            await self.server.serve_forever()
+
+    async def event_watcher(self, reader, writer):
         """This method is """
-        print(ev)
+        data = await reader.read(self.buffer_size)
+        message = data.decode()
+        addr = writer.get_extra_info('peername')
+        print(f"Received {message!r} from {addr!r}")
 
-    def run(self):
-        self.loop.run_forever()
+    def stop(self):
+        self.server.close()
+        self.loop.stop()
+
+
+if __name__ == '__main__':
+    hd = HomeDaemon()
+    asyncio.run(hd.run())
+
