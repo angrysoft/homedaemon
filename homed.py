@@ -32,36 +32,55 @@ sys.path.append('/etc/smarthouse')
 class HomeDaemon:
     def __init__(self, host='127.0.0.1', port=6666):
         self.server = None
-        self.loop = None
+        self.loop = asyncio.get_event_loop()
         self.host = host
         self.port = port
         self.buffer_size = 1024
+        self.transport = None
+        self.protocol = None
+        self.peername = ''
 
-    async def run(self):
-        self.server = await asyncio.start_server(self.event_watcher,
-                                                 self.host,
-                                                 self.port)
+    def run(self):
+        # coro = asyncio.start_server(self.event_watcher,
+        #                             self.host,
+        #                             self.port,
+        #                             loop=self.loop)
+        coro = self.loop.create_server(self, self.host, self.port)
+        self.server = self.loop.run_until_complete(coro)
         addr = self.server.sockets[0].getsockname()
         print(f'Serving on {addr}')
-        self.loop = self.server.get_loop()
-        self.loop.add_signal_handler(signal.SIGINT, self.stop)
+        try:
+            self.loop.run_forever()
+        except KeyboardInterrupt:
+            pass
+
+        self.server.close()
         self.loop.run_until_complete(self.server.wait_closed())
-        async with self.server:
-            await self.server.serve_forever()
+        self.loop.stop()
+
+    def connection_made(self, transport):
+        self.peername = transport.get_extra_info('peername')
+        print('Connection from {}'.format(self.peername))
+        self.transport = transport
+
+    def data_received(self, data):
+        message = data.decode()
+        print('Data received: {!r}'.format(message))
+        # self.transport.write('ok\n')
+
+    def connection_lost(self, exc):
+        print('Lost connection of {}'.format(self.peername))
+        self.transport.close()
 
     async def event_watcher(self, reader, writer):
         """This method is """
-        data = await reader.read(self.buffer_size)
+        data = await reader.readline()
         message = data.decode()
         addr = writer.get_extra_info('peername')
         print(f"Received {message!r} from {addr!r}")
 
-    def stop(self):
-        self.server.close()
-        self.loop.stop()
-
 
 if __name__ == '__main__':
     hd = HomeDaemon()
-    asyncio.run(hd.run())
+    hd.run()
 
