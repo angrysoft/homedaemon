@@ -29,6 +29,30 @@ import sys
 sys.path.append('/etc/smarthouse')
 
 
+class HomeDaemonProto:
+    def __init__(self, watcher):
+        self.peername = None
+        self.transport = None
+        self.watcher = watcher
+
+    def connection_made(self, transport):
+        self.peername = transport.get_extra_info('peername')
+        print('Connection from {}'.format(self.peername))
+        self.transport = transport
+
+    def data_received(self, data):
+        ret = self.watcher(data)
+        if type(ret) == str:
+            self.transport.write(ret.encode())
+
+    def eof_received(self):
+        print('wtf eof recived')
+
+    def connection_lost(self, exc):
+        print('Lost connection of {}'.format(self.peername))
+        self.transport.close()
+
+
 class HomeDaemon:
     def __init__(self, host='127.0.0.1', port=6666):
         self.server = None
@@ -41,43 +65,30 @@ class HomeDaemon:
         self.peername = ''
 
     def run(self):
-        # coro = asyncio.start_server(self.event_watcher,
-        #                             self.host,
-        #                             self.port,
-        #                             loop=self.loop)
-        coro = self.loop.create_server(self, self.host, self.port)
+        coro = self.loop.create_server(lambda: HomeDaemonProto(self.event_watcher), self.host, self.port)
         self.server = self.loop.run_until_complete(coro)
         addr = self.server.sockets[0].getsockname()
         print(f'Serving on {addr}')
         try:
             self.loop.run_forever()
         except KeyboardInterrupt:
-            pass
+            self.stop()
+        self.loop.add_signal_handler(signal.SIGINT, self.stop)
+        self.loop.add_signal_handler(signal.SIGHUP, self.stop)
+        self.loop.add_signal_handler(signal.SIGQUIT, self.stop)
+        self.loop.add_signal_handler(signal.SIGTERM, self.stop)
+        self.loop.run_forever()
 
+    def stop(self, *args, **kwargs):
+        # self.loop.stop()
         self.server.close()
         self.loop.run_until_complete(self.server.wait_closed())
         self.loop.stop()
 
-    def connection_made(self, transport):
-        self.peername = transport.get_extra_info('peername')
-        print('Connection from {}'.format(self.peername))
-        self.transport = transport
-
-    def data_received(self, data):
-        message = data.decode()
-        print('Data received: {!r}'.format(message))
-        # self.transport.write('ok\n')
-
-    def connection_lost(self, exc):
-        print('Lost connection of {}'.format(self.peername))
-        self.transport.close()
-
-    async def event_watcher(self, reader, writer):
+    def event_watcher(self, data):
         """This method is """
-        data = await reader.readline()
-        message = data.decode()
-        addr = writer.get_extra_info('peername')
-        print(f"Received {message!r} from {addr!r}")
+        print(f'Data {data}')
+        return 'ok\n'
 
 
 if __name__ == '__main__':

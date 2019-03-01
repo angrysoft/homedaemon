@@ -6,13 +6,13 @@ import asyncio
 async def tcp_echo_client(message):
     reader, writer = await asyncio.open_connection('127.0.0.1', 6666)
     for x in range(10):
-        message = f'{x}'
+        message = f'{x}\n'
         print(f'Send: {message!r}')
         writer.write(message.encode())
-        # await writer.drain()
-        await asyncio.sleep(1)
-        # data = await reader.read(100)
-        # print(f'Received: {data.decode()!r}')
+        await writer.drain()
+        # await asyncio.sleep(1)
+        data = await reader.read(100)
+        print(f'Received: {data.decode()!r}')
 
     print('Close the connection')
     writer.close()
