@@ -1,5 +1,5 @@
-from house.event import EventBase
-from house.bravia import Bravia
+from homedaemon.event import EventBase
+from homedaemon.bravia import Bravia
 
 
 class Event(EventBase):
@@ -12,7 +12,7 @@ class Event(EventBase):
         b = Bravia('192.168.1.129')
         b.macAddress = 'fc:f1:52:2a:9b:1e'
         if self.args == 'PowerOn':
-            b.powerOn()
+            b.power_on()
         else:
-            if b.isOn():
-                b.sendCommand(self.args)
+            if b.is_on():
+                b.send_command(self.args)

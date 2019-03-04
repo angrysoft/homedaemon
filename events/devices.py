@@ -1,4 +1,4 @@
-from house.event import EventBase
+from homedaemon.event import EventBase
 from angrysql.sqlitedb import Connection
 from angrysql import BaseModel, Column, Integer, String
 
@@ -67,3 +67,7 @@ class _Devices:
         }
         self.customData = {}
         self.attributes = {}
+
+
+class Event(EventBase):
+    pass

@@ -33,7 +33,7 @@ class Bravia:
         else:
             raise ValueError('Incorrect MAC address format')
 
-    def isOn(self):
+    def is_on(self):
         try:
             ret = json.loads(self._send('sony/system', data=self._jsonCmd("getPowerStatus"), timeout=2)) # , pId='1')))
         except socket.timeout:
@@ -61,8 +61,8 @@ class Bravia:
                     print("Uncaught error")
                     return False
 
-    def getAllCommands(self):
-        ret = json.loads(self._send('sony/system', data=self._jsonCmd('getRemoteControllerInfo')))
+    def get_all_commands(self):
+        ret = json.loads(self._send('sony/system', data=self._json_cmd('getRemoteControllerInfo')))
         ret = ret.get('result')[1]
         commands = dict()
         if type(ret) == list:
@@ -71,9 +71,9 @@ class Bravia:
                     commands[func.get('name')] = func.get('value')
         return commands
 
-    def sendCommand(self, cmd):
+    def send_command(self, cmd):
         if not self.commands:
-            self.commands = self.getAllCommands()
+            self.commands = self.get_all_commands()
         if cmd in self.commands:
             header = {'SOAPACTION': '"urn:schemas-sony-com:service:IRCC:1#X_SendIRCC"',
                       'X-Auth-PSK': '{}'.format(self.psk),
@@ -88,7 +88,7 @@ class Bravia:
                  "</s:Envelope>".format(self.commands.get(cmd))
             return self._send('sony/IRCC', header=header, data=data)
 
-    def _jsonCmd(self, cmd, params=[], pId=10, version='1.0'):
+    def _json_cmd(self, cmd, params=[], pId=10, version='1.0'):
         return json.dumps({'method': cmd,
                            'params': params,
                            'id': pId,
@@ -110,7 +110,7 @@ class Bravia:
         except urllib.error.URLError as err:
             print(err)
 
-    def powerOn(self):
+    def power_on(self):
         # if self.isOn():
         if False:
             return 'Power is on'
@@ -127,5 +127,5 @@ class Bravia:
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
             sock.sendto(send_data, ('255.255.255.255', 7))
 
-    def powerOff(self):
-        self.sendCommand('PowerOff')
+    def power_off(self):
+        self.send_command('PowerOff')

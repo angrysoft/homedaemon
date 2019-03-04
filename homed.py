@@ -25,7 +25,11 @@ __version__ = '0.7'
 
 import asyncio
 import signal
+import os
+import json
+import importlib
 import sys
+from aquara import GatewayWatcher
 sys.path.append('/etc/smarthouse')
 
 
@@ -41,6 +45,9 @@ class HomeDaemonProto:
         self.transport = transport
 
     def data_received(self, data):
+        ret = ''
+        if type(data) == str:
+            data = json.loads(data)
         ret = self.watcher(data)
         if type(ret) == str:
             self.transport.write(ret.encode())
@@ -63,8 +70,44 @@ class HomeDaemon:
         self.transport = None
         self.protocol = None
         self.peername = ''
+        self.events = dict()
+
+        # self.queue = asyncio.Queue(loop=self.loop)
+        gw = GatewayWatcher(self.event_watcher, loop=self.loop)
+        self.loop.run_until_complete(gw.run())
+        # self.loop.create_task(self.watch_queue())
+
+    # async def watch_queue(self):
+    #     while True:
+    #         q = await self.queue.get()
+    #         self.event_watcher(q)
+
+    async def timers(self):
+        while True:
+            self.event_watcher('timers:all')
+            await asyncio.sleep(60)
+
+    def _loadEvents(self):
+        """loadEvents"""
+        eventList = list()
+        # pth = '/etc/smarthouse'
+        pth = '.'
+        for e in os.listdir(os.path.join(pth, 'events')):
+            if e.endswith('.py') and not e.startswith('__'):
+                e = '.' + e.replace('.py', '')
+                eventList.append(e)
+
+        importlib.import_module('events')
+
+        for event in eventList:
+            ev = importlib.import_module(event, package="events")
+            inst = ev.Event()
+            self.events[inst.name] = inst
+            print(f'Load event: {inst.name}')
 
     def run(self):
+        self._loadEvents()
+
         coro = self.loop.create_server(lambda: HomeDaemonProto(self.event_watcher), self.host, self.port)
         self.server = self.loop.run_until_complete(coro)
         addr = self.server.sockets[0].getsockname()
@@ -85,9 +128,13 @@ class HomeDaemon:
         self.loop.run_until_complete(self.server.wait_closed())
         self.loop.stop()
 
-    def event_watcher(self, data):
+    def event_watcher(self, data, addr=None):
         """This method is """
-        print(f'Data {data}')
+        event_name = data.get('cmd')
+        print(f'event {event_name} from {addr}')
+        ev = self.events.get(event_name)
+        if ev:
+            ev.do(data)
         return 'ok\n'
 
 
