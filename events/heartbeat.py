@@ -1,4 +1,5 @@
 from homedaemon.event import EventBase
+import json
 
 
 class Event(EventBase):
@@ -8,8 +9,11 @@ class Event(EventBase):
         self._type = 'command'
 
     def do(self, data):
-        print(data)
+        # print(data)
         # Update device in database
+        # dev_data = data.get('data')
+
+        # print(type(dev_data))
         if data.get('model') == 'gateway':
             pass
             # self.daemon({'cmd': 'write',

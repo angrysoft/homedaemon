@@ -46,17 +46,18 @@ class HomeDaemonProto:
 
     def data_received(self, data):
         ret = ''
-        if type(data) == str:
-            data = json.loads(data)
-        ret = self.watcher(data)
+        if data:
+            _data = json.loads(data.decode())
+        ret = self.watcher(_data)
         if type(ret) == str:
             self.transport.write(ret.encode())
 
     def eof_received(self):
-        print('wtf eof recived')
+        pass
+        # print('wtf eof recived')
 
     def connection_lost(self, exc):
-        print('Lost connection of {}'.format(self.peername))
+        # print('Lost connection of {}'.format(self.peername))
         self.transport.close()
 
 
@@ -131,7 +132,7 @@ class HomeDaemon:
     def event_watcher(self, data, addr=None):
         """This method is """
         event_name = data.get('cmd')
-        print(f'event {event_name} from {addr}')
+        # print(f'event {event_name} from {addr}')
         ev = self.events.get(event_name)
         if ev:
             ev.do(data)

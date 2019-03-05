@@ -23,8 +23,7 @@ class Event(EventBase):
             pass
         elif model == 'bravia':
             b = Bravia('192.168.1.129')
-            b.macAddress = 'fc:f1:52:2a:9b:1e'
-
+            b.mac_address = 'fc:f1:52:2a:9b:1e'
             if dev_data.get('button') == 'PowerOn':
                 b.power_on()
             else:

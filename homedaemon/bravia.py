@@ -1,5 +1,6 @@
 import urllib.parse
 import urllib.request
+import urllib.error
 import json
 import socket
 import struct
@@ -19,11 +20,11 @@ class Bravia:
         self.macaddr = macaddres
 
     @property
-    def macAddress(self):
+    def mac_address(self):
         return self._macaddr
 
-    @macAddress.setter
-    def macAddress(self, val):
+    @mac_address.setter
+    def mac_address(self, val):
         if len(val) == 17:
             sep = val[2]
             val = val.replace(sep, '')
@@ -35,7 +36,7 @@ class Bravia:
 
     def is_on(self):
         try:
-            ret = json.loads(self._send('sony/system', data=self._jsonCmd("getPowerStatus"), timeout=2)) # , pId='1')))
+            ret = json.loads(self._send('sony/system', data=self._json_cmd("getPowerStatus"), timeout=2)) # , pId='1')))
         except socket.timeout:
             return False
         except:
@@ -88,7 +89,8 @@ class Bravia:
                  "</s:Envelope>".format(self.commands.get(cmd))
             return self._send('sony/IRCC', header=header, data=data)
 
-    def _json_cmd(self, cmd, params=[], pId=10, version='1.0'):
+    @staticmethod
+    def _json_cmd(cmd, params=[], pId=10, version='1.0'):
         return json.dumps({'method': cmd,
                            'params': params,
                            'id': pId,
@@ -115,7 +117,7 @@ class Bravia:
         if False:
             return 'Power is on'
         else:
-            data = b'FFFFFFFFFFFF' + (self.macAddress * 20).encode()
+            data = b'FFFFFFFFFFFF' + (self.mac_address * 20).encode()
             send_data = b''
 
             # Split up the hex values and pack.
