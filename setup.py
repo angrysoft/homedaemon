@@ -1,4 +1,22 @@
 from setuptools import setup
+from glob import glob
+import os
+
+
+def get_files(name):
+    for dirname, dirnames, filenames in os.walk(name):
+        if dirname == name:
+            return [os.path.join(dirname, f) for f in filenames]
+        else:
+            continue
+
+
+confFile = glob('files/*.json')
+wwwStatic = get_files('www/static')
+wwwStaticRf = get_files('www/static/rfpilot')
+wwwStaticTv = get_files('www/static/tvpilot')
+wwwStaticLed = get_files('www/static/ledpilot')
+wwwTemp = get_files('www/templates')
 
 setup(
     name='AngryHome',
@@ -8,5 +26,16 @@ setup(
     license='Apache 2.0',
     author='AngrySoft',
     author_email='sebastian.zwierzchowski@gmail.com',
-    description=''
+    description='',
+    scripts=['homed.py'],
+    requires=["flask", "pyserial", "pyxiaomi", "angrysql"],
+    data_files=[('/etc/angryhome', confFile),
+                  ('/etc/angryhome/events', get_files('events')),
+                  ('/var/www/angryhome', ['www/AngryHome.py']),
+                  ('/var/www/angryhome/static', wwwStatic),
+                  ('/var/www/angryhome/static/rfpilot', wwwStaticRf),
+                  ('/var/www/angryhome/static/tvpilot', wwwStaticTv),
+                  ('/var/www/angryhome/static/ledpilot', wwwStaticLed),
+                  ('/var/www/angryhome/templates', wwwTemp),
+                  ('/usr/lib/systemd/system', ['homed.service'])],
 )
