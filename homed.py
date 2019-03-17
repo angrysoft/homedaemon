@@ -90,17 +90,17 @@ class HomeDaemon:
 
     def _loadEvents(self):
         """loadEvents"""
-        eventList = list()
+        event_list = list()
         # pth = '/etc/smarthouse'
         pth = '.'
         for e in os.listdir(os.path.join(pth, 'events')):
             if e.endswith('.py') and not e.startswith('__'):
                 e = '.' + e.replace('.py', '')
-                eventList.append(e)
+                event_list.append(e)
 
         importlib.import_module('events')
 
-        for event in eventList:
+        for event in event_list:
             ev = importlib.import_module(event, package="events")
             inst = ev.Event()
             self.events[inst.name] = inst
