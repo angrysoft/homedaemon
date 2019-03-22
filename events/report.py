@@ -8,8 +8,7 @@ class Event(EventBase):
         self._type = 'command'
 
     def do(self, data):
-        pass
-        # print(data)
+        print(data)
         # if data.get('model') == 'gateway':
 
 
