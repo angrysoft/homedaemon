@@ -1,4 +1,7 @@
 import asyncio
+import json
+from homedaemon.inputs import BaseInput
+
 
 class HomeDaemonProto:
     def __init__(self, watcher):
@@ -13,9 +16,11 @@ class HomeDaemonProto:
 
     def data_received(self, data):
         ret = ''
-        if data:
+        try:
             _data = json.loads(data.decode())
-        ret = self.watcher(_data)
+            ret = self.watcher(_data)
+        except json.JSONDecodeError:
+            pass
         if type(ret) == str:
             self.transport.write(ret.encode())
 
@@ -28,13 +33,14 @@ class HomeDaemonProto:
         self.transport.close()
 
 
-class Input:
+class Input(BaseInput):
     def __init__(self, queue, host='127.0.0.1', port='6666'):
+        super(Input, self).__init__(queue)
         self.name = 'Tcp'
         self.host = host
         self.port = port
-        self.loop = asyncio.get_event_loop()
-        coro = self.loop.create_server(lambda: HomeDaemonProto(self.queue), self.host, self.port)
+        coro = self.loop.create_server(lambda: HomeDaemonProto(queue), self.host, self.port)
         self.server = self.loop.run_until_complete(coro)
         addr = self.server.sockets[0].getsockname()
         print(f'Serving on {addr}')
+

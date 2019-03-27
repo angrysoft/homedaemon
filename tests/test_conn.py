@@ -16,7 +16,4 @@ async def tcp_echo_client(message):
     print('Close the connection')
     writer.close()
 
-asyncio.run(tcp_echo_client('Test'))
-# loop = asyncio.get_event_loop()
-# loop.run_until_complete(tcp_echo_client('Test'))
-# loop.close()
+asyncio.run(tcp_echo_client('{"test":"message"}'))

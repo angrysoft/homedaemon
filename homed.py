@@ -26,67 +26,35 @@ __version__ = '0.7'
 import asyncio
 import signal
 import os
-import json
 import importlib
 import sys
-from aquara import GatewayWatcher
+from queue import Queue
 from concurrent.futures import ThreadPoolExecutor
-
+from threading import Thread
+from time import sleep
 sys.path.append('/etc/smarthouse')
 
 
-class HomeDaemonProto:
-    def __init__(self, watcher):
-        self.peername = None
-        self.transport = None
-        self.watcher = watcher
-
-    def connection_made(self, transport):
-        self.peername = transport.get_extra_info('peername')
-        print('Connection from {}'.format(self.peername))
-        self.transport = transport
-
-    def data_received(self, data):
-        ret = ''
-        if data:
-            _data = json.loads(data.decode())
-        ret = self.watcher(_data)
-        if type(ret) == str:
-            self.transport.write(ret.encode())
-
-    def eof_received(self):
-        pass
-        # print('wtf eof recived')
-
-    def connection_lost(self, exc):
-        # print('Lost connection of {}'.format(self.peername))
-        self.transport.close()
-
-
 class HomeDaemon:
-    def __init__(self, host='127.0.0.1', port=6666):
+    def __init__(self):
         self.server = None
         self.loop = asyncio.get_event_loop()
-        self.host = host
-        self.port = port
         self.buffer_size = 1024
         self.transport = None
         self.protocol = None
         self.peername = ''
         self.events = dict()
         self.inputs = dict()
-        self.inputs_list = ['gateway', 'arduino']
-        self.queue = asyncio.Queue(loop=self.loop)
+        self.inputs_list = ['gateway', 'arduino', 'tcp']
+        self.queue = Queue()
 
-        # gw = GatewayWatcher(self.event_watcher, loop=self.loop)
-        # self.loop.run_until_complete(gw.run())
-
-        self.loop.create_task(self.watch_queue())
-
-    async def watch_queue(self):
-        while True:
-            q = await self.queue.get()
-            self.event_watcher(q)
+    def watch_queue(self):
+        sleep(0.5)
+        while self.loop.is_running():
+            print('watching')
+            q = self.queue.get()
+            if q:
+                self.event_watcher(q)
 
     async def timers(self):
         while True:
@@ -96,17 +64,18 @@ class HomeDaemon:
     def _load_inputs(self):
         for i in self.inputs_list:
             _input = importlib.import_module(f'homedaemon.inputs.{i}')
-            inst = _input.Input()
+            inst = _input.Input(self._queue_put)
             self.inputs[inst.name] = inst
             print(f'load input: {inst.name}')
 
     def _listen_inputs(self):
         with ThreadPoolExecutor(max_workers=len(self.inputs)) as executors:
             for _input in self.inputs:
-                executors.submit(self.inputs[_input].listen, self.queue_put)
+                executors.submit(self.inputs[_input].listen, self._queue_put)
 
     def _queue_put(self, item):
         self.queue.put(item)
+        return str(self.queue.qsize())
 
     def _load_events(self):
         """loadEvents"""
@@ -130,10 +99,11 @@ class HomeDaemon:
         self._load_inputs()
         self._load_events()
 
-        # coro = self.loop.create_server(lambda: HomeDaemonProto(self.event_watcher), self.host, self.port)
-        # self.server = self.loop.run_until_complete(coro)
-        # addr = self.server.sockets[0].getsockname()
-        # print(f'Serving on {addr}')
+        q = Thread(target=self.watch_queue)
+        q.setDaemon(True)
+        q.start()
+
+        print('looping')
         try:
             self.loop.run_forever()
         except KeyboardInterrupt:
@@ -142,21 +112,17 @@ class HomeDaemon:
         self.loop.add_signal_handler(signal.SIGHUP, self.stop)
         self.loop.add_signal_handler(signal.SIGQUIT, self.stop)
         self.loop.add_signal_handler(signal.SIGTERM, self.stop)
-        self.loop.run_forever()
 
     def stop(self, *args, **kwargs):
-        # self.loop.stop()
-        self.server.close()
-        self.loop.run_until_complete(self.server.wait_closed())
         self.loop.stop()
 
     def event_watcher(self, data, addr=None):
         """This method is """
+        print(data)
         if type(data) is not dict:
             return f'Wrong data: {data}'
 
         event_name = data.get('cmd')
-        # print(f'event {event_name} from {addr}')
         ev = self.events.get(event_name)
         if ev:
             ev.do(data)
