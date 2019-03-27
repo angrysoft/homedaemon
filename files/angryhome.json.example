@@ -1,10 +1,6 @@
 {
   "debug": "True",
-  "serialPort": "/dev/ttyACM0",
-  "scenesDir": "../scenes",
-  "configDir": "../files",
-  "evnetDir": "../events",
-  "socketFile": "/tmp/housed.sock",
+  "serial_port": "/dev/ttyACM0",
   "password_mihome": "xxxxxxxxxxx"
 }
 

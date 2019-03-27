@@ -70,4 +70,7 @@ class _Devices:
 
 
 class Event(EventBase):
-    pass
+    def __init__(self):
+        super(Event, self).__init__()
+        self._event = 'devices'
+        self._type = 'command'
