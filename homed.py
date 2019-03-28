@@ -45,13 +45,12 @@ class HomeDaemon:
         self.peername = ''
         self.events = dict()
         self.inputs = dict()
-        self.inputs_list = ['gateway', 'arduino', 'tcp']
+        self.inputs_list = ['gateway', 'arduino', 'tcp', 'yeelight']
         self.queue = Queue()
 
     def watch_queue(self):
         sleep(0.5)
         while self.loop.is_running():
-            print('watching')
             q = self.queue.get()
             if q:
                 self.event_watcher(q)
@@ -116,9 +115,8 @@ class HomeDaemon:
     def stop(self, *args, **kwargs):
         self.loop.stop()
 
-    def event_watcher(self, data, addr=None):
+    def event_watcher(self, data):
         """This method is """
-        print(data)
         if type(data) is not dict:
             return f'Wrong data: {data}'
 
