@@ -32,11 +32,13 @@ from queue import Queue
 from concurrent.futures import ThreadPoolExecutor
 from threading import Thread
 from time import sleep
+from angrysql.sqlitedb import Connection
+from homedaemon.devicesdb import *
 sys.path.append('/etc/smarthouse')
 
 
 class HomeDaemon:
-    def __init__(self):
+    def __init__(self, dbfile='device.db', ):
         self.server = None
         self.loop = asyncio.get_event_loop()
         self.buffer_size = 1024
@@ -47,6 +49,8 @@ class HomeDaemon:
         self.inputs = dict()
         self.inputs_list = ['gateway', 'arduino', 'tcp', 'yeelight']
         self.queue = Queue()
+        self.db = Connection(dbfile)
+        self.db.create_tables(Devices, DeviceData)
 
     def watch_queue(self):
         sleep(0.5)
@@ -57,7 +61,7 @@ class HomeDaemon:
 
     async def timers(self):
         while True:
-            self.event_watcher('timers:all')
+            self._queue_put({'cmd': 'timers', 'data': 'all'})
             await asyncio.sleep(60)
 
     def _load_inputs(self):
@@ -90,7 +94,7 @@ class HomeDaemon:
 
         for event in event_list:
             ev = importlib.import_module(event, package="events")
-            inst = ev.Event()
+            inst = ev.Event(self.db)
             self.events[inst.name] = inst
             print(f'Load event: {inst.name}')
 
