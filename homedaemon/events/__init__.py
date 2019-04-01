@@ -1,4 +1,3 @@
-
 class EventBase:
     def __init__(self, db):
         self._event = 'event'
@@ -6,7 +5,6 @@ class EventBase:
         self.args = None
         self._type = ''
         self.db = db
-
 
     @property
     def type(self):

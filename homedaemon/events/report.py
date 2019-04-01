@@ -1,4 +1,4 @@
-from homedaemon.event import EventBase
+from homedaemon.events import EventBase
 
 
 class Event(EventBase):

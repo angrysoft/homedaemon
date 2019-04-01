@@ -1,10 +1,9 @@
-from homedaemon.event import EventBase
-import json
+from homedaemon.events import EventBase
 
 
 class Event(EventBase):
-    def __init__(self):
-        super(Event, self).__init__()
+    def __init__(self, db):
+        super(Event, self).__init__(db)
         self._event = 'heartbeat'
         self._type = 'command'
 

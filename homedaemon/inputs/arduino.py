@@ -1,25 +1,36 @@
 from homedaemon.inputs import BaseInput
-import serial
+from serial import Serial, SerialException
+from serial.tools.list_ports import comports
+
 import json
-import os
-import asyncio
 
 
 class Input(BaseInput):
-    def __init__(self, queue, baudrate=115200, port='/dev/ttyACM0', timeout=0):
+    def __init__(self, queue, baudrate=115200, port=None, timeout=0):
         super(Input, self).__init__(queue)
         self.name = 'Arduino'
-        self.arduino = serial.Serial()
+        self.arduino = Serial()
+        if port is None:
+            port = self._detect_port()
         self.arduino.port = port
         self.arduino.baudrate = baudrate
         self.arduino.timeout = timeout
         self.queue = queue
 
-        if os.path.exists(self.arduino.port):
+        if self.arduino.port:
             self.arduino.open()
             print(f'arduino connected')
             self.serial_reader()
             self.loop.add_reader(self.arduino, self.serial_reader)
+        else:
+            print(f'arduion is missing')
+
+    def _detect_port(self):
+        port = None
+        for p in comports():
+            if 'arduino' in p.description.lower():
+                port = p.device
+        return port
 
     def serial_reader(self):
         """"""
@@ -32,7 +43,7 @@ class Input(BaseInput):
             self.queue(json.loads(data))
         except json.JSONDecodeError as er:
             print(f'{er}, : {data}')
-        except serial.SerialException:
+        except SerialException:
             pass
 
 # class Output(asyncio.Protocol):

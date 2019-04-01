@@ -38,7 +38,7 @@ sys.path.append('/etc/smarthouse')
 
 
 class HomeDaemon:
-    def __init__(self, dbfile='device.db', ):
+    def __init__(self, dbfile='device.db'):
         self.server = None
         self.loop = asyncio.get_event_loop()
         self.buffer_size = 1024
@@ -48,8 +48,9 @@ class HomeDaemon:
         self.events = dict()
         self.inputs = dict()
         self.inputs_list = ['gateway', 'arduino', 'tcp', 'yeelight']
+        self.event_list = ['heartbeat', 'report']
         self.queue = Queue()
-        self.db = Connection(dbfile)
+        self.db = Connection({'dbfile': dbfile})
         self.db.create_tables(Devices, DeviceData)
 
     def watch_queue(self):
@@ -82,18 +83,8 @@ class HomeDaemon:
 
     def _load_events(self):
         """loadEvents"""
-        event_list = list()
-        # pth = '/etc/smarthouse'
-        pth = '.'
-        for e in os.listdir(os.path.join(pth, 'events')):
-            if e.endswith('.py') and not e.startswith('__'):
-                e = '.' + e.replace('.py', '')
-                event_list.append(e)
-
-        importlib.import_module('events')
-
-        for event in event_list:
-            ev = importlib.import_module(event, package="events")
+        for event in self.event_list:
+            ev = importlib.import_module(f'homedaemon.events.{event}')
             inst = ev.Event(self.db)
             self.events[inst.name] = inst
             print(f'Load event: {inst.name}')

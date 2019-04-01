@@ -1,4 +1,4 @@
-from homedaemon.event import EventBase
+from homedaemon.events import EventBase
 from angrysql.sqlitedb import Connection
 from angrysql import BaseModel, Column, Integer, String
 

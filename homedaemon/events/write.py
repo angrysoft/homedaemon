@@ -1,5 +1,6 @@
-from homedaemon.event import EventBase
+from homedaemon.events import EventBase
 from homedaemon.bravia import Bravia
+from homedaemon.devices import Device
 from aquara import Gateway
 
 
@@ -14,7 +15,7 @@ class Event(EventBase):
         print('write', data)
         model = data.get('model')
         dev_data = data.get('data')
-
+        dev = Device()
         if model == 'gateway':
             pass
         elif model == 'ctrl_neutral2':
