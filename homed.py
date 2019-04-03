@@ -25,20 +25,24 @@ __version__ = '0.7'
 
 import asyncio
 import signal
-import os
 import importlib
 import sys
+import logging
 from queue import Queue
 from concurrent.futures import ThreadPoolExecutor
 from threading import Thread
 from time import sleep
-from angrysql.sqlitedb import Connection
+from angrysql.mysqldb import Connection
 from homedaemon.devicesdb import *
 sys.path.append('/etc/smarthouse')
 
 
 class HomeDaemon:
-    def __init__(self, dbfile='device.db'):
+    def __init__(self):
+        self.config = {"user": "homedaemon",
+                       "password": "devpas",
+                       "dbname": "homedamondb",
+                       "addr": "localhost"}
         self.server = None
         self.loop = asyncio.get_event_loop()
         self.buffer_size = 1024
@@ -50,8 +54,16 @@ class HomeDaemon:
         self.inputs_list = ['gateway', 'arduino', 'tcp', 'yeelight']
         self.event_list = ['heartbeat', 'report']
         self.queue = Queue()
-        self.db = Connection({'dbfile': dbfile})
+        self.db = Connection(self.config)
         self.db.create_tables(Devices, DeviceData)
+        self.logger = logging
+        self.logger.basicConfig(filename='homed.log',
+                                filemode='w',  # TODO: change to 'a' in production mode
+                                format='%(asctime)s %(message)s',
+                                datefmt='%m/%d/%Y %H:%M:%S')
+
+        self.logger.info('Starting Daemon')
+        self.token = None
 
     def watch_queue(self):
         sleep(0.5)
@@ -70,7 +82,7 @@ class HomeDaemon:
             _input = importlib.import_module(f'homedaemon.inputs.{i}')
             inst = _input.Input(self._queue_put)
             self.inputs[inst.name] = inst
-            print(f'load input: {inst.name}')
+            self.logger.info(f'load input: {inst.name}')
 
     def _listen_inputs(self):
         with ThreadPoolExecutor(max_workers=len(self.inputs)) as executors:
@@ -85,9 +97,9 @@ class HomeDaemon:
         """loadEvents"""
         for event in self.event_list:
             ev = importlib.import_module(f'homedaemon.events.{event}')
-            inst = ev.Event(self.db)
+            inst = ev.Event(self)
             self.events[inst.name] = inst
-            print(f'Load event: {inst.name}')
+            self.logger.info(f'Load event: {inst.name}')
 
     def run(self):
         self._load_inputs()
@@ -97,7 +109,7 @@ class HomeDaemon:
         q.setDaemon(True)
         q.start()
 
-        print('looping')
+        self.logger.info('Daemon is listening')
         try:
             self.loop.run_forever()
         except KeyboardInterrupt:
