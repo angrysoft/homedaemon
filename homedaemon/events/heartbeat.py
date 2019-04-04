@@ -1,5 +1,4 @@
 from homedaemon.events import EventBase
-from homedaemon.devicesdb import *
 
 
 class Event(EventBase):
@@ -13,13 +12,13 @@ class Event(EventBase):
             if 'token' in data:
                 self.daemon.token = data.get('token')
         else:
-            dev = self.daemon.db.select(Devices).where(Devices.sid == data.get('sid', '-1')).first()
-            if dev:
-                self._update_info(data)
-            else:
-                self.daemon.logger.warning(
-                    f"Device model={data.get('model')} with sid={data.get('sid')} not registered ")
+            sid = data.get('sid')
+            info = data.get('data')
+            if sid and info:
+                result = self.daemon.devices.update_one({'sid': sid}, {'$set': data})
+                if result.matched_count < 1:
+                    self.daemon.logger.warning(
+                        f"The Device model={data.get('model')} with sid={data.get('sid')} are not registered ")
 
-    def _update_info(self, dev_info):
-        print(dev_info)
+
 

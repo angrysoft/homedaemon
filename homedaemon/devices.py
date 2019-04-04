@@ -1,7 +1,7 @@
 class Device:
-    def __init__(self, data):
+    def __new__(cls, data):
         model = data.get('model')
-        self.device = None
+        # self.device = None
         if model == 'ctrl_neutral1':
             pass
         elif model == 'ctrl_neutral2':
@@ -12,22 +12,27 @@ class Device:
             pass
         elif model == 'sensor_ht':
             pass
+        elif model == 'weather.v1t':
+            pass
         elif model == 'rgbw_light':
             pass
         elif model == 'magnet':
             pass
         elif model == 'motion':
             pass
+        elif model == 'sensor_motion.aq2':
+            pass
         elif model == 'plug':
             pass
         elif model == 'switch':
             pass
         elif model == 'gateway':
-            pass
+            return Gateway(data)
         elif model == 'dallastemp':
             pass
         elif model == 'rgbstrip':
             pass
+        raise ValueError(f'unrecognized device {model}')
 
 
 class BaseDevice:
@@ -57,12 +62,12 @@ class YeelightBulb(BaseDevice):
     pass
 
 
-class AquraBaseDevice:
+class AquraBaseDevice(BaseDevice):
     def __init__(self):
         super(AquraBaseDevice, self).__init__()
-        self._voltage = -1
-        self.low_voltage = 200
-        self.writeable  = False
+        self._voltage = 3300
+        self.low_voltage = 2800
+        self.writeable = False
 
     @property
     def voltage(self):
@@ -85,3 +90,20 @@ class Switch(AquraBaseDevice):
         pass
 
 
+class Gateway(AquraBaseDevice):
+    def __init__(self, data):
+        super(Gateway, self).__init__()
+        self.writeable = True
+
+
+
+
+if __name__ == '__main__':
+    test = {'cmd': 'report', 'model': 'gateway', 'sid': '7c49eb17b2a0', 'short_id': 0,
+            'data': {'rgb': 0, 'illumination': 293}}
+    test_txt = '{"cmd": "report", "model": "gateway", "sid": "7c49eb17b2a0", ' \
+               '"short_id": 0, "data": {"rgb": 0, "illumination": 293}}'
+    # dev = Device(test)
+    # print(type(dev))
+    import json
+    print(json.loads(test_txt))

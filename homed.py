@@ -32,7 +32,7 @@ from queue import Queue
 from concurrent.futures import ThreadPoolExecutor
 from threading import Thread
 from time import sleep
-from angrysql.mysqldb import Connection
+from pymongo import MongoClient
 from homedaemon.devicesdb import *
 sys.path.append('/etc/smarthouse')
 
@@ -54,8 +54,9 @@ class HomeDaemon:
         self.inputs_list = ['gateway', 'arduino', 'tcp', 'yeelight']
         self.event_list = ['heartbeat', 'report']
         self.queue = Queue()
-        self.db = Connection(self.config)
-        self.db.create_tables(Devices, DeviceData)
+        self.cli = MongoClient()
+        self.db = self.cli.homedamondb
+        self.devices = self.db.devices
         self.logger = logging
         self.logger.basicConfig(filename='homed.log',
                                 filemode='w',  # TODO: change to 'a' in production mode
