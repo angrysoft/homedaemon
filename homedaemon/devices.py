@@ -42,6 +42,22 @@ class BaseDevice:
         self.futures = list()
 
 
+class AquraBaseDevice(BaseDevice):
+    def __init__(self):
+        super(AquraBaseDevice, self).__init__()
+        self._voltage = 3300
+        self.low_voltage = 2800
+        self.writeable = False
+
+    @property
+    def voltage(self):
+        return self._voltage
+
+    @voltage.setter
+    def voltage(self, value):
+        self._voltage = value
+
+
 class GenericRgb(BaseDevice):
     def set_color(self):
         pass
@@ -60,22 +76,6 @@ class BedSideLamp(GenericRgb):
 
 class YeelightBulb(BaseDevice):
     pass
-
-
-class AquraBaseDevice(BaseDevice):
-    def __init__(self):
-        super(AquraBaseDevice, self).__init__()
-        self._voltage = 3300
-        self.low_voltage = 2800
-        self.writeable = False
-
-    @property
-    def voltage(self):
-        return self._voltage
-
-    @voltage.setter
-    def voltage(self, value):
-        self._voltage = value
 
 
 class Switch(AquraBaseDevice):

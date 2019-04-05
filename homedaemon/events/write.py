@@ -11,14 +11,14 @@ class Event(EventBase):
         self._type = 'command'
         self.gateway = Gateway('cjvt7wr3q7df72rq')
         self.aquara_devs = ['ctrl_neutral2', 'plug']
-        self.yeelight_devs = ['bslamp', 'color']
+        self.yeelight_devs = ['bslamp1', 'color']
         self.arduino_devs = ['ledstrip']
 
     def do(self, data):
         print('write', data)
         model = data.get('model')
         dev_data = data.get('data')
-
+        ret = None
         if model in self.aquara_devs:
             ret = self.gateway.write_device(data.get('model'), data.get('sid'), data.get('short_id'), dev_data)
         elif model in self.yeelight_devs:
@@ -38,6 +38,7 @@ class Event(EventBase):
 
         if ret:
             self.daemon._queue_put(ret)
+
 
 
 

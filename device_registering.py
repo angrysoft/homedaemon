@@ -20,6 +20,9 @@ def dev_list():
     list_devs.append({'cmd': 'report', 'model': 'dallastemp', 'sid': 'dallasT1', 'data': {'temp': 0}})
     list_devs.append({'cmd': 'report', 'model': 'rgbstrip', 'sid': 'rgb01',
                       'data': {'red': 0, 'green': 0, 'blue': 0}})
+    list_devs.append({'cmd': 'report', 'model': 'bslamp1', 'sid': '0x000000000545b741', 'data': {'power': 'off'}})
+    list_devs.append({'cmd': 'report', 'model': 'color', 'sid': '0x0000000007e7bae0', 'data': {'power': 'off'}})
+
     return list_devs
 
 
@@ -46,11 +49,10 @@ def add_index():
 
 
 if __name__ == '__main__':
-
     # result = db.devices_data.update_one({'sid': 'rgb01'}, {'$set': {'dupa': 'blada'}})
     clear_devs()
     registering(dev_list())
     add_index()
-    devs = [d for d in db.devices.find()]
-    print(devs)
+    # devs = [d for d in db.devices.find()]
+    # print(devs)
 
