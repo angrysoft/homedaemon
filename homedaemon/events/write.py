@@ -1,7 +1,7 @@
 from homedaemon.events import EventBase
 from homedaemon.bravia import Bravia
-from homedaemon.devices import Device
 from aquara import Gateway
+from yeelight import Bulb
 
 
 class Event(EventBase):
@@ -10,17 +10,20 @@ class Event(EventBase):
         self._event = 'write'
         self._type = 'command'
         self.gateway = Gateway('cjvt7wr3q7df72rq')
+        self.aquara_devs = ['ctrl_neutral2', 'plug']
+        self.yeelight_devs = ['bslamp', 'color']
+        self.arduino_devs = ['ledstrip']
 
     def do(self, data):
         print('write', data)
         model = data.get('model')
         dev_data = data.get('data')
-        dev = Device()
-        if model == 'gateway':
+
+        if model in self.aquara_devs:
+            ret = self.gateway.write_device(data.get('model'), data.get('sid'), data.get('short_id'), dev_data)
+        elif model in self.yeelight_devs:
             pass
-        elif model == 'ctrl_neutral2':
-            pass
-        elif model == 'plug':
+        elif model in self.arduino_devs:
             pass
         elif model == 'bravia':
             b = Bravia('192.168.1.129')
@@ -32,5 +35,9 @@ class Event(EventBase):
                     b.send_command(dev_data.get('button'))
         elif model == 'ledstrip':
             pass
+
+        if ret:
+            self.daemon._queue_put(ret)
+
 
 

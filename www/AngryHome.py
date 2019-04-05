@@ -27,26 +27,14 @@ from flask import Flask
 from flask import request
 from flask import render_template
 from flask import redirect
-import socket
-import os
 import json
 import asyncio
+from pymongo import MongoClient
 
 app = Flask(__name__)
 
 
-def sendEvent(msg, socketFile='/tmp/housed.sock'):
-    if os.path.exists(socketFile):
-        client = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
-        client.connect(socketFile)
-        client.send(msg.encode('utf-8'))
-        client.close()
-        return 'ok'
-    else:
-        return 'ko'
-
-
-async def send_evnet(msg):
+async def send_event(msg):
     reader, writer = await asyncio.open_connection('127.0.0.1', 6666)
     writer.write(msg.encode())
     await writer.drain()
@@ -55,11 +43,17 @@ async def send_evnet(msg):
     writer.close()
     return 'ok'
 
+
 # www
 @app.route('/')
 def index():
-    sensors = list()
-    return render_template('index.html', status='brak', sensors=sensors)
+    devices = [d for d in db.devices.find()]
+    return render_template('index.html', devices=devices)
+
+
+@app.route('/dev/<sid>')
+def dev(sid):
+    return db.devices.find_one({'sid': sid})
 
 
 @app.route('/tv/pilot')
@@ -77,7 +71,7 @@ def tv_button(name):
                'model': 'bravia',
                'sid': 0,
                'data': {'button': name}}
-        asyncio.run(send_evnet(json.dumps(msg)))
+        asyncio.run(send_event(json.dumps(msg)))
         status = 'ok'
     return redirect('/tv/pilot/button/{}?status={}'.format(name, status))
 
@@ -111,9 +105,12 @@ def changeColor(rgb):
                'sid': 0,
                'data': {'rgb': rgb}}
         status = 'ok'
-        asyncio.run(send_evnet(json.dumps(msg)))
+        asyncio.run(send_event(json.dumps(msg)))
     return redirect('/leds/changeColor/{}?status={}'.format(rgb, status))
 
+
+cli = MongoClient()
+db = cli.homedaemondb
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', use_reloader=False) #, port=80)

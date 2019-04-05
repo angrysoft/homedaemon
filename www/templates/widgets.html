@@ -1,0 +1,16 @@
+{% macro loader() -%}
+<div id="loader">
+  <div class="ring"></div>
+</div>
+{%- endmacro %}
+
+{% macro widget(dev) %}
+<div class="col-md-3 col-xs-12 panel">
+  <header>{{ dev.get('name') }}</header>
+  <section>
+    {% for v in dev %}
+      <p>{{ v }} : {{ dev.get(v) }}</p>
+    {% endfor %}
+  </section>
+</div>
+{% endmacro %}

@@ -1,19 +1,11 @@
 {% extends 'layout.html' %}
 {% block content %}
-  <div class="row center-xs start-md">
-    <div class="col-md-4 col-xs-12 panel">
-      <header>Temperatura</header>
-        <section>
-          <p>Temperatura na zewnątrz : <span id="temp-home">{{ sensors[0] }}</span></p>
-        </section>
-    </div>
-    
-    <div class="col-md-4 col-xs-12 panel">
-      <header>Server</header>
-        <section>
-          <p>Status połączenia : {{ status }}</p>
-          <p>Temperatura Systemowa : <span id="temp-out-side">{{ sensors[1] }}</span></p>
-        </section>
-    </div>
+{% from 'widgets.html' import loader, widget %}
+{{ loader() }}
+
+  <div class="row center-xs">
+    {% for d in devices %}
+    {{ widget(d) }}
+    {% endfor %}
   </div>
 {% endblock %}

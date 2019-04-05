@@ -8,7 +8,6 @@ class Event(EventBase):
         self._type = 'command'
 
     def do(self, data):
-        print(data, self.daemon.token)
-        # if data.get('model') == 'gateway':
+        self.update_dev_data(data)
 
 
