@@ -1,7 +1,7 @@
 from homedaemon.events import EventBase
 from homedaemon.bravia import Bravia
 from aquara import Gateway
-from yeelight import Bulb
+from homedaemon.yeelight import Yeelight
 
 
 class Event(EventBase):
@@ -16,13 +16,23 @@ class Event(EventBase):
 
     def do(self, data):
         print('write', data)
+        dev = self.daemon.devices.find_one({'sid': data.get('sid')})
+        if not dev:
+            self.daemon.logger.warning(
+                    f"The Device model={data.get('model')} with sid={data.get('sid')} are not registered ")
+            return
         model = data.get('model')
         dev_data = data.get('data')
         ret = None
         if model in self.aquara_devs:
-            ret = self.gateway.write_device(data.get('model'), data.get('sid'), data.get('short_id'), dev_data)
+            ret = self.gateway.write_device(data.get('model'),
+                                            data.get('sid'),
+                                            data.get('short_id'),
+                                            dev_data)
+        
         elif model in self.yeelight_devs:
-            pass
+            if 'ip' in dev:
+                bulb = Bulb(dev.get('ip'))
         elif model in self.arduino_devs:
             pass
         elif model == 'bravia':
