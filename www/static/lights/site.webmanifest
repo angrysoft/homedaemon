@@ -1,6 +1,6 @@
 {
-    "name": "RF Pilot",
-    "short_name": "RF",
+    "name": "Lights",
+    "short_name": "LL",
     "icons": [
         {
             "src": "/static/android-chrome-192x192.png",
@@ -15,6 +15,6 @@
     ],
     "theme_color": "#000000",
     "background_color": "#000000",
-    "start_url": "http://19.168..1.4/rf/pilot",
+    "start_url": "http://19.168..1.4/lights",
     "display": "standalone"
 }

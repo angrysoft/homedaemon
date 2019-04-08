@@ -15,14 +15,12 @@ class HomeDaemonProto:
         self.transport = transport
 
     def data_received(self, data):
-        ret = ''
         try:
             _data = json.loads(data.decode())
-            ret = self.watcher(_data)
+            self.watcher(_data)
         except json.JSONDecodeError:
-            pass
-        if type(ret) == str:
-            self.transport.write(ret.encode())
+            print('json err')
+        self.transport.write('ok\n'.encode())
 
     def eof_received(self):
         pass

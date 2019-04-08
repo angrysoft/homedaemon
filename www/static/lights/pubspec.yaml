@@ -1,6 +1,6 @@
-name: RFPilot
+name: lights
 author: Sebastian Zwierzchowski <sebastian.zwierzchowski@gmail.com>
-description: rf pilot phone version
+description: AngryHome ligts pilot
 
 environment:
   sdk: '>=2.0.0 <3.0.0'

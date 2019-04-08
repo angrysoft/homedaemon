@@ -13,7 +13,7 @@ class TvButtons {
 
   void clickBtn(Event e) {
     ButtonElement btn = e.target;
-    HttpRequest.request('/tv/pilot/button/${btn.dataset['btn']}', method: 'POST');
+    HttpRequest.request('/tv/button/${btn.dataset['btn']}', method: 'POST');
   }
 }
 

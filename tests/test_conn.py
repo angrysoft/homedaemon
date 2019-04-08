@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 import asyncio
+import json
+import sys
 
 
 async def tcp_echo_client(message):
@@ -16,4 +18,7 @@ async def tcp_echo_client(message):
     print('Close the connection')
     writer.close()
 
-asyncio.run(tcp_echo_client('{"test":"message"}'))
+if len(sys.argv) < 2:
+    sys.exit(1)
+msg = {'cmd': 'write', 'sid': '158d00029b1929', 'data': {'channel_1': sys.argv[1], 'channel_0': sys.argv[1]}}
+asyncio.run(tcp_echo_client(json.dumps(msg)))

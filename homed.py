@@ -51,7 +51,7 @@ class HomeDaemon:
         self.events = dict()
         self.inputs = dict()
         self.inputs_list = ['gateway', 'arduino', 'tcp', 'yeelight']
-        self.event_list = ['heartbeat', 'report']
+        self.event_list = ['heartbeat', 'report', 'write']
         self.queue = Queue()
         self.cli = MongoClient()
         self.db = self.cli.homedaemondb
@@ -131,8 +131,9 @@ class HomeDaemon:
         event_name = data.get('cmd')
         ev = self.events.get(event_name)
         if ev:
-            ev.do(data)
-        return 'ok\n'
+            return ev.do(data)
+        else:
+            self.logger.error(f'Unknown event: {event_name}')
 
 
 if __name__ == '__main__':

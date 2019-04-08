@@ -56,12 +56,12 @@ def dev(sid):
     return db.devices.find_one({'sid': sid})
 
 
-@app.route('/tv/pilot')
+@app.route('/tv')
 def tv_pilot():
     return render_template('tvpilot.html')
 
 
-@app.route('/tv/pilot/button/<name>', methods=['GET', 'POST'])
+@app.route('/tv/button/<name>', methods=['GET', 'POST'])
 def tv_button(name):
     """Send"""
     if request.method == 'GET':
@@ -69,11 +69,10 @@ def tv_button(name):
     elif request.method == 'POST':
         msg = {'cmd': 'write',
                'model': 'bravia',
-               'sid': 0,
+               'sid': 'tv01',
                'data': {'button': name}}
-        asyncio.run(send_event(json.dumps(msg)))
-        status = 'ok'
-    return redirect('/tv/pilot/button/{}?status={}'.format(name, status))
+        status = asyncio.run(send_event(json.dumps(msg)))
+    return redirect('/tv/button/{}?status={}'.format(name, status))
 
 
 @app.route('/leds')

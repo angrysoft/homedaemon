@@ -9,5 +9,6 @@ class Event(EventBase):
 
     def do(self, data):
         self.update_dev_data(data)
+        print(data)
 
 

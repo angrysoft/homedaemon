@@ -1,9 +1,0 @@
-{
-  "name": "RF pilot",
-  "short_name": "RFPilot",
-  "start_url": "/rf/pilot",
-  "display": "standalone",
-  "background_color": "#000",
-  "theme_color": "#000",
-  "gcm_sender_id": "0123456789 - use your sender id here"
-}

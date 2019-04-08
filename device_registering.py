@@ -3,6 +3,8 @@
 from aquara import Gateway
 from pymongo import TEXT, MongoClient
 from pymongo.errors import DuplicateKeyError
+from yeelight import Yeelight
+from urllib.parse import urlparse
 
 cli = MongoClient()
 db = cli.homedaemondb
@@ -16,17 +18,32 @@ def clear_devs():
 
 def dev_list():
     gw = Gateway()
+    ye = Yeelight()
     list_devs = gw.read_all_devices()
     list_devs.append({'cmd': 'report', 'model': 'dallastemp',
                       'sid': 'dallasT1', 'data': {'temp': 0}})
     list_devs.append({'cmd': 'report', 'model': 'rgbstrip', 'sid': 'rgb01',
                       'data': {'red': 0, 'green': 0, 'blue': 0}})
-    list_devs.append({'cmd': 'report', 'model': 'bslamp1',
-                      'sid': '0x000000000545b741',
-                      'data': {'power': 'off'}})
-    list_devs.append({'cmd': 'report', 'model': 'color',
-                      'sid': '0x0000000007e7bae0',
-                      'data': {'power': 'off'}})
+    list_devs.append({'cmd': 'write', 'model': 'bravia', 'sid': 'tv01', 'ip': '192.168.1.129',
+                      'mac': 'fc:f1:52:2a:9b:1e',
+                      'data': {'button': ''}})
+    ye.discover()
+    for bulb in ye.devices:
+        d = ye.devices[bulb]
+        url = urlparse(d.get('location'))
+        del d['location']
+        d['sid'] = d.pop('id')
+        d['ip'] = url.hostname
+        d['port'] = url.port
+        d['data'] = {'power': d.pop('power'),
+                     'bright': d.pop('bright'),
+                     'color_mode': d.pop('color_mode'),
+                     'ct': d.pop('ct'),
+                     'rgb': d.pop('rgb'),
+                     'hue': d.pop('hue'),
+                     'sat': d.pop('sat')
+                     }
+        list_devs.append(d)
 
     return list_devs
 
@@ -35,11 +52,13 @@ def registering(list_devs):
 
     print('Registering device:')
     for d in list_devs:
-        del d['cmd']
+        if 'cmd' in d:
+            del d['cmd']
         data = d.get('data')
         del d['data']
         data['sid'] = d.get('sid')
-        d['name'] = ''
+        if 'name' not in d:
+            d['name'] = ''
         print('\t', d.get('model'), d.get('sid'))
         try:
             dev_id = db.devices.insert_one(d)

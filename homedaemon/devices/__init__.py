@@ -1,0 +1,60 @@
+
+class Device:
+    def __new__(cls, data):
+        model = data.get('model')
+        if model == 'ctrl_neutral1':
+            from .aquaradevices import CtrlNeutral
+            return CtrlNeutral(data)
+        elif model == 'ctrl_neutral2':
+            from .aquaradevices import CtrlNeutral2
+            return CtrlNeutral2(data)
+        elif model == '86sw1':
+            pass
+        elif model == '86sw2':
+            pass
+        elif model == 'sensor_ht':
+            pass
+        elif model == 'weather.v1':
+            pass
+        elif model == 'rgbw_light':
+            pass
+        elif model == 'magnet':
+            pass
+        elif model == 'motion':
+            pass
+        elif model == 'sensor_motion.aq2':
+            pass
+        elif model == 'plug':
+            from .aquaradevices import Plug
+            return Plug(data)
+        elif model == 'switch':
+            pass
+        elif model == 'gateway':
+            pass
+        elif model == 'dallastemp':
+            pass
+        elif model == 'rgbstrip':
+            pass
+        elif model == 'bravia':
+            from .tv import BraviaTv
+            return BraviaTv(data)
+        else:
+            raise ValueError(f'unrecognized device {model}')
+
+
+class BaseDevice:
+    def __init__(self, data):
+        self.model = data.get('model')
+        self.name = data.get('name')
+        self.sid = data.get('sid')
+
+    def do(self, cmd):
+        print(cmd)
+
+
+class GenericRgb(BaseDevice):
+    def set_color(self):
+        pass
+
+    def set_dimmer(self):
+        pass
