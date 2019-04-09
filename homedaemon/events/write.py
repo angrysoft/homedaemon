@@ -16,7 +16,7 @@ class Event(EventBase):
                     f"The Device model={data.get('model')} with sid={data.get('sid')} are not registered ")
             return
         device = Device(dev_data)
-        ret = device.do(token=self.daemon.token, data=data.get('data'))
+        ret = device.do(token=self.daemon.token, cmd=data.get('data'))
         if ret:
             self.daemon._queue_put(ret)
 

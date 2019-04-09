@@ -36,9 +36,11 @@ class CtrlNeutral(AquraBaseDevice):
         super(CtrlNeutral, self).__init__(data)
         self.writeable = True
 
-    def do(self, token, cmd):
-        if 'channel_0' in cmd:
-            self.channel_0(token, cmd.get('channel_0'))
+    def do(self, **kwargs):
+        if not {'token', 'cmd'}.issubset(kwargs):
+            return
+        if 'channel_0' in kwargs['cmd']:
+            self.channel_0(kwargs['token'], kwargs['cmd']['channel_0'])
 
     def channel_0(self, token, value):
         self._write(token, {'channel_0': value})
@@ -46,11 +48,13 @@ class CtrlNeutral(AquraBaseDevice):
 
 class CtrlNeutral2(CtrlNeutral):
 
-    def do(self, token, cmd):
-        if 'channel_0' in cmd:
-            self.channel_0(token, cmd.get('channel_0'))
-        if 'channel_1' in cmd:
-            self.channel_1(token, cmd.get('channel_1'))
+    def do(self, **kwargs):
+        if not {'token', 'cmd'}.issubset(kwargs):
+            return
+        if 'channel_0' in kwargs['cmd']:
+            self.channel_0(kwargs['token'], kwargs['cmd']['channel_0'])
+        if 'channel_1' in kwargs['cmd']:
+            self.channel_1(kwargs['token'], kwargs['cmd']['channel_1'])
 
     def channel_1(self, token, value):
         self._write(token, {'channel_1': value})
@@ -61,9 +65,11 @@ class Plug(AquraBaseDevice):
         super(Plug, self).__init__(data)
         self._status = None
 
-    def do(self, token, cmd):
-        if 'status' in cmd:
-            self.status(token, cmd.get('status'))
+    def do(self, **kwargs):
+        if not {'token', 'cmd'}.issubset(kwargs):
+            return
+        if 'status' in kwargs['cmd']:
+            self.status(kwargs['token'], kwargs['cmd']['channel_0'])
 
     def status(self, token, value):
         self._write(token, {'status': value})
