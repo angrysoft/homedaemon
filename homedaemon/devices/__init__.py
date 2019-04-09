@@ -38,6 +38,9 @@ class Device:
         elif model == 'bravia':
             from .tv import BraviaTv
             return BraviaTv(data)
+        elif model in ['color', 'bslamp1']:
+            from .yeelightdevices import YeeligthDevice
+            return YeeligthDevice(data)
         else:
             raise ValueError(f'unrecognized device {model}')
 
@@ -48,8 +51,8 @@ class BaseDevice:
         self.name = data.get('name')
         self.sid = data.get('sid')
 
-    def do(self, cmd):
-        print(cmd)
+    def do(self, **kwargs):
+        print(kwargs)
 
 
 class GenericRgb(BaseDevice):
