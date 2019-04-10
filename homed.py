@@ -60,9 +60,9 @@ class HomeDaemon:
         self.logger = logging
         self.logger.basicConfig(filename='homed.log',
                                 filemode='w',  # TODO: change to 'a' in production mode
-                                format='%(asctime)s %(message)s',
-                                datefmt='%m/%d/%Y %H:%M:%S')
-
+                                format='%(asctime)s %(levelname)s:%(message)s',
+                                datefmt='%m/%d/%Y %H:%M:%S',
+                                level=logging.INFO)
         self.logger.info('Starting Daemon')
         self.token = None
 
@@ -132,9 +132,9 @@ class HomeDaemon:
         event_name = data.get('cmd')
         ev = self.events.get(event_name)
         if ev:
-            self.logger.info(ev.do(data))
+            ev.do(data)
         else:
-            self.logger.error(f'Unknown event: {event_name}')
+            self.logger.error(f'Unknown event: {data}')
 
 
 if __name__ == '__main__':

@@ -13,14 +13,11 @@ class YeeligthDevice(BaseDevice):
         if 'cmd' not in kwargs:
             return
         cmd = kwargs['cmd']
-        print(cmd)
-
         c, v = cmd.popitem()
         if c in self.support:
             return self._send(c, v)
 
     def _send(self, c, v):
-        print(c, v)
         bulb = Bulb(self.ip)
         ret = None
         if c == 'on':
