@@ -43,6 +43,8 @@ def dev_list():
                      'hue': d.pop('hue'),
                      'sat': d.pop('sat')
                      }
+        d['support'].append('on')
+        d['support'].append('off')
         list_devs.append(d)
 
     return list_devs

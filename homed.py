@@ -111,6 +111,7 @@ class HomeDaemon:
         q.start()
 
         self.logger.info('Daemon is listening')
+        print('Daemon is listening')
         try:
             self.loop.run_forever()
         except KeyboardInterrupt:
@@ -126,12 +127,12 @@ class HomeDaemon:
     def event_watcher(self, data):
         """This method is """
         if type(data) is not dict:
-            return f'Wrong data: {data}'
+            self.logger.warning(f'Wrong data: {data}')
 
         event_name = data.get('cmd')
         ev = self.events.get(event_name)
         if ev:
-            return ev.do(data)
+            self.logger.info(ev.do(data))
         else:
             self.logger.error(f'Unknown event: {event_name}')
 
