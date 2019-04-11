@@ -6,20 +6,69 @@
 
 
 {% macro ctrl_neutral2(data) -%}
-<div class="col-xs-2">
+<div class="col-xs-5 col-md-2 white round-8 padding-05 device">
   <div class="row center-xs">
-    <div class="col-xs-12">{{ data.get('name') }}</div>
+    <div class="col-xs-12">
+      <p class="txt-center">{{ data.get('model') }}</p>
+    </div>
   </div>
-  <div class="row">
+  
+  <div class="row center-xs">
     <div class="col-xs-6" >
-      <div class="onoffswitch">
-        <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" checked>
-        <label class="onoffswitch-label" for="myonoffswitch"></label>
-      </div>
+      <button class="btn-small" id="{{ data.get('sid') }}-channel_0" data-sid="{{ data.get('sid') }}" data-channel="0">On</button>
+    </div>
+    
     <div class="col-xs-6" >
-      <div class="onoffswitch">
-        <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" checked>
-        <label class="onoffswitch-label" for="myonoffswitch"></label>
+      <button class="btn-small" id="{{ data.get('sid') }}-channel_1" data-sid="{{ data.get('sid') }}" data-channel="1">On</button>
+    </div>
+    
+  </div>
+</div>
+{%- endmacro %}
+
+{% macro plug(data) -%}
+<div class="col-xs-4 col-md-2 white round-8 padding-05 device">
+  <div class="row center-xs">
+    <div class="col-xs-12">
+      <p class="txt-center">{{ data.get('model') }}</p>
+    </div>
+  </div>
+  
+  <div class="row center-xs">
+    <div class="col-xs-6" >
+      <button class="btn-small" id="{{ data.get('sid') }}" data-sid="{{ data.get('sid') }}">On</button>
+    </div>
+  </div>
+</div>
+{%- endmacro %}
+
+{% macro bslamp1(data) -%}
+<div class="col-xs-4 col-md-2 white round-8 padding-05 device">
+  <div class="row center-xs">
+    <div class="col-xs-12">
+      <p class="txt-center">{{ data.get('model') }}</p>
+    </div>
+  </div>
+  
+  <div class="row center-xs">
+    <div class="col-xs-6" >
+      <button class="btn-small" id="{{ data.get('sid') }}" data-sid="{{ data.get('sid') }}">On</button>
+    </div>
+  </div>
+</div>
+{%- endmacro %}
+
+{% macro color(data) -%}
+<div class="col-xs-4 col-md-2 white round-8 padding-05 device">
+  <div class="row center-xs">
+    <div class="col-xs-12">
+      <p class="txt-center">{{ data.get('model') }}</p>
+    </div>
+  </div>
+  
+  <div class="row center-xs">
+    <div class="col-xs-6" >
+      <button class="btn-small" id="{{ data.get('sid') }}" data-sid="{{ data.get('sid') }}">On</button>
     </div>
   </div>
 </div>

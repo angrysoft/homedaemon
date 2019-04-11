@@ -77,7 +77,8 @@ def tv_button(name):
 
 @app.route('/lights')
 def ligths():
-    return render_template('lights.html')
+    devices = [d for d in db.devices.find()]
+    return render_template('lights.html', devices=devices)
 
 
 @app.route('/leds')
