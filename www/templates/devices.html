@@ -1,0 +1,26 @@
+{% macro loader() -%}
+<div id="loader">
+  <div class="ring"></div>
+</div>
+{%- endmacro %}
+
+
+{% macro ctrl_neutral2(data) -%}
+<div class="col-xs-2">
+  <div class="row center-xs">
+    <div class="col-xs-12">{{ data.get('name') }}</div>
+  </div>
+  <div class="row">
+    <div class="col-xs-6" >
+      <div class="onoffswitch">
+        <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" checked>
+        <label class="onoffswitch-label" for="myonoffswitch"></label>
+      </div>
+    <div class="col-xs-6" >
+      <div class="onoffswitch">
+        <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" checked>
+        <label class="onoffswitch-label" for="myonoffswitch"></label>
+    </div>
+  </div>
+</div>
+{%- endmacro %}
