@@ -75,6 +75,11 @@ def tv_button(name):
     return redirect('/tv/button/{}?status={}'.format(name, status))
 
 
+@app.route('/lights')
+def ligths():
+    return render_template('lights.html')
+
+
 @app.route('/leds')
 def leds():
     """led"""
