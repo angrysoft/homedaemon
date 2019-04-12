@@ -5,6 +5,13 @@ import 'package:service_worker/window.dart' as sw;
 
 void _log(Object o) => print('  MAIN: $o');
 
+class Lights {
+  DivElement loader = querySelector('#loader');
+  Lights() {
+    this.loader.classes.add('show-loader');
+  }
+}
+
 class TabButtons {
   String tab = '0';
 
@@ -73,7 +80,7 @@ class TabButtons {
 }
 
 Future main() async {
-  new TabButtons();
+  new Lights();
 
   if (sw.isNotSupported) {
     _log('ServiceWorkers are not supported.');

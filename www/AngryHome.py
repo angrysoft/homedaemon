@@ -56,6 +56,11 @@ def dev(sid):
     return db.devices.find_one({'sid': sid})
 
 
+@app.route('/dev/data/<sid>')
+def dev_data(sid):
+    return db.devices_data.find_one({'sid': sid})
+
+
 @app.route('/tv')
 def tv_pilot():
     return render_template('tvpilot.html')
