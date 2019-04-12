@@ -5,7 +5,7 @@
 
   <div class="row center-xs">
     {% for d in devices %}
-    {{ widget(d) }}
+    {{ widget(d, devdata.get(d.get('sid'))) }}
     {% endfor %}
   </div>
 {% endblock %}

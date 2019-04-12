@@ -4,12 +4,12 @@
 </div>
 {%- endmacro %}
 
-{% macro widget(dev) %}
+{% macro widget(dev,devinfo) %}
 <div class="col-md-3 col-xs-12 panel">
   <header>{{ dev.get('name') }}</header>
   <section>
-    {% for v in dev %}
-      <p>{{ v }} : {{ dev.get(v) }}</p>
+    {% for v in devinfo %}
+      <p>{{ v }} : {{ devinfo.get(v) }}</p>
     {% endfor %}
   </section>
 </div>

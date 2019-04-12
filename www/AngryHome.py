@@ -48,7 +48,10 @@ async def send_event(msg):
 @app.route('/')
 def index():
     devices = [d for d in db.devices.find()]
-    return render_template('index.html', devices=devices)
+    device_data = dict() 
+    for di in db.devices_data.find():
+        device_data[di.get('sid')] = di
+    return render_template('index.html', devices=devices, devdata=device_data)
 
 
 @app.route('/dev/<sid>')
