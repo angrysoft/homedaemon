@@ -53,13 +53,33 @@ def index():
 
 @app.route('/dev/<sid>')
 def dev(sid):
-    return db.devices.find_one({'sid': sid})
+    ret = db.devices.find_one({'sid': sid})
+    if '_id' in ret:
+        del ret['_id']
+    return json.dumps(ret)
 
 
 @app.route('/dev/data/<sid>')
 def dev_data(sid):
-    return db.devices_data.find_one({'sid': sid})
+    ret = db.devices_data.find_one({'sid': sid})
+    if '_id' in ret:
+        del ret['_id']
+    return json.dumps(ret)
 
+
+@app.route('/dev/write', methods=['GET', 'POST'])
+def dev_write():
+    """Send"""
+    if request.method == 'GET':
+        return request.args.get('status', 'ooops something is wrong')
+    elif request.method == 'POST':
+        msg = {'cmd': 'write',
+               'model': request.form.get('model'),
+               'sid': request.form.get('sid'),
+               'data': {request.form.get('cmdname'): request.form.get('cmdvalue')}}
+        status = msg
+        # status = asyncio.run(send_event(json.dumps(msg)))
+    return redirect(f'/dev/write/?status={status}')
 
 @app.route('/tv')
 def tv_pilot():

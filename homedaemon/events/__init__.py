@@ -21,7 +21,7 @@ class EventBase:
         sid = data.get('sid')
         info = data.get('data')
         if sid and info:
-            result = self.daemon.device_data.update_one({'sid': sid}, {'$set': data})
+            result = self.daemon.device_data.update_one({'sid': sid}, {'$set': info})
             if result.matched_count < 1:
                 self.daemon.logger.warning(
                     f"The Device model={data.get('model')} with sid={data.get('sid')} are not registered ")

@@ -6,7 +6,7 @@
 
 
 {% macro ctrl_neutral2(data) -%}
-<div class="col-xs-5 col-md-2 white round-8 padding-05 device">
+<div class="col-xs-5 col-md-2 white round-8 padding-05 device" data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}">
   <div class="row center-xs">
     <div class="col-xs-12">
       <p class="txt-center">{{ data.get('model') }}</p>

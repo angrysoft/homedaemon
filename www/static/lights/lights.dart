@@ -10,6 +10,19 @@ class Lights {
   Lights() {
     this.loader.classes.add('show-loader');
   }
+
+  void refresDevicesStatus() {}
+
+  void sendWriteCmd(String sid, String cmdname, String cmdvalue) {
+    FormData data = new FormData();
+    data.append('sid', sid);
+    data.append('cmdname', cmdname);
+    data.append(cmdvalue, cmdvalue);
+    HttpRequest.request('/dev/write', method: 'POST', sendData: data)
+        .then((HttpRequest resp) {
+      print(resp);
+    });
+  }
 }
 
 class TabButtons {
@@ -18,34 +31,36 @@ class TabButtons {
   TabButtons() {
     DivElement buttons = querySelector('.buttons');
     for (int j = 1; j < 5; j++) {
-        ButtonElement btnOn = new ButtonElement();
-        btnOn..text = j.toString()
+      ButtonElement btnOn = new ButtonElement();
+      btnOn
+        ..text = j.toString()
         ..className = 'btn green'
         ..dataset['btn'] = j.toString()
         ..dataset['btnFunc'] = 'on'
         ..onClick.listen((Event e) => this.clickBtn(e));
-        ButtonElement btnOff = new ButtonElement();
-        btnOff..text = j.toString()
+      ButtonElement btnOff = new ButtonElement();
+      btnOff
+        ..text = j.toString()
         ..className = 'btn red'
         ..dataset['btn'] = j.toString()
         ..dataset['btnFunc'] = 'off'
         ..onClick.listen((Event e) => this.clickBtn(e));
 
-        DivElement col1 = new DivElement();
-        col1
+      DivElement col1 = new DivElement();
+      col1
         ..className = 'col-xs'
         ..append(btnOn);
-        DivElement col2 = new DivElement();
-        col2
+      DivElement col2 = new DivElement();
+      col2
         ..className = 'col-xs'
         ..append(btnOff);
-        DivElement row = new DivElement();
-        row
+      DivElement row = new DivElement();
+      row
         ..className = 'row center-xs txt-center'
         ..append(col1)
         ..append(col2);
-        buttons.append(row);
-      }
+      buttons.append(row);
+    }
     List<Element> tabBtn = querySelectorAll('.tab-btn');
     tabBtn.forEach((t) {
       t.onClick.listen((Event e) => this.changeTab(e));
@@ -67,13 +82,15 @@ class TabButtons {
     ButtonElement btn = e.target;
     String btnNo = '';
     if (btn.dataset['btn'] != 'all') {
-        int n = int.parse(btn.dataset['btn']) + int.parse(this.tab);
-        btnNo = n.toString();
+      int n = int.parse(btn.dataset['btn']) + int.parse(this.tab);
+      btnNo = n.toString();
     } else {
       btnNo = btn.dataset['btn'];
     }
-    HttpRequest.request('/rf/pilot/button/${btnNo}?func=${btn.dataset['btnFunc']}', method: 'POST')
-    .then((HttpRequest resp) {
+    HttpRequest.request(
+            '/rf/pilot/button/${btnNo}?func=${btn.dataset['btnFunc']}',
+            method: 'POST')
+        .then((HttpRequest resp) {
       print(resp);
     });
   }
