@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:html';
+import 'dart:convert';
 
 import 'package:service_worker/window.dart' as sw;
 
@@ -8,10 +9,19 @@ void _log(Object o) => print('  MAIN: $o');
 class Lights {
   DivElement loader = querySelector('#loader');
   Lights() {
-    this.loader.classes.add('show-loader');
+    this.refresDevicesStatus(); 
   }
 
-  void refresDevicesStatus() {}
+  void refresDevicesStatus() {
+    this.loader.classes.add('show-loader');
+    HttpRequest.getString('/dev/data/all').then((String resp) {
+      List<dynamic> jdata = jsonDecode(resp);
+      jdata.forEach((dev) {
+        print(dev);
+      });
+    });
+    this.loader.classes.remove('show-loader');
+  }
 
   void sendWriteCmd(String sid, String cmdname, String cmdvalue) {
     FormData data = new FormData();

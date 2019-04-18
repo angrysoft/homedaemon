@@ -70,6 +70,14 @@ def dev_data(sid):
     return json.dumps(ret)
 
 
+@app.route('/dev/data/all')
+def dev_data_all():
+    device_data = [d for d in db.devices_data.find()]
+    for dev in device_data:
+        if '_id' in dev:
+            del dev['_id']
+    return json.dumps(device_data)
+
 @app.route('/dev/write', methods=['GET', 'POST'])
 def dev_write():
     """Send"""

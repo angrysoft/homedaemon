@@ -6,7 +6,7 @@
 
 
 {% macro ctrl_neutral2(data) -%}
-<div class="col-xs-5 col-md-2 white round-8 padding-05 device" data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}">
+<div class="col-xs-5 col-md-2 white round-8 padding-05 device">
   <div class="row center-xs">
     <div class="col-xs-12">
       <p class="txt-center">{{ data.get('model') }}</p>
@@ -15,11 +15,11 @@
   
   <div class="row center-xs">
     <div class="col-xs-6" >
-      <button class="btn-small" id="{{ data.get('sid') }}-channel_0" data-sid="{{ data.get('sid') }}" data-channel="0">On</button>
+      <button class="btn-small" id="{{ data.get('sid') }}-channel_0" data-sid="{{ data.get('sid') }}" data-channel="0" data-model="{{ data.get('model') }}">On</button>
     </div>
     
     <div class="col-xs-6" >
-      <button class="btn-small" id="{{ data.get('sid') }}-channel_1" data-sid="{{ data.get('sid') }}" data-channel="1">On</button>
+      <button class="btn-small" id="{{ data.get('sid') }}-channel_1" data-sid="{{ data.get('sid') }}" data-channel="1" data-model="{{ data.get('model') }}">On</button>
     </div>
     
   </div>
