@@ -27,12 +27,14 @@ import asyncio
 import signal
 import importlib
 import sys
+import json
 import logging
 from queue import Queue
 from concurrent.futures import ThreadPoolExecutor
 from threading import Thread
 from time import sleep
 from pymongo import MongoClient
+import websockets
 sys.path.append('/etc/smarthouse')
 
 
@@ -65,7 +67,17 @@ class HomeDaemon:
                                 level=logging.INFO)
         self.logger.info('Starting Daemon')
         self.token = None
-
+        self.webserv = websockets.serve(self.watch_web, 'localhost', 8765)
+    
+    async def watch_web(self, sock, path):
+        item = await sock.recv()
+        try:
+            item = json.loads(item)
+            self._queue_put(item)
+    
+    async def websend(self, info):
+        self.webserv.
+    
     def watch_queue(self):
         sleep(0.5)
         while self.loop.is_running():
@@ -112,6 +124,9 @@ class HomeDaemon:
 
         self.logger.info('Daemon is listening')
         print('Daemon is listening')
+        
+        self.loop.rurn_until_complete(self.webserv)
+        
         try:
             self.loop.run_forever()
         except KeyboardInterrupt:

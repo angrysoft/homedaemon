@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 
-from angrysql.sqlitedb import Connection
-from homedaemon.devicesdb import *
+from pymongo import MongoClient
 
-db = Connection({'dbfile': 'device.db'})
-dev = Devices()
+
+cli = MongoClient()
+db = cli.homedaemon
+dev = db.devices_data
+for c in db.collection.watch():
+    print(c)
+    

@@ -8,29 +8,66 @@ void _log(Object o) => print('  MAIN: $o');
 
 class Lights {
   DivElement loader = querySelector('#loader');
+  List<ButtonElement> buttons = new List();
+
   Lights() {
-    this.refresDevicesStatus(); 
+    this.loader.classes.add('show-loader');
+    this.buttons = querySelectorAll('.device button');
+    this.refresDevicesStatus();
+    this.loader.classes.remove('show-loader');
+    this.buttons.forEach((btn) {
+      btn.onClick.listen((event) {
+        event.preventDefault();
+        ButtonElement b = event.target;
+        String val = 'off';
+        if (b.value == 'off') {
+          val = 'on';
+        }
+        this.sendWriteCmd(
+            b.dataset['sid'], b.dataset['model'], b.dataset['status'], val);
+      });
+    });
+    this.watchDB();
   }
 
   void refresDevicesStatus() {
-    this.loader.classes.add('show-loader');
     HttpRequest.getString('/dev/data/all').then((String resp) {
       List<dynamic> jdata = jsonDecode(resp);
+      Map<String, dynamic> devs = new Map();
       jdata.forEach((dev) {
-        print(dev);
+        devs[dev['sid']] = dev;
+      });
+      this.buttons.forEach((btn) {
+        btn.value = devs[btn.dataset['sid']][btn.dataset['status']];
+        if (btn.value == 'on') {
+          btn.classes.add('orange');
+          btn.text = 'off';
+        } else if (btn.value == 'off') {
+          btn.classes.remove('orange');
+          btn.text = 'on';
+        }
       });
     });
-    this.loader.classes.remove('show-loader');
   }
 
-  void sendWriteCmd(String sid, String cmdname, String cmdvalue) {
+  Future<void> watchDB() async {
+    HttpRequest.getString('/dev/db/watch').then((String resp) {
+      if (resp.isNotEmpty) {
+        this.refresDevicesStatus();
+      }
+    });
+    this.watchDB();
+  }
+
+  void sendWriteCmd(String sid, String model, String cmdname, String cmdvalue) {
     FormData data = new FormData();
     data.append('sid', sid);
     data.append('cmdname', cmdname);
-    data.append(cmdvalue, cmdvalue);
+    data.append('cmdvalue', cmdvalue);
+    data.append('model', model);
     HttpRequest.request('/dev/write', method: 'POST', sendData: data)
         .then((HttpRequest resp) {
-      print(resp);
+      this.refresDevicesStatus();
     });
   }
 }
