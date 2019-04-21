@@ -26,5 +26,5 @@ class EventBase:
                 self.daemon.logger.warning(
                     f"The Device model={data.get('model')} with sid={data.get('sid')} are not registered ")
             else:
-                self.daemon.websend(info)
+                self.daemon.loop.create_task(self.daemon.websend(info))
                     

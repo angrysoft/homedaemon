@@ -68,15 +68,19 @@ class HomeDaemon:
         self.logger.info('Starting Daemon')
         self.token = None
         self.webserv = websockets.serve(self.watch_web, 'localhost', 8765)
+        self.websock = None
     
     async def watch_web(self, sock, path):
+        self.websock = sock
         item = await sock.recv()
         try:
             item = json.loads(item)
             self._queue_put(item)
+        except json.JSONDecodeError:
+            print(item)
     
     async def websend(self, info):
-        self.webserv.
+        await self.websock.send(info)
     
     def watch_queue(self):
         sleep(0.5)
@@ -125,7 +129,7 @@ class HomeDaemon:
         self.logger.info('Daemon is listening')
         print('Daemon is listening')
         
-        self.loop.rurn_until_complete(self.webserv)
+        self.loop.run_until_complete(self.webserv)
         
         try:
             self.loop.run_forever()

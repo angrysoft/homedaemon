@@ -6,15 +6,42 @@ import 'package:service_worker/window.dart' as sw;
 
 void _log(Object o) => print('  MAIN: $o');
 
+class WebSockets {
+  var websock;
+
+  WebSockets(String url) {
+    this.websock = new WebSocket(url);
+    _startListening();
+  }
+
+  void send(String value) {
+    this.websock.send(value);
+  }
+
+  void _startListening() {
+    this.websock.onOpen.listen((e) {
+      print('Connected!');
+    });
+
+    this.websock.onClose.listen((_) => print('Websocket closed.'));
+    this.websock.onError.listen((_) => print('Error opening connection.'));
+
+    this.websock.onMessage.listen((e) {
+      print('<== ${e.data}');
+    });
+  }
+}
+
 class Lights {
   DivElement loader = querySelector('#loader');
   List<ButtonElement> buttons = new List();
 
   Lights() {
     this.loader.classes.add('show-loader');
+    var ws = WebSockets('ws://127.0.0.1:8765');
     this.buttons = querySelectorAll('.device button');
     this.refresDevicesStatus();
-    this.loader.classes.remove('show-loader');
+
     this.buttons.forEach((btn) {
       btn.onClick.listen((event) {
         event.preventDefault();
@@ -23,11 +50,12 @@ class Lights {
         if (b.value == 'off') {
           val = 'on';
         }
+        ws.send(val);
         this.sendWriteCmd(
             b.dataset['sid'], b.dataset['model'], b.dataset['status'], val);
       });
     });
-    this.watchDB();
+    this.loader.classes.remove('show-loader');
   }
 
   void refresDevicesStatus() {
@@ -50,25 +78,16 @@ class Lights {
     });
   }
 
-  Future<void> watchDB() async {
-    HttpRequest.getString('/dev/db/watch').then((String resp) {
-      if (resp.isNotEmpty) {
-        this.refresDevicesStatus();
-      }
-    });
-    this.watchDB();
-  }
-
   void sendWriteCmd(String sid, String model, String cmdname, String cmdvalue) {
     FormData data = new FormData();
     data.append('sid', sid);
     data.append('cmdname', cmdname);
     data.append('cmdvalue', cmdvalue);
     data.append('model', model);
-    HttpRequest.request('/dev/write', method: 'POST', sendData: data)
-        .then((HttpRequest resp) {
-      this.refresDevicesStatus();
-    });
+    // HttpRequest.request('/dev/write', method: 'POST', sendData: data)
+    // .then((HttpRequest resp) {
+    // this.refresDevicesStatus();
+    // });
   }
 }
 

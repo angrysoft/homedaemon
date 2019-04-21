@@ -61,12 +61,6 @@ def dev(sid):
         del ret['_id']
     return json.dumps(ret)
 
-@app.route('/dev/db/watch')
-def db_watch(sid):
-    
-    return "refresh"
-
-
 @app.route('/dev/data/<sid>')
 def dev_data(sid):
     ret = db.devices_data.find_one({'sid': sid})
