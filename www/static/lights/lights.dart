@@ -8,37 +8,45 @@ void _log(Object o) => print('  MAIN: $o');
 
 class WebSockets {
   var websock;
+  String url;
 
-  WebSockets(String url) {
-    this.websock = new WebSocket(url);
-    _startListening();
-  }
+  WebSockets(String _url) {
+    this.url = _url;
+    this.connect();
 
-  void send(String value) {
-    this.websock.send(value);
-  }
-
-  void _startListening() {
     this.websock.onOpen.listen((e) {
       print('Connected!');
     });
 
-    this.websock.onClose.listen((_) => print('Websocket closed.'));
+    this.websock.onClose.listen((e) {
+      this.connect();
+    });
+
     this.websock.onError.listen((_) => print('Error opening connection.'));
 
     this.websock.onMessage.listen((e) {
       print('<== ${e.data}');
     });
   }
+
+  void connect() {
+    print('connecting...');
+    this.websock = new WebSocket(this.url);
+  }
+
+  void send(String value) {
+    this.websock.send(value);
+  }
 }
 
 class Lights {
   DivElement loader = querySelector('#loader');
   List<ButtonElement> buttons = new List();
+  var ws;
 
   Lights() {
     this.loader.classes.add('show-loader');
-    var ws = WebSockets('ws://127.0.0.1:8765');
+    this.ws = WebSockets('ws://127.0.0.1:9000');
     this.buttons = querySelectorAll('.device button');
     this.refresDevicesStatus();
 
@@ -50,7 +58,6 @@ class Lights {
         if (b.value == 'off') {
           val = 'on';
         }
-        ws.send(val);
         this.sendWriteCmd(
             b.dataset['sid'], b.dataset['model'], b.dataset['status'], val);
       });
@@ -79,11 +86,17 @@ class Lights {
   }
 
   void sendWriteCmd(String sid, String model, String cmdname, String cmdvalue) {
-    FormData data = new FormData();
-    data.append('sid', sid);
-    data.append('cmdname', cmdname);
-    data.append('cmdvalue', cmdvalue);
-    data.append('model', model);
+    Map<String, dynamic> msg = new Map();
+    msg['cmd'] = 'write';
+    msg['model'] = model;
+    msg['sid'] = sid;
+    msg['data'] = {cmdname: cmdvalue};
+    this.ws.send(json.encode(msg));
+
+    // data.append('sid', sid);
+    // data.append('cmdname', cmdname);
+    // data.append('cmdvalue', cmdvalue);
+    // data.append('model', model);
     // HttpRequest.request('/dev/write', method: 'POST', sendData: data)
     // .then((HttpRequest resp) {
     // this.refresDevicesStatus();

@@ -1,8 +1,10 @@
 [Unit]
-Description=Smart house Service
+Description=Smart home Service
+Requires=mongod.service
+After=mongod.service
 
 [Service]
-ExecStart=/usr/bin/housed.py
+ExecStart=/usr/bin/homed.py
 
 [Install]
 WantedBy=multi-user.target

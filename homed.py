@@ -38,6 +38,43 @@ import websockets
 sys.path.append('/etc/smarthouse')
 
 
+class WebSockServer:
+    def __init__(self, handler=print, url='127.0.0.1', port=9000, loop=None):
+        self.url = url
+        self.port = port
+        self.handler = handler
+        self.clients = set()
+        self.loop = loop
+        if self.loop is None:
+            try:
+                self.loop = asyncio.get_event_loop()
+            except RuntimeError:
+                self.loop = asyncio.new_event_loop()
+        self.loop.run_until_complete(websockets.serve(self._handler, self.url, self.port))
+
+    async def _handler(self, websocket, path):
+        await self._register(websocket)
+        try:
+            async for message in websocket:
+                self.handler(message)
+        finally:
+            await self._unregister(websocket)
+
+    async def _register(self, client):
+        self.clients.add(client)
+
+    async def _unregister(self, client):
+        self.clients.remove(client)
+
+    def send(self, msg):
+        if self.clients:
+            for client in self.clients:
+                client.send(msg)
+
+    def serve(self):
+        self.loop.run_forever()
+
+
 class HomeDaemon:
     def __init__(self):
         self.config = {"user": "homedaemon",
@@ -67,12 +104,9 @@ class HomeDaemon:
                                 level=logging.INFO)
         self.logger.info('Starting Daemon')
         self.token = None
-        self.webserv = websockets.serve(self.watch_web, 'localhost', 8765)
-        self.websock = None
+        self.webserv = WebSockServer(handler=self.watch_web, loop=self.loop)
     
-    async def watch_web(self, sock, path):
-        self.websock = sock
-        item = await sock.recv()
+    def watch_web(self, item):
         try:
             item = json.loads(item)
             self._queue_put(item)
@@ -128,8 +162,6 @@ class HomeDaemon:
 
         self.logger.info('Daemon is listening')
         print('Daemon is listening')
-        
-        self.loop.run_until_complete(self.webserv)
         
         try:
             self.loop.run_forever()
