@@ -64,12 +64,13 @@ class Plug(AquraBaseDevice):
     def __init__(self, data):
         super(Plug, self).__init__(data)
         self._status = None
+        self.writeable = True
 
     def do(self, **kwargs):
         if not {'token', 'cmd'}.issubset(kwargs):
             return
         if 'status' in kwargs['cmd']:
-            self.status(kwargs['token'], kwargs['cmd']['channel_0'])
+            self.status(kwargs['token'], kwargs['cmd']['status'])
 
     def status(self, token, value):
         self._write(token, {'status': value})

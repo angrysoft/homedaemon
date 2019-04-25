@@ -113,21 +113,17 @@ class Bravia:
             print(err)
 
     def power_on(self):
-        # if self.isOn():
-        if False:
-            return 'Power is on'
-        else:
-            data = b'FFFFFFFFFFFF' + (self.mac_address * 20).encode()
-            send_data = b''
+        data = b'FFFFFFFFFFFF' + (self.mac_address * 20).encode()
+        send_data = b''
 
-            # Split up the hex values and pack.
-            for i in range(0, len(data), 2):
-                send_data += struct.pack('B', int(data[i: i + 2], 16))
+        # Split up the hex values and pack.
+        for i in range(0, len(data), 2):
+            send_data += struct.pack('B', int(data[i: i + 2], 16))
 
-            # Broadcast it to the LAN.
-            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-            sock.sendto(send_data, ('255.255.255.255', 7))
+        # Broadcast it to the LAN.
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        sock.sendto(send_data, ('192.168.1.255', 7))
 
     def power_off(self):
         self.send_command('PowerOff')

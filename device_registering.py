@@ -25,7 +25,7 @@ def dev_list():
     list_devs.append({'cmd': 'report', 'model': 'rgbstrip', 'sid': 'rgb01',
                       'data': {'red': 0, 'green': 0, 'blue': 0}})
     list_devs.append({'cmd': 'write', 'model': 'bravia', 'sid': 'tv01', 'ip': '192.168.1.129',
-                      'mac': 'fc:f1:52:2a:9b:1e',
+                      'mac': 'FC:F1:52:2A:9B:1E',
                       'data': {'button': ''}})
     ye.discover()
     for bulb in ye.devices:

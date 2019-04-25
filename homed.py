@@ -67,9 +67,16 @@ class WebSockServer:
         self.clients.remove(client)
 
     def send(self, msg):
+        print('prare sending')
         if self.clients:
-            for client in self.clients:
-                client.send(msg)
+            self.loop.create_task(self._send(msg))
+
+    async def _send(self, msg):
+        print(f'_sending {msg}')
+        # await asyncio.wait([client.send(msg) for client in self.clients])
+        for client in self.clients:
+            await client.send(msg)
+            
 
     def serve(self):
         self.loop.run_forever()
@@ -113,9 +120,6 @@ class HomeDaemon:
         except json.JSONDecodeError:
             print(item)
     
-    async def websend(self, info):
-        await self.websock.send(info)
-    
     def watch_queue(self):
         sleep(0.5)
         while self.loop.is_running():
@@ -152,6 +156,7 @@ class HomeDaemon:
             self.events[inst.name] = inst
             self.logger.info(f'Load event: {inst.name}')
 
+
     def run(self):
         self._load_inputs()
         self._load_events()
@@ -161,7 +166,6 @@ class HomeDaemon:
         q.start()
 
         self.logger.info('Daemon is listening')
-        print('Daemon is listening')
         
         try:
             self.loop.run_forever()
@@ -183,6 +187,8 @@ class HomeDaemon:
         event_name = data.get('cmd')
         ev = self.events.get(event_name)
         if ev:
+            # with ThreadPoolExecutor(max_workers=4) as executors:
+                # executors.submit(ev.do, data)
             ev.do(data)
         else:
             self.logger.error(f'Unknown event: {data}')

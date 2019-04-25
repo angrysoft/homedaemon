@@ -9,9 +9,11 @@ void _log(Object o) => print('  MAIN: $o');
 class WebSockets {
   var websock;
   String url;
+  Function handler;
 
-  WebSockets(String _url) {
+  WebSockets(String _url, Function handler) {
     this.url = _url;
+    this.handler = handler;
     this.connect();
 
     this.websock.onOpen.listen((e) {
@@ -24,8 +26,9 @@ class WebSockets {
 
     this.websock.onError.listen((_) => print('Error opening connection.'));
 
-    this.websock.onMessage.listen((e) {
-      print('<== ${e.data}');
+    this.websock.onMessage.listen((e)  {
+      this.handler(e.data);
+      print('<${e.data}');
     });
   }
 
@@ -46,9 +49,10 @@ class Lights {
 
   Lights() {
     this.loader.classes.add('show-loader');
-    this.ws = WebSockets('ws://127.0.0.1:9000');
+    this.ws =
+        WebSockets('ws://127.0.0.1:9000', handler: this.refreshDevicesStatus);
     this.buttons = querySelectorAll('.device button');
-    this.refresDevicesStatus();
+    this.getDevicesStatus();
 
     this.buttons.forEach((btn) {
       btn.onClick.listen((event) {
@@ -65,7 +69,7 @@ class Lights {
     this.loader.classes.remove('show-loader');
   }
 
-  void refresDevicesStatus() {
+  void getDevicesStatus() {
     HttpRequest.getString('/dev/data/all').then((String resp) {
       List<dynamic> jdata = jsonDecode(resp);
       Map<String, dynamic> devs = new Map();
@@ -83,6 +87,26 @@ class Lights {
         }
       });
     });
+  }
+
+  void refreshDevicesStatus(data) {
+    Map<String, dynamic> info = json.decode(data);
+    if (info['cmd' != 'report']) {
+      return;
+    }
+    ButtonElement btn =
+        this.buttons.firstWhere((btn) => btn.dataset['sid'] == info['sid']);
+    if (btn == null) {
+      return;
+    }
+    btn.value = info['data'][btn.dataset['status']];
+    if (btn.value == 'on') {
+      btn.classes.add('orange');
+      btn.text = 'off';
+    } else if (btn.value == 'off') {
+      btn.classes.remove('orange');
+      btn.text = 'on';
+    }
   }
 
   void sendWriteCmd(String sid, String model, String cmdname, String cmdvalue) {

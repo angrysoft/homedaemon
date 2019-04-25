@@ -1,4 +1,3 @@
-import json
 
 
 class EventBase:
@@ -28,6 +27,7 @@ class EventBase:
             if result.matched_count < 1:
                 self.daemon.logger.warning(
                     f"The Device model={data.get('model')} with sid={data.get('sid')} are not registered ")
+                return False
             else:
-                self.daemon.webserv.send(json.dumps(info))
+                return True
 

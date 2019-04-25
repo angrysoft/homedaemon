@@ -11,12 +11,12 @@ class BraviaTv(BaseDevice):
     def do(self, token, cmd):
         print(self.ip, self.mac)
         b = Bravia(self.ip, macaddres=self.mac)
+
         if 'button' not in cmd:
             return
-        if b.is_on():
-            b.send_command(cmd['button'])
-        elif cmd.get('button') == 'PowerOn':
+        if cmd.get('button') == 'PowerOn':
             b.power_on()
+        elif b.is_on():
+            b.send_command(cmd['button'])
         else:
             print('tv is off')
-

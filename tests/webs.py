@@ -33,14 +33,31 @@ class WebSockServer:
     async def _unregister(self, client):
         self.clients.remove(client)
 
-    async def send(self, msg):
+    def send(self, msg):
         if self.clients:
-            await asyncio.wait([client.send(msg) for client in self.clients])
+            print(f'sending {msg}')
+            self.loop.create_task(self._send(msg))
+
+    async def _send(self, msg):
+        await asyncio.wait([client.send(msg) for client in self.clients])
 
     def serve(self):
         self.loop.run_forever()
 
 
+async def sender(ws):
+    while True:
+        await ws.send('dupa')
+        await asyncio.sleep(2)
+
 if __name__ == '__main__':
-    ws = WebSockServer()
-    ws.serve()
+    loop = asyncio.get_event_loop()
+    ws = WebSockServer(loop=loop)
+    # ws.serve()
+    loop.call_later(3, ws.send, 'dupa')
+    try:
+        loop.run_forever()
+    except KeyboardInterrupt:
+        loop.stop()
+
+
