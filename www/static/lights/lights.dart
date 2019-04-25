@@ -7,38 +7,60 @@ import 'package:service_worker/window.dart' as sw;
 void _log(Object o) => print('  MAIN: $o');
 
 class WebSockets {
-  var websock;
+  WebSocket websock;
   String url;
   Function handler;
+  num delayTime = 1000;
+  num startTime;
 
-  WebSockets(String _url, Function handler) {
+  WebSockets(String _url, {Function handler = print}) {
     this.url = _url;
     this.handler = handler;
     this.connect();
+  }
+
+  void connect() {
+    this.websock = new WebSocket(this.url);
 
     this.websock.onOpen.listen((e) {
       print('Connected!');
     });
 
     this.websock.onClose.listen((e) {
-      this.connect();
+      print('Close');
+      window.animationFrame.then(this.setStartTime);
     });
 
     this.websock.onError.listen((_) => print('Error opening connection.'));
 
-    this.websock.onMessage.listen((e)  {
+    this.websock.onMessage.listen((e) {
       this.handler(e.data);
       print('<${e.data}');
     });
   }
 
-  void connect() {
-    print('connecting...');
-    this.websock = new WebSocket(this.url);
+  void setStartTime(num start) {
+    this.startTime = start;
+    window.animationFrame.then(this.checkConnection);
+  }
+
+  void checkConnection(num frame) {
+    print('${frame} , ${this.startTime + this.delayTime}');
+    if (this.websock != null && this.websock.readyState == WebSocket.OPEN ||
+        this.websock.readyState == WebSocket.CONNECTING) {
+      return;
+    } else if (frame >= (this.startTime + this.delayTime)) {
+      print('reconecting');
+      this.startTime = frame;
+      this.connect();
+    }
+    window.animationFrame.then(this.checkConnection);
   }
 
   void send(String value) {
-    this.websock.send(value);
+    if (this.websock != null && this.websock.readyState == WebSocket.OPEN) {
+      this.websock.send(value);
+    }
   }
 }
 
@@ -62,8 +84,13 @@ class Lights {
         if (b.value == 'off') {
           val = 'on';
         }
-        this.sendWriteCmd(
-            b.dataset['sid'], b.dataset['model'], b.dataset['status'], val);
+        String cmd;
+        if (b.dataset.containsKey('cmd')) {
+          cmd = b.dataset['cmd'];
+        } else {
+          cmd = b.dataset['status'];
+        }
+        this.sendWriteCmd(b.dataset['sid'], b.dataset['model'], cmd, val);
       });
     });
     this.loader.classes.remove('show-loader');
@@ -89,23 +116,29 @@ class Lights {
     });
   }
 
-  void refreshDevicesStatus(data) {
-    Map<String, dynamic> info = json.decode(data);
-    if (info['cmd' != 'report']) {
-      return;
-    }
-    ButtonElement btn =
-        this.buttons.firstWhere((btn) => btn.dataset['sid'] == info['sid']);
-    if (btn == null) {
-      return;
-    }
-    btn.value = info['data'][btn.dataset['status']];
-    if (btn.value == 'on') {
-      btn.classes.add('orange');
-      btn.text = 'off';
-    } else if (btn.value == 'off') {
-      btn.classes.remove('orange');
-      btn.text = 'on';
+  void refreshDevicesStatus(data) async {
+    try {
+      Map<String, dynamic> info = json.decode(data);
+
+      for (ButtonElement btn in this.buttons) {
+        print('==${info} ${btn.dataset['status']}');
+        if (btn.dataset['sid'] == info['sid']) {
+          Map<String, dynamic> data = info['data'];
+          if (data.containsKey(btn.dataset['status'])) {
+            btn.value = data[btn.dataset['status']];
+            if (btn.value == 'on') {
+              btn.classes.add('orange');
+              btn.text = 'off';
+            } else if (btn.value == 'off') {
+              btn.classes.remove('orange');
+              btn.text = 'on';
+            }
+            break;
+          }
+        }
+      }
+    } catch (e) {
+      print(data);
     }
   }
 

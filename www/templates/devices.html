@@ -9,17 +9,17 @@
 <div class="col-xs-5 col-md-2 white round-8 padding-05 device">
   <div class="row center-xs">
     <div class="col-xs-12">
-      <p class="txt-center">{{ data.get('model') }}</p>
+      <p class="txt-center">{{ data.get('name') }}</p>
     </div>
   </div>
   
-  <div class="row center-xs">
+  <div class="row center-xs" id="{{ data.get('sid') }}">
     <div class="col-xs-6" >
-      <button class="btn-small" id="{{ data.get('sid') }}-channel_0" data-sid="{{ data.get('sid') }}" data-status="channel_0" data-model="{{ data.get('model') }}">On</button>
+      <button class="btn-small channel_0" data-sid="{{ data.get('sid') }}" data-status="channel_0" data-model="{{ data.get('model') }}">On</button>
     </div>
     
     <div class="col-xs-6" >
-      <button class="btn-small" id="{{ data.get('sid') }}-channel_1" data-sid="{{ data.get('sid') }}" data-status="channel_1" data-model="{{ data.get('model') }}">On</button>
+      <button class="btn-small channel_1" data-sid="{{ data.get('sid') }}" data-status="channel_1" data-model="{{ data.get('model') }}">On</button>
     </div>
     
   </div>
@@ -30,13 +30,13 @@
 <div class="col-xs-4 col-md-2 white round-8 padding-05 device">
   <div class="row center-xs">
     <div class="col-xs-12">
-      <p class="txt-center">{{ data.get('model') }}</p>
+      <p class="txt-center">{{ data.get('name') }}</p>
     </div>
   </div>
   
-  <div class="row center-xs">
+  <div class="row center-xs" id="{{ data.get('sid') }}">
     <div class="col-xs-6" >
-      <button class="btn-small" id="{{ data.get('sid') }}" data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="status">On</button>
+      <button class="btn-small"  data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="status">On</button>
     </div>
   </div>
 </div>
@@ -46,13 +46,13 @@
 <div class="col-xs-4 col-md-2 white round-8 padding-05 device">
   <div class="row center-xs">
     <div class="col-xs-12">
-      <p class="txt-center">{{ data.get('model') }}</p>
+      <p class="txt-center">{{ data.get('name') }}</p>
     </div>
   </div>
   
-  <div class="row center-xs">
+  <div class="row center-xs" id="{{ data.get('sid') }}">
     <div class="col-xs-6" >
-      <button class="btn-small" id="{{ data.get('sid') }}" data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="power">On</button>
+      <button class="btn-small" data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="power" data-cmd="set_power">On</button>
     </div>
   </div>
 </div>
@@ -62,13 +62,13 @@
 <div class="col-xs-4 col-md-2 white round-8 padding-05 device">
   <div class="row center-xs">
     <div class="col-xs-12">
-      <p class="txt-center">{{ data.get('model') }}</p>
+      <p class="txt-center">{{ data.get('name') }}</p>
     </div>
   </div>
   
-  <div class="row center-xs">
+  <div class="row center-xs" id="{{ data.get('sid') }}">
     <div class="col-xs-6" >
-      <button class="btn-small" id="{{ data.get('sid') }}" data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="power">On</button>
+      <button class="btn-small" data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="power" data-cmd="set_power">On</button>
     </div>
   </div>
 </div>

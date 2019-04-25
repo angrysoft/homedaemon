@@ -69,14 +69,12 @@ class WebSockServer:
     def send(self, msg):
         print('prare sending')
         if self.clients:
+            # await asyncio.wait([client.send(msg) for client in self.clients])
             self.loop.create_task(self._send(msg))
 
     async def _send(self, msg):
         print(f'_sending {msg}')
-        # await asyncio.wait([client.send(msg) for client in self.clients])
-        for client in self.clients:
-            await client.send(msg)
-            
+        await asyncio.wait([client.send(msg) for client in self.clients])
 
     def serve(self):
         self.loop.run_forever()
@@ -96,8 +94,16 @@ class HomeDaemon:
         self.peername = ''
         self.events = dict()
         self.inputs = dict()
-        self.inputs_list = ['gateway', 'arduino', 'tcp', 'yeelight']
-        self.event_list = ['heartbeat', 'report', 'write']
+        self.inputs_list = [
+            # 'gateway',
+            # 'arduino',
+            # 'tcp',
+            'yeelight'
+        ]
+        self.event_list = [
+            # 'heartbeat',
+            'report',
+            'write']
         self.queue = Queue()
         self.cli = MongoClient()
         self.db = self.cli.homedaemondb
@@ -125,7 +131,11 @@ class HomeDaemon:
         while self.loop.is_running():
             q = self.queue.get()
             if q:
-                self.event_watcher(q)
+                ev = Thread(target=self.event_watcher, args=(q,))
+                ev.setDaemon(True)
+                ev.start()
+
+            # self.event_watcher(q)
 
     async def timers(self):
         while True:
@@ -156,7 +166,6 @@ class HomeDaemon:
             self.events[inst.name] = inst
             self.logger.info(f'Load event: {inst.name}')
 
-
     def run(self):
         self._load_inputs()
         self._load_events()
@@ -166,7 +175,7 @@ class HomeDaemon:
         q.start()
 
         self.logger.info('Daemon is listening')
-        
+
         try:
             self.loop.run_forever()
         except KeyboardInterrupt:

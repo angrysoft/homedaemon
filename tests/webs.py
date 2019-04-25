@@ -3,6 +3,7 @@
 
 import asyncio
 import websockets
+import json
 
 
 class WebSockServer:
@@ -23,7 +24,7 @@ class WebSockServer:
         await self._register(websocket)
         try:
             async for message in websocket:
-                self.handler(message)
+                self.handler(message, self)
         finally:
             await self._unregister(websocket)
 
@@ -50,11 +51,16 @@ async def sender(ws):
         await ws.send('dupa')
         await asyncio.sleep(2)
 
+
+def echo(msg, sock):
+    data = json.loads(msg)
+    data['cmd'] = 'report'
+    sock.send(json.dumps(data))
+
+
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
-    ws = WebSockServer(loop=loop)
-    # ws.serve()
-    loop.call_later(3, ws.send, 'dupa')
+    ws = WebSockServer(echo, loop=loop)
     try:
         loop.run_forever()
     except KeyboardInterrupt:

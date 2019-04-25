@@ -17,7 +17,7 @@ class Bravia:
         self.psk = psk
         self.commands = {}
         self._macaddr = ''
-        self.macaddr = macaddres
+        self.mac_address = macaddres
 
     @property
     def mac_address(self):
