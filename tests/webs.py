@@ -24,7 +24,7 @@ class WebSockServer:
         await self._register(websocket)
         try:
             async for message in websocket:
-                self.handler(message, self)
+                await self.handler(message, self)
         finally:
             await self._unregister(websocket)
 
@@ -34,10 +34,11 @@ class WebSockServer:
     async def _unregister(self, client):
         self.clients.remove(client)
 
-    def send(self, msg):
+    async def send(self, msg):
         if self.clients:
             print(f'sending {msg}')
-            self.loop.create_task(self._send(msg))
+            await asyncio.wait([client.send(msg) for client in self.clients])
+            # self.loop.create_task(self._send(msg))
 
     async def _send(self, msg):
         await asyncio.wait([client.send(msg) for client in self.clients])
@@ -52,10 +53,10 @@ async def sender(ws):
         await asyncio.sleep(2)
 
 
-def echo(msg, sock):
+async def echo(msg, sock):
     data = json.loads(msg)
     data['cmd'] = 'report'
-    sock.send(json.dumps(data))
+    await sock.send(json.dumps(data))
 
 
 if __name__ == '__main__':

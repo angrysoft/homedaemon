@@ -67,14 +67,15 @@ class WebSockServer:
         self.clients.remove(client)
 
     def send(self, msg):
-        print('prare sending')
+        print(f'prare sending {len(self.clients)}')
         if self.clients:
             # await asyncio.wait([client.send(msg) for client in self.clients])
             self.loop.create_task(self._send(msg))
 
     async def _send(self, msg):
         print(f'_sending {msg}')
-        await asyncio.wait([client.send(msg) for client in self.clients])
+        for client in self.clients:
+            await client.send(msg)
 
     def serve(self):
         self.loop.run_forever()
@@ -97,7 +98,7 @@ class HomeDaemon:
         self.inputs_list = [
             # 'gateway',
             # 'arduino',
-            # 'tcp',
+            'tcp',
             'yeelight'
         ]
         self.event_list = [
@@ -129,13 +130,9 @@ class HomeDaemon:
     def watch_queue(self):
         sleep(0.5)
         while self.loop.is_running():
-            q = self.queue.get()
+            q = self.queue.get_nowait()
             if q:
-                ev = Thread(target=self.event_watcher, args=(q,))
-                ev.setDaemon(True)
-                ev.start()
-
-            # self.event_watcher(q)
+                self.event_watcher(q)
 
     async def timers(self):
         while True:
@@ -155,7 +152,7 @@ class HomeDaemon:
                 executors.submit(self.inputs[_input].listen, self._queue_put)
 
     def _queue_put(self, item):
-        self.queue.put(item)
+        self.queue.put_nowait(item)
         return str(self.queue.qsize())
 
     def _load_events(self):
@@ -170,7 +167,7 @@ class HomeDaemon:
         self._load_inputs()
         self._load_events()
 
-        q = Thread(target=self.watch_queue)
+        q = Thread(target=self.event_watcher)
         q.setDaemon(True)
         q.start()
 
@@ -188,19 +185,25 @@ class HomeDaemon:
     def stop(self, *args, **kwargs):
         self.loop.stop()
 
-    def event_watcher(self, data):
+    def event_watcher(self):
         """This method is """
-        if type(data) is not dict:
-            self.logger.warning(f'Wrong data: {data}')
+        sleep(0.5)
+        while self.loop.is_running():
+            print('loop')
+            data = self.queue.get()
+            if type(data) is not dict:
+                self.logger.warning(f'Wrong data: {data}')
+                continue
 
-        event_name = data.get('cmd')
-        ev = self.events.get(event_name)
-        if ev:
-            # with ThreadPoolExecutor(max_workers=4) as executors:
-                # executors.submit(ev.do, data)
-            ev.do(data)
-        else:
-            self.logger.error(f'Unknown event: {data}')
+            event_name = data.get('cmd')
+            ev = self.events.get(event_name)
+            if ev:
+                # with ThreadPoolExecutor(max_workers=4) as executors:
+                    # executors.submit(ev.do, data)
+                ev.do(data)
+            else:
+                self.logger.error(f'Unknown event: {data}')
+            self.queue.task_done()
 
 
 if __name__ == '__main__':
