@@ -1,4 +1,3 @@
-import asyncio
 import json
 from homedaemon.inputs import BaseInput
 
@@ -15,11 +14,7 @@ class HomeDaemonProto:
         self.transport = transport
 
     def data_received(self, data):
-        try:
-            _data = json.loads(data.decode())
-            self.watcher(_data)
-        except json.JSONDecodeError:
-            print('json err')
+        self.watcher(data)
         self.transport.write('ok\n'.encode())
 
     def eof_received(self):
@@ -33,7 +28,7 @@ class HomeDaemonProto:
 
 class Input(BaseInput):
     def __init__(self, queue, host='127.0.0.1', port='6666'):
-        super(Input, self).__init__(queue)
+        super(Input, self).__init__()
         self.name = 'Tcp'
         self.host = host
         self.port = port

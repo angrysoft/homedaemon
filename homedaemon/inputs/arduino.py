@@ -1,13 +1,12 @@
 from homedaemon.inputs import BaseInput
 from serial import Serial, SerialException
 from serial.tools.list_ports import comports
-
 import json
 
 
 class Input(BaseInput):
     def __init__(self, queue, baudrate=115200, port=None, timeout=0):
-        super(Input, self).__init__(queue)
+        super(Input, self).__init__()
         self.name = 'Arduino'
         self.arduino = Serial()
         if port is None:

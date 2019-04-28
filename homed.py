@@ -31,54 +31,10 @@ import json
 import logging
 from queue import Queue
 from concurrent.futures import ThreadPoolExecutor
-from threading import Thread
+from threading import Thread, current_thread
 from time import sleep
 from pymongo import MongoClient
-import websockets
 sys.path.append('/etc/smarthouse')
-
-
-class WebSockServer:
-    def __init__(self, handler=print, url='127.0.0.1', port=9000, loop=None):
-        self.url = url
-        self.port = port
-        self.handler = handler
-        self.clients = set()
-        self.loop = loop
-        if self.loop is None:
-            try:
-                self.loop = asyncio.get_event_loop()
-            except RuntimeError:
-                self.loop = asyncio.new_event_loop()
-        self.loop.run_until_complete(websockets.serve(self._handler, self.url, self.port))
-
-    async def _handler(self, websocket, path):
-        await self._register(websocket)
-        try:
-            async for message in websocket:
-                self.handler(message)
-        finally:
-            await self._unregister(websocket)
-
-    async def _register(self, client):
-        self.clients.add(client)
-
-    async def _unregister(self, client):
-        self.clients.remove(client)
-
-    def send(self, msg):
-        print(f'prare sending {len(self.clients)}')
-        if self.clients:
-            # await asyncio.wait([client.send(msg) for client in self.clients])
-            self.loop.create_task(self._send(msg))
-
-    async def _send(self, msg):
-        print(f'_sending {msg}')
-        for client in self.clients:
-            await client.send(msg)
-
-    def serve(self):
-        self.loop.run_forever()
 
 
 class HomeDaemon:
@@ -99,6 +55,7 @@ class HomeDaemon:
             # 'gateway',
             # 'arduino',
             'tcp',
+            'websocket',
             'yeelight'
         ]
         self.event_list = [
@@ -118,42 +75,39 @@ class HomeDaemon:
                                 level=logging.INFO)
         self.logger.info('Starting Daemon')
         self.token = None
-        self.webserv = WebSockServer(handler=self.watch_web, loop=self.loop)
-    
-    def watch_web(self, item):
-        try:
-            item = json.loads(item)
-            self._queue_put(item)
-        except json.JSONDecodeError:
-            print(item)
-    
-    def watch_queue(self):
-        sleep(0.5)
-        while self.loop.is_running():
-            q = self.queue.get_nowait()
-            if q:
-                self.event_watcher(q)
+
+    def notify_clients(self, msg):
+        if 'websocket' in self.inputs:
+            self.inputs['websocket'].send(msg)
 
     async def timers(self):
         while True:
             self._queue_put({'cmd': 'timers', 'data': 'all'})
             await asyncio.sleep(60)
 
-    def _load_inputs(self):
-        for i in self.inputs_list:
-            _input = importlib.import_module(f'homedaemon.inputs.{i}')
-            inst = _input.Input(self._queue_put)
-            self.inputs[inst.name] = inst
-            self.logger.info(f'load input: {inst.name}')
+    def _load_input(self, input_name):
+        _input = importlib.import_module(f'homedaemon.inputs.{input_name}')
+        inst = _input.Input(self._queue_put)
+        self.inputs[inst.name] = inst
+        self.logger.info(f'load input: {inst.name} {self.inputs}')
+        # self.inputs[inst.name].listen()
 
     def _listen_inputs(self):
-        with ThreadPoolExecutor(max_workers=len(self.inputs)) as executors:
-            for _input in self.inputs:
-                executors.submit(self.inputs[_input].listen, self._queue_put)
+        with ThreadPoolExecutor() as e:
+            for _input in self.inputs_list:
+                print(f'{_input}')
+                e.submit(self._load_input, _input)
+            print(f'all input are listening {self.inputs}')
 
     def _queue_put(self, item):
+        if type(item) is not dict:
+            try:
+                item = json.loads(item)
+            except json.JSONDecodeError:
+                self.logger.warning(f'Wrong data: {item}')
+                return
+        print(f'put {item}')
         self.queue.put_nowait(item)
-        return str(self.queue.qsize())
 
     def _load_events(self):
         """loadEvents"""
@@ -164,12 +118,12 @@ class HomeDaemon:
             self.logger.info(f'Load event: {inst.name}')
 
     def run(self):
-        self._load_inputs()
+        print(f'main thread {current_thread()}')
+        # self._load_inputs()
         self._load_events()
+        self._listen_inputs()
 
-        q = Thread(target=self.event_watcher)
-        q.setDaemon(True)
-        q.start()
+        q = Thread(target=self.event_watcher, daemon=True).start()
 
         self.logger.info('Daemon is listening')
 
@@ -183,27 +137,24 @@ class HomeDaemon:
         self.loop.add_signal_handler(signal.SIGTERM, self.stop)
 
     def stop(self, *args, **kwargs):
+        print('stop loop')
         self.loop.stop()
+        for _input in self.inputs:
+            print(f'sotps {_input}')
+            self.inputs[_input].stop()
 
     def event_watcher(self):
         """This method is """
         sleep(0.5)
         while self.loop.is_running():
-            print('loop')
+            print(f'loop {current_thread()}')
             data = self.queue.get()
-            if type(data) is not dict:
-                self.logger.warning(f'Wrong data: {data}')
-                continue
-
             event_name = data.get('cmd')
             ev = self.events.get(event_name)
             if ev:
-                # with ThreadPoolExecutor(max_workers=4) as executors:
-                    # executors.submit(ev.do, data)
                 ev.do(data)
             else:
                 self.logger.error(f'Unknown event: {data}')
-            self.queue.task_done()
 
 
 if __name__ == '__main__':
