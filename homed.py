@@ -63,6 +63,7 @@ class HomeDaemon:
             'report',
             'write']
         self.queue = Queue()
+        # self.queue = asyncio.Queue()
         self.cli = MongoClient()
         self.db = self.cli.homedaemondb
         self.devices = self.db.devices
@@ -75,6 +76,7 @@ class HomeDaemon:
                                 level=logging.INFO)
         self.logger.info('Starting Daemon')
         self.token = None
+        self.workers = set()
 
     def notify_clients(self, msg):
         if 'websocket' in self.inputs:
@@ -89,15 +91,14 @@ class HomeDaemon:
         _input = importlib.import_module(f'homedaemon.inputs.{input_name}')
         inst = _input.Input(self._queue_put)
         self.inputs[inst.name] = inst
-        self.logger.info(f'load input: {inst.name} {self.inputs}')
-        # self.inputs[inst.name].listen()
+        self.logger.info(f'load input: {inst.name}')
+        self.inputs[inst.name].listen()
 
     def _listen_inputs(self):
         with ThreadPoolExecutor() as e:
             for _input in self.inputs_list:
                 print(f'{_input}')
-                e.submit(self._load_input, _input)
-            print(f'all input are listening {self.inputs}')
+                self.workers.add(e.submit(self._load_input, _input))
 
     def _queue_put(self, item):
         if type(item) is not dict:
@@ -119,7 +120,6 @@ class HomeDaemon:
 
     def run(self):
         print(f'main thread {current_thread()}')
-        # self._load_inputs()
         self._load_events()
         self._listen_inputs()
 
@@ -142,6 +142,8 @@ class HomeDaemon:
         for _input in self.inputs:
             print(f'sotps {_input}')
             self.inputs[_input].stop()
+        for worker in self.workers:
+            worker.shutdown()
 
     def event_watcher(self):
         """This method is """

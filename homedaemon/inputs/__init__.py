@@ -1,16 +1,16 @@
 import asyncio
-import threading
+from threading import current_thread
 
 
 class BaseInput:
     def __init__(self):
-        try:
-            self.loop = asyncio.get_event_loop()
-        except RuntimeError:
-            self.loop = asyncio.new_event_loop()
+        self.iniTh = str(current_thread())
+        print(f'init from {str(current_thread())}')
+        self.loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(self.loop)
 
     def listen(self):
-        print(f'listen {self.name} from {threading.current_thread()} thread')
+        print(f'listen {self.name} from {current_thread()} thread init {self.iniTh}')
         try:
             self.loop.run_forever()
         except KeyboardInterrupt:

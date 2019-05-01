@@ -10,7 +10,7 @@ class HomeDaemonProto:
 
     def connection_made(self, transport):
         self.peername = transport.get_extra_info('peername')
-        print('Connection from {}'.format(self.peername))
+        print(f'Connection from {self.peername}')
         self.transport = transport
 
     def data_received(self, data):
