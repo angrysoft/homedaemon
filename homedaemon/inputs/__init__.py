@@ -14,7 +14,8 @@ class BaseInput:
         try:
             self.loop.run_forever()
         except KeyboardInterrupt:
-            self.stop()
+            pass
 
     def stop(self):
         self.loop.stop()
+        self.loop.close()

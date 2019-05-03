@@ -29,12 +29,35 @@ import importlib
 import sys
 import json
 import logging
-from queue import Queue
+# from queue import Queue
 from concurrent.futures import ThreadPoolExecutor
-from threading import Thread, current_thread
+from threading import Thread, current_thread, RLock, Condition
 from time import sleep
-from pymongo import MongoClient
+from couchdb import Server
 sys.path.append('/etc/smarthouse')
+
+
+class Queue:
+    def __init__(self):
+        self._queue = list()
+        self.lock = RLock()
+
+    def put(self, item):
+        with self.lock:
+            self._queue.append(item)
+
+    def get(self):
+        if self._queue:
+            with self.lock:
+                return self._queue.pop(0)
+        else:
+            return None
+
+    def is_empty(self):
+        if self._queue:
+            return False
+        else:
+            return True
 
 
 class HomeDaemon:
@@ -43,31 +66,27 @@ class HomeDaemon:
                        "password": "devpas",
                        "dbname": "homedamondb",
                        "addr": "localhost"}
-        self.server = None
+        self.stopping = False
         self.loop = asyncio.get_event_loop()
         self.buffer_size = 1024
-        self.transport = None
-        self.protocol = None
-        self.peername = ''
         self.events = dict()
         self.inputs = dict()
         self.inputs_list = [
-            # 'gateway',
+            'dummy'
+            # 'gateway'
             # 'arduino',
-            'tcp',
-            'websocket',
-            'yeelight'
+            # 'tcp',
+            # 'websocket',
+            # 'yeelight'
         ]
         self.event_list = [
-            # 'heartbeat',
+            'heartbeat',
             'report',
             'write']
         self.queue = Queue()
-        # self.queue = asyncio.Queue()
-        self.cli = MongoClient()
-        self.db = self.cli.homedaemondb
-        self.devices = self.db.devices
-        self.device_data = self.db.devices_data
+        self.db = Server()
+        self.devices = self.db['devices']
+        self.device_data = self.db['devices-data']
         self.logger = logging
         self.logger.basicConfig(filename='homed.log',
                                 filemode='w',  # TODO: change to 'a' in production mode
@@ -77,6 +96,7 @@ class HomeDaemon:
         self.logger.info('Starting Daemon')
         self.token = None
         self.workers = set()
+        self.watcher = None
 
     def notify_clients(self, msg):
         if 'websocket' in self.inputs:
@@ -95,10 +115,13 @@ class HomeDaemon:
         self.inputs[inst.name].listen()
 
     def _listen_inputs(self):
-        with ThreadPoolExecutor() as e:
-            for _input in self.inputs_list:
-                print(f'{_input}')
-                self.workers.add(e.submit(self._load_input, _input))
+        # self.e = ThreadPoolExecutor()
+        # for _input in self.inputs_list:
+        #     self.workers.add(self.e.submit(self._load_input, _input))
+        for _input in self.inputs_list:
+            th =Thread(name=_input, target=self._load_input, args=(_input,), daemon=True)
+            self.workers.add(th)
+            th.start()
 
     def _queue_put(self, item):
         if type(item) is not dict:
@@ -108,7 +131,7 @@ class HomeDaemon:
                 self.logger.warning(f'Wrong data: {item}')
                 return
         print(f'put {item}')
-        self.queue.put_nowait(item)
+        self.queue.put(item)
 
     def _load_events(self):
         """loadEvents"""
@@ -122,41 +145,57 @@ class HomeDaemon:
         print(f'main thread {current_thread()}')
         self._load_events()
         self._listen_inputs()
-
-        q = Thread(target=self.event_watcher, daemon=True).start()
-
-        self.logger.info('Daemon is listening')
-
-        try:
-            self.loop.run_forever()
-        except KeyboardInterrupt:
-            self.stop()
         self.loop.add_signal_handler(signal.SIGINT, self.stop)
         self.loop.add_signal_handler(signal.SIGHUP, self.stop)
         self.loop.add_signal_handler(signal.SIGQUIT, self.stop)
         self.loop.add_signal_handler(signal.SIGTERM, self.stop)
 
+        self.watcher = Thread(target=self.event_watcher, daemon=True)
+        self.watcher.start()
+
+        try:
+            self.logger.info('Daemon is listening')
+            self.loop.run_forever()
+        except KeyboardInterrupt:
+            pass
+
     def stop(self, *args, **kwargs):
-        print('stop loop')
-        self.loop.stop()
+        print('Stop')
+        self.stopping = True
+        self.watcher.join()
         for _input in self.inputs:
             print(f'sotps {_input}')
             self.inputs[_input].stop()
-        for worker in self.workers:
-            worker.shutdown()
+
+        print('stop loop')
+        self.loop.stop()
+        print('close loop')
+        self.loop.close()
+
+        # for worker in self.workers:
+        #     worker.cancel()
+        #
+        # self.e.shutdown()
 
     def event_watcher(self):
         """This method is """
-        sleep(0.5)
-        while self.loop.is_running():
-            print(f'loop {current_thread()}')
+        print(f'loop {current_thread()}')
+        while not self.stopping:
+            print(self.stopping)
+            if self.queue.is_empty():
+                sleep(0.1)
+                continue
+
             data = self.queue.get()
+            print(f'get {data}')
             event_name = data.get('cmd')
             ev = self.events.get(event_name)
             if ev:
                 ev.do(data)
             else:
                 self.logger.error(f'Unknown event: {data}')
+        print('Stop watching')
+
 
 
 if __name__ == '__main__':

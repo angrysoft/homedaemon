@@ -11,7 +11,7 @@ class Input(BaseInput):
         self.port = port
         self.handler = handler
         self.clients = set()
-        self.loop.run_until_complete(websockets.serve(self._handler, self.url, self.port))
+        self.server = self.loop.run_until_complete(websockets.serve(self._handler, self.url, self.port))
 
     async def _handler(self, websocket, path):
         await self._register(websocket)
@@ -37,3 +37,7 @@ class Input(BaseInput):
         print(f'_sending {msg}')
         for client in self.clients:
             await client.send(msg)
+
+    def quit(self):
+        self.loop.stop()
+        self.server.close()

@@ -10,7 +10,7 @@ class Event(EventBase):
 
     def do(self, data):
         print('write event', data)
-        dev_data = self.daemon.devices.find_one({'sid': data.get('sid')})
+        dev_data = self.daemon.devices.get(data.get('sid'))
         if not dev_data:
             self.daemon.logger.warning(
                     f"The Device model={data.get('model')} with sid={data.get('sid')} are not registered ")

@@ -29,7 +29,7 @@ from flask import render_template
 from flask import redirect
 import json
 import asyncio
-from pymongo import MongoClient
+from couchdb import Server
 
 app = Flask(__name__)
 
@@ -47,35 +47,30 @@ async def send_event(msg):
 # www
 @app.route('/')
 def index():
-    devices = [d for d in db.devices.find()]
-    device_data = dict() 
-    for di in db.devices_data.find():
-        device_data[di.get('sid')] = di
-    return render_template('index.html', devices=devices, devdata=device_data)
+    devices = [db['devices'][d] for d in db['devices']]
+    devices_data = dict()
+    for dd in db['devices-data']:
+        devices_data[dd] = db['devices-data'][dd]
+    return render_template('index.html', devices=devices, devdata=devices_data)
 
 
 @app.route('/dev/<sid>')
 def dev(sid):
-    ret = db.devices.find_one({'sid': sid})
-    if '_id' in ret:
-        del ret['_id']
+    ret = db['devices'].get(sid)
     return json.dumps(ret)
+
 
 @app.route('/dev/data/<sid>')
 def dev_data(sid):
-    ret = db.devices_data.find_one({'sid': sid})
-    if '_id' in ret:
-        del ret['_id']
+    ret = db['devices-data'].get(sid)
     return json.dumps(ret)
 
 
 @app.route('/dev/data/all')
 def dev_data_all():
-    device_data = [d for d in db.devices_data.find()]
-    for dev in device_data:
-        if '_id' in dev:
-            del dev['_id']
+    device_data = [db['devices-data'].get(d) for d in db['devices-data']]
     return json.dumps(device_data)
+
 
 @app.route('/dev/write', methods=['GET', 'POST'])
 def dev_write():
@@ -89,6 +84,7 @@ def dev_write():
                'data': {request.form.get('cmdname'): request.form.get('cmdvalue')}}
         asyncio.run(send_event(json.dumps(msg)))
     return redirect(f'/dev/write/?status=ok')
+
 
 @app.route('/tv')
 def tv_pilot():
@@ -111,7 +107,7 @@ def tv_button(name):
 
 @app.route('/lights')
 def ligths():
-    devices = [d for d in db.devices.find()]
+    devices = [db['devices'][d] for d in db['devices']]
     return render_template('lights.html', devices=devices)
 
 
@@ -119,13 +115,6 @@ def ligths():
 def leds():
     """led"""
     return render_template('leds.html')
-
-
-@app.route('/leds/color/<num>')
-def ledsColor(num):
-    """led"""
-
-    return db.getColor(num)
 
 
 @app.route('/leds/pilot')
@@ -148,8 +137,7 @@ def changeColor(rgb):
     return redirect('/leds/changeColor/{}?status={}'.format(rgb, status))
 
 
-cli = MongoClient()
-db = cli.homedaemondb
+db = Server()
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', use_reloader=False) #, port=80)
