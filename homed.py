@@ -172,8 +172,8 @@ class HomeDaemon:
         print('close loop')
         self.loop.close()
 
-        # for worker in self.workers:
-        #     worker.cancel()
+        for worker in self.workers:
+            worker.join()
         #
         # self.e.shutdown()
 
