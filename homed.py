@@ -151,7 +151,7 @@ class HomeDaemon:
 
     def event_watcher(self):
         """This method is """
-        print(f'Waching Queue')
+        print(f'Waching Queue {current_thread()}')
         while self.loop.is_running():
             if self.queue.empty():
                 sleep(0.1)
@@ -166,7 +166,7 @@ class HomeDaemon:
             event_name = data.get('cmd')
             ev = self.events.get(event_name)
             if ev:
-                ev.do(data)
+                Thread(target=ev.do, args=(data,)).start()
             else:
                 self.logger.error(f'Unknown event: {data}')
         print('Stop watching')

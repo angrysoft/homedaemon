@@ -1,5 +1,6 @@
 from homedaemon.events import EventBase
 import json
+from threading import current_thread
 
 
 class Event(EventBase):
@@ -10,6 +11,7 @@ class Event(EventBase):
 
     def do(self, data):
         with self.lock:
+            print(f'report {current_thread()}')
             self.daemon.notify_clients(json.dumps(data))
             self.update_dev_data(data)
 

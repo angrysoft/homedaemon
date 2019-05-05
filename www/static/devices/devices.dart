@@ -44,7 +44,6 @@ class WebSockets {
   }
 
   void checkConnection(num frame) {
-    print(frame);
     if (this.websock != null && this.websock.readyState == WebSocket.OPEN ||
         this.websock.readyState == WebSocket.CONNECTING) {
       return;
@@ -67,7 +66,7 @@ class Devices {
   List<ButtonElement> buttons = new List();
   var ws;
 
-  Lights() {
+  Devices() {
     this.loader.classes.add('show-loader');
     this.ws =
         WebSockets('ws://127.0.0.1:9000', handler: this.refreshDevicesStatus);

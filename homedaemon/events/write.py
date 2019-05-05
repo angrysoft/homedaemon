@@ -1,5 +1,6 @@
 from homedaemon.events import EventBase
 from homedaemon.devices import Device
+from threading import current_thread
 
 
 class Event(EventBase):
@@ -9,8 +10,8 @@ class Event(EventBase):
         self._type = 'command'
 
     def do(self, data):
-        print(f"write event {data.get('model')} {data.get('data')}")
         with self.lock:
+            print(f"write event {data.get('model')} {data.get('data')} {current_thread()}")
             dev_data = self.daemon.devices.get(data.get('sid'))
             if not dev_data:
                 self.daemon.logger.warning(

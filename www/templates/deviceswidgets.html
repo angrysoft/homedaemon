@@ -5,14 +5,14 @@
 {%- endmacro %}
 
 {% macro ctrl_neutral1(data) -%}
-<div class="col-xs-5 col-md-2 white round-8 padding-05 device">
+<div class="col-xs-5 col-md-2 white round-8 padding-05 device"  id="{{ data.get('sid') }}">
   <div class="row center-xs">
     <div class="col-xs-12">
       <p class="txt-center">{{ data.get('name') }}</p>
     </div>
   </div>
   
-  <div class="row center-xs" id="{{ data.get('sid') }}">
+  <div class="row center-xs">
     <div class="col-xs-6" >
       <button class="btn-small channel_0" data-sid="{{ data.get('sid') }}" data-status="channel_0" data-model="{{ data.get('model') }}">On</button>
     </div>
@@ -22,14 +22,14 @@
 {%- endmacro %}
 
 {% macro ctrl_neutral2(data) -%}
-<div class="col-xs-5 col-md-2 white round-8 padding-05 device">
+<div class="col-xs-5 col-md-2 white round-8 padding-05 device"  id="{{ data.get('sid') }}">
   <div class="row center-xs">
     <div class="col-xs-12">
       <p class="txt-center">{{ data.get('name') }}</p>
     </div>
   </div>
   
-  <div class="row center-xs" id="{{ data.get('sid') }}">
+  <div class="row center-xs">
     <div class="col-xs-6" >
       <button class="btn-small channel_0" data-sid="{{ data.get('sid') }}" data-status="channel_0" data-model="{{ data.get('model') }}">On</button>
     </div>
@@ -43,14 +43,14 @@
 {%- endmacro %}
 
 {% macro plug(data) -%}
-<div class="col-xs-4 col-md-2 white round-8 padding-05 device">
+<div class="col-xs-5 col-md-2 white round-8 padding-05 device"  id="{{ data.get('sid') }}">
   <div class="row center-xs">
     <div class="col-xs-12">
       <p class="txt-center">{{ data.get('name') }}</p>
     </div>
   </div>
   
-  <div class="row center-xs" id="{{ data.get('sid') }}">
+  <div class="row center-xs">
     <div class="col-xs-6" >
       <button class="btn-small"  data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="status">On</button>
     </div>
@@ -59,14 +59,14 @@
 {%- endmacro %}
 
 {% macro bslamp1(data) -%}
-<div class="col-xs-4 col-md-2 white round-8 padding-05 device">
+<div class="col-xs-5 col-md-2 white round-8 padding-05 device"  id="{{ data.get('sid') }}">
   <div class="row center-xs">
     <div class="col-xs-12">
       <p class="txt-center">{{ data.get('name') }}</p>
     </div>
   </div>
   
-  <div class="row center-xs" id="{{ data.get('sid') }}">
+  <div class="row center-xs">
     <div class="col-xs-6" >
       <button class="btn-small" data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="power" data-cmd="set_power">On</button>
     </div>
@@ -75,14 +75,14 @@
 {%- endmacro %}
 
 {% macro color(data) -%}
-<div class="col-xs-4 col-md-2 white round-8 padding-05 device">
+<div class="col-xs-5 col-md-2 white round-8 padding-05 device"  id="{{ data.get('sid') }}">
   <div class="row center-xs">
     <div class="col-xs-12">
       <p class="txt-center">{{ data.get('name') }}</p>
     </div>
   </div>
   
-  <div class="row center-xs" id="{{ data.get('sid') }}">
+  <div class="row center-xs">
     <div class="col-xs-6" >
       <button class="btn-small" data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="power" data-cmd="set_power">On</button>
     </div>
@@ -91,26 +91,26 @@
 {%- endmacro %}
 
 {% macro sensor_ht(data) -%}
-<div class="col-xs-4 col-md-2 white round-8 padding-05 device">
+<div class="col-xs-5 col-md-2 white round-8 padding-05 device"  id="{{ data.get('sid') }}">
   <div class="row center-xs">
     <div class="col-xs-12">
       <p class="txt-center">{{ data.get('name') }}</p>
     </div>
   </div>
   
-  <div class="row center-xs" id="{{ data.get('sid') }}">
+  <div class="row center-xs">
     <div class="col-xs-12" >
       <label class="label">Temp: </label><span class='info' data-sid="{{ data.get('sid') }}" data-status="temperature">?</span>
     </div>
   </div>
 
-  <div class="row center-xs" id="{{ data.get('sid') }}">
+  <div class="row center-xs">
     <div class="col-xs-12" >
       <label class="label">Humidity: </label><span class='info' data-sid="{{ data.get('sid') }}" data-status="humidity">?</span>
     </div>
   </div>
 
-  <div class="row center-xs" id="{{ data.get('sid') }}">
+  <div class="row center-xs">
     <div class="col-xs-12" >
       <label class="label">Vol: </label><span class='info' data-sid="{{ data.get('sid') }}" data-status="voltage">?</span>
     </div>
@@ -119,32 +119,32 @@
 {%- endmacro %}
 
 {% macro weather_v1(data) -%}
-<div class="col-xs-4 col-md-2 white round-8 padding-05 device">
+<div class="col-xs-5 col-md-2 white round-8 padding-05 device"  id="{{ data.get('sid') }}">
   <div class="row center-xs">
     <div class="col-xs-12">
       <p class="txt-center">{{ data.get('name') }}</p>
     </div>
   </div>
 
-  <div class="row center-xs" id="{{ data.get('sid') }}">
+  <div class="row center-xs">
     <div class="col-xs-12" >
       <label class="label">Temp: </label><span class='info' data-sid="{{ data.get('sid') }}" data-status="temperature">?</span>
     </div>
   </div>
 
-  <div class="row center-xs" id="{{ data.get('sid') }}">
+  <div class="row center-xs">
     <div class="col-xs-12" >
       <label class="label">Humidity: </label><span class='info' data-sid="{{ data.get('sid') }}" data-status="humidity">?</span>
     </div>
   </div>
 
-  <div class="row center-xs" id="{{ data.get('sid') }}">
+  <div class="row center-xs">
     <div class="col-xs-12" >
       <label class="label">Pressure</label><span class='info' data-sid="{{ data.get('sid') }}" data-status="pressure">?</span>
     </div>
   </div>
 
-  <div class="row center-xs" id="{{ data.get('sid') }}">
+  <div class="row center-xs">
     <div class="col-xs-12" >
       <label class="label">Vol: </label><span class='info' data-sid="{{ data.get('sid') }}" data-status="voltage">?</span>
     </div>
@@ -153,32 +153,32 @@
 {%- endmacro %}
 
 {% macro sensor_motion_aq2(data) -%}
-<div class="col-xs-4 col-md-2 white round-8 padding-05 device">
+<div class="col-xs-5 col-md-2 white round-8 padding-05 device"  id="{{ data.get('sid') }}">
   <div class="row center-xs">
     <div class="col-xs-12">
       <p class="txt-center">{{ data.get('name') }}</p>
     </div>
   </div>
 
-  <div class="row center-xs" id="{{ data.get('sid') }}">
+  <div class="row center-xs">
     <div class="col-xs-12" >
       <label class="label">Lux: </label><span class='info' data-sid="{{ data.get('sid') }}" data-status="lux">?</span>
     </div>
   </div>
 
-  <div class="row center-xs" id="{{ data.get('sid') }}">
+  <div class="row center-xs">
     <div class="col-xs-12" >
       <label class="label">No motion: </label><span class='info' data-sid="{{ data.get('sid') }}" data-status="mo_motion">?</span>
     </div>
   </div>
 
-  <div class="row center-xs" id="{{ data.get('sid') }}">
+  <div class="row center-xs">
     <div class="col-xs-12" >
       <label class="label">Status: </label><span class='info' data-sid="{{ data.get('sid') }}" data-status="status">?</span>
     </div>
   </div>
 
-  <div class="row center-xs" id="{{ data.get('sid') }}">
+  <div class="row center-xs">
     <div class="col-xs-12" >
       <label class="label">Vol: </label><span class='info' data-sid="{{ data.get('sid') }}" data-status="voltage">?</span>
     </div>
@@ -188,20 +188,20 @@
 {%- endmacro %}
 
 {% macro magnet(data) -%}
-<div class="col-xs-4 col-md-2 white round-8 padding-05 device">
+<div class="col-xs-5 col-md-2 white round-8 padding-05 device"  id="{{ data.get('sid') }}">
   <div class="row center-xs">
     <div class="col-xs-12">
       <p class="txt-center">{{ data.get('name') }}</p>
     </div>
   </div>
 
-  <div class="row center-xs" id="{{ data.get('sid') }}">
+  <div class="row center-xs">
     <div class="col-xs-12" >
       <label class="label">Status: </label><span class='info' data-sid="{{ data.get('sid') }}" data-status="status">?</span>
     </div>
   </div>
 
-  <div class="row center-xs" id="{{ data.get('sid') }}">
+  <div class="row center-xs">
     <div class="col-xs-12" >
       <label class="label">Vol: </label><span class='info' data-sid="{{ data.get('sid') }}" data-status="voltage">?</span>
     </div>
