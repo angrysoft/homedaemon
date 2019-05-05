@@ -1,20 +1,21 @@
 import asyncio
-from threading import current_thread
+from threading import Thread
 
 
-class BaseInput:
-    def __init__(self):
-        self.iniTh = str(current_thread())
-        print(f'init from {str(current_thread())}')
+class BaseInput(Thread):
+    def __init__(self, queue):
+        super().__init__()
+        self.setDaemon(True)
+        self.queue = queue
         self.loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self.loop)
 
-    def listen(self):
-        print(f'listen {self.name} from {current_thread()} thread init {self.iniTh}')
+    def run(self):
+        print(f'listen {self.name}')
         try:
             self.loop.run_forever()
         except KeyboardInterrupt:
-            pass
+            print('omg')
 
     def stop(self):
         self.loop.stop()

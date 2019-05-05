@@ -29,9 +29,7 @@ import importlib
 import sys
 import json
 import logging
-# from queue import Queue
-from concurrent.futures import ThreadPoolExecutor
-from threading import Thread, current_thread, RLock, Condition
+from threading import Thread, current_thread, RLock
 from time import sleep
 from couchdb import Server
 sys.path.append('/etc/smarthouse')
@@ -53,12 +51,11 @@ class Queue:
         else:
             return None
 
-    def is_empty(self):
+    def empty(self):
         if self._queue:
             return False
         else:
             return True
-
 
 class HomeDaemon:
     def __init__(self):
@@ -66,18 +63,17 @@ class HomeDaemon:
                        "password": "devpas",
                        "dbname": "homedamondb",
                        "addr": "localhost"}
-        self.stopping = False
         self.loop = asyncio.get_event_loop()
         self.buffer_size = 1024
         self.events = dict()
         self.inputs = dict()
         self.inputs_list = [
-            'dummy'
-            # 'gateway'
+            # 'dummy',
+            'gateway',
             # 'arduino',
-            # 'tcp',
-            # 'websocket',
-            # 'yeelight'
+            'tcp',
+            'websocket',
+            'yeelight'
         ]
         self.event_list = [
             'heartbeat',
@@ -95,33 +91,23 @@ class HomeDaemon:
                                 level=logging.INFO)
         self.logger.info('Starting Daemon')
         self.token = None
-        self.workers = set()
-        self.watcher = None
 
     def notify_clients(self, msg):
         if 'websocket' in self.inputs:
-            self.inputs['websocket'].send(msg)
+            asyncio.run(self.inputs['websocket'].send(msg))
 
-    async def timers(self):
-        while True:
-            self._queue_put({'cmd': 'timers', 'data': 'all'})
-            await asyncio.sleep(60)
+    # async def timers(self):
+    #     while True:
+    #         self._queue_put({'cmd': 'timers', 'data': 'all'})
+    #         await asyncio.sleep(60)
 
-    def _load_input(self, input_name):
-        _input = importlib.import_module(f'homedaemon.inputs.{input_name}')
-        inst = _input.Input(self._queue_put)
-        self.inputs[inst.name] = inst
-        self.logger.info(f'load input: {inst.name}')
-        self.inputs[inst.name].listen()
-
-    def _listen_inputs(self):
-        # self.e = ThreadPoolExecutor()
-        # for _input in self.inputs_list:
-        #     self.workers.add(self.e.submit(self._load_input, _input))
-        for _input in self.inputs_list:
-            th =Thread(name=_input, target=self._load_input, args=(_input,), daemon=True)
-            self.workers.add(th)
-            th.start()
+    def _load_inputs(self):
+        for _input_name in self.inputs_list:
+            _input = importlib.import_module(f'homedaemon.inputs.{_input_name}')
+            inst = _input.Input(self.queue)
+            self.inputs[inst.name] = inst
+            self.logger.info(f'load input: {inst.name}')
+            self.inputs[inst.name].start()
 
     def _queue_put(self, item):
         if type(item) is not dict:
@@ -130,7 +116,6 @@ class HomeDaemon:
             except json.JSONDecodeError:
                 self.logger.warning(f'Wrong data: {item}')
                 return
-        print(f'put {item}')
         self.queue.put(item)
 
     def _load_events(self):
@@ -142,16 +127,16 @@ class HomeDaemon:
             self.logger.info(f'Load event: {inst.name}')
 
     def run(self):
-        print(f'main thread {current_thread()}')
+        print(f'main thread {current_thread()} loop {id(self.loop)}')
         self._load_events()
-        self._listen_inputs()
+        self._load_inputs()
         self.loop.add_signal_handler(signal.SIGINT, self.stop)
         self.loop.add_signal_handler(signal.SIGHUP, self.stop)
         self.loop.add_signal_handler(signal.SIGQUIT, self.stop)
         self.loop.add_signal_handler(signal.SIGTERM, self.stop)
 
-        self.watcher = Thread(target=self.event_watcher, daemon=True)
-        self.watcher.start()
+        watcher = Thread(name='watcher', target=self.event_watcher)
+        self.loop.call_later(0.5, watcher.start)
 
         try:
             self.logger.info('Daemon is listening')
@@ -161,33 +146,23 @@ class HomeDaemon:
 
     def stop(self, *args, **kwargs):
         print('Stop')
-        self.stopping = True
-        self.watcher.join()
-        for _input in self.inputs:
-            print(f'sotps {_input}')
-            self.inputs[_input].stop()
-
-        print('stop loop')
         self.loop.stop()
-        print('close loop')
-        self.loop.close()
-
-        for worker in self.workers:
-            worker.join()
-        #
-        # self.e.shutdown()
+        # self.loop.close()
 
     def event_watcher(self):
         """This method is """
-        print(f'loop {current_thread()}')
-        while not self.stopping:
-            print(self.stopping)
-            if self.queue.is_empty():
+        print(f'Waching Queue')
+        while self.loop.is_running():
+            if self.queue.empty():
                 sleep(0.1)
                 continue
-
             data = self.queue.get()
-            print(f'get {data}')
+            if type(data) is not dict:
+                try:
+                    data = json.loads(data)
+                except json.JSONDecodeError:
+                    self.logger.warning(f'Wrong data: {data}')
+                    return
             event_name = data.get('cmd')
             ev = self.events.get(event_name)
             if ev:
@@ -195,7 +170,6 @@ class HomeDaemon:
             else:
                 self.logger.error(f'Unknown event: {data}')
         print('Stop watching')
-
 
 
 if __name__ == '__main__':

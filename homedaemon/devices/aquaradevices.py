@@ -20,6 +20,8 @@ class AquraBaseDevice(BaseDevice):
         self._voltage = value
 
     def _write(self, token, data):
+        if token is None:
+            return 'Token is missing'
         if type(data) is not dict:
             raise ValueError('Data argument is not dict')
         if not self.writeable:

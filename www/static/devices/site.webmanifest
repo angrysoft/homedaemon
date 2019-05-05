@@ -1,20 +1,20 @@
 {
-    "name": "Lights",
-    "short_name": "LL",
+    "name": "Devices",
+    "short_name": "Devs",
     "icons": [
         {
-            "src": "/static/android-chrome-192x192.png",
+            "src": "/static/devices/android-chrome-192x192.png",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "/static/android-chrome-512x512.png",
+            "src": "/static/devices/android-chrome-512x512.png",
             "sizes": "512x512",
             "type": "image/png"
         }
     ],
     "theme_color": "#000000",
     "background_color": "#000000",
-    "start_url": "http://19.168..1.4/lights",
+    "start_url": "http://19.168..1.4/devices",
     "display": "standalone"
 }

@@ -2,27 +2,37 @@ from homedaemon.inputs import BaseInput
 from serial import Serial, SerialException
 from serial.tools.list_ports import comports
 import json
+import asyncio
 
 
 class Input(BaseInput):
     def __init__(self, queue, baudrate=115200, port=None, timeout=0):
-        super(Input, self).__init__()
+        super(Input, self).__init__(queue)
         self.name = 'Arduino'
         self.arduino = Serial()
-        if port is None:
-            port = self._detect_port()
-        self.arduino.port = port
-        self.arduino.baudrate = baudrate
-        self.arduino.timeout = timeout
+        self.port = port
+        self.baudrate = baudrate
+        self.timeout = timeout
         self.queue = queue
+        self.stopping = False
 
-        if self.arduino.port:
-            self.arduino.open()
-            print(f'arduino connected')
-            self.serial_reader()
-            self.loop.add_reader(self.arduino, self.serial_reader)
-        else:
-            print(f'arduion is missing')
+    async def _connect(self):
+        while not self.arduino.is_open:
+            if self.stopping:
+                break
+            self.arduino.port = self.port
+            self.arduino.baudrate = self.baudrate
+            self.arduino.timeout = self.timeout
+            if self.port is None:
+                self.port = self._detect_port()
+            if self.arduino.port:
+                self.arduino.open()
+                print(f'arduino connected')
+                self.serial_reader()
+                self.loop.add_reader(self.arduino, self.serial_reader)
+            else:
+                print(f'arduion is missing')
+                await asyncio.sleep(3)
 
     def _detect_port(self):
         port = None
@@ -39,10 +49,17 @@ class Input(BaseInput):
             while not b == '\n':
                 data += b
                 b = self.arduino.read().decode()
-            self.queue(json.loads(data))
+            self.queue.put(json.loads(data))
         except json.JSONDecodeError as er:
             print(f'{er}, : {data}')
         except SerialException:
+            pass
+
+    def run(self):
+        self.loop.create_task(self._connect())
+        try:
+            self.loop.run_forever()
+        except KeyboardInterrupt:
             pass
 
 # class Output(asyncio.Protocol):

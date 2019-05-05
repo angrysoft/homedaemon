@@ -30,6 +30,7 @@ from flask import redirect
 import json
 import asyncio
 from couchdb import Server
+import operator
 
 app = Flask(__name__)
 
@@ -38,7 +39,6 @@ async def send_event(msg):
     reader, writer = await asyncio.open_connection('127.0.0.1', 6666)
     writer.write(msg.encode())
     await writer.drain()
-    # await asyncio.sleep(1)
     data = await reader.read(100)
     writer.close()
     return 'ok'
@@ -47,11 +47,11 @@ async def send_event(msg):
 # www
 @app.route('/')
 def index():
-    devices = [db['devices'][d] for d in db['devices']]
-    devices_data = dict()
+    devs = [db['devices'][d] for d in db['devices']]
+    devs_data = dict()
     for dd in db['devices-data']:
-        devices_data[dd] = db['devices-data'][dd]
-    return render_template('index.html', devices=devices, devdata=devices_data)
+        devs_data[dd] = db['devices-data'][dd]
+    return render_template('index.html', devices=sorted(devs, key=operator.itemgetter('name')), devdata=devs_data)
 
 
 @app.route('/dev/<sid>')
@@ -105,10 +105,10 @@ def tv_button(name):
     return redirect('/tv/button/{}?status={}'.format(name, status))
 
 
-@app.route('/lights')
-def ligths():
-    devices = [db['devices'][d] for d in db['devices']]
-    return render_template('lights.html', devices=devices)
+@app.route('/devices')
+def devices():
+    devs = sorted([db['devices'][d] for d in db['devices']], key=operator.itemgetter('name'))
+    return render_template('devices.html', devices=devs)
 
 
 @app.route('/leds')

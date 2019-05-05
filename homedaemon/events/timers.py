@@ -7,6 +7,6 @@ class Event(EventBase):
         self._event = 'timers'
         self._type = 'command'
 
-    def start(self):
+    def do(self):
         pass
         # presence

@@ -16,9 +16,9 @@ leds: $(path)/leds.dart
 main: $(path)/main.dart
 	$(dart) $(path)/main.dart.js $(path)/main.dart
 
-lights: $(path)/lights/lights.dart
-	$(dart) $(path)/lights/lights.dart.js $(path)/lights/lights.dart
-	$(dart) $(path)/lights/sw.dart.js $(path)/lights/sw.dart
+devices: $(path)/devices/devices.dart
+	$(dart) $(path)/devices/devices.dart.js $(path)/devices/devices.dart
+	$(dart) $(path)/devices/sw.dart.js $(path)/devices/sw.dart
 
 tvpilot: $(path)/tvpilot/tvpilot.dart
 	$(dart) $(path)/tvpilot/tvpilot.dart.js $(path)/tvpilot/tvpilot.dart
@@ -33,8 +33,8 @@ allcss: stylescss rfpilotcss tvpilotcss ledpilotcss
 stylescss: $(path)/styles.css
 	sassc -t compressed $(path)/styles.css $(path)/styles.min.css
 
-lightscss: $(path)/lights/lights.scss
-	sassc -t compressed $(path)/lights/lights.scss $(path)/lights/lights.min.css
+devicesscss: $(path)/devices/devices.scss
+	sassc -t compressed $(path)/devices/devices.scss $(path)/devices/devices.min.css
 
 tvpilotcss: $(path)/tvpilot/tvpilot.scss
 	sassc -t compressed $(path)/tvpilot/tvpilot.scss $(path)/tvpilot/tvpilot.min.css

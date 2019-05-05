@@ -9,17 +9,14 @@ class Event(EventBase):
         self._type = 'command'
 
     def do(self, data):
-        print('write event', data)
-        dev_data = self.daemon.devices.get(data.get('sid'))
-        if not dev_data:
-            self.daemon.logger.warning(
-                    f"The Device model={data.get('model')} with sid={data.get('sid')} are not registered ")
-            return
-        device = Device(dev_data)
-        ret = device.do(token=self.daemon.token, cmd=data.get('data'))
-        if ret:
-            self.daemon._queue_put(ret)
-
-
-
-
+        print(f"write event {data.get('model')} {data.get('data')}")
+        with self.lock:
+            dev_data = self.daemon.devices.get(data.get('sid'))
+            if not dev_data:
+                self.daemon.logger.warning(
+                        f"The Device model={data.get('model')} with sid={data.get('sid')} are not registered ")
+                return
+            device = Device(dev_data)
+            ret = device.do(token=self.daemon.token, cmd=data.get('data'))
+            if ret:
+                self.daemon.queue.put(ret)

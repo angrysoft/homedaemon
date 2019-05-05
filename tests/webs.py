@@ -38,10 +38,6 @@ class WebSockServer:
         if self.clients:
             print(f'sending {msg}')
             await asyncio.wait([client.send(msg) for client in self.clients])
-            # self.loop.create_task(self._send(msg))
-
-    async def _send(self, msg):
-        await asyncio.wait([client.send(msg) for client in self.clients])
 
     def serve(self):
         self.loop.run_forever()

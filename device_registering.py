@@ -6,12 +6,24 @@ from yeelight import Yeelight
 from urllib.parse import urlparse
 
 
-
 class Register:
     def __init__(self):
         self.db = Server()
         self.devices = None
         self.devices_data = None
+        self.names = {'0x000000000545b741': 'Bedroom Lamp',
+                      '0x0000000007e7bae0': 'Living room lamp',
+                      '158d00027d0065': 'Kitchen Strip',
+                      '158d000283b219': 'Bedroom speakers',
+                      '158d00029b1929': 'Living room ',
+                      '158d0002a16338': 'Bedroom',
+                      '158d0002a18c2b': 'Hall',
+                      '158d0002abac97': 'Bathroom',
+                      '158d0002bffe5a': 'Kitchen',
+                      '158d00024e2e5b': 'Outside',
+                      'tv01': 'Bravia',
+                      'rgb01': 'Tv Rgb',
+                      '7c49eb17b2a0': 'Gateway'}
 
     def clear_db(self):
         print('Remove all device and device data')
@@ -29,7 +41,11 @@ class Register:
     def dev_list():
         gw = Gateway()
         ye = Yeelight()
+        gt = gw.whois()
+
         list_devs = gw.read_all_devices()
+        list_devs.append(gw.read_device(gt.get('sid')))
+        print('Find aquara devices')
         list_devs.append({'cmd': 'report', 'model': 'dallastemp',
                           'sid': 'dallasT1', 'data': {'temp': 0}})
         list_devs.append({'cmd': 'report', 'model': 'rgbstrip', 'sid': 'rgb01',
@@ -37,7 +53,9 @@ class Register:
         list_devs.append({'cmd': 'write', 'model': 'bravia', 'sid': 'tv01', 'ip': '192.168.1.129',
                           'mac': 'FC:F1:52:2A:9B:1E',
                           'data': {'button': ''}})
+        print('Find custom devices')
         ye.discover()
+        print('find yeelight devices')
         for bulb in ye.devices:
             d = ye.devices[bulb]
             url = urlparse(d.get('location'))
@@ -70,9 +88,8 @@ class Register:
             del d['data']
 
             data['sid'] = d.get('sid')
-            if 'name' not in d:
-                d['name'] = ''
-            print('\t', d.get('model'), d.get('sid'))
+            d['name'] = self.names.get(d.get('sid'), '....')
+            print(f"\t {d.get('model')}  {d.get('sid')} {d.get('name')}")
 
             self.devices[d.get('sid')] = d
             self.devices_data[d.get('sid')] = data
@@ -87,3 +104,5 @@ if __name__ == '__main__':
     r.clear_db()
     r.create_db()
     r.registering()
+    # for d in r.dev_list():
+    #     print(d)

@@ -1,75 +1,65 @@
-{% macro loader() -%}
-<div id="loader">
-  <div class="ring"></div>
-</div>
-{%- endmacro %}
-
-
-{% macro ctrl_neutral2(data) -%}
-<div class="col-xs-5 col-md-2 white round-8 padding-05 device">
-  <div class="row center-xs">
-    <div class="col-xs-12">
-      <p class="txt-center">{{ data.get('name') }}</p>
+<!DOCTYPE html>
+<html>
+<head>
+  <!--<link rel="manifest" href="/static/manifest.json" />-->
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/static/lights/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/lights/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/static/lights/favicon-16x16.png">
+  <link rel="manifest" href="/static/lights/site.webmanifest">
+  <link rel="mask-icon" href="/static/lights/safari-pinned-tab.svg" color="#5bbad5">
+  <link rel="shortcut icon" href="/static/lights/favicon.ico">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="msapplication-config" content="/static/lights/browserconfig.xml">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="apple-mobile-web-app-title" content="SmartHouse">
+  <meta name="application-name" content="SmartHouse">
+  <meta name="theme-color" content="#000000">
+  <title>Smart Home</title>
+  <link rel="stylesheet" type="text/css" href="/static/angry.min.css">
+  <link rel="stylesheet" type="text/css" href="/static/devices/devices.min.css">
+  <script defer src="/static/devices/devices.dart.js" type="text/javascript"></script>
+</head>
+<body>
+{% from 'deviceswidgets.html' import ctrl_neutral1, ctrl_neutral2, plug, bslamp1, color, loader %}
+{% from 'deviceswidgets.html' import sensor_ht, weather_v1, sensor_motion_aq2, magnet %}
+{{ loader() }}
+  <div class="container-fluid">
+    <div class="row around-xs tab lights">
+    {% for d in devices %}
+      {% if d.get('model') == 'ctrl_neutral1' %}
+      {{ ctrl_neutral1(d) }}
+      {% elif d.get('model') == 'ctrl_neutral2' %}
+      {{ ctrl_neutral2(d) }}
+      {% elif d.get('model') == 'plug' %}
+      {{ plug(d) }}
+      {% elif d.get('model') == 'bslamp1' %}
+      {{ bslamp1(d) }}
+      {% elif d.get('model') == 'color' %}
+      {{ color(d) }}
+      {% endif %}
+    {% endfor %}
     </div>
+    <div class="row around-xs tab temps">
+    {% for d in devices %}
+      {% if d.get('model') == 'sensor_ht' %}
+      {{ sensor_ht(d) }}
+      {% elif d.get('model') == 'weather.v1' %}
+      {{ weather_v1(d) }}
+      {% endif %}
+    {% endfor %}
+    </div>
+    <div class="row around-xs tab sensors">
+      {% for d in devices %}
+        {% if d.get('model') == 'sensor_motion.aq2' %}
+        {{ sensor_motion_aq2(d) }}
+        {% elif d.get('model') == 'magnet' %}
+        {{ magnet(d) }}
+        {% endif %}
+      {% endfor %}
+      </div>
   </div>
-  
-  <div class="row center-xs" id="{{ data.get('sid') }}">
-    <div class="col-xs-6" >
-      <button class="btn-small channel_0" data-sid="{{ data.get('sid') }}" data-status="channel_0" data-model="{{ data.get('model') }}">On</button>
-    </div>
-    
-    <div class="col-xs-6" >
-      <button class="btn-small channel_1" data-sid="{{ data.get('sid') }}" data-status="channel_1" data-model="{{ data.get('model') }}">On</button>
-    </div>
-    
-  </div>
-</div>
-{%- endmacro %}
-
-{% macro plug(data) -%}
-<div class="col-xs-4 col-md-2 white round-8 padding-05 device">
-  <div class="row center-xs">
-    <div class="col-xs-12">
-      <p class="txt-center">{{ data.get('name') }}</p>
-    </div>
-  </div>
-  
-  <div class="row center-xs" id="{{ data.get('sid') }}">
-    <div class="col-xs-6" >
-      <button class="btn-small"  data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="status">On</button>
-    </div>
-  </div>
-</div>
-{%- endmacro %}
-
-{% macro bslamp1(data) -%}
-<div class="col-xs-4 col-md-2 white round-8 padding-05 device">
-  <div class="row center-xs">
-    <div class="col-xs-12">
-      <p class="txt-center">{{ data.get('name') }}</p>
-    </div>
-  </div>
-  
-  <div class="row center-xs" id="{{ data.get('sid') }}">
-    <div class="col-xs-6" >
-      <button class="btn-small" data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="power" data-cmd="set_power">On</button>
-    </div>
-  </div>
-</div>
-{%- endmacro %}
-
-{% macro color(data) -%}
-<div class="col-xs-4 col-md-2 white round-8 padding-05 device">
-  <div class="row center-xs">
-    <div class="col-xs-12">
-      <p class="txt-center">{{ data.get('name') }}</p>
-    </div>
-  </div>
-  
-  <div class="row center-xs" id="{{ data.get('sid') }}">
-    <div class="col-xs-6" >
-      <button class="btn-small" data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="power" data-cmd="set_power">On</button>
-    </div>
-  </div>
-</div>
-{%- endmacro %}
+</body>
+</html>

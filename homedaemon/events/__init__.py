@@ -1,4 +1,4 @@
-
+from threading import RLock
 
 class EventBase:
     def __init__(self, daemon):
@@ -7,6 +7,7 @@ class EventBase:
         self.args = None
         self._type = ''
         self.daemon = daemon
+        self.lock = RLock()
 
     @property
     def type(self):
@@ -26,5 +27,6 @@ class EventBase:
             doc = self.daemon.device_data.get(sid)
             if doc:
                 doc.update(info)
-            self.daemon.device_data[sid] = doc
+                self.daemon.device_data.save(doc)
+                print('update db')
 

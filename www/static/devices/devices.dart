@@ -35,7 +35,6 @@ class WebSockets {
 
     this.websock.onMessage.listen((e) {
       this.handler(e.data);
-      print('<${e.data}');
     });
   }
 
@@ -45,12 +44,11 @@ class WebSockets {
   }
 
   void checkConnection(num frame) {
-    print('${frame} , ${this.startTime + this.delayTime}');
+    print(frame);
     if (this.websock != null && this.websock.readyState == WebSocket.OPEN ||
         this.websock.readyState == WebSocket.CONNECTING) {
       return;
     } else if (frame >= (this.startTime + this.delayTime)) {
-      print('reconecting');
       this.startTime = frame;
       this.connect();
     }
@@ -64,7 +62,7 @@ class WebSockets {
   }
 }
 
-class Lights {
+class Devices {
   DivElement loader = querySelector('#loader');
   List<ButtonElement> buttons = new List();
   var ws;
@@ -121,7 +119,6 @@ class Lights {
       Map<String, dynamic> info = json.decode(data);
 
       for (ButtonElement btn in this.buttons) {
-        print('==${info} ${btn.dataset['status']}');
         if (btn.dataset['sid'] == info['sid']) {
           Map<String, dynamic> data = info['data'];
           if (data.containsKey(btn.dataset['status'])) {
@@ -149,91 +146,72 @@ class Lights {
     msg['sid'] = sid;
     msg['data'] = {cmdname: cmdvalue};
     this.ws.send(json.encode(msg));
-
-    // data.append('sid', sid);
-    // data.append('cmdname', cmdname);
-    // data.append('cmdvalue', cmdvalue);
-    // data.append('model', model);
-    // HttpRequest.request('/dev/write', method: 'POST', sendData: data)
-    // .then((HttpRequest resp) {
-    // this.refresDevicesStatus();
-    // });
   }
 }
 
-class TabButtons {
-  String tab = '0';
+class Tabs {
+  num currentTab = 0;
+  num lastTab;
+  List<DivElement> tabs;
 
-  TabButtons() {
-    DivElement buttons = querySelector('.buttons');
-    for (int j = 1; j < 5; j++) {
-      ButtonElement btnOn = new ButtonElement();
-      btnOn
-        ..text = j.toString()
-        ..className = 'btn green'
-        ..dataset['btn'] = j.toString()
-        ..dataset['btnFunc'] = 'on'
-        ..onClick.listen((Event e) => this.clickBtn(e));
-      ButtonElement btnOff = new ButtonElement();
-      btnOff
-        ..text = j.toString()
-        ..className = 'btn red'
-        ..dataset['btn'] = j.toString()
-        ..dataset['btnFunc'] = 'off'
-        ..onClick.listen((Event e) => this.clickBtn(e));
-
-      DivElement col1 = new DivElement();
-      col1
-        ..className = 'col-xs'
-        ..append(btnOn);
-      DivElement col2 = new DivElement();
-      col2
-        ..className = 'col-xs'
-        ..append(btnOff);
-      DivElement row = new DivElement();
-      row
-        ..className = 'row center-xs txt-center'
-        ..append(col1)
-        ..append(col2);
-      buttons.append(row);
+  Tabs() {
+    tabs = querySelectorAll('.tab');
+    this.lastTab = tabs.length - 1;
+    Point tstart;
+    Point tend;
+    if (tabs.isNotEmpty) {
+      this.currentTab = 0;
+      this.changeTab(this.currentTab);
     }
-    List<Element> tabBtn = querySelectorAll('.tab-btn');
-    tabBtn.forEach((t) {
-      t.onClick.listen((Event e) => this.changeTab(e));
+
+    window.onTouchStart.listen((e) {
+      tstart = new Point(e.touches[0].client.x, 0);
     });
-    querySelectorAll('.btn-all').onClick.listen((Event e) => this.clickBtn(e));
+
+    window.onTouchEnd.listen((e) {
+      tend = Point(e.changedTouches[0].client.x, 0);
+      num move = tstart.x - tend.x;
+      if (tend.distanceTo(tstart) > 100) {
+        if (move > 0) {
+          this.swipeLeft();
+        } else {
+          this.swipeRight();
+        }
+      }
+    });
   }
 
-  void changeTab(Event e) {
-    ButtonElement tabBtn = e.target;
+  void swipeLeft() {
+    num nextTab = this.currentTab + 1;
+    if (this.lastTab >= nextTab) {
+      this.changeTab(nextTab);
+    } else {
+      this.changeTab(0);
+    }
+  }
+
+  void swipeRight() {
+    num nextTab = this.currentTab - 1;
+    if (nextTab >= 0) {
+      this.changeTab(nextTab);
+    } else {
+      this.changeTab(this.lastTab);
+    }
+  }
+
+  void changeTab(num tab) {
     List<Element> active = querySelectorAll('.active');
     active.forEach((a) {
       a.classes.remove('active');
     });
-    tabBtn.classes.add('active');
-    this.tab = tabBtn.dataset['tab'];
-  }
-
-  void clickBtn(Event e) {
-    ButtonElement btn = e.target;
-    String btnNo = '';
-    if (btn.dataset['btn'] != 'all') {
-      int n = int.parse(btn.dataset['btn']) + int.parse(this.tab);
-      btnNo = n.toString();
-    } else {
-      btnNo = btn.dataset['btn'];
-    }
-    HttpRequest.request(
-            '/rf/pilot/button/${btnNo}?func=${btn.dataset['btnFunc']}',
-            method: 'POST')
-        .then((HttpRequest resp) {
-      print(resp);
-    });
+    tabs[tab].classes.add('active');
+    this.currentTab = tab;
   }
 }
 
 Future main() async {
-  new Lights();
+  new Devices();
+  new Tabs();
 
   if (sw.isNotSupported) {
     _log('ServiceWorkers are not supported.');

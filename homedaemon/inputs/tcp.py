@@ -4,7 +4,7 @@ import asyncio
 
 class Input(BaseInput):
     def __init__(self, queue, host='127.0.0.1', port='6666'):
-        super(Input, self).__init__()
+        super(Input, self).__init__(queue)
         self.name = 'Tcp'
         self.host = host
         self.port = port
@@ -18,7 +18,7 @@ class Input(BaseInput):
         data = await reader.read(1024)
         addr = writer.get_extra_info('peername')
         print(f"Received from {addr}")
-        self.queue(data.decode())
+        self.queue.put(data.decode())
         writer.write('ok\n'.encode())
         await writer.drain()
         writer.close()
