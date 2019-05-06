@@ -34,6 +34,7 @@ class WebSockets {
     this.websock.onError.listen((_) => print('Error opening connection.'));
 
     this.websock.onMessage.listen((e) {
+      print("< ${e.data}");
       this.handler(e.data);
     });
   }
@@ -64,6 +65,8 @@ class WebSockets {
 class Devices {
   DivElement loader = querySelector('#loader');
   List<ButtonElement> buttons = new List();
+  List<Element> deviceStatusList = new List();
+  Map<String, List> deviceStatus = new Map();
   var ws;
 
   Devices() {
@@ -71,6 +74,7 @@ class Devices {
     this.ws =
         WebSockets('ws://127.0.0.1:9000', handler: this.refreshDevicesStatus);
     this.buttons = querySelectorAll('.device button');
+    this.deviceStatusList = querySelectorAll('.device-status');
     this.getDevicesStatus();
 
     this.buttons.forEach((btn) {
@@ -94,20 +98,27 @@ class Devices {
   }
 
   void getDevicesStatus() {
+    this.deviceStatusList.forEach((dev) {
+      if (this.deviceStatus.containsKey(dev.dataset['sid'])) {
+        this.deviceStatus[dev.dataset['sid']].add(dev);
+      } else {
+        this.deviceStatus[dev.dataset['sid']] = [dev];
+      }
+    });
     HttpRequest.getString('/dev/data/all').then((String resp) {
       List<dynamic> jdata = jsonDecode(resp);
-      Map<String, dynamic> devs = new Map();
       jdata.forEach((dev) {
-        devs[dev['sid']] = dev;
-      });
-      this.buttons.forEach((btn) {
-        btn.value = devs[btn.dataset['sid']][btn.dataset['status']];
-        if (btn.value == 'on') {
-          btn.classes.add('orange');
-          btn.text = 'off';
-        } else if (btn.value == 'off') {
-          btn.classes.remove('orange');
-          btn.text = 'on';
+        if (this.deviceStatus.containsKey(dev['sid'])) {
+          var devs = this.deviceStatus[dev['sid']];
+          devs.forEach((d) {
+            if (d is ButtonElement) {
+              this.updateButton(d, dev);
+            } else {
+              if (dev.containsKey(d.dataset['status'])) {
+                this.updateElement(d, dev);
+              }
+            }
+          });
         }
       });
     });
@@ -116,7 +127,22 @@ class Devices {
   void refreshDevicesStatus(data) async {
     try {
       Map<String, dynamic> info = json.decode(data);
-
+      print(info);
+      if (this.deviceStatus.containsKey(info['sid']) &&
+          info.containsKey('data')) {
+        var devs = this.deviceStatus[info['sid']];
+        devs.forEach((d) {
+          if (d is ButtonElement) {
+            this.updateButton(d, info['data']);
+          } else {
+            if (info['data'].containsKey(d.dataset['status'])) {
+              //d.text = info['data'][d.dataset['status']].toString();
+              this.updateElement(d, info['data']);
+            }
+          }
+        });
+      }
+      /*
       for (ButtonElement btn in this.buttons) {
         if (btn.dataset['sid'] == info['sid']) {
           Map<String, dynamic> data = info['data'];
@@ -133,8 +159,50 @@ class Devices {
           }
         }
       }
+      */
     } catch (e) {
       print(data);
+    }
+  }
+
+  void updateButton(ButtonElement btn, Map dev) {
+    btn.value = dev[btn.dataset['status']];
+    if (btn.value == 'on') {
+      btn.classes.add('orange');
+      btn.text = 'off';
+    } else if (btn.value == 'off') {
+      btn.classes.remove('orange');
+      btn.text = 'on';
+    }
+  }
+
+  void updateElement(Element el, Map data) {
+    String status = el.dataset['status'];
+    
+    switch (status) {
+      case 'temperature':
+        {
+          el.text = "${(int.parse(data[status]) / 100).ceil()} C";
+        }
+        break;
+
+      case 'humidity':
+        {
+          el.text = "${(int.parse(data[status]) / 100).ceil()} %";
+        }
+        break;
+      
+      case 'pressure':
+        {
+          el.text = "${(int.parse(data[status]) / 1000).ceil()} kPa";
+        }
+        break;
+
+      default:
+        {
+          el.text = data[el.dataset['status']].toString();
+        }
+        break;
     }
   }
 

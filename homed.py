@@ -29,7 +29,7 @@ import importlib
 import sys
 import json
 import logging
-from threading import Thread, current_thread, RLock
+from threading import Thread, current_thread, RLock, enumerate
 from time import sleep
 from couchdb import Server
 sys.path.append('/etc/smarthouse')
@@ -91,6 +91,7 @@ class HomeDaemon:
                                 level=logging.INFO)
         self.logger.info('Starting Daemon')
         self.token = None
+        self.workers = list()
 
     def notify_clients(self, msg):
         if 'websocket' in self.inputs:
@@ -166,7 +167,7 @@ class HomeDaemon:
             event_name = data.get('cmd')
             ev = self.events.get(event_name)
             if ev:
-                Thread(target=ev.do, args=(data,)).start()
+                ev.do(data)
             else:
                 self.logger.error(f'Unknown event: {data}')
         print('Stop watching')

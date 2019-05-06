@@ -21,6 +21,10 @@ class Register:
                       '158d0002abac97': 'Bathroom',
                       '158d0002bffe5a': 'Kitchen',
                       '158d00024e2e5b': 'Outside',
+                      '158d0002c9d230': 'Bathroom',
+                      '158d0002e966b9': 'Living Room',
+                      '158d00025d84a6': 'Outside',
+                      '158d000208d668': 'Bedroom',
                       'tv01': 'Bravia',
                       'rgb01': 'Tv Rgb',
                       '7c49eb17b2a0': 'Gateway'}

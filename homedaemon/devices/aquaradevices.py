@@ -9,7 +9,7 @@ class AquraBaseDevice(BaseDevice):
         self.low_voltage = 2800
         self.writeable = False
         self.short_id = data.get('short_id')
-        self.gateway = Gateway(gwpasswd='cjvt7wr3q7df72rq')
+        self.gateway = Gateway(ip='192.168.1.16', gwpasswd='cjvt7wr3q7df72rq')
 
     @property
     def voltage(self):

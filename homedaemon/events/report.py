@@ -10,9 +10,8 @@ class Event(EventBase):
         self._type = 'command'
 
     def do(self, data):
-        with self.lock:
-            print(f'report {current_thread()}')
-            self.daemon.notify_clients(json.dumps(data))
-            self.update_dev_data(data)
+        print(f'report {current_thread()}')
+        self.daemon.notify_clients(json.dumps(data))
+        self.update_dev_data(data)
 
 
