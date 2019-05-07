@@ -9,11 +9,4 @@ class Input(BaseInput):
         self.gw = GatewayWatcher(self.queue.put, loop=self.loop)
         self.loop.run_until_complete(self.gw.listen())
 
-    def stop(self):
-        self.loop.stop()
-        print('stop loop')
-        self.gw.transport.close()
-        print('transport close')
-        # self.loop.close()
-        print(f'{self.name} stops')
 

@@ -28,7 +28,7 @@ class Input(BaseInput):
 
     async def send(self, msg):
         if self.clients:
-            print(f'sending {len(self.clients)}')
+            self.daemon.logger.debug(f'sending {len(self.clients)}')
             await asyncio.wait([client.send(msg) for client in self.clients])
 
 

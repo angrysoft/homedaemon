@@ -23,12 +23,5 @@ class Input(BaseInput):
         await writer.drain()
         writer.close()
 
-    def stop(self):
-        self.loop.stop()
-        self.server.close()
-
-        self.loop.create_task(self.server.wait_closed())
-        # self.loop.close()
-        print('tcp stops')
 
 

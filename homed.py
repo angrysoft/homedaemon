@@ -32,7 +32,9 @@ import logging
 from threading import Thread, current_thread, RLock, enumerate
 from time import sleep
 from couchdb import Server
+from systemd.journal import JournalHandler
 sys.path.append('/etc/smarthouse')
+
 
 
 class Queue:
@@ -56,6 +58,7 @@ class Queue:
             return False
         else:
             return True
+
 
 class HomeDaemon:
     def __init__(self):
@@ -83,12 +86,9 @@ class HomeDaemon:
         self.db = Server()
         self.devices = self.db['devices']
         self.device_data = self.db['devices-data']
-        self.logger = logging
-        self.logger.basicConfig(filename='homed.log',
-                                filemode='w',  # TODO: change to 'a' in production mode
-                                format='%(asctime)s %(levelname)s:%(message)s',
-                                datefmt='%m/%d/%Y %H:%M:%S',
-                                level=logging.INFO)
+        self.logger = logging.getLogger('homed')
+        self.logger.addHandler(JournalHandler())
+        self.logger.setLevel(logging.DEBUG)
         self.logger.info('Starting Daemon')
         self.token = None
         self.workers = list()
@@ -128,7 +128,7 @@ class HomeDaemon:
             self.logger.info(f'Load event: {inst.name}')
 
     def run(self):
-        print(f'main thread {current_thread()} loop {id(self.loop)}')
+        self.logger.info(f'main thread {current_thread()} loop {id(self.loop)}')
         self._load_events()
         self._load_inputs()
         self.loop.add_signal_handler(signal.SIGINT, self.stop)
@@ -146,13 +146,13 @@ class HomeDaemon:
             pass
 
     def stop(self, *args, **kwargs):
-        print('Stop')
+        self.logger.info('Stop homed')
         self.loop.stop()
         # self.loop.close()
 
     def event_watcher(self):
         """This method is """
-        print(f'Waching Queue {current_thread()}')
+        self.logger.info(f'Waching Queue {current_thread()}')
         while self.loop.is_running():
             if self.queue.empty():
                 sleep(0.1)
@@ -170,7 +170,7 @@ class HomeDaemon:
                 ev.do(data)
             else:
                 self.logger.error(f'Unknown event: {data}')
-        print('Stop watching')
+        self.logger.info('Stop watching')
 
 
 if __name__ == '__main__':

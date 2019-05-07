@@ -3,6 +3,7 @@ from serial import Serial, SerialException
 from serial.tools.list_ports import comports
 import json
 import asyncio
+from sys import stderr
 
 
 class Input(BaseInput):
@@ -31,7 +32,7 @@ class Input(BaseInput):
                 self.serial_reader()
                 self.loop.add_reader(self.arduino, self.serial_reader)
             else:
-                print(f'arduion is missing')
+                stderr.write(f'arduion is missing\n')
                 await asyncio.sleep(3)
 
     def _detect_port(self):
@@ -51,7 +52,7 @@ class Input(BaseInput):
                 b = self.arduino.read().decode()
             self.queue.put(json.loads(data))
         except json.JSONDecodeError as er:
-            print(f'{er}, : {data}')
+            stderr.write(f'{er}, : {data}\n')
         except SerialException:
             pass
 

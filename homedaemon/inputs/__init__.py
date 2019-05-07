@@ -11,7 +11,6 @@ class BaseInput(Thread):
         asyncio.set_event_loop(self.loop)
 
     def run(self):
-        print(f'listen {self.name}')
         try:
             self.loop.run_forever()
         except KeyboardInterrupt:

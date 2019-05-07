@@ -28,7 +28,6 @@ class EventBase:
                 if doc:
                     doc.update(info)
                     self.daemon.device_data.save(doc)
-                    print('update db')
 
 
 class SceneBase(Thread):
@@ -38,6 +37,7 @@ class SceneBase(Thread):
         self.daemon = daemon
         self._event = 'event'
         self._type = 'scene'
+        self.data = None
 
     @property
     def type(self):

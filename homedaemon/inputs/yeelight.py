@@ -7,6 +7,3 @@ class Input(BaseInput):
         super(Input, self).__init__(queue)
         self.name = 'Yeelight'
         self.yw = YeelightWatcher(self.queue.put, loop=self.loop)
-
-
-

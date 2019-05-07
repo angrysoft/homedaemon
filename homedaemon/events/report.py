@@ -1,7 +1,5 @@
 from homedaemon.events import EventBase
 import json
-from threading import current_thread
-
 
 class Event(EventBase):
     def __init__(self, daemon):
@@ -10,7 +8,6 @@ class Event(EventBase):
         self._type = 'command'
 
     def do(self, data):
-        print(f'report {current_thread()}')
         self.daemon.notify_clients(json.dumps(data))
         self.update_dev_data(data)
 

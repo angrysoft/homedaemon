@@ -28,7 +28,7 @@ setup(
     author_email='sebastian.zwierzchowski@gmail.com',
     description='',
     scripts=['homed.py'],
-    requires=["flask", "pyserial", "pyxiaomi", "angrysql", "pymongo", "websockets"],
+    requires=["flask", "pyserial", "pyxiaomi", "angrysql", "pymongo", "websockets", 'couchdb'],
     data_files=[('/etc/angryhome', confFile),
                 ('/var/www/angryhome', ['www/AngryHome.py']),
                 ('/var/www/angryhome/static', wwwStatic),
