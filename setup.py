@@ -13,7 +13,7 @@ def get_files(name):
 
 confFile = glob('files/*.json')
 wwwStatic = get_files('www/static')
-wwwStaticRf = get_files('www/static/rfpilot')
+wwwStaticDevs = get_files('www/static/devices')
 wwwStaticTv = get_files('www/static/tvpilot')
 wwwStaticLed = get_files('www/static/ledpilot')
 wwwTemp = get_files('www/templates')
@@ -30,12 +30,11 @@ setup(
     scripts=['homed.py'],
     requires=["flask", "pyserial", "pyxiaomi", "angrysql", "pymongo", "websockets"],
     data_files=[('/etc/angryhome', confFile),
-                  ('/etc/angryhome/events', get_files('events')),
-                  ('/var/www/angryhome', ['www/AngryHome.py']),
-                  ('/var/www/angryhome/static', wwwStatic),
-                  ('/var/www/angryhome/static/rfpilot', wwwStaticRf),
-                  ('/var/www/angryhome/static/tvpilot', wwwStaticTv),
-                  ('/var/www/angryhome/static/ledpilot', wwwStaticLed),
-                  ('/var/www/angryhome/templates', wwwTemp),
-                  ('/usr/lib/systemd/system', ['homed.service'])],
+                ('/var/www/angryhome', ['www/AngryHome.py']),
+                ('/var/www/angryhome/static', wwwStatic),
+                ('/var/www/angryhome/static/devices', wwwStaticDevs),
+                ('/var/www/angryhome/static/tvpilot', wwwStaticTv),
+                ('/var/www/angryhome/static/ledpilot', wwwStaticLed),
+                ('/var/www/angryhome/templates', wwwTemp),
+                ('/usr/lib/systemd/system', ['homed.service'])],
 )

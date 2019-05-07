@@ -1,7 +1,7 @@
 [Unit]
 Description=Smart home Service
-Requires=mongod.service
-After=mongod.service
+Requires=couchdb.service
+After=couchdb.service
 
 [Service]
 ExecStart=/usr/bin/homed.py
