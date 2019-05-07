@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 from glob import glob
 import os
 
@@ -21,7 +21,7 @@ wwwTemp = get_files('www/templates')
 setup(
     name='AngryHome',
     version='0.9',
-    packages=['homedaemon'],
+    packages=find_packages(),
     url='https://bitbucket.org/angrysoft/angryhome',
     license='Apache 2.0',
     author='AngrySoft',
