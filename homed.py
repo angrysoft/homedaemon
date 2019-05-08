@@ -73,7 +73,7 @@ class HomeDaemon:
         self.inputs_list = [
             # 'dummy',
             'gateway',
-            # 'arduino',
+            'arduino',
             'tcp',
             'websocket',
             'yeelight'
