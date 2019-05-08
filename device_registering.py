@@ -4,6 +4,7 @@ from aquara import Gateway
 from couchdb import Server
 from yeelight import Yeelight
 from urllib.parse import urlparse
+import json
 
 
 class Register:
@@ -11,6 +12,7 @@ class Register:
         self.db = Server()
         self.devices = None
         self.devices_data = None
+        self.config = None
         self.names = {'0x000000000545b741': 'Bedroom Lamp',
                       '0x0000000007e7bae0': 'Living room lamp',
                       '158d00027d0065': 'Kitchen Strip',
@@ -35,11 +37,14 @@ class Register:
             self.db.delete('devices')
         if 'devices-data' in self.db:
             self.db.delete('devices-data')
+        if 'config' in self.db:
+            self.db.delete('config')
 
     def create_db(self):
         print('Creating db')
         self.devices = self.db.create('devices')
         self.devices_data = self.db.create('devices-data')
+        self.config = self.db.create('config')
 
     @staticmethod
     def dev_list():
@@ -98,6 +103,13 @@ class Register:
             self.devices[d.get('sid')] = d
             self.devices_data[d.get('sid')] = data
 
+    def add_config(self):
+        with open('files/angryhome.json') as jconf:
+            config = json.load(jconf)
+            for c in config:
+                self.config[c] = config[c]
+            print('Config added')
+
     # def add_index(self):
     #     print(f"Creating index on device: {db.devices.create_index([('sid', TEXT)], unique=True)}")
     #     print(f"Creating index on device data: {db.devices_data.create_index([('sid', TEXT)], unique=True)}")
@@ -108,5 +120,6 @@ if __name__ == '__main__':
     r.clear_db()
     r.create_db()
     r.registering()
+    r.add_config()
     # for d in r.dev_list():
     #     print(d)

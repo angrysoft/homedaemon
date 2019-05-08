@@ -62,10 +62,6 @@ class Queue:
 
 class HomeDaemon:
     def __init__(self):
-        self.config = {"user": "homedaemon",
-                       "password": "devpas",
-                       "dbname": "homedamondb",
-                       "addr": "localhost"}
         self.loop = asyncio.get_event_loop()
         self.buffer_size = 1024
         self.events = dict()
@@ -84,6 +80,7 @@ class HomeDaemon:
             'write']
         self.queue = Queue()
         self.db = Server()
+        self.config = self.db['config']
         self.devices = self.db['devices']
         self.device_data = self.db['devices-data']
         self.logger = logging.getLogger('homed')
@@ -105,7 +102,7 @@ class HomeDaemon:
     def _load_inputs(self):
         for _input_name in self.inputs_list:
             _input = importlib.import_module(f'homedaemon.inputs.{_input_name}')
-            inst = _input.Input(self.queue)
+            inst = _input.Input(self.queue, self.config)
             self.inputs[inst.name] = inst
             self.logger.info(f'load input: {inst.name}')
             self.inputs[inst.name].start()

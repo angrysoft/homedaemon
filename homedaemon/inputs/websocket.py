@@ -4,11 +4,11 @@ from homedaemon.inputs import BaseInput
 
 
 class Input(BaseInput):
-    def __init__(self, queue, url='192.168.1.4', port=9000):
+    def __init__(self, queue, config):
         super(Input, self).__init__(queue)
         self.name = 'websocket'
-        self.url = url
-        self.port = port
+        self.url = config['websocket']['ip']
+        self.port = config['websocket']['port']
         self.clients = set()
         self.server = self.loop.run_until_complete(websockets.serve(self._handler, self.url, self.port))
 

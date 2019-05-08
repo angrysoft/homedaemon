@@ -4,16 +4,17 @@ from serial.tools.list_ports import comports
 import json
 import asyncio
 from sys import stderr
+from os.path import exists
 
 
 class Input(BaseInput):
-    def __init__(self, queue, baudrate=115200, port=None, timeout=0):
+    def __init__(self, queue, config):
         super(Input, self).__init__(queue)
         self.name = 'Arduino'
         self.arduino = Serial()
-        self.port = port
-        self.baudrate = baudrate
-        self.timeout = timeout
+        self.port = config['arduino']['port']
+        self.baudrate = config['arduino']['baudrate']
+        self.timeout = 0
         self.queue = queue
         self.stopping = False
 
@@ -25,8 +26,9 @@ class Input(BaseInput):
             self.arduino.baudrate = self.baudrate
             self.arduino.timeout = self.timeout
             if self.port is None:
-                self.port = self._detect_port()
-            if self.arduino.port:
+                return
+                # self.port = self._detect_port()
+            if self.arduino.port and exists(self.port):
                 self.arduino.open()
                 print(f'arduino connected')
                 self.serial_reader()
@@ -35,7 +37,8 @@ class Input(BaseInput):
                 stderr.write(f'arduion is missing\n')
                 await asyncio.sleep(3)
 
-    def _detect_port(self):
+    @staticmethod
+    def _detect_port():
         port = None
         for p in comports():
             if 'arduino' in p.description.lower():

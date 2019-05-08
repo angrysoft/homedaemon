@@ -1,6 +1,20 @@
 {
-  "debug": "True",
-  "serial_port": "/dev/ttyACM0",
-  "password_mihome": "xxxxxxxxxxx"
+  "gateway": {
+    "password": "cjvt7wr3q7df72rq",
+    "ip": "192.168.16"
+  },
+
+  "websocket": {
+    "ip": "192.168.1.4",
+    "port": 9000
+  },
+  "arduino": {
+    "port": "/dev/ttyACM0",
+    "baudrate": 115200
+  },
+  "tcp": {
+    "ip": "192.168.1.4",
+    "port": 6666
+  }
 }
 

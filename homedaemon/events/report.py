@@ -1,6 +1,7 @@
 from homedaemon.events import EventBase
 import json
 
+
 class Event(EventBase):
     def __init__(self, daemon):
         super(Event, self).__init__(daemon)

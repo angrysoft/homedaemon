@@ -1,13 +1,13 @@
 
 class Device:
-    def __new__(cls, data):
+    def __new__(cls, data, config={}):
         model = data.get('model')
         if model == 'ctrl_neutral1':
             from .aquaradevices import CtrlNeutral
-            return CtrlNeutral(data)
+            return CtrlNeutral(data, config)
         elif model == 'ctrl_neutral2':
             from .aquaradevices import CtrlNeutral2
-            return CtrlNeutral2(data)
+            return CtrlNeutral2(data, config)
         elif model == '86sw1':
             pass
         elif model == '86sw2':
@@ -26,7 +26,7 @@ class Device:
             pass
         elif model == 'plug':
             from .aquaradevices import Plug
-            return Plug(data)
+            return Plug(data, config)
         elif model == 'switch':
             pass
         elif model == 'gateway':

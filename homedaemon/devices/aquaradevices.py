@@ -3,13 +3,14 @@ from aquara import Gateway
 
 
 class AquraBaseDevice(BaseDevice):
-    def __init__(self, data):
+    def __init__(self, data, config):
         super(AquraBaseDevice, self).__init__(data)
         self._voltage = 3300
         self.low_voltage = 2800
         self.writeable = False
         self.short_id = data.get('short_id')
-        self.gateway = Gateway(ip='192.168.1.16', gwpasswd='cjvt7wr3q7df72rq')
+        self.gateway = Gateway(ip=config['gateway']['ip'], gwpasswd=config['gateway']['password'])
+        print(config['gateway']['ip'], config['gateway']['password'])
 
     @property
     def voltage(self):
@@ -34,8 +35,8 @@ class AquraBaseDevice(BaseDevice):
 
 
 class CtrlNeutral(AquraBaseDevice):
-    def __init__(self, data):
-        super(CtrlNeutral, self).__init__(data)
+    def __init__(self, data, config):
+        super(CtrlNeutral, self).__init__(data, config)
         self.writeable = True
 
     def do(self, **kwargs):
@@ -63,8 +64,8 @@ class CtrlNeutral2(CtrlNeutral):
 
 
 class Plug(AquraBaseDevice):
-    def __init__(self, data):
-        super(Plug, self).__init__(data)
+    def __init__(self, data, config):
+        super(Plug, self).__init__(data, config)
         self._status = None
         self.writeable = True
 
