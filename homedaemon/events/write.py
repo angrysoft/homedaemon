@@ -9,7 +9,7 @@ class Event(EventBase):
         self._type = 'command'
 
     def do(self, data):
-        self.daemon.logger.debug(f"write event {data.get('model')} {data.get('data')}")
+        self.daemon.logger.info(f"write event {data.get('model')} {data.get('data')}")
         dev_data = self.daemon.devices.get(data.get('sid'))
         if not dev_data:
             self.daemon.logger.warning(

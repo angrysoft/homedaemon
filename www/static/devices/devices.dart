@@ -72,7 +72,7 @@ class Devices {
   Devices() {
     this.loader.classes.add('show-loader');
     this.ws =
-        WebSockets('ws://127.0.0.1:9000', handler: this.refreshDevicesStatus);
+        WebSockets('ws://192.168.1.4:9000', handler: this.refreshDevicesStatus);
     this.buttons = querySelectorAll('.device button');
     this.deviceStatusList = querySelectorAll('.device-status');
     this.getDevicesStatus();

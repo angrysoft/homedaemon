@@ -4,7 +4,7 @@ from homedaemon.inputs import BaseInput
 
 
 class Input(BaseInput):
-    def __init__(self, queue, url='127.0.0.1', port=9000):
+    def __init__(self, queue, url='192.168.1.4', port=9000):
         super(Input, self).__init__(queue)
         self.name = 'websocket'
         self.url = url
@@ -28,7 +28,6 @@ class Input(BaseInput):
 
     async def send(self, msg):
         if self.clients:
-            self.daemon.logger.debug(f'sending {len(self.clients)}')
             await asyncio.wait([client.send(msg) for client in self.clients])
 
 
