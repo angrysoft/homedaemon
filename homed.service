@@ -2,9 +2,10 @@
 Description=Smart home Service
 Requires=couchdb.service
 After=couchdb.service
+After=network-online.target
 
 [Service]
 ExecStart=/usr/bin/homed.py
 
 [Install]
-WantedBy=multi-user.target
+Wants=network-online.target
