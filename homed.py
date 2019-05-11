@@ -33,7 +33,7 @@ from threading import Thread, current_thread, RLock, enumerate
 from time import sleep
 from couchdb import Server
 from systemd.journal import JournalHandler
-sys.path.append('/etc/smarthouse')
+sys.path.append('/etc/angryhome')
 
 
 
@@ -145,7 +145,6 @@ class HomeDaemon:
     def stop(self, *args, **kwargs):
         self.logger.info('Stop homed')
         self.loop.stop()
-        # self.loop.close()
 
     def event_watcher(self):
         """This method is """
