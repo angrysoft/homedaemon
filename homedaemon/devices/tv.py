@@ -3,8 +3,8 @@ from homedaemon.bravia import Bravia
 
 
 class BraviaTv(BaseDevice):
-    def __init__(self, data):
-        super(BraviaTv, self).__init__(data)
+    def __init__(self, data, daemon):
+        super(BraviaTv, self).__init__(data, daemon)
         self.ip = data.get('ip')
         self.mac = data.get('mac')
 

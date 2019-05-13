@@ -33,6 +33,7 @@ from threading import Thread, current_thread, RLock, enumerate
 from time import sleep
 from couchdb import Server
 from systemd.journal import JournalHandler
+from homedaemon.devices import Device
 sys.path.append('/etc/angryhome')
 
 
@@ -80,7 +81,7 @@ class HomeDaemon:
         self.queue = Queue()
         self.db = Server()
         self.config = self.db['config']
-        self.devices = self.db['devices']
+        self.devicesdb = self.db['devices']
         self.device_data = self.db['devices-data']
         self.logger = logging.getLogger('homed')
         self.logger.addHandler(JournalHandler())
@@ -88,6 +89,7 @@ class HomeDaemon:
         self.logger.info('Starting Daemon')
         self.token = None
         self.workers = list()
+        self.devices = dict()
 
     def notify_clients(self, msg):
         if 'websocket' in self.inputs:
@@ -123,16 +125,21 @@ class HomeDaemon:
             self.events[inst.name] = inst
             self.logger.info(f'Load event: {inst.name}')
 
+    def _load_devices(self):
+        for dev in self.devicesdb:
+            self.devices[dev] = Device(self.devicesdb.get(dev), self)
+
     def run(self):
         self.logger.info(f'main thread {current_thread()} loop {id(self.loop)}')
-        self._load_events()
+        # self._load_events()
+        self._load_devices()
         self._load_inputs()
         self.loop.add_signal_handler(signal.SIGINT, self.stop)
         self.loop.add_signal_handler(signal.SIGHUP, self.stop)
         self.loop.add_signal_handler(signal.SIGQUIT, self.stop)
         self.loop.add_signal_handler(signal.SIGTERM, self.stop)
 
-        watcher = Thread(name='watcher', target=self.event_watcher)
+        watcher = Thread(name='watcher', target=self.devices_watcher)
         self.loop.call_later(0.5, watcher.start)
 
         try:
@@ -145,7 +152,7 @@ class HomeDaemon:
         self.logger.info('Stop homed')
         self.loop.stop()
 
-    def event_watcher(self):
+    def devices_watcher(self):
         """This method is """
         self.logger.info(f'Waching Queue {current_thread()}')
         while self.loop.is_running():
@@ -159,11 +166,11 @@ class HomeDaemon:
                 except json.JSONDecodeError:
                     self.logger.warning(f'Wrong data: {data}')
                     return
-            event_name = data.get('cmd')
-            if event_name in self.events:
-                self.events[event_name].do(data)
+            dev_sid = data.get('sid')
+            if dev_sid in self.devices:
+                self.devices[dev_sid].do(data)
             else:
-                self.logger.error(f'Unknown event: {data}')
+                self.logger.error(f'Unknown dev: {data}')
         self.logger.info('Stop watching')
 
 

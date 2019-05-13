@@ -3,8 +3,8 @@ from yeelight import Bulb
 
 
 class YeeligthDevice(BaseDevice):
-    def __init__(self, data):
-        super(YeeligthDevice, self).__init__(data)
+    def __init__(self, data, daemon):
+        super(YeeligthDevice, self).__init__(data, daemon)
         self.support = data.get('support')
         self.ip = data.get('ip')
 
