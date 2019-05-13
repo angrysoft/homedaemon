@@ -34,7 +34,7 @@ class Input(BaseInput):
                 self.serial_reader()
                 self.loop.add_reader(self.arduino, self.serial_reader)
             else:
-                stderr.write(f'arduion is missing\n')
+                # stderr.write(f'arduion is missing\n')
                 await asyncio.sleep(3)
 
     @staticmethod

@@ -1,5 +1,5 @@
 from threading import RLock, Thread
-
+from os import path, listdir
 
 class EventBase:
     def __init__(self, daemon):
@@ -35,9 +35,14 @@ class SceneBase(Thread):
         super(SceneBase, self).__init__()
         self.lock = RLock()
         self.daemon = daemon
-        self._event = 'event'
+        self._scene = 'event'
         self._type = 'scene'
         self.data = None
+
+    def _load_scenes(self):
+        scene_dir =  self.daemon.config.get('scene_dir')
+        if path.exists(scene_dir):
+            pass
 
     @property
     def type(self):
@@ -45,7 +50,7 @@ class SceneBase(Thread):
 
     @property
     def name(self):
-        return self._event
+        return self._scene
 
     def run(self, data):
         pass

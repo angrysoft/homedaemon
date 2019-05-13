@@ -36,7 +36,6 @@ from systemd.journal import JournalHandler
 sys.path.append('/etc/angryhome')
 
 
-
 class Queue:
     def __init__(self):
         self._queue = list()
@@ -161,9 +160,8 @@ class HomeDaemon:
                     self.logger.warning(f'Wrong data: {data}')
                     return
             event_name = data.get('cmd')
-            ev = self.events.get(event_name)
-            if ev:
-                ev.do(data)
+            if event_name in self.events:
+                self.events[event_name].do(data)
             else:
                 self.logger.error(f'Unknown event: {data}')
         self.logger.info('Stop watching')

@@ -9,6 +9,7 @@ class Event(EventBase):
         self._type = 'command'
 
     def do(self, data):
+        print(data)
         self.daemon.notify_clients(json.dumps(data))
         self.update_dev_data(data)
 

@@ -34,7 +34,8 @@ class Device:
         elif model == 'dallastemp':
             pass
         elif model == 'rgbstrip':
-            pass
+            from .color import RgbStrip
+            return RgbStrip(data)
         elif model == 'bravia':
             from .tv import BraviaTv
             return BraviaTv(data)
