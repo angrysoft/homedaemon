@@ -8,8 +8,7 @@ class BraviaTv(BaseDevice):
         self.ip = data.get('ip')
         self.mac = data.get('mac')
 
-    def do(self, token, cmd):
-        print(self.ip, self.mac)
+    def write(self, cmd):
         b = Bravia(self.ip, macaddres=self.mac)
 
         if 'button' not in cmd:

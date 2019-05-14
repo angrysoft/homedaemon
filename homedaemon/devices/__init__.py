@@ -61,10 +61,13 @@ class BaseDevice:
         self.lock = RLock()
 
     def do(self, data):
-        c = {'write': self.write,
-             'report': self.report,
-             'heartbeat': self.heartbeat}
-        c.get(data.get('cmd'))(data.get('data'))
+        return {'write': self.write,
+                'report': self.report,
+                'heartbeat': self.heartbeat}.get(data.get('cmd'),
+                                                 self._unknown_cmd)(data)
+
+    def _unknown_cmd(self, data):
+        self.daemon.logger.error(f'Unknown command:  {data}')
 
     def write(self, data):
         print(data)
@@ -75,7 +78,7 @@ class BaseDevice:
     def report(self, data):
         print(data)
         self.daemon.notify_clients(json.dumps(data))
-        self.update_dev_data(data)
+        self.update_dev_data(data.get('data'))
 
     def update_dev_data(self, data):
         with self.lock:
@@ -84,10 +87,3 @@ class BaseDevice:
                 doc.update(data)
                 self.daemon.device_data.save(doc)
 
-
-class GenericRgb(BaseDevice):
-    def set_color(self):
-        pass
-
-    def set_dimmer(self):
-        pass

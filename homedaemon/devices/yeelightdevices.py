@@ -8,12 +8,8 @@ class YeeligthDevice(BaseDevice):
         self.support = data.get('support')
         self.ip = data.get('ip')
 
-    def do(self, **kwargs):
-        print(kwargs)
-        if 'cmd' not in kwargs:
-            return
-        cmd = kwargs['cmd']
-        c, v = cmd.popitem()
+    def write(self, data):
+        c, v = data.popitem()
         if c in self.support:
             return self._send(c, v)
 
