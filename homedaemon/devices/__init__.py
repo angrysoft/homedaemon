@@ -70,10 +70,10 @@ class BaseDevice:
         self.daemon.logger.error(f'Unknown command:  {data}')
 
     def write(self, data):
-        print(data)
+        print('write',data)
 
     def heartbeat(self, data):
-        print(data)
+        print('heartbeat', data)
 
     def report(self, data):
         print(data)

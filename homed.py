@@ -26,7 +26,6 @@ __version__ = '0.7'
 import asyncio
 import signal
 import importlib
-import sys
 import json
 import logging
 from threading import Thread, current_thread, RLock, enumerate
@@ -34,7 +33,6 @@ from time import sleep
 from couchdb import Server
 from systemd.journal import JournalHandler
 from homedaemon.devices import Device
-sys.path.append('/etc/angryhome')
 
 
 class Queue:
@@ -74,10 +72,6 @@ class HomeDaemon:
             'websocket',
             'yeelight'
         ]
-        self.event_list = [
-            'heartbeat',
-            'report',
-            'write']
         self.queue = Queue()
         self.db = Server()
         self.config = self.db['config']
@@ -88,8 +82,7 @@ class HomeDaemon:
         self.logger.setLevel(logging.DEBUG)
         self.logger.info('Starting Daemon')
         self.token = None
-        self.workers = list()
-        self.devices = dict()
+        self.workers = dict()
 
     def notify_clients(self, msg):
         if 'websocket' in self.inputs:
@@ -108,30 +101,13 @@ class HomeDaemon:
             self.logger.info(f'load input: {inst.name}')
             self.inputs[inst.name].start()
 
-    def _queue_put(self, item):
-        if type(item) is not dict:
-            try:
-                item = json.loads(item)
-            except json.JSONDecodeError:
-                self.logger.warning(f'Wrong data: {item}')
-                return
-        self.queue.put(item)
-
-    def _load_events(self):
-        """loadEvents"""
-        for event in self.event_list:
-            ev = importlib.import_module(f'homedaemon.events.{event}')
-            inst = ev.Event(self)
-            self.events[inst.name] = inst
-            self.logger.info(f'Load event: {inst.name}')
-
     def _load_devices(self):
         for dev in self.devicesdb:
-            self.devices[dev] = Device(self.devicesdb.get(dev), self)
+            self.workers[dev] = Device(self.devicesdb.get(dev), self)
+        print(self.workers)
 
     def run(self):
         self.logger.info(f'main thread {current_thread()} loop {id(self.loop)}')
-        # self._load_events()
         self._load_devices()
         self._load_inputs()
         self.loop.add_signal_handler(signal.SIGINT, self.stop)
@@ -166,9 +142,10 @@ class HomeDaemon:
                 except json.JSONDecodeError:
                     self.logger.warning(f'Wrong data: {data}')
                     return
-            dev_sid = data.get('sid')
-            if dev_sid in self.devices:
-                self.devices[dev_sid].do(data)
+            print(data)
+            sid = data.get('sid')
+            if sid in self.workers:
+                self.workers[sid].do(data)
             else:
                 self.logger.error(f'Unknown dev: {data}')
         self.logger.info('Stop watching')
