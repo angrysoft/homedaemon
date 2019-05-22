@@ -1,5 +1,6 @@
 from . import BaseDevice
 from aquara import Gateway
+import json
 
 
 class AquraBaseDevice(BaseDevice):
@@ -66,3 +67,32 @@ class AquaraGateway(AquraBaseDevice):
 
     def heartbeat(self, data):
         self.daemon.token = data.get('token')
+
+
+class SensorMotionAq2(AquraBaseDevice):
+    def __init__(self, data, daemon):
+        super(SensorMotionAq2, self).__init__(data, daemon)
+
+    def report(self, data):
+        data = data.get('data')
+        event, arg = data.popitem()
+        print(event, arg)
+        # self.daemon.notify_clients(json.dumps(data))
+        # self.update_dev_data(data)
+        return {'no_motion': self.no_motion,
+                'status': self.motion,
+                'lux': self.lux}.get(event, self._unknown_cmd)(arg)
+
+    def no_motion(self, time):
+        self.daemon.queue.put({'sid': 'no_motion',
+                               'data': {'time': time, 'sid': self.sid}})
+        print(f'debug : no motion {time}')
+
+    def motion(self, arg):
+        self.daemon.queue.put({'sid': 'no_motion',
+                               'data': {'time': arg, 'sid': self.sid}})
+        print(f'debug : motion {arg}')
+
+    def lux(self, arg):
+        print('lux', arg)
+

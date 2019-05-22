@@ -26,7 +26,8 @@ class Device:
         elif model == 'motion':
             return BaseDevice(data, daemon)
         elif model == 'sensor_motion.aq2':
-            return BaseDevice(data, daemon)
+            from .aquaradevices import SensorMotionAq2
+            return SensorMotionAq2(data, daemon)
         elif model == 'sensor_switch.aq2':
             return BaseDevice(data, daemon)
         elif model == 'plug':
@@ -70,13 +71,13 @@ class BaseDevice:
         self.daemon.logger.error(f'Unknown command:  {data}')
 
     def write(self, data):
-        print('write',data)
+        print('write', data)
 
     def heartbeat(self, data):
         print('heartbeat', data)
 
     def report(self, data):
-        print(data)
+        print('report', data)
         self.daemon.notify_clients(json.dumps(data))
         self.update_dev_data(data.get('data'))
 

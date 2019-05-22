@@ -104,11 +104,15 @@ class HomeDaemon:
     def _load_devices(self):
         for dev in self.devicesdb:
             self.workers[dev] = Device(self.devicesdb.get(dev), self)
-        print(self.workers)
+
+    def _load_scenes(self):
+        self.config
+        pass
 
     def run(self):
         self.logger.info(f'main thread {current_thread()} loop {id(self.loop)}')
         self._load_devices()
+        self._load_scenes()
         self._load_inputs()
         self.loop.add_signal_handler(signal.SIGINT, self.stop)
         self.loop.add_signal_handler(signal.SIGHUP, self.stop)
@@ -142,12 +146,11 @@ class HomeDaemon:
                 except json.JSONDecodeError:
                     self.logger.warning(f'Wrong data: {data}')
                     return
-            print(data)
             sid = data.get('sid')
             if sid in self.workers:
                 self.workers[sid].do(data)
             else:
-                self.logger.error(f'Unknown dev: {data}')
+                self.logger.error(f'Unknown sid: {data}')
         self.logger.info('Stop watching')
 
 
