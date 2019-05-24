@@ -17,8 +17,5 @@ class Scene:
         print(data)
 
     def do(self, data):
-        if data is 'on':
-            pass
-        elif data is 'off':
-            pass
+        status = data.get('status')
 
