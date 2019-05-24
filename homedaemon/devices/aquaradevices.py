@@ -72,26 +72,31 @@ class AquaraGateway(AquraBaseDevice):
 class SensorMotionAq2(AquraBaseDevice):
     def __init__(self, data, daemon):
         super(SensorMotionAq2, self).__init__(data, daemon)
+        self.on_motion = data.get('on_motion')
+        self.on_no_motion = data.get('no_motion')
 
     def report(self, data):
+        self.daemon.notify_clients(json.dumps(data))
         data = data.get('data')
         event, arg = data.popitem()
         print(event, arg)
-        # self.daemon.notify_clients(json.dumps(data))
-        # self.update_dev_data(data)
+        self.update_dev_data(data)
         return {'no_motion': self.no_motion,
                 'status': self.motion,
                 'lux': self.lux}.get(event, self._unknown_cmd)(arg)
 
     def no_motion(self, time):
-        self.daemon.queue.put({'sid': 'no_motion',
+        if self.on_no_motion is None:
+            return
+        self.daemon.queue.put({'sid': self.on_no_motion,
                                'data': {'time': time, 'sid': self.sid}})
         print(f'debug : no motion {time}')
 
     def motion(self, arg):
-        self.daemon.queue.put({'sid': 'no_motion',
-                               'data': {'time': arg, 'sid': self.sid}})
-        print(f'debug : motion {arg}')
+        if self.on_motion is None:
+            return
+        self.daemon.queue.put({'sid': self.on_motion,
+                               'data': {'sid': self.sid}})
 
     def lux(self, arg):
         print('lux', arg)

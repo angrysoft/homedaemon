@@ -1,0 +1,9 @@
+{
+  "name": "hall_motion",
+  "type": "automatic",
+  "on": [
+    {"device":  {"cmd": "write", "sid": "158d0002a18c2b", "data": {"channel_1":  "on"}
+    }}
+  ],
+  "off": []
+}

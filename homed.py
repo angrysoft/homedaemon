@@ -27,12 +27,14 @@ import asyncio
 import signal
 import importlib
 import json
+import os
 import logging
-from threading import Thread, current_thread, RLock, enumerate
+from threading import Thread, current_thread, RLock
 from time import sleep
 from couchdb import Server
 from systemd.journal import JournalHandler
 from homedaemon.devices import Device
+from homedaemon.scenes import Scene
 
 
 class Queue:
@@ -106,8 +108,10 @@ class HomeDaemon:
             self.workers[dev] = Device(self.devicesdb.get(dev), self)
 
     def _load_scenes(self):
-        self.config
-        pass
+        path = self.config['scenes']['path']
+        for sc in os.listdir(path):
+            scene = Scene(os.path.join(path, sc))
+            print(scene.name)
 
     def run(self):
         self.logger.info(f'main thread {current_thread()} loop {id(self.loop)}')
