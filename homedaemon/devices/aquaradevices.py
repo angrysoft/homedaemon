@@ -10,6 +10,7 @@ class AquraBaseDevice(BaseDevice):
         self.low_voltage = 2800
         self.writeable = False
         self.short_id = data.get('short_id')
+        self.name = data.get('name')
         self.gateway = Gateway(ip=self.daemon.config['gateway']['ip'],
                                gwpasswd=self.daemon.config['gateway']['password'])
 
@@ -79,24 +80,25 @@ class SensorMotionAq2(AquraBaseDevice):
         self.daemon.notify_clients(json.dumps(data))
         data = data.get('data')
         event, arg = data.popitem()
-        print(event, arg)
+        print(f'{event}, {arg}, {self.sid}:{self.name}, {self.on_motion}')
         self.update_dev_data(data)
         return {'no_motion': self.no_motion,
                 'status': self.motion,
                 'lux': self.lux}.get(event, self._unknown_cmd)(arg)
 
     def no_motion(self, time):
+        print('on no motion from dev')
         if self.on_no_motion is None:
             return
         self.daemon.queue.put({'sid': self.on_no_motion,
                                'data': {'time': time, 'sid': self.sid}})
-        print(f'debug : no motion {time}')
 
     def motion(self, arg):
+        print('on motion from dev')
         if self.on_motion is None:
             return
         self.daemon.queue.put({'sid': self.on_motion,
-                               'data': {'sid': self.sid}})
+                               'data': {'sid': self.sid, 'status': 'on'}})
 
     def lux(self, arg):
         print('lux', arg)

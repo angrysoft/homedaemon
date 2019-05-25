@@ -111,7 +111,7 @@ class HomeDaemon:
         path = self.config['scenes']['path']
         for sc in os.listdir(path):
             scene = Scene(os.path.join(path, sc))
-            print(scene.name)
+            self.workers[scene.name] = scene
 
     def run(self):
         self.logger.info(f'main thread {current_thread()} loop {id(self.loop)}')
