@@ -1,28 +1,47 @@
 import json
+from threading import Thread
 
 
-class Scene:
-    def __init__(self, path):
+class Commands(Thread):
+    def __init__(self, cmds, queue_put):
+        super().__init__()
+        self.cmds = cmds
+        self.queue_put = queue_put
+
+    def run(self):
+        for c in self.cmds:
+            cmd = c.get('cmd')
+            print(c)
+            if cmd == 'device':
+                self.queue_put(c.get('args'))
+
+
+class Scene():
+    def __init__(self, path, queue_put):
         self.name = 'empty'
+        self.cmds = {'on': [], 'off': []}
         self._load_scene_config(path)
-        self.on = list()
-        self.off = list()
+        self.status = None
+        self.queue_put = queue_put
 
     def _load_scene_config(self, path):
         try:
             with open(path, 'r') as jfscene:
                 data = json.load(jfscene)
             self.name = data.get('name')
-            self.on = data.get('on')
-            self.off = data.get('off')
+            self.cmds['on'] = data.get('on')
+            self.cmds['off'] = data.get('off')
         except json.JSONDecodeError:
             pass
 
     def do(self, data):
         if 'data' in data:
-            print('scene', data['data'].get('status'))
+            Commands(self.cmds.get(data['data'].get('status'), []),
+                     self.queue_put).start()
 
-    def run_scene(self):
-        pass
+
+
+
+
 
 

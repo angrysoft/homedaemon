@@ -28,8 +28,8 @@ class Register:
                       '158d00025d84a6': 'Outside',
                       '158d000208d668': 'Bedroom',
                       '158d0002ec2fa6': 'Living Room',
-                      '158d00029a49ba': 'Bedroom',
-                      '158d0002ec03fe': 'Hall',
+                      '158d00029a49ba': 'Hall',
+                      '158d0002ec03fe': 'Bedroom',
                       'tv01': 'Bravia',
                       'rgb01': 'Tv Rgb',
                       '7c49eb17b2a0': 'Gateway'}
