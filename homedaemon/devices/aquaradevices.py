@@ -79,7 +79,9 @@ class SensorMotionAq2(AquraBaseDevice):
     def __init__(self, data, daemon):
         super(SensorMotionAq2, self).__init__(data, daemon)
         self.on_motion = data.get('on_motion')
-        self.on_no_motion = data.get('no_motion')
+        self.on_no_motion = dict()
+
+        self.on_no_motion.update(data.get('on_no_motion', {}))
 
     def report(self, data):
         self.daemon.notify_clients(json.dumps(data))
@@ -92,9 +94,9 @@ class SensorMotionAq2(AquraBaseDevice):
                 'lux': self.lux}.get(event, self._unknown_cmd)(arg)
 
     def no_motion(self, time):
-        if self.on_no_motion is None:
-            return
-        self.daemon.queue.put({'sid': f'{self.on_no_motion}_{time}', 'data': {'sid': self.sid}})
+        if time in self.on_no_motion:
+            self.daemon.queue.put({'sid': self.on_no_motion.get(time),
+                                   'data': {'sid': self.sid, 'status': 'on'}})
 
     def motion(self, arg):
         if self.on_motion is None:

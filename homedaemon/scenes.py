@@ -1,5 +1,6 @@
 import json
 from threading import Thread
+from time import sleep
 
 
 class Commands(Thread):
@@ -11,9 +12,18 @@ class Commands(Thread):
     def run(self):
         for c in self.cmds:
             cmd = c.get('cmd')
+            args = c.get('args')
             if cmd == 'device':
-                print('dev', c.get('args'), type(c.get('args')))
-                self.queue_put(c.get('args'))
+                print('dev', args)
+                self.queue_put(args)
+            if cmd == 'sleep':
+                sleep(int(args))
+            if cmd == 'check':
+                if {'if', 'op', 'then'}.issubset(c):
+                    self.chekc(c)
+
+    def chekc(self, args):
+        pass
 
 
 class Scene:
