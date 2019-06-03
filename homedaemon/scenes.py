@@ -11,12 +11,12 @@ class Commands(Thread):
     def run(self):
         for c in self.cmds:
             cmd = c.get('cmd')
-            print(c)
             if cmd == 'device':
+                print('dev', c.get('args'), type(c.get('args')))
                 self.queue_put(c.get('args'))
 
 
-class Scene():
+class Scene:
     def __init__(self, path, queue_put):
         self.name = 'empty'
         self.cmds = {'on': [], 'off': []}

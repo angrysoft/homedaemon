@@ -23,8 +23,13 @@ class AquraBaseDevice(BaseDevice):
         self._voltage = value
 
     def write(self, data):
+        print('write',
+              self.model,
+              self.sid,
+              self.short_id,
+              data)
         if self.daemon.token is None:
-            return 'Token is missing'
+            raise ValueError('Token is missing')
         if type(data) is not dict:
             raise ValueError('Data argument is not dict')
         if not self.writeable:
@@ -33,7 +38,7 @@ class AquraBaseDevice(BaseDevice):
         self.gateway.write_device(self.model,
                                   self.sid,
                                   self.short_id,
-                                  data)
+                                  data.get('data'))
 
 
 class CtrlNeutral(AquraBaseDevice):

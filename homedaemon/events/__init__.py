@@ -1,6 +1,7 @@
 from threading import RLock, Thread
 from os import path, listdir
 
+
 class EventBase:
     def __init__(self, daemon):
         self._event = 'event'

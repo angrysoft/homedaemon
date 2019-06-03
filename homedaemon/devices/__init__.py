@@ -62,10 +62,11 @@ class BaseDevice:
         self.lock = RLock()
 
     def do(self, data):
-        return {'write': self.write,
-                'report': self.report,
-                'heartbeat': self.heartbeat}.get(data.get('cmd'),
-                                                 self._unknown_cmd)(data)
+        if 'data' in data:
+            return {'write': self.write,
+                    'report': self.report,
+                    'heartbeat': self.heartbeat}.get(data.get('cmd'),
+                                                     self._unknown_cmd)(data)
 
     def _unknown_cmd(self, data):
         self.daemon.logger.error(f'Unknown command:  {data}')
