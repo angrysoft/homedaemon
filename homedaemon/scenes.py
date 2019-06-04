@@ -2,6 +2,9 @@ import json
 from threading import Thread
 from time import sleep
 
+class TimeCheck:
+    def __init__(self, op):
+        pass
 
 class Commands(Thread):
     def __init__(self, cmds, queue_put):
