@@ -66,6 +66,29 @@ class Plug(AquraBaseDevice):
         self.write({'status': value})
 
 
+class SensorSwitchAq2(AquraBaseDevice):
+    def __init__(self, data, daemon):
+        super().__init__(data, daemon)
+        self._status = None
+        self.on_click = data.get('on_click')
+        self.on_double_click = data.get('on_double_click')
+
+    def report(self, data):
+        self.daemon.notify_clients(json.dumps(data))
+        data = data.get('data')
+        event, arg = data.popitem()
+        print(f'{event}, {arg}, {self.sid}:{self.name}, {self.on_motion}')
+        self.update_dev_data(data)
+        return {'click': self.click,
+                'double_click': self.double_click}.get(event, self._unknown_cmd)(arg)
+
+    def click(self):
+        pass
+
+    def double_click(self):
+        pass
+
+
 class AquaraGateway(AquraBaseDevice):
     def __init__(self, data, daemon):
         super().__init__(data, daemon)

@@ -29,7 +29,8 @@ class Device:
             from .aquaradevices import SensorMotionAq2
             return SensorMotionAq2(data, daemon)
         elif model == 'sensor_switch.aq2':
-            return BaseDevice(data, daemon)
+            from .aquaradevices import SensorSwitchAq2
+            return SensorSwitchAq2(data, daemon)
         elif model == 'plug':
             from .aquaradevices import Plug
             return Plug(data, daemon)
