@@ -65,6 +65,13 @@ class Plug(AquraBaseDevice):
     def status(self, value):
         self.write({'status': value})
 
+    def toggle(self):
+        status = self.damone.devices_data[self.sid].get('status')
+        if status == 'on':
+            self.status('off')
+        else:
+            self.status('on')
+
 
 class SensorSwitchAq2(AquraBaseDevice):
     def __init__(self, data, daemon):
@@ -83,10 +90,16 @@ class SensorSwitchAq2(AquraBaseDevice):
                 'double_click': self.double_click}.get(event, self._unknown_cmd)(arg)
 
     def click(self):
-        pass
+        if self.on_click is None:
+            return
+        self.daemon.queue.put({'sid': self.on_click,
+                               'data': {'sid': self.sid, 'status': 'on'}})
 
     def double_click(self):
-        pass
+        if self.on_double_click is None:
+            return
+        self.daemon.queue.put({'sid': self.on_double_click,
+                               'data': {'sid': self.sid, 'status': 'on'}})
 
 
 class AquaraGateway(AquraBaseDevice):
