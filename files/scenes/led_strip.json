@@ -1,0 +1,7 @@
+{
+  "name": "led_strip",
+  "type": "automatic",
+  "on": [
+    {"cmd": "device", "args": {"cmd": "write", "sid": "158d00027d0065", "data": {"status":  "toggle"}}}
+  ]
+}

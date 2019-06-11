@@ -20,7 +20,7 @@ async def tcp_echo_client(message):
 
 if len(sys.argv) < 2:
     sys.exit(1)
-msg = {'cmd': 'write', 'sid': '158d00029b1929', 'model': 'ctrl_neutral2', 'data': {'channel_1': sys.argv[1]}}  # , 'channel_0': sys.argv[1]}}
+msg = {'cmd': 'write', 'sid': '158d00027d0065', 'model': 'plug', 'data': {'toogle': ''}  # , 'channel_0': sys.argv[1]}}
 asyncio.run(tcp_echo_client(json.dumps(msg)))
 
 if len(sys.argv) < 3:
