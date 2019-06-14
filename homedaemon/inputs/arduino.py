@@ -59,6 +59,14 @@ class Input(BaseInput):
         except SerialException:
             pass
 
+    def serial_write(self, value):
+        try:
+            self.arduino.write(json.dumps(value))
+        except json.JSONDecodeError as er:
+            stderr.write(f'{er}, : {value}\n')
+        except SerialException:
+            self.daemon.logger.error(str(SerialException))
+
     def run(self):
         self.loop.create_task(self._connect())
         try:

@@ -60,14 +60,17 @@ class BaseDevice:
         self.model = data.get('model')
         self.name = data.get('name')
         self.sid = data.get('sid')
+        self.device_data = daemon.device_data[self.sid]
         self.lock = RLock()
+        self.cmds = {'write': self.write,
+                     'report': self.report,
+                     'heartbeat': self.heartbeat}
 
     def do(self, data):
         if 'data' in data:
-            return {'write': self.write,
-                    'report': self.report,
-                    'heartbeat': self.heartbeat}.get(data.get('cmd'),
-                                                     self._unknown_cmd)(data)
+            return self.cmds.get(data.get('cmd'), self._unknown_cmd)(data)
+        else:
+            return self.cmds.get(data.get('cmd'), self._unknown_cmd)()
 
     def _unknown_cmd(self, data):
         self.daemon.logger.error(f'Unknown command:  {data}')
@@ -92,3 +95,11 @@ class BaseDevice:
                 doc.update(data)
                 self.daemon.device_data.save(doc)
 
+
+class DeviceData:
+    def __init__(self, db, sid):
+        self.db = db
+        self.sid = sid
+
+    def get(self, key):
+        return self.db[self.sid].get(key)

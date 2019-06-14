@@ -20,7 +20,7 @@
 __author__ = 'Sebastian Zwierzchowski'
 __copyright__ = 'Copyright 2014-2019 Sebastian Zwierzchowski'
 __license__ = 'GPL2'
-__version__ = '0.7'
+__version__ = '0.8'
 
 
 import asyncio

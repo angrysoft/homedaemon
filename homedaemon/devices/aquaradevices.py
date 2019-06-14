@@ -1,6 +1,7 @@
 from . import BaseDevice
 from aquara import Gateway
 import json
+from time import time
 
 
 class AquraBaseDevice(BaseDevice):
@@ -45,6 +46,8 @@ class CtrlNeutral(AquraBaseDevice):
     def __init__(self, data, daemon):
         super(CtrlNeutral, self).__init__(data, daemon)
         self.writeable = True
+        self._t0 = 0
+        self.t1 = 0
 
     def channel_0(self, value):
         self.write({'channel_0': value})
@@ -77,7 +80,6 @@ class SensorSwitchAq2(AquraBaseDevice):
         self.daemon.notify_clients(json.dumps(data))
         data = data.get('data')
         event, arg = data.popitem()
-        print(f'{event}, {arg}, {self.sid}:{self.name}')
         self.update_dev_data(data)
         return {'click': self.click,
                 'double_click': self.double_click}.get(arg, self._unknown_cmd)()
@@ -113,18 +115,18 @@ class SensorMotionAq2(AquraBaseDevice):
         self.on_no_motion.update(data.get('on_no_motion', {}))
 
     def report(self, data):
+        print('report', data)
         self.daemon.notify_clients(json.dumps(data))
         data = data.get('data')
         event, arg = data.popitem()
-        print(f'{event}, {arg}, {self.sid}:{self.name}, {self.on_motion}')
         self.update_dev_data(data)
         return {'no_motion': self.no_motion,
                 'status': self.motion,
                 'lux': self.lux}.get(event, self._unknown_cmd)(arg)
 
-    def no_motion(self, time):
-        if time in self.on_no_motion:
-            self.daemon.queue.put({'sid': self.on_no_motion.get(time),
+    def no_motion(self, _time):
+        if _time in self.on_no_motion:
+            self.daemon.queue.put({'sid': self.on_no_motion.get(_time),
                                    'data': {'sid': self.sid, 'status': 'on'}})
 
     def motion(self, arg):
