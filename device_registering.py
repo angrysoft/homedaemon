@@ -30,6 +30,7 @@ class Register:
                       '158d0002ec2fa6': 'Living Room',
                       '158d00029a49ba': 'Hall',
                       '158d0002ec03fe': 'Bedroom',
+                      '158d000200a020': 'Kitchen Switch',
                       'tv01': 'Bravia',
                       'rgb01': 'Tv Rgb',
                       '7c49eb17b2a0': 'Gateway'}
@@ -103,6 +104,11 @@ class Register:
 
             data['sid'] = d.get('sid')
             d['name'] = self.names.get(d.get('sid'), '....')
+            if d['name'] == 'hall' and d['model'] == 'sensor_motion.aq2':
+                d['on_motion'] = 'hall_motion'
+                d['on_nomotion_120'] = 'hall_no_motion'
+            elif d['name'] == 'Kitchen Switch' and d['model'] == 'sensor_switch.aq2':
+                d['on_click'] = 'led_strip'
             print(f"\t {d.get('model')}  {d.get('sid')} {d.get('name')}")
 
             self.devices[d.get('sid')] = d
@@ -126,5 +132,4 @@ if __name__ == '__main__':
     r.create_db()
     r.registering()
     r.add_config()
-    # for d in r.dev_list():
-    #     print(d)
+
