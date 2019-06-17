@@ -104,7 +104,7 @@ class Register:
 
             data['sid'] = d.get('sid')
             d['name'] = self.names.get(d.get('sid'), '....')
-            if d['name'] == 'hall' and d['model'] == 'sensor_motion.aq2':
+            if d['name'] == 'Hall' and d['model'] == 'sensor_motion.aq2':
                 d['on_motion'] = 'hall_motion'
                 d['on_nomotion_120'] = 'hall_no_motion'
             elif d['name'] == 'Kitchen Switch' and d['model'] == 'sensor_switch.aq2':
