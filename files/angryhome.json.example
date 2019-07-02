@@ -1,7 +1,7 @@
 {
   "gateway": {
-    "password": "cjvt7wr3q7df72rq",
-    "ip": "192.168.16"
+    "password": "xxxxxxxxxxxxxxx",
+    "ip": "192.168.1.16"
   },
 
   "websocket": {
