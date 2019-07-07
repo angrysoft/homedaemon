@@ -3,27 +3,12 @@ import json
 import sys
 from time import sleep
 from datetime import datetime, time
+from threading import Thread
 
 
-class TimeCheck:
-    def __init__(self, op, value):
-        self._now = datetime.now().time()
-        self._value = time(*[int(i) for i in value.split(':')])
-        self.status = {'==': self.eq,
-                       '>': self.gt}.get(op)()
-
-    def eq(self):
-        return self._now == self._value
-
-    def gt(self):
-        return self._now > self._value
-
-    def lt(self):
-        return self._now < self._value
-
-
-class Commands:
+class Commands(Thread):
     def __init__(self, cmds, queue_put=print):
+        super().__init__()
         self.cmds = cmds
         self.queue_put = queue_put
 
@@ -39,7 +24,7 @@ class Commands:
         if cmd == 'device':
             self.queue_put(args)
         if cmd == 'sleep':
-            print(f'sleep {args}')
+            sleep(int(args))
         if cmd == 'check':
             self.chekc(args)
 
@@ -53,6 +38,24 @@ class Commands:
             self._run_cmds(args.get('then', []))
         else:
             self._run_cmds(args.get('else', []))
+
+
+class TimeCheck:
+    def __init__(self, op, value):
+        self._now = datetime.now().time()
+        self._value = time(*[int(i) for i in value.split(':')])
+        self.status = {'==': self.eq,
+                       '>': self.gt,
+                       '<': self.lt}.get(op)()
+
+    def eq(self):
+        return self._now == self._value
+
+    def gt(self):
+        return self._now > self._value
+
+    def lt(self):
+        return self._now < self._value
 
 
 if __name__ == '__main__':
