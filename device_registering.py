@@ -60,7 +60,7 @@ class Register:
         list_devs.append(gw.read_device(gt.get('sid')))
         print('Find aquara devices')
         list_devs.append({'cmd': 'report', 'model': 'dallastemp',
-                          'sid': 'dallasT1', 'data': {'temp': 0}})
+                          'sid': 'dallasDS0', 'data': {'temp': 0}})
         list_devs.append({'cmd': 'report', 'model': 'rgbstrip', 'sid': 'rgb01',
                           'data': {'red': 0, 'green': 0, 'blue': 0,
                                    'color': {'red': 0, 'green': 0, 'blue': 0},

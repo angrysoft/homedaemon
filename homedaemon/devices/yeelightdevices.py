@@ -9,7 +9,8 @@ class YeeligthDevice(BaseDevice):
         self.ip = data.get('ip')
 
     def write(self, data):
-        c, v = data.popitem()
+        _data = data.get('data')
+        c, v = _data.popitem()
         if c in self.support:
             return self._send(c, v)
 

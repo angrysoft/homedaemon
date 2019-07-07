@@ -108,7 +108,10 @@ def tv_button(name):
 @app.route('/devices')
 def devices():
     devs = sorted([db['devices'][d] for d in db['devices']], key=operator.itemgetter('name'))
-    return render_template('devices.html', devices=devs)
+    return render_template('devices.html',
+                           devices=devs,
+                           websock=db['config']['websocket']['ip'],
+                           wp=db['config']['websocket']['port'])
 
 
 @app.route('/leds')
