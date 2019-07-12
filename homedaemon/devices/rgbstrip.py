@@ -20,7 +20,7 @@ class RgbStrip(BaseDevice):
             raise ValueError('Data argument is not dict')
         if not self.writeable:
             raise PermissionError('Device is not writable')
-        self.daemon.inputs['arduiono'].serial_write(self.get_rgb(data))
+        self.daemon.inputs['arduino'].serial_write(self.get_rgb(data))
 
     @staticmethod
     def get_rgb(data):
@@ -32,9 +32,14 @@ class RgbStrip(BaseDevice):
         return f'F:{r}.{g}.{b}'
 
     def off(self):
+        r = self.daemon.device_data.get('red')
+        g = self.daemon.device_data.get('green')
+        b = self.daemon.device_data.get('blue')
+        d = self.daemon.device_data.get('dim')
+        self.daemon.device_data['default'] = {'red': r, 'green': g, 'blue': b, 'dim': d}
         self.write({'red': 0, 'green': 0, 'blue': 0})
 
     def on(self):
         self.write(self.daemon.device_data.get('default',
-                                               {'red': 255, 'green': 255, 'blue': 255}))
+                                               {'red': '255', 'green': '255', 'blue': '255', 'dim': '100'}))
 

@@ -12,7 +12,7 @@ class BraviaTv(BaseDevice):
     def write(self, cmd):
         data = cmd.get('data')
         if 'button' not in data:
-            print(cmd)
+            print(f'wrong command {cmd}')
             return
         if data.get('button') == 'PowerOn':
             self.tv.power_on()

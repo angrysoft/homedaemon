@@ -32,7 +32,8 @@ class Commands(Thread):
         if len(args.get('if', 0)) < 3:
             raise ValueError('if list  3 elemnts')
         condition, op, value = args.get('if')
-        status = {'time': TimeCheck}.get(condition)(op, value).status
+        status = {'time': TimeCheck,
+                  'device': DevCheck}.get(condition)(op, value).status
         print(args.get('if'), status)
         if status:
             self._run_cmds(args.get('then', []))
@@ -56,6 +57,12 @@ class TimeCheck:
 
     def lt(self):
         return self._now < self._value
+
+
+class DevCheck:
+    def __init__(self, op, value):
+        self.status = False
+        # TODO: ee ang what ?
 
 
 if __name__ == '__main__':
