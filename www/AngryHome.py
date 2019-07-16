@@ -36,7 +36,8 @@ app = Flask(__name__)
 
 
 async def send_event(msg):
-    reader, writer = await asyncio.open_connection('127.0.0.1', 6666)
+    reader, writer = await asyncio.open_connection(db['config']['tcp']['ip'],
+                                                   db['config']['tcp']['port'])
     writer.write(msg.encode())
     await writer.drain()
     data = await reader.read(100)
