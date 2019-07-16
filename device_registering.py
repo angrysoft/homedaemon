@@ -31,6 +31,9 @@ class Register:
                       '158d00029a49ba': 'Hall',
                       '158d0002ec03fe': 'Bedroom',
                       '158d000200a020': 'Kitchen Switch',
+                      '158d0002b74c28': 'Entrance',
+                      '158d0002a13819': 'Living room Door',
+                      '158d0002a67612': 'Bedroom window',
                       'tv01': 'Bravia',
                       'rgb01': 'Tv Rgb',
                       '7c49eb17b2a0': 'Gateway'}
