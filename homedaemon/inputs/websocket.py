@@ -19,7 +19,8 @@ class Input(BaseInput):
 
     def exception_handler(self, loop, context):
         loop.stop()
-        print(context)
+        self.clients.clear()
+        print(f'exception from input :{context}')
         self.start_server()
 
     async def _handler(self, websocket, path):
