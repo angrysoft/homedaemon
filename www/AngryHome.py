@@ -54,6 +54,12 @@ def index():
     return render_template('index.html', devices=sorted(devs, key=operator.itemgetter('name')), devdata=devs_data)
 
 
+@app.route('/dev/config')
+def dev_conf():
+    ret = db['config'].get('websocket', {'ip': 'localhost', 'port': 9000})
+    return json.dumps(ret)
+
+
 @app.route('/dev/<sid>')
 def dev(sid):
     ret = db['devices'].get(sid)
