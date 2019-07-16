@@ -28,7 +28,7 @@ class RgbStrip(BaseDevice):
         r = int(data.get('red', '0')) * d
         g = int(data.get('green', '0')) * d
         b = int(data.get('blue', '0')) * d
-
+        print(f'F:{r}.{g}.{b}')
         return f'F:{r}.{g}.{b}'
 
     def off(self):
