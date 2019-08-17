@@ -1,7 +1,6 @@
 from . import BaseDevice
 from aquara import Gateway
 import json
-from time import time
 
 
 class AquraBaseDevice(BaseDevice):
@@ -77,6 +76,8 @@ class SensorSwitchAq2(AquraBaseDevice):
         self.on_double_click = data.get('on_double_click')
 
     def report(self, data):
+        # TODO info
+        self.daemon.logger.info(str(data))
         self.daemon.notify_clients(json.dumps(data))
         data = data.get('data')
         event, arg = data.popitem()
@@ -115,7 +116,8 @@ class SensorMotionAq2(AquraBaseDevice):
         self.on_no_motion.update(data.get('on_no_motion', {}))
 
     def report(self, data):
-        print('report', data)
+        # TODO info
+        self.daemon.logger.info(str(data))
         self.daemon.notify_clients(json.dumps(data))
         data = data.get('data')
         event, arg = data.popitem()

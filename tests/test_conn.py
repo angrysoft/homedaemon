@@ -27,5 +27,5 @@ async def tcp_echo_client(message):
 #     sys.exit(2)
 # msg = {'cmd': 'write', 'sid': '0x0000000007e7bae0', 'data': {'set_power': sys.argv[2]}}
 # asyncio.run(tcp_echo_client(json.dumps(msg)))
-msg = {'cmd': 'write', 'sid': 'rgb01', 'data': {'red': 0, 'green': 0, 'blue': 255, 'dimm': '100'}}
+msg = {'cmd': 'write', 'sid': 'rgb01', 'data': {'red': '0', 'green': '0', 'blue': '255', 'dim': '100'}}
 asyncio.run(tcp_echo_client(json.dumps(msg)))

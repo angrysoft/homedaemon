@@ -84,7 +84,7 @@ class BaseDevice:
         # print('heartbeat', data)
 
     def report(self, data):
-        print('report', data)
+        self.daemon.logger.info(str(data))
         self.daemon.notify_clients(json.dumps(data))
         self.update_dev_data(data.get('data'))
 
