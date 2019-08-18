@@ -117,6 +117,7 @@ class Register:
     def add_config(self):
         with open('files/angryhome.json') as jconf:
             config = json.load(jconf)
+
             for c in config:
                 self.config[c] = config[c]
             print('Config added')

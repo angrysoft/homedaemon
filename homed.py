@@ -63,8 +63,6 @@ class Queue:
 class HomeDaemon:
     def __init__(self):
         self.loop = asyncio.get_event_loop()
-        self.buffer_size = 1024
-        self.events = dict()
         self.inputs = dict()
         self.inputs_list = [
             # 'dummy',
@@ -144,6 +142,7 @@ class HomeDaemon:
                 sleep(0.1)
                 continue
             data = self.queue.get()
+            self.logger.info(data)
             if type(data) is not dict:
                 try:
                     data = json.loads(data)
