@@ -42,7 +42,7 @@ class Device:
         elif model == 'dallastemp':
             return BaseDevice(data, daemon)
         elif model == 'rgbstrip':
-            from .color import RgbStrip
+            from .rgbstrip import RgbStrip
             return RgbStrip(data, daemon)
         elif model == 'bravia':
             from .tv import BraviaTv
@@ -84,7 +84,7 @@ class BaseDevice:
         # print('heartbeat', data)
 
     def report(self, data):
-        print('report', data)
+        self.daemon.logger.info(str(data))
         self.daemon.notify_clients(json.dumps(data))
         self.update_dev_data(data.get('data'))
 

@@ -36,7 +36,8 @@ app = Flask(__name__)
 
 
 async def send_event(msg):
-    reader, writer = await asyncio.open_connection('127.0.0.1', 6666)
+    reader, writer = await asyncio.open_connection(db['config']['tcp']['ip'],
+                                                   db['config']['tcp']['port'])
     writer.write(msg.encode())
     await writer.drain()
     data = await reader.read(100)
@@ -52,6 +53,12 @@ def index():
     for dd in db['devices-data']:
         devs_data[dd] = db['devices-data'][dd]
     return render_template('index.html', devices=sorted(devs, key=operator.itemgetter('name')), devdata=devs_data)
+
+
+@app.route('/dev/config')
+def dev_conf():
+    ret = db['config'].get('websocket', {'ip': 'localhost', 'port': 9000})
+    return json.dumps(ret)
 
 
 @app.route('/dev/<sid>')

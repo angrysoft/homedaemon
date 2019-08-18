@@ -8,3 +8,6 @@ Wants=network-online.target
 [Service]
 ExecStart=/usr/bin/homed.py
 
+[Install]
+WantedBy=multi-user.target
+

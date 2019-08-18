@@ -7,15 +7,16 @@ class BraviaTv(BaseDevice):
         super(BraviaTv, self).__init__(data, daemon)
         self.ip = data.get('ip')
         self.mac = data.get('mac')
+        self.tv = Bravia(self.ip, macaddres=self.mac)
 
     def write(self, cmd):
-        b = Bravia(self.ip, macaddres=self.mac)
-
-        if 'button' not in cmd:
+        data = cmd.get('data')
+        if 'button' not in data:
+            print(f'wrong command {cmd}')
             return
-        if cmd.get('button') == 'PowerOn':
-            b.power_on()
-        elif b.is_on():
-            b.send_command(cmd['button'])
+        if data.get('button') == 'PowerOn':
+            self.tv.power_on()
+        elif self.tv.is_on():
+            self.tv.send_command(data['button'])
         else:
             print('tv is off')

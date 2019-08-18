@@ -67,12 +67,12 @@ class Devices {
   List<ButtonElement> buttons = new List();
   List<Element> deviceStatusList = new List();
   Map<String, List> deviceStatus = new Map();
-  var ws;
+  Map<String, dynamic> config = new Map();
+  WebSockets ws;
 
   Devices() {
     this.loader.classes.add('show-loader');
-    this.ws =
-        WebSockets('ws://192.168.1.4:9000', handler: this.refreshDevicesStatus);
+    this.connectWs();
     this.buttons = querySelectorAll('.device button');
     this.deviceStatusList = querySelectorAll('.device-status');
     this.getDevicesStatus();
@@ -95,6 +95,13 @@ class Devices {
       });
     });
     this.loader.classes.remove('show-loader');
+  }
+
+  void connectWs() {
+    HttpRequest.getString('/dev/config').then((String resp) {
+      this.config = jsonDecode(resp);
+      this.ws = WebSockets("ws://${this.config['ip']}:${this.config['port']}", handler: this.refreshDevicesStatus);
+      });
   }
 
   void getDevicesStatus() {
@@ -136,30 +143,11 @@ class Devices {
             this.updateButton(d, info['data']);
           } else {
             if (info['data'].containsKey(d.dataset['status'])) {
-              //d.text = info['data'][d.dataset['status']].toString();
               this.updateElement(d, info['data']);
             }
           }
         });
       }
-      /*
-      for (ButtonElement btn in this.buttons) {
-        if (btn.dataset['sid'] == info['sid']) {
-          Map<String, dynamic> data = info['data'];
-          if (data.containsKey(btn.dataset['status'])) {
-            btn.value = data[btn.dataset['status']];
-            if (btn.value == 'on') {
-              btn.classes.add('orange');
-              btn.text = 'off';
-            } else if (btn.value == 'off') {
-              btn.classes.remove('orange');
-              btn.text = 'on';
-            }
-            break;
-          }
-        }
-      }
-      */
     } catch (e) {
       print(data);
     }
@@ -228,6 +216,11 @@ class Tabs {
     Point tend;
     if (tabs.isNotEmpty) {
       this.currentTab = 0;
+
+      if (window.localStorage.containsKey("currentTab")) {
+        this.currentTab = int.parse(window.localStorage["currentTab"]);
+      }
+
       this.changeTab(this.currentTab);
     }
 
@@ -273,6 +266,7 @@ class Tabs {
     });
     tabs[tab].classes.add('active');
     this.currentTab = tab;
+    window.localStorage['currentTab'] = this.currentTab.toString();
   }
 }
 
