@@ -22,13 +22,12 @@ class RgbStrip(BaseDevice):
             raise PermissionError('Device is not writable')
         self.daemon.inputs['arduino'].serial_write(self.get_rgb(data))
 
-    @staticmethod
-    def get_rgb(data):
+    def get_rgb(self, data):
         d = int(data.get('dim', '100')) / 100
         r = int(data.get('red', '0')) * d
         g = int(data.get('green', '0')) * d
         b = int(data.get('blue', '0')) * d
-        print(f'F:{r}.{g}.{b}')
+        self.daemon.logger.info(f'F:{r}.{g}.{b}')
         return f'F:{r}.{g}.{b}'
 
     def off(self):
