@@ -74,6 +74,22 @@
 </div>
 {%- endmacro %}
 
+{% macro rgbstrip(data) -%}
+<div class="col-xs-5 col-md-2 white round-8 padding-05 device"  id="{{ data.get('sid') }}">
+  <div class="row center-xs">
+    <div class="col-xs-12">
+      <p class="txt-center">{{ data.get('name') }}</p>
+    </div>
+  </div>
+  
+  <div class="row center-xs">
+    <div class="col-xs-6" >
+      <button class="btn-small device-status" data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="status">On</button>
+    </div>
+  </div>
+</div>
+{%- endmacro %}
+
 {% macro color(data) -%}
 <div class="col-xs-5 col-md-2 white round-8 padding-05 device"  id="{{ data.get('sid') }}">
   <div class="row center-xs">

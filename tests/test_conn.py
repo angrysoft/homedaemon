@@ -5,9 +5,11 @@ import json
 import sys
 from time import sleep
 
+ip = '192.168.1.4'
+
 
 async def tcp_echo_client(message):
-    reader, writer = await asyncio.open_connection('127.0.0.1', 6666)
+    reader, writer = await asyncio.open_connection(ip, 6666)
     message = f'{message}\n'
     print(f'Send: {message!r}')
     writer.write(message.encode())
