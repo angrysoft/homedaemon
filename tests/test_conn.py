@@ -6,7 +6,7 @@ import sys
 
 
 async def tcp_echo_client(message):
-    reader, writer = await asyncio.open_connection('192.168.1.4', 6666)
+    reader, writer = await asyncio.open_connection('127.0.0.1', 6666)
     message = f'{message}\n'
     print(f'Send: {message!r}')
     writer.write(message.encode())
@@ -28,5 +28,5 @@ msg = {'cmd': 'write', 'sid': '0x0000000007e7bae0', 'data': {'set_power': sys.ar
 asyncio.run(tcp_echo_client(json.dumps(msg)))
 
 
-msg = {'cmd': 'write', 'sid': 'rgb01', 'data': {'red': '0', 'green': '0', 'blue': '255', 'dim': '100'}}
+msg = {'cmd': 'write', 'sid': 'rgb01', 'data': {'red': '255', 'green': '0', 'blue': '255', 'dim': '100'}}
 asyncio.run(tcp_echo_client(json.dumps(msg)))

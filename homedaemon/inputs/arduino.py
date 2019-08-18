@@ -61,7 +61,8 @@ class Input(BaseInput):
 
     def serial_write(self, value):
         try:
-            self.arduino.write(json.dumps(value))
+            msg = f'{value}\n'
+            self.arduino.write(msg.encode())
         except json.JSONDecodeError as er:
             stderr.write(f'{er}, : {value}\n')
         except SerialException:
@@ -74,29 +75,3 @@ class Input(BaseInput):
         except KeyboardInterrupt:
             pass
 
-# class Output(asyncio.Protocol):
-#     def __init__(self):
-#         self.transport = None
-#
-#     def connection_made(self, transport):
-#         self.transport = transport
-#         print('port opened', transport)
-#         transport.serial.rts = False
-#         transport.write(b'hello world\n')
-#
-#     def data_received(self, data):
-#         print('data received', repr(data))
-#         self.transport.close()
-#
-#     def connection_lost(self, exc):
-#         print('port closed')
-#         asyncio.get_event_loop().stop()
-#
-#
-# class Input(BaseInput):
-#     def __init__(self, queue, baudrate=9600, port='/dev/ttyACM2', timeout=0):
-#         super(Input, self).__init__(queue)
-#         self.name = 'Arduino'
-#         self.queue = queue
-#         coro = serial.aio.create_serial_connection(self.loop, Output, port, baudrate=baudrate)
-#         self.loop.run_until_complete(coro)
