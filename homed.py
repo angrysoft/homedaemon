@@ -142,7 +142,6 @@ class HomeDaemon:
                 sleep(0.1)
                 continue
             data = self.queue.get()
-            self.logger.info(data)
             if type(data) is not dict:
                 try:
                     data = json.loads(data)
