@@ -3,6 +3,7 @@
 import asyncio
 import json
 import sys
+from time import sleep
 
 
 async def tcp_echo_client(message):
@@ -29,4 +30,7 @@ asyncio.run(tcp_echo_client(json.dumps(msg)))
 
 
 msg = {'cmd': 'write', 'sid': 'rgb01', 'data': {'red': '255', 'green': '0', 'blue': '255', 'dim': '100'}}
+asyncio.run(tcp_echo_client(json.dumps(msg)))
+sleep(10)
+msg = {'cmd': 'write', 'sid': 'rgb01', 'data': {'status': sys.argv[3]}}
 asyncio.run(tcp_echo_client(json.dumps(msg)))

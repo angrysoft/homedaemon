@@ -77,11 +77,9 @@ class BaseDevice:
 
     def write(self, data):
         pass
-        # print('write', data)
 
     def heartbeat(self, data):
         pass
-        # print('heartbeat', data)
 
     def report(self, data):
         self.daemon.logger.info(str(data))

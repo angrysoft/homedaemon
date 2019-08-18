@@ -150,7 +150,10 @@ class HomeDaemon:
                     return
             sid = data.get('sid')
             if sid in self.workers:
-                self.workers[sid].do(data)
+                try:
+                    self.workers[sid].do(data)
+                except ValueError as err:
+                    self.logger.error(f'{sid} {err}')
             else:
                 self.logger.error(f'Unknown sid: {data}')
         self.logger.info('Stop watching')
