@@ -13,6 +13,8 @@ class Input(BaseInput):
         self.name = 'Arduino'
         self.arduino = Serial()
         self.port = config['arduino']['port']
+        if self.port is None or self.port == 'auto':
+            self.port = self._detect_port()
         self.baudrate = config['arduino']['baudrate']
         self.timeout = 0
         self.queue = queue
@@ -27,21 +29,20 @@ class Input(BaseInput):
             self.arduino.timeout = self.timeout
             if self.port is None:
                 return
-                # self.port = self._detect_port()
             if self.arduino.port and exists(self.port):
                 self.arduino.open()
-                print(f'arduino connected')
+                print(f'arduino connected: {self.port}')
                 self.serial_reader()
                 self.loop.add_reader(self.arduino, self.serial_reader)
             else:
-                # stderr.write(f'arduion is missing\n')
                 await asyncio.sleep(3)
 
     @staticmethod
     def _detect_port():
         port = None
         for p in comports():
-            if 'arduino' in p.description.lower():
+            manufacturer = p.manufacturer
+            if type(manufacturer) is str and 'arduino' in manufacturer.lower():
                 port = p.device
         return port
 
