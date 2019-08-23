@@ -8,10 +8,13 @@ PREFIX = /usr
 
 all: alldart allcss
 
-alldart: main tvpilot ledpilot
+alldart: main tvpilot ledpilot login
 
 main: $(path)/main.dart
 	$(dart) $(path)/main.dart.js $(path)/main.dart
+
+login: $(path)/login.dart
+	$(dart) $(path)/login.dart.js $(path)/login.dart
 
 devices: $(path)/devices/devices.dart
 	$(dart) $(path)/devices/devices.dart.js $(path)/devices/devices.dart
@@ -25,10 +28,13 @@ ledpilot: $(path)/ledpilot/ledpilot.dart
 	$(dart) $(path)/ledpilot/ledpilot.dart.js $(path)/ledpilot/ledpilot.dart
 	$(dart) $(path)/ledpilot/sw.dart.js $(path)/ledpilot/sw.dart
 
-allcss: stylescss devicesscss tvpilotcss ledpilotcss
+allcss: stylescss devicesscss tvpilotcss ledpilotcss admincss
 
-stylescss: $(path)/styles.css
-	sassc -t compressed $(path)/styles.css $(path)/styles.min.css
+admincss: $(path)/admin.scss
+	sassc -t compressed $(path)/admin.scss $(path)/admin.css
+
+stylescss: $(path)/styles.scss
+	sassc -t compressed $(path)/styles.scss $(path)/styles.css
 
 devicesscss: $(path)/devices/devices.scss
 	sassc -t compressed $(path)/devices/devices.scss $(path)/devices/devices.min.css

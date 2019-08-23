@@ -27,10 +27,15 @@ from flask import Flask
 from flask import request
 from flask import render_template
 from flask import redirect
+from flask import url_for
+from flask import session
+from functools import wraps
 import json
 import asyncio
 from couchdb import Server
 import operator
+from os import urandom
+from hashlib import sha256
 
 app = Flask(__name__)
 
@@ -44,6 +49,14 @@ async def send_event(msg):
     writer.close()
     return 'ok'
 
+
+def login_required(func):
+    @wraps(func)
+    def decorated_function(*args, **kwargs):
+        if 'admin' not in session:
+            return redirect(url_for('login', next=request.url))
+        return func(*args, **kwargs)
+    return decorated_function
 
 # www
 @app.route('/')
@@ -132,7 +145,7 @@ def leds_pilot():
     return render_template('ledpilot.html')
 
 
-@app.route('/leds/changeColor/<rgb>', methods=['GET', 'POST'])
+@app.route('/leds/set/<rgb>', methods=['GET', 'POST'])
 def changeColor(rgb):
     """changeColor"""
     if request.method == 'GET':
@@ -144,10 +157,39 @@ def changeColor(rgb):
                'data': {'rgb': rgb}}
         status = 'ok'
         asyncio.run(send_event(json.dumps(msg)))
-    return redirect('/leds/changeColor/{}?status={}'.format(rgb, status))
+    return redirect('/leds/set/{}?status={}'.format(rgb, status))
+
+# ______Admin______ #
+@app.route('/admin/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        user = request.form['user']
+        password = request.form['passwd']
+        pwd = sha256(password.encode()).hexdigest()
+        if user == db['config']['user'].get('user') and pwd == db['config']['user'].get('password'):
+            session['admin'] = 'admin'
+            return request.args.get('next', '/admin')
+        else:
+            return 'ko'
+    elif request.method == 'GET':
+        return render_template('admin/login.html')
+
+
+@app.route('/admin/logout')
+def logout():
+    # remove the username from the session if it's there
+    # session.pop('username', None)
+    session.clear()
+    return redirect(url_for('login'))
+
+@app.route('/admin')
+@login_required
+def admin():
+    return render_template('admin/admin.html')
 
 
 db = Server()
+app.secret_key = urandom(24)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', use_reloader=False) #, port=80)

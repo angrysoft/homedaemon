@@ -2,11 +2,11 @@
 <html>
 <head>
 {% block head %}
-  <title>AngryHome</title>
+  <title>Admin AngryHome</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/static/angry.min.css">
-  <link rel="stylesheet" href="/static/styles.css">
+  <link rel="stylesheet" href="/static/admin.css">
 {% endblock %}
   
   {% block dart %}
@@ -16,14 +16,14 @@
 {% block menu %}
 <div class="container">
   <div class="row center-xs">
-    <nav class="navbar col-xs-12">
+    <nav class="navbar col-xs-12 black">
       <header>
         <div class="menu hamburger"></div>
-        <div class="header"><a href="/">SmartHome</a></div>
+        <div class="header"><a href="/admin">Config</a></div>
       </header>
-      <div><a href="/devices">Devs</a></div>
-      <div><a href="/tv">TV Pilot</a></div>
-      <div><a href="/leds">Leds</a> </div>
+      <div><a href="/admin/devices">Devices</a></div>
+      <div><a href="/admin/tv">TV Pilot</a></div>
+      <div class="right"><a href="/admin/logout">Logout</a></div>
     </nav>
   </div>
 </div>
