@@ -182,10 +182,21 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
+
 @app.route('/admin')
 @login_required
 def admin():
     return render_template('admin/admin.html')
+
+
+@app.route('/admin/devices')
+@login_required
+def admin_devices():
+    devs = [db['devices'][d] for d in db['devices']]
+    devs_data = dict()
+    for dd in db['devices-data']:
+        devs_data[dd] = db['devices-data'][dd]
+    return render_template('admin/devices.html', devices=sorted(devs, key=operator.itemgetter('name')), devdata=devs_data)
 
 
 db = Server()

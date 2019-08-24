@@ -1,9 +1,19 @@
 body {
-  background-color: black;
+  background-color: rgb(35, 35, 35);
 }
 
 .device {
     margin: 0.4rem;
+    background: black;
+    color: white;
+}
+
+.label {
+  color: rgb(135, 0, 135);
+}
+
+button.btn-small {
+  background: rgba(128, 0, 128, 0.73);;
 }
 
 #loader {
