@@ -188,15 +188,21 @@ def logout():
 def admin():
     return render_template('admin/admin.html')
 
+@app.route('/admin/config', methods=['GET', 'POST'])
+@login_required
+def admin_config():
+    if request.method == 'POST':
+        pass
+    elif request.method == 'GET':  
+        config = [db['config'][d] for d in db['config']]  
+        return render_template('admin/config.html', config=config)
+
 
 @app.route('/admin/devices')
 @login_required
 def admin_devices():
     devs = [db['devices'][d] for d in db['devices']]
-    devs_data = dict()
-    for dd in db['devices-data']:
-        devs_data[dd] = db['devices-data'][dd]
-    return render_template('admin/devices.html', devices=sorted(devs, key=operator.itemgetter('name')), devdata=devs_data)
+    return render_template('admin/devices.html', devices=sorted(devs, key=operator.itemgetter('name')))
 
 
 db = Server()

@@ -1,25 +1,71 @@
 body {
     background: rgb(35,35,35);
-    color: white;
 }
 
-.panel {
-    background: rgb(0,0,0);
-}
-
-.panel.login > div.row {
+.panel.login div.row {
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
 }
 
-.panel.buttons > * {
+.panel .buttons > * {
     margin: 0.5rem;
 }
 
-.panel.login{
+.panel .login{
     justify-content: center;
 }
 
-.panel input {
+.input {
     border-bottom: 1px solid rgba(128, 0, 128, 0.75);
 }
+
+.label {
+    color: rgb(128, 0, 128,);
+}
+
+#addbtn {
+    position: fixed;
+    bottom: 4rem;
+    right: 1rem;
+}
+
+.modal,
+.modal-dialog {
+    background: rgba(35,35,35,0.8);
+}
+
+@media screen and (min-width: 800px) {
+    #addbtn {
+        bottom: 7rem;
+        right: 7rem;
+    }
+}
+
+.material-icons {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;  /* Preferred icon size */
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+  
+    /* Support for all WebKit browsers. */
+    -webkit-font-smoothing: antialiased;
+    /* Support for Safari and Chrome. */
+    text-rendering: optimizeLegibility;
+  
+    /* Support for Firefox. */
+    -moz-osx-font-smoothing: grayscale;
+  
+    /* Support for IE. */
+    font-feature-settings: 'liga';
+  }
+
+  #add-back {
+      cursor: pointer;
+  }
