@@ -21,18 +21,18 @@ async def tcp_echo_client(message):
     print('Close the connection')
     writer.close()
 
-msg = {'cmd': 'write', 'sid': '158d00027d0065', 'model': 'plug', 'data': {'toogle': ''}}
-asyncio.run(tcp_echo_client(json.dumps(msg)))
+#msg = {'cmd': 'write', 'sid': '158d00027d0065', 'model': 'plug', 'data': {'toogle': ''}}
+#asyncio.run(tcp_echo_client(json.dumps(msg)))
 
-msg = {'cmd': 'write', 'sid': '158d00027d0065', 'model': 'plug', 'data': {'status': sys.argv[1]}}
-asyncio.run(tcp_echo_client(json.dumps(msg)))
+#msg = {'cmd': 'write', 'sid': '158d00027d0065', 'model': 'plug', 'data': {'status': sys.argv[1]}}
+#asyncio.run(tcp_echo_client(json.dumps(msg)))
 
-msg = {'cmd': 'write', 'sid': '0x0000000007e7bae0', 'data': {'set_power': sys.argv[2]}}
-asyncio.run(tcp_echo_client(json.dumps(msg)))
+#msg = {'cmd': 'write', 'sid': '0x0000000007e7bae0', 'data': {'set_power': sys.argv[2]}}
+#asyncio.run(tcp_echo_client(json.dumps(msg)))
 
 
-msg = {'cmd': 'write', 'sid': 'rgb01', 'data': {'red': '255', 'green': '0', 'blue': '255', 'dim': '100'}}
+msg = {'cmd': 'write', 'sid': 'rgb01', 'data': {'red': '127', 'green': '35', 'blue': '0', 'dim': '100'}}
 asyncio.run(tcp_echo_client(json.dumps(msg)))
-sleep(10)
-msg = {'cmd': 'write', 'sid': 'rgb01', 'data': {'status': sys.argv[3]}}
-asyncio.run(tcp_echo_client(json.dumps(msg)))
+#sleep(10)
+#msg = {'cmd': 'write', 'sid': 'rgb01', 'data': {'status': sys.argv[3]}}
+#asyncio.run(tcp_echo_client(json.dumps(msg)))
