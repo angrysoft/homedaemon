@@ -33,7 +33,7 @@ class Input(BaseInput):
         await self._register(_websocket)
         try:
             async for message in _websocket:
-                await self.queue.put(message)
+                self.queue.put(message)
         except websockets.exceptions.ConnectionClosed:
             self.restart_server()
         finally:
