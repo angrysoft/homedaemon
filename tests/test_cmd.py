@@ -31,9 +31,9 @@ class Commands(Thread):
     def chekc(self, args):
         if len(args.get('if', 0)) < 3:
             raise ValueError('if list  3 elemnts')
-        condition, op, value = args.get('if')
+        values  = args.get('if')
         status = {'time': TimeCheck,
-                  'device': DevCheck}.get(condition)(op, value).status
+                  'device': DevCheck}.get(values[0])(values[1:]).status
         print(args.get('if'), status)
         if status:
             self._run_cmds(args.get('then', []))
@@ -42,21 +42,30 @@ class Commands(Thread):
 
 
 class TimeCheck:
-    def __init__(self, op, value):
+    def __init__(self, args):
+        op = args[0]
         self._now = datetime.now().time()
-        self._value = time(*[int(i) for i in value.split(':')])
+        self._value1 = time(*[int(i) for i in args[1].split(':')])
+        if len(args) > 2:
+            self._value2 = time(*[int(i) for i in args[2].split(':')])
         self.status = {'==': self.eq,
                        '>': self.gt,
-                       '<': self.lt}.get(op)()
+                       '<': self.lt,
+                       '<>':self.between}.get(op)()
 
     def eq(self):
-        return self._now == self._value
+        return self._now == self._value1
 
     def gt(self):
-        return self._now > self._value
+        return self._now > self._value1
 
     def lt(self):
-        return self._now < self._value
+        return self._now < self._value1
+    
+    def between(self):
+        print(self._value1, self._now, self._value2)
+        return self._value1 < self._now < self._value2
+         
 
 
 class DevCheck:

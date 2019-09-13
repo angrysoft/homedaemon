@@ -11,10 +11,16 @@ class Input(BaseInput):
         self.port = config['websocket']['port']
         self.clients = set()
         self.server = None
+        self.loop.set_exception_handler(self.exception_handler)
+        self.start_server()
+
+    def restart_server(self):
+        print('restarting server')
+        self.loop.stop()
+        self.clients.clear()
         self.start_server()
 
     def start_server(self):
-        self.loop.set_exception_handler(self.exception_handler)
         self.server = self.loop.run_until_complete(websockets.serve(self._handler, self.url, self.port))
 
     def exception_handler(self, loop, context):
@@ -23,13 +29,15 @@ class Input(BaseInput):
         print(f'exception from input :{context}')
         self.start_server()
 
-    async def _handler(self, websocket, path):
-        await self._register(websocket)
+    async def _handler(self, _websocket, path):
+        await self._register(_websocket)
         try:
-            async for message in websocket:
-                self.queue.put(message)
+            async for message in _websocket:
+                await self.queue.put(message)
+        except websockets.exceptions.ConnectionClosed:
+            self.restart_server()
         finally:
-            await self._unregister(websocket)
+            await self._unregister(_websocket)
 
     async def _register(self, client):
         self.clients.add(client)
