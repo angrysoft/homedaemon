@@ -108,7 +108,7 @@ class HomeDaemon:
     def _load_scenes(self):
         path = self.config['scenes']['path']
         for sc in os.listdir(path):
-            scene = Scene(os.path.join(path, sc), self.queue.put)
+            scene = Scene(os.path.join(path, sc), self)
             self.workers[scene.name] = scene
 
     def run(self):

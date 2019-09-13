@@ -1,0 +1,9 @@
+{
+    "name": "bedroom_motion",
+    "type": "automatic",
+    "on": [
+      {"cmd": "device", "args": {"cmd": "write", "sid": "0x000000000545b741", "data": {"set_power":  "on"}}},
+      {"cmd":  "sleep", "args": 25},
+      {"cmd": "device", "args": {"cmd": "write", "sid": "0x000000000545b741", "data": {"set_power":  "off"}}}
+    ]
+  }

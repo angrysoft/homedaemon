@@ -112,8 +112,7 @@ class SensorMotionAq2(AquraBaseDevice):
         super(SensorMotionAq2, self).__init__(data, daemon)
         self.on_motion = data.get('on_motion')
         self.on_no_motion = dict()
-
-        self.on_no_motion.update(data.get('on_no_motion', {}))
+        self.on_no_motion.update(data.get('on_nomotion', {}))
 
     def report(self, data):
         # TODO info

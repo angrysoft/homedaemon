@@ -1,5 +1,6 @@
 import asyncio
 import websockets
+import sys
 from homedaemon.inputs import BaseInput
 
 
@@ -15,13 +16,15 @@ class Input(BaseInput):
         self.start_server()
 
     def restart_server(self):
-        print('restarting server')
+        sys.stderr.write('restarting server\n')
         self.loop.stop()
         self.clients.clear()
         self.start_server()
 
     def start_server(self):
-        self.server = self.loop.run_until_complete(websockets.serve(self._handler, self.url, self.port))
+        print('Starting websocket server')
+        self.server = websockets.serve(self._handler, self.url, self.port)
+        self.loop.run_until_complete(self.server)
 
     def exception_handler(self, loop, context):
         loop.stop()
@@ -34,7 +37,8 @@ class Input(BaseInput):
         try:
             async for message in _websocket:
                 self.queue.put(message)
-        except websockets.exceptions.ConnectionClosed:
+        except websockets.exceptions.ConnectionClosed as err:
+            print(err)
             self.restart_server()
         finally:
             await self._unregister(_websocket)
