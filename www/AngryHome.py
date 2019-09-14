@@ -32,7 +32,7 @@ from flask import session
 from functools import wraps
 import json
 import asyncio
-from couchdb import Server
+from pycouchdb import Server
 import operator
 from os import urandom
 from hashlib import sha256
