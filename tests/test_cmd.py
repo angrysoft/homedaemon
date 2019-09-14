@@ -64,14 +64,27 @@ class TimeCheck:
     
     def between(self):
         print(self._value1, self._now, self._value2)
-        return self._value1 < self._now < self._value2
+        _range = TimeRange(self._value1, self._value2)
+        return self._now in _range
          
+class TimeRange:
+    """TimeRange"""
+    def __init__(self, _from, _to):
+        self._from = _from
+        self._to = _to
+    
+    def __contains__(self, value):
+        if value > self._to:
+            return self._from <= value >= self._to
+        elif value < self._to:
+            return self._from >= value <= self._to
+
 
 
 class DevCheck:
     def __init__(self, op, value):
         self.status = False
-        # TODO: ee ang what ?
+        # TODO: ee and what ?
 
 
 if __name__ == '__main__':

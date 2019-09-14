@@ -2,8 +2,15 @@
   "name": "hall_motion",
   "type": "automatic",
   "on": [
-    {"cmd": "device", "args": {"cmd": "write", "sid": "158d0002a18c2b", "data": {"channel_1":  "on"}}},
-    {"cmd":  "sleep", "args": 25},
-    {"cmd": "device", "args": {"cmd": "write", "sid": "158d0002a18c2b", "data": {"channel_1":  "off"}}}
+    {
+      "cmd": "check",
+      "args": {
+        "if": ["time", "<>", "21:00", "6:00"],
+        "then": [{"cmd": "device", "args": {"cmd": "write", "sid": "158d0002a18c2b", "data": {"channel_1":  "on"}}},
+                 {"cmd":  "sleep", "args": 25},
+                 {"cmd": "device", "args": {"cmd": "write", "sid": "158d0002a18c2b", "data": {"channel_1":  "off"}}}
+                ]
+      }
+    }
   ]
 }
