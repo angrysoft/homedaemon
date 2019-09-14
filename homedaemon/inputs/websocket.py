@@ -16,9 +16,11 @@ class Input(BaseInput):
         self.start_server()
 
     def restart_server(self):
-        sys.stderr.write('restarting server\n')
+        print('Restarting server')
         self.loop.stop()
         self.clients.clear()
+        del self.server
+        self.server = None
         self.start_server()
 
     def start_server(self):

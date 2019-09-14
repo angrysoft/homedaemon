@@ -57,7 +57,6 @@ class Device:
 class BaseDevice:
     def __init__(self, data, daemon):
         self.daemon = daemon
-        
         self.model = data.get('model')
         self.name = data.get('name')
         self.sid = data.get('sid')

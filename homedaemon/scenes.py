@@ -57,7 +57,6 @@ class Commands(Thread):
         values  = args.get('if')
         status = {'time': TimeCheck,
                   'device': DevCheck}.get(values[0])(values[1:]).status
-        print(args.get('if'), status)
         if status:
             self._run_cmds(args.get('then', []))
         else:
