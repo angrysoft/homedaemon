@@ -57,6 +57,7 @@ class Device:
 class BaseDevice:
     def __init__(self, data, daemon):
         self.daemon = daemon
+        
         self.model = data.get('model')
         self.name = data.get('name')
         self.sid = data.get('sid')
@@ -65,6 +66,7 @@ class BaseDevice:
         self.cmds = {'write': self.write,
                      'report': self.report,
                      'heartbeat': self.heartbeat}
+        
 
     def do(self, data):
         if 'data' in data:
@@ -88,10 +90,11 @@ class BaseDevice:
 
     def update_dev_data(self, data):
         with self.lock:
-            doc = self.daemon.device_data.get(self.sid)
-            if doc:
-                doc.update(data)
-                self.daemon.device_data.save(doc)
+            # doc = self.daemon.device_data.get(self.sid)
+            # if doc:
+                # doc.update(data)
+                # self.daemon.device_data.save(doc)
+            self.daemon.device_data[self.sid] = data
 
 
 class DeviceData:

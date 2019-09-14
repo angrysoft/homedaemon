@@ -32,7 +32,7 @@ from flask import session
 from functools import wraps
 import json
 import asyncio
-from couchdb import Server
+from pycouchdb import Server
 import operator
 from os import urandom
 from hashlib import sha256
@@ -61,10 +61,11 @@ def login_required(func):
 # www
 @app.route('/')
 def index():
-    devs = [db['devices'][d] for d in db['devices']]
+    devs = [d for d in db['devices']]
+    print(devs)
     devs_data = dict()
     for dd in db['devices-data']:
-        devs_data[dd] = db['devices-data'][dd]
+        devs_data[dd.get('sid')] = dd
     return render_template('index.html', devices=sorted(devs, key=operator.itemgetter('name')), devdata=devs_data)
 
 
@@ -88,7 +89,7 @@ def dev_data(sid):
 
 @app.route('/dev/data/all')
 def dev_data_all():
-    device_data = [db['devices-data'].get(d) for d in db['devices-data']]
+    device_data = [d for d in db['devices-data']]
     return json.dumps(device_data)
 
 
@@ -127,7 +128,7 @@ def tv_button(name):
 
 @app.route('/devices')
 def devices():
-    devs = sorted([db['devices'][d] for d in db['devices']], key=operator.itemgetter('name'))
+    devs = sorted([d for d in db['devices']], key=operator.itemgetter('name'))
     return render_template('devices.html',
                            devices=devs,
                            websock=db['config']['websocket']['ip'],

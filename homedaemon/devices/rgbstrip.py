@@ -37,7 +37,6 @@ class RgbStrip(BaseDevice):
             if data['data']['status'] == 'off':
                 data['data']['default'] = self.rgb_to_default()
 
-        print(data)
         self.daemon.logger.info(str(data))
         self.daemon.notify_clients(json.dumps(data))
         self.update_dev_data(data.get('data'))
@@ -53,10 +52,14 @@ class RgbStrip(BaseDevice):
             return 'off'
 
     def rgb_to_default(self):
-        r = self.daemon.device_data[self.sid].get('red')
-        g = self.daemon.device_data[self.sid].get('green')
-        b = self.daemon.device_data[self.sid].get('blue')
+        r = self.daemon.device_data[self.sid].get('red', 0)
+        g = self.daemon.device_data[self.sid].get('green', 0)
+        b = self.daemon.device_data[self.sid].get('blue', 0)
         d = self.daemon.device_data[self.sid].get('dim', 100)
+        if int(r) + int(g) + int(b) == 0:
+            r = '255'
+            g = '255'
+            b = '255'
         return {'red': r, 'green': g, 'blue': b, 'dim': d}
 
     def get_rgb(self, data):
