@@ -5,12 +5,13 @@ from time import sleep
 
 
 class Scene:
-    def __init__(self, path, queue_put):
+    def __init__(self, path, daemon):
+        self.daemon = daemon
         self.name = 'empty'
         self.cmds = {'on': [], 'off': []}
         self._load_scene_config(path)
         self.status = None
-        self.queue_put = queue_put
+        self.queue_put = daemon.queue.put
 
     def _load_scene_config(self, path):
         try:

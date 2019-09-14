@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 from aquara import Gateway
-from couchdb import Server
+from pycouchdb import Server
 from yeelight import Yeelight
 from urllib.parse import urlparse
 import json
@@ -9,7 +9,7 @@ import json
 
 class Register:
     def __init__(self):
-        self.db = Server()
+        self.srv = Server()
         self.devices = None
         self.devices_data = None
         self.config = None
@@ -40,18 +40,24 @@ class Register:
 
     def clear_db(self):
         print('Remove all device and device data')
-        if 'devices' in self.db:
-            self.db.delete('devices')
-        if 'devices-data' in self.db:
-            self.db.delete('devices-data')
-        if 'config' in self.db:
-            self.db.delete('config')
+        if 'devices' in self.srv:
+            self.srv.delete('devices')
+        if 'devices-data' in self.srv:
+            self.srv.delete('devices-data')
+        if 'config' in self.srv:
+            self.srv.delete('config')
 
     def create_db(self):
         print('Creating db')
-        self.devices = self.db.create('devices')
-        self.devices_data = self.db.create('devices-data')
-        self.config = self.db.create('config')
+        self.srv.create('devices')
+        self.srv.create('devices-data')
+        self.srv.create('config')
+        
+    def accessing_db(self):
+        print('accessing db')
+        self.devices = self.srv['devices']
+        self.devices_data = self.srv.db('devices-data')
+        self.config = self.srv.db('config')
 
     @staticmethod
     def dev_list():
@@ -123,6 +129,8 @@ class Register:
 
             for c in config:
                 self.config[c] = config[c]
+            self.config['user'] = {'user': 'admin',
+                                   'password': '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918'}
             print('Config added')
 
     # def add_index(self):
@@ -134,6 +142,7 @@ if __name__ == '__main__':
     r = Register()
     r.clear_db()
     r.create_db()
+    r.accessing_db()
     r.registering()
     r.add_config()
 
