@@ -12,6 +12,7 @@ class Input(BaseInput):
         self.port = config['websocket']['port']
         self.clients = set()
         self.server = None
+        self.srv = None
         self.loop.set_exception_handler(self.exception_handler)
         self.start_server()
 
@@ -19,6 +20,7 @@ class Input(BaseInput):
         print('Restarting server')
         self.loop.stop()
         self.clients.clear()
+        self.srv.stop()
         del self.server
         self.server = None
         self.start_server()
@@ -26,7 +28,7 @@ class Input(BaseInput):
     def start_server(self):
         print('Starting websocket server')
         self.server = websockets.serve(self._handler, self.url, self.port)
-        self.loop.run_until_complete(self.server)
+        self.srv = self.loop.run_until_complete(self.server)
 
     def exception_handler(self, loop, context):
         loop.stop()
