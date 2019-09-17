@@ -195,14 +195,14 @@ def admin_config():
     if request.method == 'POST':
         pass
     elif request.method == 'GET':  
-        config = [db['config'][d] for d in db['config']]  
+        config = [d for d in db['config']]  
         return render_template('admin/config.html', config=config)
 
 
 @app.route('/admin/devices')
 @login_required
 def admin_devices():
-    devs = [db['devices'][d] for d in db['devices']]
+    devs = [d for d in db['devices']]
     return render_template('admin/devices.html', devices=sorted(devs, key=operator.itemgetter('name')))
 
 
