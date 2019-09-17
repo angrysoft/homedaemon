@@ -20,7 +20,6 @@ class Input(BaseInput):
         print('Restarting server')
         self.loop.stop()
         self.clients.clear()
-        self.srv.stop()
         del self.server
         self.server = None
         self.start_server()
