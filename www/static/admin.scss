@@ -23,9 +23,13 @@ body {
     color: rgb(128, 0, 128,);
 }
 
+.device-list {
+    position: relative;
+}
+
 #addbtn {
-    position: fixed;
-    bottom: 4rem;
+    position: absolute;
+    bottom: 1rem;
     right: 1rem;
 }
 
