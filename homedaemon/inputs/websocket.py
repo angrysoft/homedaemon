@@ -51,7 +51,8 @@ class Input(BaseInput):
         self.clients.add(client)
 
     async def _unregister(self, client):
-        self.clients.remove(client)
+        if client in self.clients:
+            self.clients.remove(client)
 
     async def send(self, msg):
         if self.clients:
