@@ -50,6 +50,8 @@ class Device:
         elif model in ['color', 'bslamp1']:
             from .yeelightdevices import YeeligthDevice
             return YeeligthDevice(data, daemon)
+        elif model == 'computer':
+            from .computer import Computer
         else:
             raise ValueError(f'unrecognized device {model}')
 
