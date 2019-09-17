@@ -45,7 +45,6 @@ class RgbStrip(BaseDevice):
     def _status(data):
         rgb = (int(data.get('red', '0')) + int(data.get('green', '0')) + int(data.get('blue', '0'))) * \
               int(int(data.get('dim', '100')) / 100)
-        print(rgb)
         if rgb > 0:
             return 'on'
         else:

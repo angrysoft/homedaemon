@@ -5,6 +5,11 @@ import asyncio
 import websockets
 import json
 
+import logging
+logger = logging.getLogger('websockets')
+logger.setLevel(logging.INFO)
+logger.addHandler(logging.StreamHandler())
+
 
 class WebSockServer:
     def __init__(self, handeler=print, url='127.0.0.1', port=9000, loop=None):

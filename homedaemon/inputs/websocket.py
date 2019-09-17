@@ -24,25 +24,24 @@ class Input(BaseInput):
         self.server = None
         self.start_server()
 
+
     def start_server(self):
         print('Starting websocket server')
         self.server = websockets.serve(self._handler, self.url, self.port)
         self.srv = self.loop.run_until_complete(self.server)
 
     def exception_handler(self, loop, context):
-        loop.stop()
-        self.clients.clear()
         print(f'exception from input :{context}')
-        self.start_server()
+        self.restart_server()
 
     async def _handler(self, _websocket, path):
         await self._register(_websocket)
         try:
             async for message in _websocket:
                 self.queue.put(message)
-        except websockets.exceptions.ConnectionClosed as err:
-            print(err)
-            self.restart_server()
+        # except websockets.exceptions.ConnectionClosed as err:
+            # print(err)
+            # self.restart_server()
         finally:
             await self._unregister(_websocket)
 
