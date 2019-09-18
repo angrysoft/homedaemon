@@ -70,6 +70,10 @@
     <div class="col-xs-6" >
       <button class="btn-small device-status" data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="power" data-cmd="set_power">On</button>
     </div>
+
+    <div class="col-xs-6" >
+      <button class="btn-small color-set-button" data-sid="{{ data.get('sid') }}">Set</button>
+    </div>
   </div>
 </div>
 {%- endmacro %}
@@ -86,6 +90,10 @@
     <div class="col-xs-6" >
       <button class="btn-small device-status" data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="status">On</button>
     </div>
+
+    <div class="col-xs-6" >
+      <button class="btn-small color-set-button" data-sid="{{ data.get('sid') }}">Set</button>
+    </div>
   </div>
 </div>
 {%- endmacro %}
@@ -101,6 +109,10 @@
   <div class="row center-xs">
     <div class="col-xs-6" >
       <button class="btn-small device-status" data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="power" data-cmd="set_power">On</button>
+    </div>
+
+    <div class="col-xs-6" >
+      <button class="btn-small color-set-button" data-sid="{{ data.get('sid') }}">Set</button>
     </div>
   </div>
 </div>
@@ -220,6 +232,43 @@
   <div class="row center-xs">
     <div class="col-xs-12" >
       <label class="label">Vol: </label><span class="device-status" data-sid="{{ data.get('sid') }}" data-status="voltage">?</span>
+    </div>
+  </div>
+</div>
+{%- endmacro %}
+
+{% macro colorset() -%}
+<div class="modal-dialog dark" id="color-set">
+  <div class="modal-content">
+    <div class="modal-header">
+        <div class="row between-xs">
+            <div class="col-xs-1"><i class="material-icons" id="back">arrow_back</i></div>
+            <div class="col-xs3">Color</div>   
+        </div>
+    </div>
+    <div class="modal-body">
+      <div class="row center-xs middle-xs">
+        <div class="col-xs-6">
+          <button class="btn" id="rgb-btn">Color</button>
+        </div>
+
+        <div class="col-xs-6">
+          <button class="btn" id="ct-btn">White</button>
+        </div>
+      </div>
+
+      <div class="row center-xs show" id="rgb-tab">
+        <div class="col-xs-12">
+          <p>rgb</p>
+        </div>
+      </div>
+
+      <div class="row center-xs" id="ct-tab">
+        <div class="col-xs-12 col-md-3">
+          <p>ct</p>
+        </div>
+      </div>
+      
     </div>
   </div>
 </div>

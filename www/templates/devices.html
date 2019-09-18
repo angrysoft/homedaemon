@@ -18,6 +18,7 @@
   <meta name="application-name" content="SmartHouse">
   <meta name="theme-color" content="#000000">
   <title>Smart Home</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="/static/angry.min.css">
   <link rel="stylesheet" type="text/css" href="/static/devices/devices.min.css">
   <script defer src="/static/devices/devices.dart.js" type="text/javascript"></script>
@@ -25,7 +26,11 @@
 <body>
 {% from 'deviceswidgets.html' import ctrl_neutral1, ctrl_neutral2, plug, bslamp1, rgbstrip, color, loader %}
 {% from 'deviceswidgets.html' import sensor_ht, weather_v1, sensor_motion_aq2, magnet %}
+{% from 'deviceswidgets.html' import colorset %}
+
 {{ loader() }}
+{{ colorset() }}
+
   <div class="container-fluid">
     <div class="row around-xs tab lights">
     {% for d in devices %}

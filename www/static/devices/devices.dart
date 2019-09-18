@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:html';
 import 'dart:convert';
-
 import 'package:service_worker/window.dart' as sw;
+import '../lib/modal.dart';
 
 void _log(Object o) => print('  MAIN: $o');
 
@@ -34,7 +34,7 @@ class WebSockets {
     this.websock.onError.listen((_) => print('Error opening connection.'));
 
     this.websock.onMessage.listen((e) {
-      print("< ${e.data}");
+      // print("< ${e.data}");
       this.handler(e.data);
     });
   }
@@ -65,17 +65,29 @@ class WebSockets {
 class Devices {
   DivElement loader = querySelector('#loader');
   List<ButtonElement> buttons = new List();
+  List<ButtonElement> colorSetButtons = new List();
   List<Element> deviceStatusList = new List();
+  Modal colorSet;
   Map<String, List> deviceStatus = new Map();
   Map<String, dynamic> config = new Map();
   WebSockets ws;
+  Element back;
 
   Devices() {
     this.loader.classes.add('show-loader');
     this.connectWs();
-    this.buttons = querySelectorAll('.device button');
+    this.buttons = querySelectorAll('.device-status button');
+    this.colorSetButtons = querySelectorAll('.color-set-button');
     this.deviceStatusList = querySelectorAll('.device-status');
+    this.colorSet = new Modal.fromHtml('color-set');
+    this.back = querySelector('#back');
+    this.back.onClick.listen((e) {
+      this.colorSet.hide();
+    });
     this.getDevicesStatus();
+    // window.onPageShow.listen((event) {
+      // this.getDevicesStatus();
+    // });
 
     this.buttons.forEach((btn) {
       btn.onClick.listen((event) {
@@ -92,6 +104,13 @@ class Devices {
           cmd = b.dataset['status'];
         }
         this.sendWriteCmd(b.dataset['sid'], b.dataset['model'], cmd, val);
+      });
+    });
+
+    this.colorSetButtons.forEach((btn) {
+      btn.onClick.listen((event) {
+        new ColorSetter(btn.dataset['sid']);
+        this.colorSet.show();
       });
     });
     this.loader.classes.remove('show-loader');
@@ -201,6 +220,35 @@ class Devices {
     msg['sid'] = sid;
     msg['data'] = {cmdname: cmdvalue};
     this.ws.send(json.encode(msg));
+  }
+}
+
+class ColorSetter {
+  String sid;
+  ButtonElement btnRgb;
+  ButtonElement btnCt;
+  DivElement rgbTab;
+  DivElement ctTab;
+
+  ColorSetter(String sid) {
+    this.sid = sid;
+    this.btnCt = querySelector('#ct-btn');
+    this.btnRgb = querySelector('#rgb-btn');
+    this.rgbTab = querySelector('#rgb-tab');
+    this.ctTab = querySelector('#ct-tab');
+    this.btnCt.onClick.listen((event) {
+      event.preventDefault();
+      print('ct conn');
+      this.ctTab.classes.add('show');
+      this.rgbTab.classes.remove('show');
+    });
+
+    this.btnRgb.onClick.listen((event) {
+      print('rgb conn');
+      event.preventDefault();
+      this.rgbTab.classes.add('show');
+      this.ctTab.classes.remove('show');
+    });
   }
 }
 
