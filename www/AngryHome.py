@@ -62,11 +62,10 @@ def login_required(func):
 @app.route('/')
 def index():
     devs = [d for d in db['devices']]
-    print(devs)
     devs_data = dict()
     for dd in db['devices-data']:
         devs_data[dd.get('sid')] = dd
-    return render_template('index.html', devices=sorted(devs, key=operator.itemgetter('name')), devdata=devs_data)
+    return render_template('index.html', devices=sorted(devs, key=operator.itemgetter('name')), devdata=devs_data, scenses=[])
 
 
 @app.route('/dev/config')

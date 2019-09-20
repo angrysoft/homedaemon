@@ -83,6 +83,7 @@ class HomeDaemon:
         self.logger.info('Starting Daemon')
         self.token = None
         self.workers = dict()
+        self.scenes = dict()
 
     def notify_clients(self, msg):
         if 'websocket' in self.inputs:
@@ -109,7 +110,7 @@ class HomeDaemon:
         path = self.config['scenes']['path']
         for sc in os.listdir(path):
             scene = Scene(os.path.join(path, sc), self)
-            self.workers[scene.name] = scene
+            self.scenes[scene.name] = scene
             print(f'loaded {scene.name}')
 
     def run(self):
@@ -155,6 +156,11 @@ class HomeDaemon:
                     self.workers[sid].do(data)
                 except ValueError as err:
                     self.logger.error(f'{sid} {err}')
+            elif sid in self.scenes:
+                try:
+                    self.scenes[sid].do(data)
+                except ValueError as err:
+                    self.loop.error(f'{sid} {err}')
             else:
                 self.logger.error(f'Unknown sid: {data}')
         self.logger.info('Stop watching')

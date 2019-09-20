@@ -72,6 +72,7 @@ class Devices {
   Map<String, dynamic> config = new Map();
   WebSockets ws;
   Element back;
+  Tabs tabs = new Tabs();
 
   Devices() {
     this.loader.classes.add('show-loader');
@@ -83,6 +84,7 @@ class Devices {
     this.back = querySelector('#back');
     this.back.onClick.listen((e) {
       this.colorSet.hide();
+      this.tabs.enableTouch = true;
     });
     this.getDevicesStatus();
     // window.onPageShow.listen((event) {
@@ -109,6 +111,7 @@ class Devices {
 
     this.colorSetButtons.forEach((btn) {
       btn.onClick.listen((event) {
+        this.tabs.enableTouch = false;
         new ColorSetter(btn.dataset['sid']);
         this.colorSet.show();
       });
@@ -256,6 +259,7 @@ class Tabs {
   num currentTab = 0;
   num lastTab;
   List<DivElement> tabs;
+  bool _enable = true;
 
   Tabs() {
     tabs = querySelectorAll('.tab');
@@ -277,16 +281,26 @@ class Tabs {
     });
 
     window.onTouchEnd.listen((e) {
-      tend = Point(e.changedTouches[0].client.x, 0);
-      num move = tstart.x - tend.x;
-      if (tend.distanceTo(tstart) > 100) {
-        if (move > 0) {
-          this.swipeLeft();
-        } else {
-          this.swipeRight();
+      if (this.enableTouch) {
+        tend = Point(e.changedTouches[0].client.x, 0);
+        num move = tstart.x - tend.x;
+        if (tend.distanceTo(tstart) > 100) {
+          if (move > 0) {
+            this.swipeLeft();
+          } else {
+            this.swipeRight();
+          }
         }
       }
     });
+  }
+
+  bool get enableTouch {
+    return this._enable;
+  }
+
+  void set enableTouch(bool value) {
+    this._enable = value;
   }
 
   void swipeLeft() {
@@ -320,7 +334,6 @@ class Tabs {
 
 Future main() async {
   new Devices();
-  new Tabs();
 
   if (sw.isNotSupported) {
     _log('ServiceWorkers are not supported.');

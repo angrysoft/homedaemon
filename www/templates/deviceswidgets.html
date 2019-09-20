@@ -243,7 +243,7 @@
     <div class="modal-header">
         <div class="row between-xs">
             <div class="col-xs-1"><i class="material-icons" id="back">arrow_back</i></div>
-            <div class="col-xs3">Color</div>   
+            <div class="col-xs-3">Color</div>   
         </div>
     </div>
     <div class="modal-body">
@@ -257,19 +257,86 @@
         </div>
       </div>
 
-      <div class="row center-xs show" id="rgb-tab">
+      <div class="row center-xs padding-10 show" id="rgb-tab">
         <div class="col-xs-12">
-          <p>rgb</p>
-        </div>
-      </div>
+          
+          <div class="row center-xs">
+            <div class="col-xs-12 txt-center">
+                <label class="label">Bright: </label>
+            </div>
+          </div>
 
-      <div class="row center-xs" id="ct-tab">
-        <div class="col-xs-12 col-md-3">
-          <p>ct</p>
+          <div class="row center-xs">
+            <div class="col-xs-12 txt-center">
+              <input class="color-range" id="intensity" type="range" step="1" min="0" max="255" value="255">
+            </div>
+          </div>
+        
+          <div class="row center-xs">
+            <div class="col-xs-12 col-md-4 txt-center">
+              <label class="label">Pick Color: </label>
+            </div>
+          </div>
+        
+          <div class="row center-xs">
+            <div class="col-xs-12 col-md-4">
+              <input id="ledPicker" type="color">
+            </div>
+          </div>
+
         </div>
       </div>
-      
     </div>
+
+    <div class="row center-xs padding-10" id="ct-tab">
+      <div class="col-xs-12">  
+        <div class="row center-xs">
+          <div class="col-xs-12 txt-center">
+            <label class="label">Bright: </label>
+          </div>
+        </div>
+  
+        <div class="row center-xs">
+          <div class="col-xs-12 txt-center">
+            <input class="color-range" id="intensity" type="range" step="1" min="0" max="255" value="255">
+          </div>
+        </div>
+
+        <div class="row center-xs">
+          <div class="col-xs-12 txt-center">
+            <label class="label">Color temperature: </label>
+          </div>
+        </div>
+    
+        <div class="row center-xs">
+          <div class="col-xs-12 txt-center">
+            <input class="color-range" id="intensity" type="range" step="1" min="0" max="255" value="255">
+          </div>
+        </div>
+          
+      </div>
+    </div>
+  </div>
+</div>
+{%- endmacro %}
+
+{% macro scene(name) -%}
+<div class="col-xs-5 col-md-2  round-8 padding-05"  id="{{ name }}">
+  <div class="row center-xs">
+    <div class="col-xs-12">
+      <p class="txt-center">{{ name }}</p>
+    </div>
+  </div>
+  
+  <div class="row center-xs">
+    <div class="col-xs-6" >
+      <button class="btn-small" data-sid="{{ name }}" data-status="on">On</button>
+    </div>
+    
+    <div class="col-xs-6" >
+      <button class="btn-small" data-sid="{{ name }}" data-status="off">Off</button>
+    </div>
+    
   </div>
 </div>
 {%- endmacro %}

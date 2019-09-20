@@ -1628,7 +1628,7 @@ kb:function(){var u,t,s=H.e(document.querySelector("#loader"),"$iT"),r=[W.L],q=H
 r=H.M([],r)
 u=H.M([],[W.N])
 t=P.d
-s=new M.bY(s,q,r,u,new H.am([t,[P.n,,]]),new H.am([t,null]))
+s=new M.bY(s,q,r,u,new H.am([t,[P.n,,]]),new H.am([t,null]),M.kC())
 s.br()
 return s},
 k8:function(a){var u=new M.dx()
@@ -1640,7 +1640,6 @@ return u},
 bb:function(){var u=0,t=P.jk(null),s,r=2,q,p=[],o,n,m,l,k,j,i
 var $async$bb=P.jr(function(a,b){if(a===1){q=b
 u=r}while(true)switch(u){case 0:M.kb()
-M.kC()
 m=$.jH()
 if(m==null){P.R("  MAIN: ServiceWorkers are not supported.")
 u=1
@@ -1686,7 +1685,7 @@ fv:function fv(){},
 fw:function fw(a){this.a=a},
 fx:function fx(){},
 fy:function fy(a){this.a=a},
-bY:function bY(a,b,c,d,e,f){var _=this
+bY:function bY(a,b,c,d,e,f,g){var _=this
 _.a=a
 _.b=b
 _.c=c
@@ -1694,7 +1693,8 @@ _.d=d
 _.e=null
 _.f=e
 _.r=f
-_.y=_.x=null},
+_.y=_.x=null
+_.z=g},
 dN:function dN(a){this.a=a},
 dO:function dO(a){this.a=a},
 dM:function dM(a){this.a=a},
@@ -1713,8 +1713,10 @@ dx:function dx(){var _=this
 _.e=_.d=_.c=_.b=null},
 dy:function dy(a){this.a=a},
 dz:function dz(a){this.a=a},
-fc:function fc(){this.a=0
-this.c=this.b=null},
+fc:function fc(){var _=this
+_.a=0
+_.c=_.b=null
+_.d=!0},
 fe:function fe(a){this.a=a},
 ff:function ff(a,b){this.a=a
 this.b=b},
@@ -4178,8 +4180,11 @@ sbY:function(a){this.c=H.D(a,"$in",[W.L],"$an")},
 sc3:function(a){this.d=H.D(a,"$in",[W.N],"$an")},
 sc_:function(a){this.r=H.D(a,"$iy",[P.d,null],"$ay")}}
 M.dN.prototype={
-$1:function(a){H.e(a,"$iJ")
-this.a.e.a.classList.remove("modal-show")},
+$1:function(a){var u
+H.e(a,"$iJ")
+u=this.a
+u.e.a.classList.remove("modal-show")
+u.z.d=!0},
 $S:3}
 M.dO.prototype={
 $1:function(a){var u
@@ -4216,11 +4221,13 @@ u=W.J
 W.X(a,"click",H.h(new M.dL(this.a,a),{func:1,ret:-1,args:[u]}),!1,u)},
 $S:12}
 M.dL.prototype={
-$1:function(a){var u
+$1:function(a){var u,t
 H.e(a,"$iJ")
-u=this.b
-M.k8(u.getAttribute("data-"+new W.P(new W.Q(u)).v("sid")))
-this.a.e.a.classList.add("modal-show")},
+u=this.a
+u.z.d=!1
+t=this.b
+M.k8(t.getAttribute("data-"+new W.P(new W.Q(t)).v("sid")))
+u.e.a.classList.add("modal-show")},
 $S:3}
 M.dQ.prototype={
 $1:function(a){var u,t=this.a
@@ -4324,27 +4331,29 @@ C.b.a1(t.clientY)
 this.a.b=new P.aK(u,0,[P.H])},
 $S:10}
 M.ff.prototype={
-$1:function(a){var u,t,s,r,q,p,o=H.e(a,"$ias").changedTouches
-if(0>=o.length)return H.v(o,0)
-o=o[0]
-u=C.b.a1(o.clientX)
-C.b.a1(o.clientY)
-o=[P.H]
-t=this.a
-t.a=new P.aK(u,0,o)
-t=t.b
-s=t.a
-r=u-s
-q=0-H.D(t,"$iaK",o,"$aaK").b
-if(Math.sqrt(r*r+q*q)>100){o=this.b
-t=o.a
-if(s-u>0){if(typeof t!=="number")return t.F()
-p=t+1
-if(o.b>=p)o.M(p)
-else o.M(0)}else{if(typeof t!=="number")return t.cr()
-p=t-1
-if(p>=0)o.M(p)
-else o.M(o.b)}}},
+$1:function(a){var u,t,s,r,q,p,o,n
+H.e(a,"$ias")
+u=this.b
+if(u.d){t=a.changedTouches
+if(0>=t.length)return H.v(t,0)
+t=t[0]
+s=C.b.a1(t.clientX)
+C.b.a1(t.clientY)
+t=[P.H]
+r=this.a
+r.a=new P.aK(s,0,t)
+r=r.b
+q=r.a
+p=s-q
+o=0-H.D(r,"$iaK",t,"$aaK").b
+if(Math.sqrt(p*p+o*o)>100){t=u.a
+if(q-s>0){if(typeof t!=="number")return t.F()
+n=t+1
+if(u.b>=n)u.M(n)
+else u.M(0)}else{if(typeof t!=="number")return t.cr()
+n=t-1
+if(n>=0)u.M(n)
+else u.M(u.b)}}}},
 $S:10}
 M.fd.prototype={
 $1:function(a){J.jW(H.e(a,"$iN")).a0(0,"active")},

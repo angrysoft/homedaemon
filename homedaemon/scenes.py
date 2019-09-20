@@ -18,6 +18,7 @@ class Scene:
             with open(path, 'r') as jfscene:
                 data = json.load(jfscene)
             self.name = data.get('name')
+            self.type = data.get('type', 'automatic')
             self.cmds['on'] = data.get('on')
             self.cmds['off'] = data.get('off')
         except json.JSONDecodeError:

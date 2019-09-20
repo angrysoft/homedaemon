@@ -27,11 +27,17 @@
 {% from 'deviceswidgets.html' import ctrl_neutral1, ctrl_neutral2, plug, bslamp1, rgbstrip, color, loader %}
 {% from 'deviceswidgets.html' import sensor_ht, weather_v1, sensor_motion_aq2, magnet %}
 {% from 'deviceswidgets.html' import colorset %}
+{% from 'deviceswidgets.html' import scene %}
 
 {{ loader() }}
 {{ colorset() }}
 
   <div class="container-fluid">
+    <div class="row around-xs tab scenes">
+      {% for sc in scenes %}
+        {{ scene(sc) }}
+      {% endfor %}
+    </div>
     <div class="row around-xs tab lights">
     {% for d in devices %}
       {% if d.get('model') == 'ctrl_neutral1' %}
