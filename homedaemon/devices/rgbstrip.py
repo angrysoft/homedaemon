@@ -62,13 +62,13 @@ class RgbStrip(BaseDevice):
         return {'red': r, 'green': g, 'blue': b, 'bright': d}
 
     def get_rgb(self, data):
-        s = f"{data.get('red', '0')}.{data.get('green', '0')}.{data.get('blue', '0')}.{data.get('bright', '100')}"
+        s = f"F.{data.get('red', '0')}.{data.get('green', '0')}.{data.get('blue', '0')}.{data.get('bright', '100')}"
         self.daemon.logger.info(s)
         return s
 
     def off(self):
         if 'Arduino' in self.daemon.inputs:
-            self.daemon.inputs['Arduino'].serial_write('F.0.0.0')
+            self.daemon.inputs['Arduino'].serial_write('F.0.0.0.0')
 
     def on(self):
         color = self.daemon.device_data[self.sid].get('default',
