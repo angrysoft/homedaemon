@@ -62,7 +62,7 @@ class RgbStrip(BaseDevice):
         return {'red': r, 'green': g, 'blue': b, 'bright': d}
 
     def get_rgb(self, data):
-        s = f"{data.get('red', '0')}.{data.get('green', '0')}.{data.get('blue', '0')}.{data.get('bright', '100')}""
+        s = f"{data.get('red', '0')}.{data.get('green', '0')}.{data.get('blue', '0')}.{data.get('bright', '100')}"
         self.daemon.logger.info(s)
         return s
 
