@@ -73,6 +73,7 @@ class Devices {
   WebSockets ws;
   Element back;
   Tabs tabs = new Tabs();
+  ColorSetter colsetter;
 
   Devices() {
     this.loader.classes.add('show-loader');
@@ -112,12 +113,17 @@ class Devices {
     this.colorSetButtons.forEach((btn) {
       btn.onClick.listen((event) {
         this.tabs.enableTouch = false;
-        new ColorSetter(btn.dataset['sid']);
+        HttpRequest.getString('/dev/data/${btn.dataset['sid']}').then((String resp) {
+          var data = jsonDecode(resp);
+          print('data : ${data}');
+          this.colsetter = new ColorSetter(btn.dataset['sid'], data);
+        });
         this.colorSet.show();
       });
     });
     this.loader.classes.remove('show-loader');
   }
+
 
   void connectWs() {
     HttpRequest.getString('/dev/config').then((String resp) {
@@ -232,26 +238,42 @@ class ColorSetter {
   ButtonElement btnCt;
   DivElement rgbTab;
   DivElement ctTab;
+  Map<String, dynamic> lampdata;
+  RangeInputElement bright = querySelector('#bright');
 
-  ColorSetter(String sid) {
+  ColorSetter(String sid, Map<String,dynamic> data) {
     this.sid = sid;
+    this.lampdata = data;
+
+    this.bright.onChange.listen((e) {
+      this.sendBrightnes(this.bright.value);
+    });
+
+    if (this.lampdata.containsKey('bright')) {
+      this.bright.value = this.lampdata['brigth'];
+      print(this.lampdata['brigth']);
+    } else if (this.lampdata.containsKey('dim')) {
+      this.bright.value = this.lampdata['dim'];
+    }
     this.btnCt = querySelector('#ct-btn');
     this.btnRgb = querySelector('#rgb-btn');
     this.rgbTab = querySelector('#rgb-tab');
     this.ctTab = querySelector('#ct-tab');
     this.btnCt.onClick.listen((event) {
       event.preventDefault();
-      print('ct conn');
       this.ctTab.classes.add('show');
       this.rgbTab.classes.remove('show');
     });
 
     this.btnRgb.onClick.listen((event) {
-      print('rgb conn');
       event.preventDefault();
       this.rgbTab.classes.add('show');
       this.ctTab.classes.remove('show');
     });
+  }
+
+  void sendBrightnes(String bright) {
+    print(this.bright.value);
   }
 }
 

@@ -43,9 +43,9 @@ class RgbStrip(BaseDevice):
 
     @staticmethod
     def _status(data):
-        rgb = (int(data.get('red', '0')) + int(data.get('green', '0')) + int(data.get('blue', '0'))) * \
-              int(int(data.get('dim', '100')) / 100)
-        if rgb > 0:
+        rgb = (int(data.get('red', '0')) + int(data.get('green', '0')) + int(data.get('blue', '0')))
+
+        if rgb > 0 and data.get('bright') > 0:
             return 'on'
         else:
             return 'off'
@@ -54,20 +54,17 @@ class RgbStrip(BaseDevice):
         r = self.daemon.device_data[self.sid].get('red', 0)
         g = self.daemon.device_data[self.sid].get('green', 0)
         b = self.daemon.device_data[self.sid].get('blue', 0)
-        d = self.daemon.device_data[self.sid].get('dim', 100)
+        d = self.daemon.device_data[self.sid].get('bright', 100)
         if int(r) + int(g) + int(b) == 0:
             r = '255'
             g = '255'
             b = '255'
-        return {'red': r, 'green': g, 'blue': b, 'dim': d}
+        return {'red': r, 'green': g, 'blue': b, 'bright': d}
 
     def get_rgb(self, data):
-        d = int(int(data.get('dim', '100')) / 100)
-        r = int(data.get('red', '0')) * d
-        g = int(data.get('green', '0')) * d
-        b = int(data.get('blue', '0')) * d
-        self.daemon.logger.info(f'F:{r}.{g}.{b}')
-        return f'F.{r}.{g}.{b}'
+        s = f'{data.get('red', '0')}.{data.get('green', '0')}.{data.get('blue', '0')}.{data.get('bright', '100')}'
+        self.daemon.logger.info(s)
+        return s
 
     def off(self):
         if 'Arduino' in self.daemon.inputs:
@@ -75,7 +72,7 @@ class RgbStrip(BaseDevice):
 
     def on(self):
         color = self.daemon.device_data[self.sid].get('default',
-                                                      {'red': '255', 'green': '255', 'blue': '255', 'dim': '100'})
+                                                      {'red': '255', 'green': '255', 'blue': '255', 'bright': '100'})
         if 'Arduino' in self.daemon.inputs:
             self.daemon.inputs['Arduino'].serial_write(self.get_rgb(color))
 
