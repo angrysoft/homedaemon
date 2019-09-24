@@ -34,7 +34,6 @@ class WebSockets {
     this.websock.onError.listen((_) => print('Error opening connection.'));
 
     this.websock.onMessage.listen((e) {
-      // print("< ${e.data}");
       this.handler(e.data);
     });
   }
@@ -66,7 +65,6 @@ class Devices {
   DivElement loader = querySelector('#loader');
   List<ButtonElement> buttons = new List();
   List<ButtonElement> colorSetButtons = new List();
-  List<Element> deviceStatusList = new List();
   Modal colorSet;
   Map<String, List> deviceStatus = new Map();
   Map<String, dynamic> config = new Map();
@@ -78,35 +76,40 @@ class Devices {
   Devices() {
     this.loader.classes.add('show-loader');
     this.connectWs();
-    this.buttons = querySelectorAll('.device-status button');
+    this.buttons = querySelectorAll('button.device-status');
     this.colorSetButtons = querySelectorAll('.color-set-button');
-    this.deviceStatusList = querySelectorAll('.device-status');
     this.colorSet = new Modal.fromHtml('color-set');
     this.back = querySelector('#back');
-    this.back.onClick.listen((e) {
-      this.colorSet.hide();
-      this.tabs.enableTouch = true;
-    });
+    
     this.getDevicesStatus();
     // window.onPageShow.listen((event) {
       // this.getDevicesStatus();
     // });
 
+    querySelectorAll('.device-status').forEach((dev) {
+      if (this.deviceStatus.containsKey(dev.dataset['sid'])) {
+        this.deviceStatus[dev.dataset['sid']].add(dev);
+      } else {
+        this.deviceStatus[dev.dataset['sid']] = [dev];
+      }
+    });
+
+    this.back.onClick.listen((e) {
+      this.colorSet.hide();
+      this.tabs.enableTouch = true;
+    });
+
     this.buttons.forEach((btn) {
       btn.onClick.listen((event) {
         event.preventDefault();
         ButtonElement b = event.target;
-        String val = 'off';
-        if (b.value == 'off') {
-          val = 'on';
-        }
         String cmd;
         if (b.dataset.containsKey('cmd')) {
           cmd = b.dataset['cmd'];
         } else {
           cmd = b.dataset['status'];
         }
-        this.sendWriteCmd(b.dataset['sid'], b.dataset['model'], cmd, val);
+        this.sendWriteCmd(b.dataset['sid'], b.dataset['model'], cmd, b.value);
       });
     });
 
@@ -115,8 +118,9 @@ class Devices {
         this.tabs.enableTouch = false;
         HttpRequest.getString('/dev/data/${btn.dataset['sid']}').then((String resp) {
           var data = jsonDecode(resp);
-          print('data : ${data}');
-          this.colsetter = new ColorSetter(btn.dataset['sid'], data);
+          if (data.containsKey('sid')) {
+            this.colsetter = new ColorSetter(data, this.sendWriteCmd);
+          }
         });
         this.colorSet.show();
       });
@@ -133,13 +137,6 @@ class Devices {
   }
 
   void getDevicesStatus() {
-    this.deviceStatusList.forEach((dev) {
-      if (this.deviceStatus.containsKey(dev.dataset['sid'])) {
-        this.deviceStatus[dev.dataset['sid']].add(dev);
-      } else {
-        this.deviceStatus[dev.dataset['sid']] = [dev];
-      }
-    });
     HttpRequest.getString('/dev/data/all').then((String resp) {
       List<dynamic> jdata = jsonDecode(resp);
       jdata.forEach((dev) {
@@ -162,10 +159,11 @@ class Devices {
   void refreshDevicesStatus(data) async {
     try {
       Map<String, dynamic> info = json.decode(data);
-      print(info);
+
       if (this.deviceStatus.containsKey(info['sid']) &&
           info.containsKey('data')) {
         var devs = this.deviceStatus[info['sid']];
+        
         devs.forEach((d) {
           if (d is ButtonElement) {
             this.updateButton(d, info['data']);
@@ -177,19 +175,26 @@ class Devices {
         });
       }
     } catch (e) {
-      print(data);
+      print('error: ${data}');
     }
   }
 
   void updateButton(ButtonElement btn, Map dev) {
-    btn.value = dev[btn.dataset['status']];
-    if (btn.value == 'on') {
-      btn.classes.add('orange');
-      btn.text = 'off';
-    } else if (btn.value == 'off') {
-      btn.classes.remove('orange');
-      btn.text = 'on';
-    }
+    switch(dev[btn.dataset['status']]) { 
+      case "on": {
+        btn.classes.add('orange');
+        btn.text = 'off';
+        btn.value = 'off';
+      } 
+      break; 
+     
+      case "off": {
+        btn.classes.remove('orange');
+        btn.text = 'on';
+        btn.value = 'on';
+      } 
+      break;
+   }   
   }
 
   void updateElement(Element el, Map data) {
@@ -240,21 +245,54 @@ class ColorSetter {
   DivElement ctTab;
   Map<String, dynamic> lampdata;
   RangeInputElement bright = querySelector('#bright');
+  RangeInputElement ct = querySelector('#ct');
+  InputElement color = querySelector('#color-picker');
+  Function send;
 
-  ColorSetter(String sid, Map<String,dynamic> data) {
-    this.sid = sid;
+  ColorSetter(Map<String,dynamic> data, Function send) {
+    this.sid = data['sid'];
     this.lampdata = data;
+    this.send = send;
+
+    print(data);
 
     this.bright.onChange.listen((e) {
       this.sendBrightnes(this.bright.value);
     });
 
+    this.ct.onChange.listen((e) {
+      this.sendBrightnes(this.ct.value);
+    });
+
+    this.color.onChange.listen((e) {
+      this.hexToRgb(this.color.value);
+    });
+
     if (this.lampdata.containsKey('bright')) {
-      this.bright.value = this.lampdata['brigth'];
-      print(this.lampdata['brigth']);
-    } else if (this.lampdata.containsKey('dim')) {
-      this.bright.value = this.lampdata['dim'];
+      this.bright.value = this.lampdata['bright'].toString();
     }
+
+    if (this.lampdata.containsKey('ct')) {
+      this.ct.value = this.lampdata['ct'].toString();
+    }
+
+    if (this.lampdata.containsKey('rgb')) {
+      int rgbint;
+      if (this.lampdata['rgb'] is int) {
+        rgbint = this.lampdata['rgb'];
+      } else {
+        rgbint = int.parse(this.lampdata['rgb']);
+      }
+      int b =  rgbint & 255;
+      int g = (rgbint >> 8) & 255;
+      int r =   (rgbint >> 16) & 255;
+      print('${r}.${g}.${b}');
+      this.color.value = this.rgbToHex(r, g, b);
+    } else if (this.lampdata.containsKey('red') && this.lampdata.containsKey('green') && this.lampdata.containsKey('blue')) {
+      this.color.value = this.rgbToHex(this.lampdata['red'], this.lampdata['green'], this.lampdata['blue']);
+    }
+
+
     this.btnCt = querySelector('#ct-btn');
     this.btnRgb = querySelector('#rgb-btn');
     this.rgbTab = querySelector('#rgb-tab');
@@ -273,7 +311,25 @@ class ColorSetter {
   }
 
   void sendBrightnes(String bright) {
-    print(this.bright.value);
+    print(bright);
+  }
+
+  String hexToRgb(String h) {
+    String ret = '';
+    if (h.length == 7) {
+      int r = int.parse(h.substring(1,3),radix:16);
+      int g = int.parse(h.substring(3,5),radix:16);
+      int b = int.parse(h.substring(5,7),radix:16);
+      ret = '${r}.${g}.${b}';
+    }
+    print(ret);
+    return ret;
+  }
+
+  String rgbToHex(int r, int g, int b) {
+    String hex = '#${r.toRadixString(16).padLeft(2,'0')}${g.toRadixString(16).padLeft(2,'0')}${b.toRadixString(16).padLeft(2,'0')}';
+    print(hex);
+    return hex;
   }
 }
 

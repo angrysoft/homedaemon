@@ -14,7 +14,7 @@
   
   <div class="row center-xs">
     <div class="col-xs-6" >
-      <button class="btn-small device-status" data-sid="{{ data.get('sid') }}" data-status="channel_0" data-model="{{ data.get('model') }}">On</button>
+      <button class="btn-small device-status" data-sid="{{ data.get('sid') }}" data-status="channel_0" data-model="{{ data.get('model') }}" value="on">On</button>
     </div>
     
   </div>
@@ -31,11 +31,11 @@
   
   <div class="row center-xs">
     <div class="col-xs-6" >
-      <button class="btn-small device-status" data-sid="{{ data.get('sid') }}" data-status="channel_0" data-model="{{ data.get('model') }}">On</button>
+      <button class="btn-small device-status" data-sid="{{ data.get('sid') }}" data-status="channel_0" data-model="{{ data.get('model') }}" value="on">On</button>
     </div>
     
     <div class="col-xs-6" >
-      <button class="btn-small device-status" data-sid="{{ data.get('sid') }}" data-status="channel_1" data-model="{{ data.get('model') }}">On</button>
+      <button class="btn-small device-status" data-sid="{{ data.get('sid') }}" data-status="channel_1" data-model="{{ data.get('model') }}" value="on">On</button>
     </div>
     
   </div>
@@ -52,7 +52,7 @@
   
   <div class="row center-xs">
     <div class="col-xs-6" >
-      <button class="btn-small device-status"  data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="status">On</button>
+      <button class="btn-small device-status"  data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="status" value="on">On</button>
     </div>
   </div>
 </div>
@@ -68,7 +68,7 @@
   
   <div class="row center-xs">
     <div class="col-xs-6" >
-      <button class="btn-small device-status" data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="power" data-cmd="set_power">On</button>
+      <button class="btn-small device-status" data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="power" data-cmd="set_power" value="on">On</button>
     </div>
 
     <div class="col-xs-6" >
@@ -88,7 +88,7 @@
   
   <div class="row center-xs">
     <div class="col-xs-6" >
-      <button class="btn-small device-status" data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="status">On</button>
+      <button class="btn-small device-status" data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="status" value="on">On</button>
     </div>
 
     <div class="col-xs-6" >
@@ -108,7 +108,7 @@
   
   <div class="row center-xs">
     <div class="col-xs-6" >
-      <button class="btn-small device-status" data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="power" data-cmd="set_power">On</button>
+      <button class="btn-small device-status" data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="power" data-cmd="set_power" value="on">On</button>
     </div>
 
     <div class="col-xs-6" >
@@ -280,7 +280,7 @@
         
           <div class="row center-xs">
             <div class="col-xs-12 col-md-4">
-              <input id="ledPicker" type="color">
+              <input id="color-picker" type="color">
             </div>
           </div>
 
@@ -299,7 +299,7 @@
     
         <div class="row center-xs">
           <div class="col-xs-12 txt-center">
-            <input class="color-range" id="intensity" type="range" step="1" min="0" max="255" value="255">
+            <input class="color-range" id="ct" type="range" step="1" min="1700" max="6500" value="6500">
           </div>
         </div>
           
@@ -319,11 +319,11 @@
   
   <div class="row center-xs">
     <div class="col-xs-6" >
-      <button class="btn-small" data-sid="{{ name }}" data-status="on">On</button>
+      <button class="btn-small" data-sid="{{ name }}" data-status="on" value="on">On</button>
     </div>
     
     <div class="col-xs-6" >
-      <button class="btn-small" data-sid="{{ name }}" data-status="off">Off</button>
+      <button class="btn-small" data-sid="{{ name }}" data-status="off" value="off">Off</button>
     </div>
     
   </div>

@@ -28,6 +28,8 @@ class RgbStrip(BaseDevice):
                     self.on()
                 elif _data['status'] == 'off':
                     self.off()
+            elif 'bright' in data:
+                self.bright(data)
             else:
                 self.daemon.inputs['Arduino'].serial_write(self.get_rgb(_data))
 
@@ -75,4 +77,7 @@ class RgbStrip(BaseDevice):
                                                       {'red': '255', 'green': '255', 'blue': '255', 'bright': '100'})
         if 'Arduino' in self.daemon.inputs:
             self.daemon.inputs['Arduino'].serial_write(self.get_rgb(color))
+
+    def bright(self, data):
+        pass
 
