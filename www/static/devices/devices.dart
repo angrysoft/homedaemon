@@ -109,7 +109,7 @@ class Devices {
         } else {
           cmd = b.dataset['status'];
         }
-        this.sendWriteCmd(b.dataset['sid'], b.dataset['model'], cmd, b.value);
+        this.sendWriteCmd(b.dataset['sid'], cmd, b.value);
       });
     });
 
@@ -227,12 +227,12 @@ class Devices {
     }
   }
 
-  void sendWriteCmd(String sid, String model, String cmdname, String cmdvalue) {
+  void sendWriteCmd(String sid, String cmdname, String cmdvalue) {
     Map<String, dynamic> msg = new Map();
     msg['cmd'] = 'write';
-    msg['model'] = model;
     msg['sid'] = sid;
     msg['data'] = {cmdname: cmdvalue};
+    print(msg);
     this.ws.send(json.encode(msg));
   }
 }
@@ -261,7 +261,7 @@ class ColorSetter {
     });
 
     this.ct.onChange.listen((e) {
-      this.sendBrightnes(this.ct.value);
+      this.sendCt(this.ct.value);
     });
 
     this.color.onChange.listen((e) {
@@ -311,7 +311,11 @@ class ColorSetter {
   }
 
   void sendBrightnes(String bright) {
-    print(bright);
+    this.send(this.sid, 'set_bright', bright);
+  }
+
+  void sendCt(String ct) {
+    this.send(this.sid, 'set_ct', ct);
   }
 
   String hexToRgb(String h) {

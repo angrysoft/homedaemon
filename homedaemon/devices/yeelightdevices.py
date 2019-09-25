@@ -11,8 +11,8 @@ class YeeligthDevice(BaseDevice):
     def write(self, data):
         _data = data.get('data')
         c, v = _data.popitem()
-        if c in self.support:
-            return self._send(c, v)
+        print(c,v)
+        return self._send(c, v)
 
     def _send(self, c, v):
         bulb = Bulb(self.ip)
@@ -28,14 +28,27 @@ class YeeligthDevice(BaseDevice):
                 
         elif c == 'toogle':
             ret = bulb.toggle()
-        elif c == 'set_ct' and v is dict and 'ct' in v:
-            ret = bulb.set_ct_abx(v['ct'],
-                                  efx=v.get('efx', 'smooth'),
-                                  duration=v.get('duration', 500))
-        elif c == 'set_bright' and v is dict and 'bright' in v:
-            ret = bulb.set_bright(v['bright'],
-                                  efx=v.get('efx', 'smooth'),
-                                  duration=v.get('duration', 500))
+        
+        elif c == 'set_rgb':
+            # TODO check
+            ret = bulb.set_rgb(v['red'], v['green'], v['blue'])
+        
+        elif c == 'set_ct':
+             if type(v) is dict:
+                ret = bulb.set_ct_abx(v['set_ct'],
+                                      efx=v.get('efx', 'smooth'),
+                                      duration=v.get('duration', 500))
+             else:
+                 bulb.set_ct_abx(v)
+
+        elif c == 'set_bright':
+            if type(v) is dict:
+                ret = bulb.set_bright(v['set_bright'],
+                                      efx=v.get('efx', 'smooth'),
+                                      duration=v.get('duration', 500))
+            else:
+                ret = bulb.set_bright(v)
+                
         elif c == 'set_default':
             ret = bulb.set_default()
         elif c == 'start_cf' and v is dict:
