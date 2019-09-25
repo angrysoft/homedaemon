@@ -227,7 +227,7 @@ class Devices {
     }
   }
 
-  void sendWriteCmd(String sid, String cmdname, String cmdvalue) {
+  void sendWriteCmd(String sid, String cmdname, dynamic cmdvalue) {
     Map<String, dynamic> msg = new Map();
     msg['cmd'] = 'write';
     msg['sid'] = sid;
@@ -265,7 +265,7 @@ class ColorSetter {
     });
 
     this.color.onChange.listen((e) {
-      this.hexToRgb(this.color.value);
+      this.sendRgb(this.hexToRgb(this.color.value));
     });
 
     if (this.lampdata.containsKey('bright')) {
@@ -318,15 +318,19 @@ class ColorSetter {
     this.send(this.sid, 'set_ct', ct);
   }
 
-  String hexToRgb(String h) {
-    String ret = '';
+  void sendRgb(Map<String,dynamic> rgb) {
+    this.send(this.sid, 'set_rgb', rgb);
+  }
+
+  Map<String,dynamic> hexToRgb(String h) {
+     Map<String,dynamic> ret = new Map();
+
     if (h.length == 7) {
       int r = int.parse(h.substring(1,3),radix:16);
       int g = int.parse(h.substring(3,5),radix:16);
       int b = int.parse(h.substring(5,7),radix:16);
-      ret = '${r}.${g}.${b}';
+      ret = {'red': r, 'green': g, 'blue': b};
     }
-    print(ret);
     return ret;
   }
 

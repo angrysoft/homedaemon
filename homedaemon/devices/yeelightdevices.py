@@ -35,19 +35,19 @@ class YeeligthDevice(BaseDevice):
         
         elif c == 'set_ct':
              if type(v) is dict:
-                ret = bulb.set_ct_abx(v['set_ct'],
+                ret = bulb.set_ct_abx(int(v['set_ct']),
                                       efx=v.get('efx', 'smooth'),
                                       duration=v.get('duration', 500))
              else:
-                 bulb.set_ct_abx(v)
+                 bulb.set_ct_abx(int(v))
 
         elif c == 'set_bright':
             if type(v) is dict:
-                ret = bulb.set_bright(v['set_bright'],
+                ret = bulb.set_bright(int(v['set_bright']),
                                       efx=v.get('efx', 'smooth'),
                                       duration=v.get('duration', 500))
             else:
-                ret = bulb.set_bright(v)
+                ret = bulb.set_bright(int(v))
                 
         elif c == 'set_default':
             ret = bulb.set_default()
