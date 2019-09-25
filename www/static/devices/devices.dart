@@ -72,6 +72,8 @@ class Devices {
   Element back;
   Tabs tabs = new Tabs();
   ColorSetter colsetter;
+  Map<String, ColorSetter> setters = new Map();
+  String activeSetter;
 
   Devices() {
     this.loader.classes.add('show-loader');
@@ -97,6 +99,7 @@ class Devices {
     this.back.onClick.listen((e) {
       this.colorSet.hide();
       this.tabs.enableTouch = true;
+      this.setters[this.activeSetter].cancelWatchEvent();
     });
 
     this.buttons.forEach((btn) {
@@ -114,12 +117,16 @@ class Devices {
     });
 
     this.colorSetButtons.forEach((btn) {
+      this.setters[btn.dataset['sid']] = ColorSetter(btn.dataset['sid'], this.sendWriteCmd);
       btn.onClick.listen((event) {
         this.tabs.enableTouch = false;
         HttpRequest.getString('/dev/data/${btn.dataset['sid']}').then((String resp) {
           var data = jsonDecode(resp);
           if (data.containsKey('sid')) {
-            this.colsetter = new ColorSetter(data, this.sendWriteCmd);
+            this.setters[btn.dataset['sid']]
+              ..refresh(data)
+              ..watchEvent();
+            this.activeSetter = btn.dataset['sid'];
           }
         });
         this.colorSet.show();
@@ -248,50 +255,13 @@ class ColorSetter {
   RangeInputElement ct = querySelector('#ct');
   InputElement color = querySelector('#color-picker');
   Function send;
+  StreamSubscription eventBright;
+  StreamSubscription eventCt;
+  StreamSubscription eventColor;
 
-  ColorSetter(Map<String,dynamic> data, Function send) {
-    this.sid = data['sid'];
-    this.lampdata = data;
+  ColorSetter(String sid, Function send) {
+    this.sid = sid;
     this.send = send;
-
-    print(data);
-
-    this.bright.onChange.listen((e) {
-      this.sendBrightnes(this.bright.value);
-    });
-
-    this.ct.onChange.listen((e) {
-      this.sendCt(this.ct.value);
-    });
-
-    this.color.onChange.listen((e) {
-      this.sendRgb(this.hexToRgb(this.color.value));
-    });
-
-    if (this.lampdata.containsKey('bright')) {
-      this.bright.value = this.lampdata['bright'].toString();
-    }
-
-    if (this.lampdata.containsKey('ct')) {
-      this.ct.value = this.lampdata['ct'].toString();
-    }
-
-    if (this.lampdata.containsKey('rgb')) {
-      int rgbint;
-      if (this.lampdata['rgb'] is int) {
-        rgbint = this.lampdata['rgb'];
-      } else {
-        rgbint = int.parse(this.lampdata['rgb']);
-      }
-      int b =  rgbint & 255;
-      int g = (rgbint >> 8) & 255;
-      int r =   (rgbint >> 16) & 255;
-      print('${r}.${g}.${b}');
-      this.color.value = this.rgbToHex(r, g, b);
-    } else if (this.lampdata.containsKey('red') && this.lampdata.containsKey('green') && this.lampdata.containsKey('blue')) {
-      this.color.value = this.rgbToHex(this.lampdata['red'], this.lampdata['green'], this.lampdata['blue']);
-    }
-
 
     this.btnCt = querySelector('#ct-btn');
     this.btnRgb = querySelector('#rgb-btn');
@@ -310,7 +280,55 @@ class ColorSetter {
     });
   }
 
+  void refresh(Map<String,dynamic> data) {
+
+    if (data.containsKey('bright')) {
+      this.bright.value = data['bright'].toString();
+    }
+
+    if (data.containsKey('ct')) {
+      this.ct.value = data['ct'].toString();
+    }
+
+    if (data.containsKey('rgb')) {
+      int rgbint;
+      if (data['rgb'] is int) {
+        rgbint = data['rgb'];
+      } else {
+        rgbint = int.parse(data['rgb']);
+      }
+      int b =  rgbint & 255;
+      int g = (rgbint >> 8) & 255;
+      int r =   (rgbint >> 16) & 255;
+      print('${r}.${g}.${b}');
+      this.color.value = this.rgbToHex(r, g, b);
+    } else if (data.containsKey('red') && data.containsKey('green') && data.containsKey('blue')) {
+      this.color.value = this.rgbToHex(data['red'], data['green'], data['blue']);
+    }
+  }
+
+  void watchEvent() {
+    this.eventBright = this.bright.onChange.listen((e) {
+      this.sendBrightnes(this.bright.value);
+    });
+
+    this.eventCt = this.ct.onChange.listen((e) {
+      this.sendCt(this.ct.value);
+    });
+
+    this.eventColor = this.color.onChange.listen((e) {
+      this.sendRgb(this.hexToRgb(this.color.value));
+    });
+  }
+
+  void cancelWatchEvent() {
+    this.eventBright.cancel();
+    this.eventCt.cancel();
+    this.eventColor.cancel();
+  }
+
   void sendBrightnes(String bright) {
+    print(this.sid);
     this.send(this.sid, 'set_bright', bright);
   }
 
