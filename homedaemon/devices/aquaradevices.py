@@ -110,9 +110,10 @@ class AquaraGateway(AquraBaseDevice):
 class SensorMotionAq2(AquraBaseDevice):
     def __init__(self, data, daemon):
         super(SensorMotionAq2, self).__init__(data, daemon)
-        self.on_motion = data.get('on_motion')
-        self.on_no_motion = dict()
-        self.on_no_motion.update(data.get('on_nomotion', {}))
+        self.on_motion_event = data.get('on_motion')
+        self.on_no_motion_event = dict()
+        self.on_no_motion_event.update(data.get('on_nomotion', {}))
+        self.on_lux_event = data.get('on_lux')
 
     def report(self, data):
         # TODO info
@@ -121,21 +122,29 @@ class SensorMotionAq2(AquraBaseDevice):
         data = data.get('data')
         event, arg = data.popitem()
         self.update_dev_data(data)
-        return {'no_motion': self.no_motion,
-                'status': self.motion,
-                'lux': self.lux}.get(event, self._unknown_cmd)(arg)
+        return {'no_motion': self.on_no_motion,
+                'status': self.on_motion,
+                'lux': self.on_lux}.get(event, self._unknown_cmd)(arg)
 
-    def no_motion(self, _time):
-        if _time in self.on_no_motion:
+    def on_no_motion(self, _time):
+        if _time in self.on_no_motion_event:
             self.daemon.queue.put({'sid': self.on_no_motion.get(_time),
                                    'data': {'sid': self.sid, 'status': 'on'}})
 
-    def motion(self, arg):
-        if self.on_motion is None:
+    def on_motion(self, arg):
+        if self.on_motion_event is None:
             return
-        self.daemon.queue.put({'sid': self.on_motion,
+        self.daemon.queue.put({'sid': self.on_motion_event,
                                'data': {'sid': self.sid, 'status': 'on'}})
 
-    def lux(self, arg):
-        pass
-
+    
+    def on_lux(self, arg):
+        if self.on_lux_event:
+            self.daemon.queue.put({'sid': self.on_motion_event,
+                                   'data': {'sid': self.sid, 'status': 'on'}})
+        
+    
+    @property
+    def lux(self):
+        return self.daemon.device_data[self.sid].get['lux']
+    

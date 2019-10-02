@@ -5,7 +5,7 @@
     {
       "cmd": "check",
       "args": {
-        "if": ["time", "<>", "18:00", "7:00"],
+        "if": ["device","158d00029a49ba", "<", "lux", "5"],
         "then": [{"cmd": "device", "args": {"cmd": "write", "sid": "158d0002a18c2b", "data": {"channel_1":  "on"}}},
                  {"cmd":  "sleep", "args": 25},
                  {"cmd": "device", "args": {"cmd": "write", "sid": "158d0002a18c2b", "data": {"channel_1":  "off"}}}

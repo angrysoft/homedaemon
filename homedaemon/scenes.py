@@ -103,7 +103,7 @@ class TimeRange:
             return self._from >= value <= self._to
 
 class DevCheck:
-    def __init__(self, op, value):
+    def __init__(self, args):
         self.status = False
         # TODO: ee and what ?
 
