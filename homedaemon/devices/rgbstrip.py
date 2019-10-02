@@ -67,7 +67,7 @@ class RgbStrip(BaseDevice):
             rgb['red'] = '255'
             rgb['green'] = '255'
             rgb['blue'] = '255'
-        data['data']['default'] = {'red':rgb['red'], 'green': rgb['green'], 'blue': rgb['blue']}
+        self.daemon.device_data[self.sid]['default'] = {'red':rgb['red'], 'green': rgb['green'], 'blue': rgb['blue']}
         
 
     def _rgb_to_send(self, data):

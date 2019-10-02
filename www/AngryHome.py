@@ -134,31 +134,6 @@ def devices():
                            wp=db['config']['websocket']['port'])
 
 
-@app.route('/leds')
-def leds():
-    """led"""
-    return render_template('leds.html')
-
-
-@app.route('/leds/pilot')
-def leds_pilot():
-    return render_template('ledpilot.html')
-
-
-@app.route('/leds/set/<rgb>', methods=['GET', 'POST'])
-def changeColor(rgb):
-    """changeColor"""
-    if request.method == 'GET':
-        return request.args.get('status', 'ooops something is wrong')
-    elif request.method == 'POST':
-        msg = {'cmd': 'write',
-               'model': 'ledstrip',
-               'sid': 0,
-               'data': {'rgb': rgb}}
-        status = 'ok'
-        asyncio.run(send_event(json.dumps(msg)))
-    return redirect('/leds/set/{}?status={}'.format(rgb, status))
-
 # ______Admin______ #
 @app.route('/admin/login', methods=['GET', 'POST'])
 def login():
