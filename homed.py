@@ -77,6 +77,7 @@ class HomeDaemon:
         self.config = self.db['config']
         self.devicesdb = self.db['devices']
         self.device_data = self.db['devices-data']
+        self.scenes_data = self.db['scenes']
         self.logger = logging.getLogger('homed')
         self.logger.addHandler(JournalHandler())
         self.logger.setLevel(logging.DEBUG)
@@ -107,9 +108,10 @@ class HomeDaemon:
             self.workers[dev['sid']] = Device(dev, self)
 
     def _load_scenes(self):
-        path = self.config['scenes']['path']
-        for sc in os.listdir(path):
-            scene = Scene(os.path.join(path, sc), self)
+        # path = self.config['scenes']['path']
+        print('try to load')
+        for sc in self.scenes_data:
+            scene = Scene(sc, self)
             self.scenes[scene.name] = scene
             print(f'loaded {scene.name}')
 

@@ -5,6 +5,7 @@ from pycouchdb import Server
 from yeelight import Yeelight
 from urllib.parse import urlparse
 import json
+import os
 
 
 class Register:
@@ -13,6 +14,7 @@ class Register:
         self.devices = None
         self.devices_data = None
         self.config = None
+        self.scenes = None
         self.names = {'0x000000000545b741': 'Bedroom Lamp',
                       '0x0000000007e7bae0': 'Living room lamp',
                       '158d00027d0065': 'Kitchen Strip',
@@ -46,18 +48,22 @@ class Register:
             self.srv.delete('devices-data')
         if 'config' in self.srv:
             self.srv.delete('config')
+        if 'scenes' in self.srv:
+            self.srv.delete('scenes')
 
     def create_db(self):
         print('Creating db')
         self.srv.create('devices')
         self.srv.create('devices-data')
         self.srv.create('config')
+        self.srv.create('scenes')
         
     def accessing_db(self):
         print('accessing db')
         self.devices = self.srv['devices']
         self.devices_data = self.srv.db('devices-data')
         self.config = self.srv.db('config')
+        self.scenes = self.srv.db('scenes')
 
     @staticmethod
     def dev_list():
@@ -118,6 +124,8 @@ class Register:
                 d['on_nomotion'] = {'120':'hall_no_motion'}
             elif d['name'] == 'Kitchen Switch' and d['model'] == 'sensor_switch.aq2':
                 d['on_click'] = 'led_strip'
+            elif d['name'] == 'Bedroom' and d['model'] == 'sensor_motion.aq2':
+                d['on_motion'] = 'bedroom_motion'
             print(f"\t {d.get('model')}  {d.get('sid')} {d.get('name')}")
 
             self.devices[d.get('sid')] = d
@@ -132,7 +140,16 @@ class Register:
             self.config['user'] = {'user': 'admin',
                                    'password': '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918'}
             print('Config added')
-
+    
+    def add_scenes(self):
+        path = 'files/scenes'
+        for sc in os.listdir(path):
+            with open(os.path.join(path,sc)) as jconf:
+                scene_data = json.load(jconf)
+                self.scenes[scene_data.get('name')] = scene_data
+        print('Scenes added')
+        
+        
     # def add_index(self):
     #     print(f"Creating index on device: {db.devices.create_index([('sid', TEXT)], unique=True)}")
     #     print(f"Creating index on device data: {db.devices_data.create_index([('sid', TEXT)], unique=True)}")
@@ -145,4 +162,5 @@ if __name__ == '__main__':
     r.accessing_db()
     r.registering()
     r.add_config()
+    r.add_scenes()
 

@@ -5,22 +5,22 @@ from time import sleep
 
 
 class Scene:
-    def __init__(self, path, daemon):
+    def __init__(self, scene_data, daemon):
         self.daemon = daemon
         self.name = 'empty'
         self.cmds = {'on': [], 'off': []}
-        self._load_scene_config(path)
+        self._load_scene_config(scene_data)
         self.status = None
         self.queue_put = daemon.queue.put
 
-    def _load_scene_config(self, path):
+    def _load_scene_config(self, scene_data):
         try:
-            with open(path, 'r') as jfscene:
-                data = json.load(jfscene)
-            self.name = data.get('name')
-            self.type = data.get('type', 'automatic')
-            self.cmds['on'] = data.get('on')
-            self.cmds['off'] = data.get('off')
+            # with open(path, 'r') as jfscene:
+            # data = json.load(scene_data)
+            self.name = scene_data.get('name')
+            self.type = scene_data.get('type', 'automatic')
+            self.cmds['on'] = scene_data.get('on')
+            self.cmds['off'] = scene_data.get('off')
         except json.JSONDecodeError:
             pass
 
