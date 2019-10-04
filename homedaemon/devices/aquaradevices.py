@@ -128,7 +128,7 @@ class SensorMotionAq2(AquraBaseDevice):
 
     def on_no_motion(self, _time):
         if _time in self.on_no_motion_event:
-            self.daemon.queue.put({'sid': self.on_no_motion.get(_time),
+            self.daemon.queue.put({'sid': self.on_no_motion_event.get(_time),
                                    'data': {'sid': self.sid, 'status': 'on'}})
 
     def on_motion(self, arg):
@@ -140,7 +140,7 @@ class SensorMotionAq2(AquraBaseDevice):
     
     def on_lux(self, arg):
         if self.on_lux_event:
-            self.daemon.queue.put({'sid': self.on_motion_event,
+            self.daemon.queue.put({'sid': self.on_lux_event,
                                    'data': {'sid': self.sid, 'status': 'on'}})
         
     

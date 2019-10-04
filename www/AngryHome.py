@@ -36,7 +36,7 @@ from pycouchdb import Server
 import operator
 from os import urandom
 from hashlib import sha256
-
+from time import sleep
 app = Flask(__name__)
 
 
@@ -180,7 +180,18 @@ def admin_devices():
     return render_template('admin/devices.html', devices=sorted(devs, key=operator.itemgetter('name')))
 
 
-db = Server()
+def connect_db():
+    db = None
+    for x in range(0,10):
+        try:
+            db = Server()
+            break
+        except ConnectionRefusedError:
+            sleep(1)
+    return db
+
+
+db = connect_db()
 app.secret_key = urandom(24)
 
 if __name__ == '__main__':

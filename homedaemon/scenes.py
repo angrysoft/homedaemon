@@ -14,15 +14,10 @@ class Scene:
         self.queue_put = daemon.queue.put
 
     def _load_scene_config(self, scene_data):
-        try:
-            # with open(path, 'r') as jfscene:
-            # data = json.load(scene_data)
-            self.name = scene_data.get('name')
-            self.type = scene_data.get('type', 'automatic')
-            self.cmds['on'] = scene_data.get('on')
-            self.cmds['off'] = scene_data.get('off')
-        except json.JSONDecodeError:
-            pass
+        self.name = scene_data.get('name')
+        self.type = scene_data.get('type', 'automatic')
+        self.cmds['on'] = scene_data.get('on')
+        self.cmds['off'] = scene_data.get('off')
 
     def do(self, data):
         if 'data' in data:

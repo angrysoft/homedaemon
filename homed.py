@@ -108,8 +108,6 @@ class HomeDaemon:
             self.workers[dev['sid']] = Device(dev, self)
 
     def _load_scenes(self):
-        # path = self.config['scenes']['path']
-        print('try to load')
         for sc in self.scenes_data:
             scene = Scene(sc, self)
             self.scenes[scene.name] = scene
