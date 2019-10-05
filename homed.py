@@ -108,10 +108,18 @@ class HomeDaemon:
             self.workers[dev['sid']] = Device(dev, self)
 
     def _load_scenes(self):
-        for sc in self.scenes_data:
-            scene = Scene(sc, self)
-            self.scenes[scene.name] = scene
-            print(f'loaded {scene.name}')
+        sys.path.append(self.config['scenes']['path'])
+        with os.scandir(self.config['scenes']['path']) as it:
+            for entry in it:
+                if entry.name.endswith('.py') and entry.is_file():
+                    _scene = importlib.import_module(entry.name[:-3])
+                    inst = _scene.Scene(self)
+                    print(inst.name)
+        
+        # for sc in self.scenes_data:
+            # scene = Scene(sc, self)
+            # self.scenes[scene.name] = scene
+            # print(f'loaded {scene.name}')
 
     def run(self):
         self.logger.info(f'main thread {current_thread()} loop {id(self.loop)}')

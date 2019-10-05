@@ -4,6 +4,29 @@ from datetime import datetime, time
 from time import sleep
 
 
+class BaseScene:
+    name = ''
+    automatic = True
+
+    def __init__(self, daemon):
+        self.daemon = daemon
+        
+
+    def do(self, cmd):
+        {'on': self.on,
+         'off': self.off}.get(cmd, self._unknown_cmd)()
+    
+    def on(self):
+        pass
+
+    def off(self):
+        pass
+
+    def _unknown_cmd(self):
+        pass
+
+
+
 class Scene:
     def __init__(self, scene_data, daemon):
         self.daemon = daemon
