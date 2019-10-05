@@ -35,6 +35,7 @@ from pycouchdb import Server
 from systemd.journal import JournalHandler
 from homedaemon.devices import Device
 from homedaemon.scenes import Scene
+import sys
 
 
 class Queue:
