@@ -65,7 +65,6 @@ class HomeDaemon:
         self.loop = asyncio.get_event_loop()
         self.inputs = dict()
         self.inputs_list = [
-            # 'dummy',
             'gateway',
             'arduino',
             'tcp',

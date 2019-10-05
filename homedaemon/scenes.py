@@ -11,7 +11,6 @@ class Scene:
         self.cmds = {'on': [], 'off': []}
         self._load_scene_config(scene_data)
         self.status = None
-        self.queue_put = daemon.queue.put
 
     def _load_scene_config(self, scene_data):
         self.name = scene_data.get('name')
@@ -22,7 +21,7 @@ class Scene:
     def do(self, data):
         if 'data' in data:
             Commands(self.cmds.get(data['data'].get('status'), []),
-                     self.queue_put).start()
+                     self.daemon.queue.put).start()
 
 
 class Commands(Thread):

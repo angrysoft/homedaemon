@@ -71,9 +71,9 @@ class BaseDevice:
 
     def do(self, data):
         if 'data' in data:
-            return self.cmds.get(data.get('cmd'), self._unknown_cmd)(data)
+            self.cmds.get(data.get('cmd'), self._unknown_cmd)(data)
         else:
-            return self.cmds.get(data.get('cmd'), self._unknown_cmd)()
+            self.cmds.get(data.get('cmd'), self._unknown_cmd)()
 
     def _unknown_cmd(self, data):
         self.daemon.logger.error(f'Unknown command:  {data}')
@@ -91,10 +91,6 @@ class BaseDevice:
 
     def update_dev_data(self, data):
         with self.lock:
-            # doc = self.daemon.device_data.get(self.sid)
-            # if doc:
-                # doc.update(data)
-                # self.daemon.device_data.save(doc)
             self.daemon.device_data[self.sid] = data
 
 
