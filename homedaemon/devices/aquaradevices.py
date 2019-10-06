@@ -2,6 +2,23 @@ from . import BaseDevice
 from aquara import Gateway
 import json
 
+class ButtonOnOff:
+    def __init__(self, name, sid, write):
+        self.name = name
+        self.write = write
+
+    def on(self):
+        self.write({'data': {self.name: 'on'}})
+
+    def off(self):
+        self.write({'data': {self.name: 'on'}})
+
+
+class ButtonToggleOnOff(ButtonOnOff):
+
+    def toggle(self):
+        self.write({'data': {self.name: 'toggle'}})
+
 
 class AquraBaseDevice(BaseDevice):
     def __init__(self, data, daemon):
@@ -45,17 +62,17 @@ class CtrlNeutral(AquraBaseDevice):
     def __init__(self, data, daemon):
         super(CtrlNeutral, self).__init__(data, daemon)
         self.writeable = True
-        self._t0 = 0
-        self.t1 = 0
-
-    def channel_0(self, value):
-        self.write({'channel_0': value})
-
+        self.channel_0 = ButtonOnOff('channel_0', self.sid, self.write)
 
 class CtrlNeutral2(CtrlNeutral):
 
+    @property
+    def channel_1(self):
+        return self.daemon.device_data[self.sid].get('channel_1')
+    
+    @channel_1.setter
     def channel_1(self, value):
-        self.write({'channel_1': value})
+        self.write({'data':{'channel_1': value}})
 
 
 class Plug(AquraBaseDevice):
@@ -148,3 +165,5 @@ class SensorMotionAq2(AquraBaseDevice):
     def lux(self):
         return self.daemon.device_data[self.sid].get['lux']
     
+
+

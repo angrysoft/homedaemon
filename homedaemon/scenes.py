@@ -13,8 +13,11 @@ class BaseScene(Thread):
         self.daemon = daemon
         
     def do(self, cmd):
-        self.cmd = cmd
-        self.start()
+        if 'status' in cmd:
+            self.cmd = cmd['status']
+            self.start()
+        else:
+            self.daemon.logger.error(f'{self.name}: missing status')
     
     def run(self):
         {'on': self.on,
@@ -27,78 +30,25 @@ class BaseScene(Thread):
         pass
 
     def _unknown_cmd(self):
-        pass
+        self.daemon.logger.error(f'unknown status {self.cmd}')
 
     def sleep(self, s):
         sleep(s)
 
-
-
-class Scene:
-    def __init__(self, scene_data, daemon):
-        self.daemon = daemon
-        self.name = 'empty'
-        self.cmds = {'on': [], 'off': []}
-        self._load_scene_config(scene_data)
-        self.status = None
-
-    def _load_scene_config(self, scene_data):
-        self.name = scene_data.get('name')
-        self.type = scene_data.get('type', 'automatic')
-        self.cmds['on'] = scene_data.get('on')
-        self.cmds['off'] = scene_data.get('off')
-
-    def do(self, data):
-        if 'data' in data:
-            Commands(self.cmds.get(data['data'].get('status'), []),
-                     self.daemon.queue.put).start()
-
-
-class Commands(Thread):
-    def __init__(self, cmds, queue_put=print):
-        super().__init__()
-        self.cmds = cmds
-        self.queue_put = queue_put
-
-    def run(self):
-        self._run_cmds(self.cmds)
-
-    def _run_cmds(self, cmds):
-        for c in cmds:
-            print(f'cmd : {c}')
-            self.cmd(c.get('cmd'), c.get('args'))
-
-    def cmd(self, cmd, args=None):
-        if cmd == 'device':
-            self.queue_put(args)
-        if cmd == 'sleep':
-            sleep(int(args))
-        if cmd == 'check':
-            self.chekc(args)
-
-    def chekc(self, args):
-        if len(args.get('if', 0)) < 3:
-            raise ValueError('if list  3 elemnts')
-        values  = args.get('if')
-        status = {'time': TimeCheck,
-                  'device': DevCheck}.get(values[0])(values[1:]).status
-        if status:
-            self._run_cmds(args.get('then', []))
-        else:
-            self._run_cmds(args.get('else', []))
+    def get_device(self, sid):
+        return self.daemon.workers.get(sid)
 
 
 class TimeCheck:
-    def __init__(self, args):
-        op = args[0]
+    def __init__(self, operator, value1, value2=None):
         self._now = datetime.now().time()
-        self._value1 = time(*[int(i) for i in args[1].split(':')])
-        if len(args) > 2:
-            self._value2 = time(*[int(i) for i in args[2].split(':')])
+        self._value1 = time(*[int(i) for i in value1.split(':')])
+        if value2:
+            self._value2 = time(*[int(i) for i in value2.split(':')])
         self.status = {'==': self.eq,
                        '>': self.gt,
                        '<': self.lt,
-                       '<>':self.between}.get(op)()
+                       '<>':self.between}.get(operator)()
 
     def eq(self):
         return self._now == self._value1
@@ -110,7 +60,6 @@ class TimeCheck:
         return self._now < self._value1
     
     def between(self):
-        print(self._value1, self._now, self._value2)
         _range = TimeRange(self._value1, self._value2)
         return self._now in _range
          
@@ -125,10 +74,5 @@ class TimeRange:
             return self._from <= value >= self._to
         elif value < self._to:
             return self._from >= value <= self._to
-
-class DevCheck:
-    def __init__(self, args):
-        self.status = False
-        # TODO: ee and what ?
 
 
