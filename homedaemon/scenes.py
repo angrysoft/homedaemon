@@ -4,17 +4,21 @@ from datetime import datetime, time
 from time import sleep
 
 
-class BaseScene:
+class BaseScene(Thread):
     name = ''
     automatic = True
 
     def __init__(self, daemon):
+        super().__init__()
         self.daemon = daemon
         
-
     def do(self, cmd):
+        self.cmd = cmd
+        self.start()
+    
+    def run(self):
         {'on': self.on,
-         'off': self.off}.get(cmd, self._unknown_cmd)()
+         'off': self.off}.get(self.cmd, self._unknown_cmd)()
     
     def on(self):
         pass
@@ -24,6 +28,9 @@ class BaseScene:
 
     def _unknown_cmd(self):
         pass
+
+    def sleep(self, s):
+        sleep(s)
 
 
 
