@@ -13,15 +13,12 @@ class BaseScene(Thread):
         self.daemon = daemon
         
     def do(self, cmd):
+        print(cmd)
         if 'status' in cmd:
-            self.cmd = cmd['status']
-            self.start()
+            sc = Thread(name=self.name, target={'on': self.on, 'off': self.off}.get(cmd['status'], self._unknown_cmd))
+            sc.start()
         else:
             self.daemon.logger.error(f'{self.name}: missing status')
-    
-    def run(self):
-        {'on': self.on,
-         'off': self.off}.get(self.cmd, self._unknown_cmd)()
     
     def on(self):
         pass
@@ -30,7 +27,7 @@ class BaseScene(Thread):
         pass
 
     def _unknown_cmd(self):
-        self.daemon.logger.error(f'unknown status {self.cmd}')
+        self.daemon.logger.error(f'unknown status')
 
     def sleep(self, s):
         sleep(s)

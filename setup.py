@@ -11,8 +11,7 @@ def get_files(name):
             continue
 
 
-confFile = glob('files/*.json')
-scenes = glob('files/scenes/*.json')
+scenes = glob('files/scenes/*.py')
 wwwStatic = get_files('www/static')
 wwwStaticDevs = get_files('www/static/devices')
 wwwStaticTv = get_files('www/static/tvpilot')
@@ -32,8 +31,7 @@ setup(
     description='',
     scripts=['homed.py'],
     requires=["flask", "pyserial", "pyxiaomi", "websockets", 'pycouchdb'],
-    data_files=[('/etc/angryhome', confFile),
-                ('/etc/angryhome/scenes', scenes),
+    data_files=[('/etc/angryhome/scenes', scenes),
                 ('/var/www/angryhome', ['www/AngryHome.py']),
                 ('/var/www/angryhome/static', wwwStatic),
                 ('/var/www/angryhome/static/devices', wwwStaticDevs),

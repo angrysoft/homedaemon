@@ -94,10 +94,20 @@ class BaseDevice:
             self.daemon.device_data[self.sid] = data
 
 
-class DeviceData:
-    def __init__(self, db, sid):
-        self.db = db
-        self.sid = sid
+class ButtonOnOff:
+    def __init__(self, name, write):
+        self.name = name
+        self.write = write
 
-    def get(self, key):
-        return self.db[self.sid].get(key)
+    def on(self):
+        self.write({'data': {self.name: 'on'}})
+
+    def off(self):
+        self.write({'data': {self.name: 'off'}})
+
+
+class ButtonToggleOnOff(ButtonOnOff):
+
+    def toggle(self):
+        print('toogle')
+        self.write({'data': {self.name: 'toggle'}})

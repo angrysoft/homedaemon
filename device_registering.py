@@ -141,13 +141,6 @@ class Register:
                                    'password': '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918'}
             print('Config added')
     
-    def add_scenes(self):
-        path = 'files/scenes'
-        for sc in os.listdir(path):
-            with open(os.path.join(path,sc)) as jconf:
-                scene_data = json.load(jconf)
-                self.scenes[scene_data.get('name')] = scene_data
-        print('Scenes added')
         
         
     # def add_index(self):
@@ -162,5 +155,4 @@ if __name__ == '__main__':
     r.accessing_db()
     r.registering()
     r.add_config()
-    r.add_scenes()
 

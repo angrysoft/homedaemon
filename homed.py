@@ -28,14 +28,13 @@ import signal
 import importlib
 import json
 import os
+import sys
 import logging
 from threading import Thread, current_thread, RLock
 from time import sleep
 from pycouchdb import Server
 from systemd.journal import JournalHandler
 from homedaemon.devices import Device
-from homedaemon.scenes import Scene
-import sys
 
 
 class Queue:
@@ -114,12 +113,8 @@ class HomeDaemon:
                 if entry.name.endswith('.py') and entry.is_file():
                     _scene = importlib.import_module(entry.name[:-3])
                     inst = _scene.Scene(self)
-                    print(inst.name)
-        
-        # for sc in self.scenes_data:
-            # scene = Scene(sc, self)
-            # self.scenes[scene.name] = scene
-            # print(f'loaded {scene.name}')
+                    self.scenes[inst.name] = inst
+                    print(f'loaded {inst.name}')
 
     def run(self):
         self.logger.info(f'main thread {current_thread()} loop {id(self.loop)}')
@@ -166,7 +161,7 @@ class HomeDaemon:
                     self.logger.error(f'{sid} {err}')
             elif sid in self.scenes:
                 try:
-                    self.scenes[sid].do(data)
+                    self.scenes[sid].do(data.get('data', {}))
                 except ValueError as err:
                     self.loop.error(f'{sid} {err}')
             else:
@@ -177,4 +172,3 @@ class HomeDaemon:
 if __name__ == '__main__':
     hd = HomeDaemon()
     hd.run()
-

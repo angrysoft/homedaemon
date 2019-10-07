@@ -1,24 +1,6 @@
-from . import BaseDevice
+from . import BaseDevice, ButtonOnOff, ButtonToggleOnOff
 from aquara import Gateway
 import json
-
-class ButtonOnOff:
-    def __init__(self, name, sid, write):
-        self.name = name
-        self.write = write
-
-    def on(self):
-        self.write({'data': {self.name: 'on'}})
-
-    def off(self):
-        self.write({'data': {self.name: 'on'}})
-
-
-class ButtonToggleOnOff(ButtonOnOff):
-
-    def toggle(self):
-        self.write({'data': {self.name: 'toggle'}})
-
 
 class AquraBaseDevice(BaseDevice):
     def __init__(self, data, daemon):
@@ -56,33 +38,31 @@ class AquraBaseDevice(BaseDevice):
                                   self.sid,
                                   self.short_id,
                                   data.get('data'))
+    
+    def status(self, value):
+        if value in self.daemon.device_data[self.sid]:    
+            return self.daemon.device_data[self.sid][value]
+        else:
+            return None
 
 
 class CtrlNeutral(AquraBaseDevice):
     def __init__(self, data, daemon):
         super(CtrlNeutral, self).__init__(data, daemon)
         self.writeable = True
-        self.channel_0 = ButtonOnOff('channel_0', self.sid, self.write)
+        self.channel_0 = ButtonOnOff('channel_0', self.write)
 
 class CtrlNeutral2(CtrlNeutral):
-
-    @property
-    def channel_1(self):
-        return self.daemon.device_data[self.sid].get('channel_1')
-    
-    @channel_1.setter
-    def channel_1(self, value):
-        self.write({'data':{'channel_1': value}})
+    def __init__(self, data, daemon):
+        super().__init__(data, daemon)
+        self.channel_1 = ButtonOnOff('channel_1', self.write)
 
 
 class Plug(AquraBaseDevice):
     def __init__(self, data, daemon):
         super(Plug, self).__init__(data, daemon)
-        self._status = None
+        self.power = ButtonToggleOnOff('status', self.write)
         self.writeable = True
-
-    def status(self, value):
-        self.write({'status': value})
 
 
 class SensorSwitchAq2(AquraBaseDevice):
@@ -164,6 +144,3 @@ class SensorMotionAq2(AquraBaseDevice):
     @property
     def lux(self):
         return self.daemon.device_data[self.sid].get['lux']
-    
-
-
