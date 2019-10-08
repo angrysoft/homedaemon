@@ -41,7 +41,6 @@ class RgbStrip(BaseDevice):
         if 'data' in data:
             data['data']['status'] = self._status(data['data'])
 
-        self.daemon.logger.info(str(data))
         self.daemon.notify_clients(json.dumps(data))
         self.update_dev_data(data.get('data'))
 

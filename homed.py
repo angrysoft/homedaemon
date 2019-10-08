@@ -108,6 +108,7 @@ class HomeDaemon:
 
     def _load_scenes(self):
         sys.path.append(self.config['scenes']['path'])
+        scene_list = list()
         with os.scandir(self.config['scenes']['path']) as it:
             for entry in it:
                 if entry.name.endswith('.py') and entry.is_file():
@@ -115,6 +116,9 @@ class HomeDaemon:
                     inst = _scene.Scene(self)
                     self.scenes[inst.name] = inst
                     print(f'loaded {inst.name}')
+                    scene_list.append({'name': inst.name, 'automaitc': inst.automatic })
+            self.config['scenes_list'] = {'list':scene_list}
+
 
     def run(self):
         self.logger.info(f'main thread {current_thread()} loop {id(self.loop)}')

@@ -9,4 +9,5 @@ if os.path.exists('files.txt'):
             if os.path.exists(f):
                 print('Remove {}'.format(f))
                 os.unlink(f)
+    
 
