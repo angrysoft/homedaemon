@@ -7,6 +7,7 @@ from time import sleep
 class BaseScene(Thread):
     name = ''
     automatic = True
+    trigger = ''
 
     def __init__(self, daemon):
         super().__init__()

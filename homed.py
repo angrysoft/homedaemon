@@ -36,28 +36,9 @@ from pycouchdb import Server
 from systemd.journal import JournalHandler
 from homedaemon.devices import Device
 
-
-class Queue:
-    def __init__(self):
-        self._queue = list()
-        self.lock = RLock()
-
-    def put(self, item):
-        with self.lock:
-            self._queue.append(item)
-
-    def get(self):
-        if self._queue:
-            with self.lock:
-                return self._queue.pop(0)
-        else:
-            return None
-
-    def empty(self):
-        if self._queue:
-            return False
-        else:
-            return True
+logger = logging.getLogger('homed')
+logger.addHandler(JournalHandler())
+logger.setLevel(logging.DEBUG)
 
 
 class HomeDaemon:
@@ -76,10 +57,7 @@ class HomeDaemon:
         self.config = self.db['config']
         self.devicesdb = self.db['devices']
         self.device_data = self.db['devices-data']
-        self.scenes_data = self.db['scenes']
-        self.logger = logging.getLogger('homed')
-        self.logger.addHandler(JournalHandler())
-        self.logger.setLevel(logging.DEBUG)
+        self.logger = logger
         self.logger.info('Starting Daemon')
         self.token = None
         self.workers = dict()
@@ -115,6 +93,7 @@ class HomeDaemon:
                     _scene = importlib.import_module(entry.name[:-3])
                     inst = _scene.Scene(self)
                     self.scenes[inst.name] = inst
+                    Trigger(inst.trigger, inst)
                     print(f'loaded {inst.name}')
                     scene_list.append({'name': inst.name, 'automaitc': inst.automatic })
             self.config['scenes_list'] = {'list':scene_list}
@@ -151,12 +130,6 @@ class HomeDaemon:
                 sleep(0.1)
                 continue
             data = self.queue.get()
-            if type(data) is not dict:
-                try:
-                    data = json.loads(data)
-                except json.JSONDecodeError:
-                    self.logger.warning(f'Wrong data: {data}')
-                    return
             sid = data.get('sid')
             if sid in self.workers:
                 try:
@@ -171,6 +144,44 @@ class HomeDaemon:
             else:
                 self.logger.error(f'Unknown sid: {data}')
         self.logger.info('Stop watching')
+
+class Queue:
+    def __init__(self):
+        self._queue = list()
+        self.lock = RLock()
+
+    def put(self, item):
+        with self.lock:
+            if type(item) is not dict:
+                try:
+                    item = json.loads(item)
+                except json.JSONDecodeError:
+                    logger.warning(f'Wrong data: {item}')
+                    return
+            self._queue.append(item)
+
+    def get(self):
+        if self._queue:
+            with self.lock:
+                return self._queue.pop(0)
+        else:
+            return None
+
+    def empty(self):
+        if self._queue:
+            return False
+        else:
+            return True
+
+
+class Trigger:
+    def __init__(self, trigger, scene):
+        if type(trigger) is str:
+            _values = trigger.split('.')
+            if len(_values) == 3:
+                self.sid, self.event, self.value = _values
+                print(self.sid, self.event, self.value)
+        
 
 
 if __name__ == '__main__':

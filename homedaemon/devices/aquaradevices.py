@@ -74,6 +74,7 @@ class SensorSwitchAq2(AquraBaseDevice):
 
     def report(self, data):
         # TODO info
+        print(data)
         self.daemon.logger.info(str(data))
         self.daemon.notify_clients(json.dumps(data))
         data = data.get('data')
