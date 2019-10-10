@@ -62,6 +62,7 @@ class HomeDaemon:
         self.token = None
         self.workers = dict()
         self.scenes = dict()
+        self.triggers = Triggers()
 
     def notify_clients(self, msg):
         if 'websocket' in self.inputs:
@@ -174,6 +175,32 @@ class Queue:
             return True
 
 
+class Triggers:
+    def __init__(self):
+        self._triggers = dict()
+    
+    def register(self, trigger):
+        if trigger is not isinstance(Trigger):
+            raise ValueError('arg need to by Trigger instance')
+        if trigger.sid not in self._triggers:
+            self._triggers[trigger.sid] = list()
+
+        self._triggers[trigger.sid].append(trigger)
+
+    def unregister(self, ):
+        pass
+
+    def on_event(self, event):
+        try:
+            name , value = event.get('data').popitem()
+        except KeyError:
+            return
+
+        for trigger in self._triggers.get(event.get('sid'), []):
+            if trigger.event == name and trigger.value == value:
+                trigger.pull()
+            
+
 class Trigger:
     def __init__(self, trigger, scene):
         if type(trigger) is str:
@@ -181,6 +208,10 @@ class Trigger:
             if len(_values) == 3:
                 self.sid, self.event, self.value = _values
                 print(self.sid, self.event, self.value)
+        self._scene = scene
+    
+    def pull(self):
+        self._scene.do({'status', 'on'})
         
 
 

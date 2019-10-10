@@ -65,7 +65,7 @@ class BaseDevice:
         self.device_data = daemon.device_data[self.sid]
         self.lock = RLock()
         self.cmds = {'write': self.write,
-                     'report': self._report,
+                     'report': self.report,
                      'heartbeat': self.heartbeat}
         
 
@@ -84,8 +84,9 @@ class BaseDevice:
     def heartbeat(self, data):
         pass
 
-    def _report(self, data):
+    def report(self, data):
         self.daemon.notify_clients(json.dumps(data))
+        self.daemon.triggers.on_event(data)
         self.update_dev_data(data.get('data'))
         self.daemon.logger.info(str(data))
 

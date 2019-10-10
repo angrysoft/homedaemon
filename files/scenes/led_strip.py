@@ -4,7 +4,6 @@ class Scene(BaseScene):
     def __init__(self, daemon):
         super().__init__(daemon)
         self.name = 'led_strip'
-        self.scene_type = 'automatic'
         self.trigger = '158d000200a020.status.click'
     
     def on(self):
