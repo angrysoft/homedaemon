@@ -100,7 +100,7 @@ class RgbStrip(BaseDevice):
             self.daemon.inputs['Arduino'].serial_write(self._rgb_to_send(data.get('set_rgb')))
 
 
-#
+# https://andi-siess.de/rgb-to-color-temperature/
 kelvin_table = {
     1700: (255, 121, 0),
     1800: (255, 126, 0),
