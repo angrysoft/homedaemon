@@ -29,11 +29,11 @@ class RgbStrip(BaseDevice):
                 elif _data['status'] == 'off':
                     self.off()
             elif 'set_bright' in _data:
-                self.bright(_data.get('set_bright'))
+                self.bright(_data)
             elif 'set_ct_abx' in _data:
-                self.ct(_data.get('ct'))
-            elif 'set_rgb' in data:
-                self.set_rgb(_data.get('set_rgb'))
+                self.ct(_data)
+            elif 'set_rgb' in _data:
+                self.set_rgb(_data)
             else:
                 self.daemon.inputs['Arduino'].serial_write(self._rgb_to_send(_data))
 
@@ -62,17 +62,16 @@ class RgbStrip(BaseDevice):
     
     def set_default(self):
         rgb = self.get_rgb()
-        if int(rgb['red']) + int(rgb['green']) + int(rgb['blue']) == 0:
+        if int(rgb['red']) + int(rgb['green']) + int(rgb['blue'] + int(rgb['bright'])) == 0:
             rgb['red'] = '255'
             rgb['green'] = '255'
             rgb['blue'] = '255'
-        self.daemon.device_data[self.sid]['default'] = {'red':rgb['red'], 'green': rgb['green'], 'blue': rgb['blue']}
+            rgb['bright'] = '100'
+        self.daemon.device_data[self.sid]['default'] = rgb
         
 
     def _rgb_to_send(self, data):
-        s = f"F.{data.get('red', '0')}.{data.get('green', '0')}.{data.get('blue', '0')}.{data.get('bright', '100')}"
-        self.daemon.logger.info(s)
-        return s
+        return f"F.{data.get('red', '0')}.{data.get('green', '0')}.{data.get('blue', '0')}.{data.get('bright', '100')}"
 
     def off(self):
         if 'Arduino' in self.daemon.inputs:
@@ -86,17 +85,19 @@ class RgbStrip(BaseDevice):
 
     def bright(self, data):
         if 'Arduino' in self.daemon.inputs:
-            self.daemon.inputs['Arduino'].serial_write(self._rgb_to_send(self.get_rgb()))
+            rgb = self.get_rgb()
+            rgb['bright'] = data.get('set_bright')
+            self.daemon.inputs['Arduino'].serial_write(self._rgb_to_send(rgb)
             
     def ct(self, data):
-        print(data)
+        print(data.get('ct'))
     
     def set_rgb(self, data):
         if 'bright' not in data:
             data['bright'] = self.daemon.device_data[self.sid].get('bright', 100)
         
         if 'Arduino' in self.daemon.inputs:
-            self.daemon.inputs['Arduino'].serial_write(self._rgb_to_send(data))
+            self.daemon.inputs['Arduino'].serial_write(self._rgb_to_send(data.get('set_rgb')))
 
 
 #
