@@ -50,7 +50,8 @@ class HomeDaemon:
             'arduino',
             'tcp',
             'websocket',
-            'yeelight'
+            'yeelight',
+            'timer'
         ]
         self.queue = Queue()
         self.db = Server()
@@ -67,11 +68,6 @@ class HomeDaemon:
     def notify_clients(self, msg):
         if 'websocket' in self.inputs:
             asyncio.run(self.inputs['websocket'].send(msg))
-
-    # async def timers(self):
-    #     while True:
-    #         self._queue_put({'cmd': 'timers', 'data': 'all'})
-    #         await asyncio.sleep(60)
 
     def _load_inputs(self):
         for _input_name in self.inputs_list:
