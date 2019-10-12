@@ -90,7 +90,7 @@ class HomeDaemon:
                     _scene = importlib.import_module(entry.name[:-3])
                     inst = _scene.Scene(self)
                     self.scenes[inst.name] = inst
-                    Trigger(inst.trigger, inst)
+                    self.triggers.register(Trigger(inst.trigger, inst))
                     print(f'loaded {inst.name}')
                     scene_list.append({'name': inst.name, 'automaitc': inst.automatic })
             self.config['scenes_list'] = {'list':scene_list}
@@ -127,6 +127,9 @@ class HomeDaemon:
                 sleep(0.1)
                 continue
             data = self.queue.get()
+            if data.get('cmd') == 'report':
+                self.triggers.on_event(data)
+
             sid = data.get('sid')
             if sid in self.workers:
                 try:
@@ -141,6 +144,7 @@ class HomeDaemon:
             else:
                 self.logger.error(f'Unknown sid: {data}')
         self.logger.info('Stop watching')
+
 
 class Queue:
     def __init__(self):
@@ -176,7 +180,7 @@ class Triggers:
         self._triggers = dict()
     
     def register(self, trigger):
-        if trigger is not isinstance(Trigger):
+        if not isinstance(trigger, Trigger):
             raise ValueError('arg need to by Trigger instance')
         if trigger.sid not in self._triggers:
             self._triggers[trigger.sid] = list()

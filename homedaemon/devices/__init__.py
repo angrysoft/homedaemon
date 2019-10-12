@@ -86,7 +86,6 @@ class BaseDevice:
 
     def report(self, data):
         self.daemon.notify_clients(json.dumps(data))
-        self.daemon.triggers.on_event(data)
         self.update_dev_data(data.get('data'))
         self.daemon.logger.info(str(data))
 
