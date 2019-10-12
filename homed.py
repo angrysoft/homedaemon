@@ -187,7 +187,7 @@ class Triggers:
 
         self._triggers[trigger.sid].append(trigger)
 
-    def unregister(self, ):
+    def unregister(self):
         pass
 
     def on_event(self, event):
