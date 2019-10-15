@@ -118,6 +118,7 @@ class Register:
             del d['data']
 
             data['sid'] = d.get('sid')
+            d['name'] = self.names.get(d.get('sid'), '....')
             print(f"\t {d.get('model')}  {d.get('sid')} {d.get('name')}")
 
             self.devices[d.get('sid')] = d
