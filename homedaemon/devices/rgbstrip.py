@@ -62,11 +62,6 @@ class RgbStrip(BaseDevice):
                              '6500': {'red': '255', 'green': '249', 'blue': '253'}}
 
     def write(self, data):
-        print('write',
-              self.model,
-              self.sid,
-              self.short_id,
-              data)
         if type(data) is not dict:
             raise ValueError('Data argument is not dict')
         if not self.writeable:
@@ -140,7 +135,7 @@ class RgbStrip(BaseDevice):
             self.daemon.inputs['Arduino'].serial_write(self._rgb_to_send(rgb))
             
     def ct(self, data):
-        rgb = self.kelvin_table.get(data.get('ct'))
+        rgb = self.kelvin_table.get(data.get('set_ct_abx'))
         self.daemon.inputs['Arduino'].serial_write(self._rgb_to_send(rgb))
     
     def set_rgb(self, data):

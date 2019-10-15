@@ -87,7 +87,6 @@ class BaseDevice:
     def report(self, data):
         self.daemon.notify_clients(json.dumps(data))
         self.update_dev_data(data.get('data'))
-        self.daemon.logger.info(str(data))
 
     def update_dev_data(self, data):
         with self.lock:
