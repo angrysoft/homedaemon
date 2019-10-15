@@ -180,9 +180,6 @@ class Queue:
             return True
 
 
-
-            
-
 if __name__ == '__main__':
     hd = HomeDaemon()
     hd.run()
