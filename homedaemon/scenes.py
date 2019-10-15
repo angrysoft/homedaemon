@@ -7,14 +7,21 @@ from time import sleep
 class BaseScene(Thread):
     name = ''
     automatic = True
-    trigger = ''
+    _trigger = None
 
     def __init__(self, daemon):
         super().__init__()
         self.daemon = daemon
+    
+    @property
+    def trigger(self):
+        return self._trigger
+    
+    @trigger.setter
+    def trigger(self, value):
+        self._trigger = Trigger(value, self)
         
     def do(self, cmd):
-        print(cmd)
         if 'status' in cmd:
             sc = Thread(name=self.name, target={'on': self.on, 'off': self.off}.get(cmd['status'], self._unknown_cmd))
             sc.start()
@@ -35,6 +42,44 @@ class BaseScene(Thread):
 
     def get_device(self, sid):
         return self.daemon.workers.get(sid)
+
+
+class Triggers:
+    def __init__(self):
+        self._triggers = dict()
+    
+    def register(self, trigger):
+        if trigger is None:
+            return
+        elif not isinstance(trigger, Trigger):
+            raise ValueError('arg need to by Trigger instance')
+        if trigger.sid not in self._triggers:
+            self._triggers[trigger.sid] = list()
+        self._triggers[trigger.sid].append(trigger)
+
+    def unregister(self, sid):
+        if sid in self._triggers:
+            del self._triggers[sid]
+
+    def on_event(self, event):
+        for trigger in self._triggers.get(event.get('sid'), []):
+            if event.get('data', dict()).get(trigger.event) == trigger.value:
+                trigger.pull()
+
+
+class Trigger:
+    sid = ''
+    event = ''
+    value = ''
+    def __init__(self, trigger, scene):
+        if type(trigger) is str:
+            _values = trigger.split('.')
+            if len(_values) == 3:
+                self.sid, self.event, self.value = _values
+        self._scene = scene
+    
+    def pull(self):
+        self._scene.do({'status': 'on'})
 
 
 class TimeCheck:

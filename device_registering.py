@@ -118,14 +118,6 @@ class Register:
             del d['data']
 
             data['sid'] = d.get('sid')
-            d['name'] = self.names.get(d.get('sid'), '....')
-            if d['name'] == 'Hall' and d['model'] == 'sensor_motion.aq2':
-                d['on_motion'] = 'hall_motion'
-                d['on_nomotion'] = {'120':'hall_no_motion'}
-            elif d['name'] == 'Kitchen Switch' and d['model'] == 'sensor_switch.aq2':
-                d['on_click'] = 'led_strip'
-            elif d['name'] == 'Bedroom' and d['model'] == 'sensor_motion.aq2':
-                d['on_motion'] = 'bedroom_motion'
             print(f"\t {d.get('model')}  {d.get('sid')} {d.get('name')}")
 
             self.devices[d.get('sid')] = d

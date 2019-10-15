@@ -38,12 +38,6 @@ class AquraBaseDevice(BaseDevice):
                                   self.sid,
                                   self.short_id,
                                   data.get('data'))
-    
-    def status(self, value):
-        if value in self.daemon.device_data[self.sid]:    
-            return self.daemon.device_data[self.sid][value]
-        else:
-            return None
 
 
 class CtrlNeutral(AquraBaseDevice):
@@ -56,6 +50,12 @@ class CtrlNeutral2(CtrlNeutral):
     def __init__(self, data, daemon):
         super().__init__(data, daemon)
         self.channel_1 = ButtonOnOff('channel_1', self.write)
+    
+    def all_on(self):
+        self.write({'data': {'channel_0': 'on', 'channel_1': 'on'}})
+        
+    def all_off(self):
+        self.write({'data': {'channel_0': 'off', 'channel_1': 'off'}})
 
 
 class Plug(AquraBaseDevice):
@@ -66,34 +66,7 @@ class Plug(AquraBaseDevice):
 
 
 class SensorSwitchAq2(AquraBaseDevice):
-    def __init__(self, data, daemon):
-        super().__init__(data, daemon)
-        self._status = None
-        self.on_click = data.get('on_click')
-        self.on_double_click = data.get('on_double_click')
-
-    def report(self, data):
-        # TODO info
-        print(data)
-        self.daemon.logger.info(str(data))
-        self.daemon.notify_clients(json.dumps(data))
-        data = data.get('data')
-        event, arg = data.popitem()
-        self.update_dev_data(data)
-        return {'click': self.click,
-                'double_click': self.double_click}.get(arg, self._unknown_cmd)()
-
-    def click(self):
-        if self.on_click is None:
-            return
-        self.daemon.queue.put({'sid': self.on_click,
-                               'data': {'sid': self.sid, 'status': 'on'}})
-
-    def double_click(self):
-        if self.on_double_click is None:
-            return
-        self.daemon.queue.put({'sid': self.on_double_click,
-                               'data': {'sid': self.sid, 'status': 'on'}})
+    pass
 
 
 class AquaraGateway(AquraBaseDevice):
@@ -106,41 +79,6 @@ class AquaraGateway(AquraBaseDevice):
 
 
 class SensorMotionAq2(AquraBaseDevice):
-    def __init__(self, data, daemon):
-        super(SensorMotionAq2, self).__init__(data, daemon)
-        self.on_motion_event = data.get('on_motion')
-        self.on_no_motion_event = dict()
-        self.on_no_motion_event.update(data.get('on_nomotion', {}))
-        self.on_lux_event = data.get('on_lux')
-
-    def report(self, data):
-        # TODO info
-        self.daemon.logger.info(str(data))
-        self.daemon.notify_clients(json.dumps(data))
-        data = data.get('data')
-        event, arg = data.popitem()
-        self.update_dev_data(data)
-        return {'no_motion': self.on_no_motion,
-                'status': self.on_motion,
-                'lux': self.on_lux}.get(event, self._unknown_cmd)(arg)
-
-    def on_no_motion(self, _time):
-        if _time in self.on_no_motion_event:
-            self.daemon.queue.put({'sid': self.on_no_motion_event.get(_time),
-                                   'data': {'sid': self.sid, 'status': 'on'}})
-
-    def on_motion(self, arg):
-        if self.on_motion_event is None:
-            return
-        self.daemon.queue.put({'sid': self.on_motion_event,
-                               'data': {'sid': self.sid, 'status': 'on'}})
-
-    
-    def on_lux(self, arg):
-        if self.on_lux_event:
-            self.daemon.queue.put({'sid': self.on_lux_event,
-                                   'data': {'sid': self.sid, 'status': 'on'}})
-        
     
     @property
     def lux(self):

@@ -92,6 +92,12 @@ class BaseDevice:
     def update_dev_data(self, data):
         with self.lock:
             self.daemon.device_data[self.sid] = data
+    
+    def get_value(self, value):
+        if value in self.daemon.device_data[self.sid]:    
+            return self.daemon.device_data[self.sid][value]
+        else:
+            return None
 
 
 class ButtonOnOff:

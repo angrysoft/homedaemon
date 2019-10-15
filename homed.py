@@ -35,6 +35,7 @@ from time import sleep
 from pycouchdb import Server
 from systemd.journal import JournalHandler
 from homedaemon.devices import Device
+from homedaemon.scenes import Triggers
 
 logger = logging.getLogger('homed')
 logger.addHandler(JournalHandler())
@@ -90,7 +91,7 @@ class HomeDaemon:
                     _scene = importlib.import_module(entry.name[:-3])
                     inst = _scene.Scene(self)
                     self.scenes[inst.name] = inst
-                    self.triggers.register(Trigger(inst.trigger, inst))
+                    self.triggers.register(inst.trigger)
                     print(f'loaded {inst.name}')
                     scene_list.append({'name': inst.name, 'automaitc': inst.automatic })
             self.config['scenes_list'] = {'list':scene_list}
@@ -128,7 +129,11 @@ class HomeDaemon:
                 continue
             data = self.queue.get()
             if data.get('cmd') == 'report':
-                self.triggers.on_event(data)
+                try:
+                    # print(data)
+                    self.triggers.on_event(data)
+                except:
+                    self.logger.error(f'ooops something went wrong {data}')
 
             sid = data.get('sid')
             if sid in self.workers:
@@ -175,45 +180,8 @@ class Queue:
             return True
 
 
-class Triggers:
-    def __init__(self):
-        self._triggers = dict()
-    
-    def register(self, trigger):
-        if not isinstance(trigger, Trigger):
-            raise ValueError('arg need to by Trigger instance')
-        if trigger.sid not in self._triggers:
-            self._triggers[trigger.sid] = list()
 
-        self._triggers[trigger.sid].append(trigger)
-
-    def unregister(self):
-        pass
-
-    def on_event(self, event):
-        try:
-            name , value = event.get('data').popitem()
-        except KeyError:
-            return
-
-        for trigger in self._triggers.get(event.get('sid'), []):
-            if trigger.event == name and trigger.value == value:
-                trigger.pull()
             
-
-class Trigger:
-    def __init__(self, trigger, scene):
-        if type(trigger) is str:
-            _values = trigger.split('.')
-            if len(_values) == 3:
-                self.sid, self.event, self.value = _values
-                print(self.sid, self.event, self.value)
-        self._scene = scene
-    
-    def pull(self):
-        self._scene.do({'status', 'on'})
-        
-
 
 if __name__ == '__main__':
     hd = HomeDaemon()
