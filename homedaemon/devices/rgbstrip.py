@@ -138,6 +138,7 @@ class RgbStrip(BaseDevice):
     def ct(self, data):
         rgb = self.kelvin_table.get(data.get('set_ct'))
         self.daemon.inputs['Arduino'].serial_write(self._rgb_to_send(rgb))
+        self.daemon.device_data[self.sid]['ct'] = data.get('set_ct')
     
     def set_rgb(self, data):
         if 'bright' not in data:
