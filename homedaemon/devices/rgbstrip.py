@@ -120,6 +120,7 @@ class RgbStrip(BaseDevice):
 
     def off(self):
         if 'Arduino' in self.daemon.inputs:
+            self.set_default()
             self.daemon.inputs['Arduino'].serial_write('F.0.0.0.0')
 
     def on(self):
