@@ -130,7 +130,7 @@ class HomeDaemon:
             data = self.queue.get()
             if data.get('cmd') == 'report':
                 # try:
-                self.loop.info(data)
+                self.logger.info(f'trig: {data}')
                 self.triggers.on_event(data)
                 # except:
                     # self.logger.error(f'ooops something went wrong {data}')
