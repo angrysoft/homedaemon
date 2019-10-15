@@ -75,7 +75,7 @@ class RgbStrip(BaseDevice):
                     self.off()
             elif 'set_bright' in _data:
                 self.bright(_data)
-            elif 'set_ct_abx' in _data:
+            elif 'set_ct' in _data:
                 self.ct(_data)
             elif 'set_rgb' in _data:
                 self.set_rgb(_data)
@@ -135,7 +135,7 @@ class RgbStrip(BaseDevice):
             self.daemon.inputs['Arduino'].serial_write(self._rgb_to_send(rgb))
             
     def ct(self, data):
-        rgb = self.kelvin_table.get(data.get('set_ct_abx'))
+        rgb = self.kelvin_table.get(data.get('set_ct'))
         self.daemon.inputs['Arduino'].serial_write(self._rgb_to_send(rgb))
     
     def set_rgb(self, data):
