@@ -9,6 +9,6 @@ class Scene(BaseScene):
     
     def on(self):
         wallsw = self.get_device('158d0002a18c2b')
-        wallsw.channel_1.on()
-        self.sleep(5)
-        wallsw.channel_1.off()
+        # wallsw.channel_1.on()
+        # self.sleep(5)
+        # wallsw.channel_1.off()
