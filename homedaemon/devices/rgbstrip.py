@@ -103,7 +103,8 @@ class RgbStrip(BaseDevice):
         g = self.daemon.device_data[self.sid].get('green', 0)
         b = self.daemon.device_data[self.sid].get('blue', 0)
         d = self.daemon.device_data[self.sid].get('bright', 100)
-        return {'red': r, 'green': g, 'blue': b, 'bright': d}
+        ct = self.daemon.device_data[self.sid].get('ct', 1700)
+        return {'red': r, 'green': g, 'blue': b, 'bright': d, 'ct': ct}
     
     def set_default(self):
         rgb = self.get_rgb()
@@ -137,7 +138,8 @@ class RgbStrip(BaseDevice):
             
     def ct(self, data):
         rgb = self.kelvin_table.get(data.get('set_ct'))
-        self.daemon.inputs['Arduino'].serial_write(self._rgb_to_send(rgb))
+        # self.daemon.inputs['Arduino'].serial_write(self._rgb_to_send(rgb))
+        print(f'rgb {rgb} {data.get("set_ct")}')
         self.daemon.device_data[self.sid]['ct'] = data.get('set_ct')
     
     def set_rgb(self, data):

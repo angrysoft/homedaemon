@@ -88,7 +88,9 @@ def dev_data(sid):
 
 @app.route('/dev/data/all')
 def dev_data_all():
-    device_data = [d for d in db['devices-data']]
+    device_data = list() 
+    for d in db['devices-data']:
+        device_data.append(d)
     return json.dumps(device_data)
 
 
@@ -180,18 +182,19 @@ def admin_devices():
     return render_template('admin/devices.html', devices=sorted(devs, key=operator.itemgetter('name')))
 
 
-def connect_db():
-    db = None
-    for x in range(0,10):
-        try:
-            db = Server()
-            break
-        except ConnectionRefusedError:
-            sleep(1)
-    return db
+# def connect_db():
+#     db = None
+#     for x in range(0,10):
+#         try:
+#             db = Server()
+#             break
+#         except ConnectionRefusedError:
+#             sleep(1)
+#     return db
 
 
-db = connect_db()
+# db = connect_db()
+db = Server()
 app.secret_key = urandom(24)
 
 if __name__ == '__main__':

@@ -77,8 +77,8 @@ class Register:
         list_devs.append({'cmd': 'report', 'model': 'dallastemp',
                           'sid': 'dallasDS0', 'data': {'temp': 0}})
         list_devs.append({'cmd': 'report', 'model': 'rgbstrip', 'sid': 'rgb01',
-                          'data': {'red': 0, 'green': 0, 'blue': 0, 'bright': 0,
-                                   'default': {'red': 0, 'green': 0, 'blue': 0, 'bright': 0},
+                          'data': {'red': 0, 'green': 0, 'blue': 0, 'bright': 0, 'ct': 1700,
+                                   'default': {'red': 0, 'green': 0, 'blue': 0, 'bright': 0, 'ct': 1700},
                                    'status': 'off'}})
         list_devs.append({'cmd': 'write', 'model': 'bravia', 'sid': 'tv01', 'ip': '192.168.1.129',
                           'mac': 'FC:F1:52:2A:9B:1E',
