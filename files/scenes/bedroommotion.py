@@ -5,7 +5,7 @@ class Scene(BaseScene):
     def __init__(self, daemon):
         super().__init__(daemon)
         self.name = 'bedroom_motion'
-        self.trigger = 'timer.time.14:25'
+        self.triggers = 'timer.time.14:25'
     
     def on(self):
         wallsw = self.get_device('158d0002a18c2b')

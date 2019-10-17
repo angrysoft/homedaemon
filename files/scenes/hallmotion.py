@@ -5,7 +5,7 @@ class Scene(BaseScene):
     def __init__(self, daemon):
         super().__init__(daemon)
         self.name = 'hall_motion'
-        self.trigger = '158d00029a49ba.status.motion'
+        self.triggers = '158d00029a49ba.status.motion'
     
     def on(self):
         if TimeCheck('<>', "18:00", '7:00').status:

@@ -38,7 +38,6 @@ from homedaemon.devices import Device
 from homedaemon.scenes import Triggers
 
 logger = logging.getLogger('homed')
-logger.addHandler(JournalHandler())
 logger.setLevel(logging.DEBUG)
 
 
@@ -90,9 +89,14 @@ class HomeDaemon:
                 if entry.name.endswith('.py') and entry.is_file():
                     _scene = importlib.import_module(entry.name[:-3])
                     inst = _scene.Scene(self)
-                    self.scenes[inst.name] = inst
-                    self.triggers.register(inst.trigger)
-                    print(f'loaded {inst.name}')
+                    if inst.name not in self.scenes:
+                        self.scenes[inst.name] = inst
+                    else:
+                        self.logger.warning('scene duplcate name skiping ... {inst.name}')
+                    for trigger in inst.triggers:
+                        self.triggers.register(trigger)
+                        self.logger.debug(f'register trigger {trigger.sid} for scene {inst.name}')
+                    self.logger.info(f'loaded {inst.name}')
                     scene_list.append({'name': inst.name, 'automaitc': inst.automatic })
             self.config['scenes_list'] = {'list':scene_list}
 
@@ -111,7 +115,7 @@ class HomeDaemon:
         self.loop.call_later(0.5, watcher.start)
 
         try:
-            self.logger.info('Daemon is listening')
+            self.logger.debug('Daemon is listening')
             self.loop.run_forever()
         except KeyboardInterrupt:
             pass
@@ -122,7 +126,7 @@ class HomeDaemon:
 
     def devices_watcher(self):
         """This method is """
-        self.logger.info(f'Waching Queue {current_thread()}')
+        self.logger.debug(f'Waching Queue {current_thread()}')
         while self.loop.is_running():
             if self.queue.empty():
                 sleep(0.1)
@@ -130,7 +134,7 @@ class HomeDaemon:
             data = self.queue.get()
             if data.get('cmd') == 'report':
                 # try:
-                self.logger.info(f'trig: {data}')
+                self.logger.debug(f'trig: {data}')
                 self.triggers.on_event(data)
                 # except:
                     # self.logger.error(f'ooops something went wrong {data}')
@@ -145,10 +149,10 @@ class HomeDaemon:
                 try:
                     self.scenes[sid].do(data.get('data', {}))
                 except ValueError as err:
-                    self.loop.error(f'{sid} {err}')
+                    self.logger.error(f'{sid} {err}')
             else:
                 self.logger.error(f'Unknown sid: {data}')
-        self.logger.info('Stop watching')
+        self.logger.debug('Stop watching')
 
 
 class Queue:
@@ -181,5 +185,8 @@ class Queue:
 
 
 if __name__ == '__main__':
+    if len(sys.argv) < 2:
+        logger.addHandler(JournalHandler())
     hd = HomeDaemon()
+    
     hd.run()

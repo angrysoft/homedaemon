@@ -7,19 +7,19 @@ from time import sleep
 class BaseScene(Thread):
     name = ''
     automatic = True
-    _trigger = None
+    _triggers = []
 
     def __init__(self, daemon):
         super().__init__()
         self.daemon = daemon
     
     @property
-    def trigger(self):
-        return self._trigger
+    def triggers(self):
+        return self._triggers
     
-    @trigger.setter
-    def trigger(self, value):
-        self._trigger = Trigger(value, self)
+    @triggers.setter
+    def triggers(self, value):
+        self._triggers.append(Trigger(value, self))
         
     def do(self, cmd):
         if 'status' in cmd:

@@ -52,6 +52,8 @@ class Device:
             return YeeligthDevice(data, daemon)
         elif model == 'computer':
             from .computer import Computer
+        elif model == 'timer':
+            return BaseDevice(data, daemon)
         else:
             raise ValueError(f'unrecognized device {model}')
 
