@@ -93,6 +93,7 @@ class HomeDaemon:
                         self.scenes[inst.name] = inst
                     else:
                         self.logger.warning('scene duplcate name skiping ... {inst.name}')
+                        continue
                     for trigger in inst.triggers:
                         self.triggers.register(trigger)
                         self.logger.debug(f'register trigger {trigger.sid} for scene {inst.name}')
