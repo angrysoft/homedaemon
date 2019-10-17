@@ -130,10 +130,12 @@ def tv_button(name):
 @app.route('/devices')
 def devices():
     devs = sorted([d for d in db['devices']], key=operator.itemgetter('name'))
+    sc_list = [s for s in db['config']['scenes_list']['list']]
     return render_template('devices.html',
                            devices=devs,
                            websock=db['config']['websocket']['ip'],
-                           wp=db['config']['websocket']['port'])
+                           wp=db['config']['websocket']['port'],
+                           scenes=sc_list)
 
 
 # ______Admin______ #
