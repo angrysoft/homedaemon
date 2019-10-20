@@ -4,7 +4,7 @@ from homedaemon.scenes import TimeCheck
 class Scene(BaseScene):
     def __init__(self, daemon):
         super().__init__(daemon)
-        self.name = 'hall_motion'
+        self.name = 'hall motion'
         self.triggers = '158d00029a49ba.status.motion'
     
     def on(self):

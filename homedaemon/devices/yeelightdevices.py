@@ -18,6 +18,29 @@ class YeeligthDevice(BaseDevice):
             return
         c, v = _data.popitem()
         self._send(c, v)
+        {'set_power': self.set_power,
+         'on', self.}
+    
+    def on(self):
+        self.bulb.set_power('on')
+
+    def off(self):
+        self.bulb.set_power('off')
+
+    def toggle(self):
+        self.bulb.toggle()
+
+    def bright(self, value):
+        self.bulb.set_bright(int(value))
+    
+    def set_rgb(self, r, g, b):
+        self.bulb.set_rgb(r, g, b)
+
+    def set_default(self):
+        self.bulb.set_default()
+    
+    def set_ct_abx(self, value):
+        self.bulb.set_ct_abx(int(value))
 
     def _send(self, c, v):
         # bulb = Bulb(self.ip)

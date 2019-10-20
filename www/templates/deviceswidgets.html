@@ -310,7 +310,7 @@
 {%- endmacro %}
 
 {% macro scene(name) -%}
-<div class="col-xs-5 col-md-2  round-8 padding-05"  id="{{ name }}">
+<div class="col-xs-5 col-md-2  round-8 padding-05 device"  id="{{ name }}">
   <div class="row center-xs">
     <div class="col-xs-12">
       <p class="txt-center">{{ name }}</p>
@@ -319,11 +319,11 @@
   
   <div class="row center-xs">
     <div class="col-xs-6" >
-      <button class="btn-small" data-sid="{{ name }}" data-status="on" value="on">On</button>
+      <button class="btn-small device-status" data-sid="{{ name }}" data-status="status" value="on">On</button>
     </div>
     
     <div class="col-xs-6" >
-      <button class="btn-small" data-sid="{{ name }}" data-status="off" value="off">Off</button>
+      <button class="btn-small device-status" data-sid="{{ name }}" data-status="status" value="off">Off</button>
     </div>
     
   </div>

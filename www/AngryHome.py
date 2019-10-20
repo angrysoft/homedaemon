@@ -130,7 +130,10 @@ def tv_button(name):
 @app.route('/devices')
 def devices():
     devs = sorted([d for d in db['devices']], key=operator.itemgetter('name'))
-    sc_list = [s for s in db['config']['scenes_list']['list']]
+    sc_list = list()
+    for s in db['config']['scenes_list']['list']:
+        if not s.get('automaitc'):
+            sc_list.append(s)
     return render_template('devices.html',
                            devices=devs,
                            websock=db['config']['websocket']['ip'],
