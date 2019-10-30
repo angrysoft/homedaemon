@@ -17,9 +17,14 @@ class YeeligthDevice(BaseDevice):
             self.daemon.logger.error('Yeelight write :data is empty')
             return
         c, v = _data.popitem()
-        self._send(c, v)
+        
         {'set_power': self.set_power,
-         'on', self.}
+         'set_rgb': self.set_rgb,
+         'set_ct_abx': self.set_ct_abx,
+         'set_bright': self.bright}.get(c, self.unknown)(v)
+    
+    def unknown(self, value):
+        self.daemon.logger.erro(f'unknown parametr {value}')
     
     def on(self):
         self.bulb.set_power('on')
@@ -36,53 +41,21 @@ class YeeligthDevice(BaseDevice):
     def set_rgb(self, r, g, b):
         self.bulb.set_rgb(r, g, b)
 
-    def set_default(self):
+    def set_default(self, *args):
         self.bulb.set_default()
     
     def set_ct_abx(self, value):
         self.bulb.set_ct_abx(int(value))
+    
+    def set_power(self, value):
+        if type(value) is str:
+            self.bulb.set_power(value)
+        elif type(value) is dict:
+            self.bulb.set_power(value.get('power'),
+                                efx=value.get('efx', 'smooth'),
+                                duration=value.get('duration', 500),
+                                mode=value.get('mode', 0))
 
-    def _send(self, c, v):
-        # bulb = Bulb(self.ip)
-        if c == 'set_power':
-            if type(v) is str:
-                self.bulb.set_power(v)
-            elif type(v) is dict:
-                self.bulb.set_power(v.get('power'),
-                                    efx=v.get('efx', 'smooth'),
-                                    duration=v.get('duration', 500),
-                                    mode=v.get('mode', 0))
-                
-        elif c == 'toogle':
-            self.bulb.toggle()
-        
-        elif c == 'set_rgb':
-            self.bulb.set_rgb(v['red'], v['green'], v['blue'])
-        
-        elif c == 'set_ct':
-             if type(v) is dict:
-                self.bulb.set_ct_abx(int(v['set_ct']),
-                                     efx=v.get('efx', 'smooth'),
-                                     duration=v.get('duration', 500))
-             else:
-                self.bulb.set_ct_abx(int(v))
-
-        elif c == 'set_bright':
-            if type(v) is dict:
-                self.bulb.set_bright(int(v['set_bright']),
-                                     efx=v.get('efx', 'smooth'),
-                                     duration=v.get('duration', 500))
-            else:
-                self.bulb.set_bright(int(v))
-                
-        elif c == 'set_default':
-            self.bulb.set_default()
-        elif c == 'start_cf' and v is dict:
-            self.bulb.start_cf(count=v.get('count', 0),
-                               action=v.get('action', 0),
-                               flow_expression=v.get('flow_expression',
-                                                     '1000, 2, 2700, 100, 500, 1'))
-        elif c == 'stop_cf':
-            self.bulb.stop_cf()
-        elif c == 'set_scene' and v is dict and {'scene_class', 'args'}.issubset(v):
-            self.bulb.set_scene(v['scene_class'], v['args'])
+    def set_scene(self, value):
+        if value is dict and {'scene_class', 'args'}.issubset(value):
+            self.bulb.set_scene(value['scene_class'], value['args'])

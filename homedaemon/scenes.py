@@ -8,6 +8,7 @@ class BaseScene(Thread):
     name = ''
     automatic = True
     _triggers = []
+    running = False
 
     def __init__(self, daemon):
         super().__init__()
@@ -24,7 +25,10 @@ class BaseScene(Thread):
     def do(self, cmd):
         if 'status' in cmd:
             sc = Thread(name=self.name, target={'on': self.on, 'off': self.off}.get(cmd['status'], self._unknown_cmd))
+            self.running = True
             sc.start()
+            sc.join()
+            self.running = False
         else:
             self.daemon.logger.error(f'{self.name}: missing status')
     

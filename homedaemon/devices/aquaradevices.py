@@ -22,11 +22,6 @@ class AquraBaseDevice(BaseDevice):
         self._voltage = value
 
     def write(self, data):
-        print('write',
-              self.model,
-              self.sid,
-              self.short_id,
-              data)
         if self.daemon.token is None:
             raise ValueError('Token is missing')
         if type(data) is not dict:

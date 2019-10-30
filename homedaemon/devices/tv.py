@@ -12,11 +12,21 @@ class BraviaTv(BaseDevice):
     def write(self, cmd):
         data = cmd.get('data')
         if 'button' not in data:
-            print(f'wrong command {cmd}')
+            self.daemon.logger.error(f'wrong command {cmd}')
             return
         if data.get('button') == 'PowerOn':
             self.tv.power_on()
         elif self.tv.is_on():
             self.tv.send_command(data['button'])
         else:
-            print('tv is off')
+            self.daemon.logger.warning('tv is off')
+    
+    def on(self):
+        self.tv.power_on()
+    
+    def off(self):
+        self.tv.power_off
+    
+    @property
+    def power(self):
+        return self.tv.is_on()
