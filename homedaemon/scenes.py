@@ -27,7 +27,7 @@ class BaseScene(Thread):
             sc = Thread(name=self.name, target={'on': self.on, 'off': self.off}.get(cmd['status'], self._unknown_cmd))
             self.running = True
             sc.start()
-            sc.join()
+            # sc.join()
             self.running = False
         else:
             self.daemon.logger.error(f'{self.name}: missing status')

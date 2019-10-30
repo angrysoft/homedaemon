@@ -1,5 +1,6 @@
 from homedaemon.scenes import BaseScene
 from homedaemon.scenes import TimeCheck
+from datetime import datetime
 
 class Scene(BaseScene):
     def __init__(self, daemon):
@@ -8,7 +9,10 @@ class Scene(BaseScene):
         self.triggers = '158d00029a49ba.status.motion'
     
     def on(self):
-        if TimeCheck('<>', "18:00", '7:00').status:
+        sunrise = self.daemon.config['datetime']['sunrise']
+        sunset = self.daemon.config['datetime']['sunset']
+        print(datetime.now(), sunrise, sunset)
+        if TimeCheck('<>', sunset, sunrise).status:
             entrance = self.get_device('158d0002b74c28')
             wallsw = self.get_device('158d0002a18c2b')
             if entrance.get_value('status') == 'open':
