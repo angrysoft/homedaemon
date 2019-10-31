@@ -11,7 +11,6 @@ class Scene(BaseScene):
     def on(self):
         sunrise = self.daemon.config['datetime']['sunrise']
         sunset = self.daemon.config['datetime']['sunset']
-        print(datetime.now(), sunrise, sunset)
         if TimeCheck('<>', sunset, sunrise).status:
             entrance = self.get_device('158d0002b74c28')
             wallsw = self.get_device('158d0002a18c2b')

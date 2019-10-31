@@ -25,7 +25,7 @@ class BraviaTv(BaseDevice):
         self.tv.power_on()
     
     def off(self):
-        self.tv.power_off
+        self.tv.power_off()
     
     @property
     def power(self):

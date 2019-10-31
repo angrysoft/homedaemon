@@ -14,6 +14,7 @@ class Scene(BaseScene):
         color = self.get_device('0x0000000007e7bae0')
         bslamp.on()
         color.on()
+        color.bright(80)
         for _sid in dev_to_off:
             dev = self.get_device(_sid)
             if dev.model == 'plug':
@@ -25,7 +26,7 @@ class Scene(BaseScene):
                 dev.channel_0.off()
             elif dev.model in ('bslamp1', 'color', 'rgbstrip', 'bravia'):
                 dev.off()
-        self.sleep(15)
+        self.sleep(20)
         color.off()
         
         
