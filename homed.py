@@ -132,11 +132,11 @@ class HomeDaemon:
                 continue
             data = self.queue.get()
             if data.get('cmd') == 'report':
-                # try:
-                self.logger.debug(f'trig: {data}')
-                self.triggers.on_event(data)
-                # except:
-                    # self.logger.error(f'ooops something went wrong {data}')
+                try:
+                    self.logger.debug(f'trig: {data}')
+                    self.triggers.on_event(data)
+                except:
+                    self.logger.error(f'ooops something went wrong {data}')
 
             sid = data.get('sid')
             if sid in self.workers:

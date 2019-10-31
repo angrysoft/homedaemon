@@ -5,14 +5,13 @@ from time import sleep
 
 
 class BaseScene(Thread):
-    name = ''
-    automatic = True
-    _triggers = []
-    running = False
-
     def __init__(self, daemon):
         super().__init__()
         self.daemon = daemon
+        self.name = ''
+        self.automatic = True
+        self._triggers = list()
+        self.running = False
     
     @property
     def triggers(self):
@@ -53,9 +52,7 @@ class Triggers:
         self._triggers = dict()
     
     def register(self, trigger):
-        if trigger is None:
-            return
-        elif not isinstance(trigger, Trigger):
+        if not isinstance(trigger, Trigger):
             raise ValueError('arg need to by Trigger instance')
         if trigger.sid not in self._triggers:
             self._triggers[trigger.sid] = list()
@@ -84,6 +81,9 @@ class Trigger:
     
     def pull(self):
         self._scene.do({'status': 'on'})
+    
+    def __repr__(self):
+        return f'Trigger: {self.sid}.{self.event}.{self.value}'
 
 
 class TimeCheck:
