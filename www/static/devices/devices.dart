@@ -20,7 +20,7 @@ class WebSockets {
   }
 
   void connect() {
-    document.cookie = 'Authorization=Basic aaabbbbbccccdddddkkkkkkkkkk';
+    // document.cookie = 'Authorization=Basic aaabbbbbccccdddddkkkkkkkkkk';
     this.websock = new WebSocket(this.url);
 
     this.websock.onOpen.listen((e) {

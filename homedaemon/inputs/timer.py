@@ -12,5 +12,5 @@ class Input(BaseInput):
     async def timer(self):
         while True:
             date = datetime.now()
-            self.queue.put({'cmd': 'report', 'sid': 'timer',  'data': {'time': f'{date.hour}:{date.minute:02}'}})
+            self.queue.put({'cmd': 'report', 'sid': 'timer',  'data': {'time': f'{date.hour:02}:{date.minute:02}'}})
             await asyncio.sleep(60)

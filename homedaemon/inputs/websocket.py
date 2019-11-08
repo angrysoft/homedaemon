@@ -39,9 +39,6 @@ class Input(BaseInput):
         try:
             async for message in _websocket:
                 self.queue.put(message)
-        # except websockets.exceptions.ConnectionClosed as err:
-            # print(err)
-            # self.restart_server()
         finally:
             await self._unregister(_websocket)
 
@@ -50,6 +47,7 @@ class Input(BaseInput):
 
     async def _unregister(self, client):
         self.clients.discard(client)
+        await client.close()
 
     async def send(self, msg):
         if self.clients:
