@@ -13,4 +13,8 @@ class Input(BaseInput):
         while True:
             date = datetime.now()
             self.queue.put({'cmd': 'report', 'sid': 'timer',  'data': {'time': f'{date.hour:02}:{date.minute:02}'}})
+            if f'{date.hour:02}:{date.minute:02}' == self.config['datetime']['sunrise']:
+                self.queue.put({'cmd': 'report', 'sid': 'timer',  'data': {'time': 'sunrise'}})
+            elif f'{date.hour:02}:{date.minute:02}' == self.config['datetime']['sunset']:
+                self.queue.put({'cmd': 'report', 'sid': 'timer',  'data': {'time': 'sunset'}})
             await asyncio.sleep(60)
