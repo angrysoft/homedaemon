@@ -20,8 +20,11 @@ class WebSockets {
   }
 
   void connect() {
-    // document.cookie = 'Authorization=Basic aaabbbbbccccdddddkkkkkkkkkk';
-    this.websock = new WebSocket(this.url);
+    try {
+      this.websock = new WebSocket('${this.url}?token=1234567890');
+    } catch(err) {
+      print('Error ${err}');
+    }
 
     this.websock.onOpen.listen((e) {
       print('Connected!');
@@ -144,7 +147,7 @@ class Devices {
       });
   }
 
-  void getDevicesStatus() {
+  void getDevicesStatus() async {
     HttpRequest.getString('/dev/data/all').then((String resp) {
       List<dynamic> jdata = jsonDecode(resp);
       jdata.forEach((dev) {
@@ -162,6 +165,7 @@ class Devices {
         }
       });
     });
+
   }
 
   void refreshDevicesStatus(data) async {
@@ -187,7 +191,7 @@ class Devices {
     }
   }
 
-  void updateButton(ButtonElement btn, Map dev) {
+  void updateButton(ButtonElement btn, Map dev) async {
     switch(dev[btn.dataset['status']]) { 
       case "on": {
         btn.classes.add('orange');
@@ -205,7 +209,7 @@ class Devices {
    }   
   }
 
-  void updateElement(Element el, Map data) {
+  void updateElement(Element el, Map data) async {
     String status = el.dataset['status'];
     
     switch (status) {
@@ -235,13 +239,13 @@ class Devices {
     }
   }
 
-  void sendWriteCmd(String sid, String cmdname, dynamic cmdvalue) {
+  void sendWriteCmd(String sid, String cmdname, dynamic cmdvalue) async {
     Map<String, dynamic> msg = new Map();
     msg['cmd'] = 'write';
     msg['sid'] = sid;
     msg['data'] = {cmdname: cmdvalue};
     print(msg);
-    this.ws.send(json.encode(msg));
+    await this.ws.send(json.encode(msg));
   }
 }
 
@@ -445,7 +449,7 @@ Future main() async {
     return;
   }
 
-  await sw.register('/static/rfpilot/sw.dart.js');
+  await sw.register('/static/devices/sw.dart.js');
   _log('registered');
 
   sw.ServiceWorkerRegistration registration = await sw.ready;

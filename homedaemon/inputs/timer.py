@@ -7,6 +7,7 @@ class Input(BaseInput):
     def __init__(self, queue, config):
         super(Input, self).__init__(queue)
         self.name = 'timer'
+        self.config = config
         self.loop.create_task(self.timer())
 
     async def timer(self):
