@@ -8,26 +8,30 @@ void _log(Object o) => print('  MAIN: $o');
 
 class WebSockets {
   WebSocket websock;
-  String url;
+  List<String> urls;
+  Map<String,String> tokens;
   Function handler;
   num delayTime = 1000;
   num startTime;
+  int curUrl = 0;
+  bool secure;
 
-  WebSockets(String _url, {Function handler = print}) {
-    this.url = _url;
+  WebSockets(List<String> _urls, Map<String,String> _tokens, {Function handler = print, bool secure = false}) {
+    this.urls = _urls;
     this.handler = handler;
+    this.tokens = _tokens;
+    this.secure = secure;
     this.connect();
   }
 
   void connect() {
-    try {
-      this.websock = new WebSocket('${this.url}?token=1234567890');
-    } catch(err) {
-      print('Error ${err}');
-    }
+    this.websock = new WebSocket(this.geturl());
 
     this.websock.onOpen.listen((e) {
       print('Connected!');
+      if (this.tokens.containsKey('hellotoken')) {
+        this.send(this.tokens['hellotoken']);
+      }
     });
 
     this.websock.onClose.listen((e) {
@@ -35,11 +39,28 @@ class WebSockets {
       window.animationFrame.then(this.setStartTime);
     });
 
-    this.websock.onError.listen((_) => print('Error opening connection.'));
+    this.websock.onError.listen((_) => this.connect());
 
     this.websock.onMessage.listen((e) {
       this.handler(e.data);
     });
+  }
+
+  String geturl() {
+    String proto = 'ws://';
+    if (this.curUrl >= this.urls.length) {
+      this.curUrl = 0;
+    }
+    String url = this.urls[this.curUrl];
+    this.curUrl++;
+
+    if (this.secure) {
+      proto = "wss://";
+    }
+    if (this.tokens.containsKey('urltoken')) {
+      url = "${url}?${this.tokens['urltoken']}";
+    }
+    return '${proto}${url}';
   }
 
   void setStartTime(num start) {
@@ -143,11 +164,11 @@ class Devices {
   void connectWs() {
     HttpRequest.getString('/dev/config').then((String resp) {
       this.config = jsonDecode(resp);
-      this.ws = WebSockets("ws://${this.config['ip']}:${this.config['port']}", handler: this.refreshDevicesStatus);
-      });
+      this.ws = WebSockets(List.from(this.config['servers']), this.config['tokens'], handler: this.refreshDevicesStatus);
+    });
   }
 
-  void getDevicesStatus() async {
+  void getDevicesStatus() {
     HttpRequest.getString('/dev/data/all').then((String resp) {
       List<dynamic> jdata = jsonDecode(resp);
       jdata.forEach((dev) {
@@ -165,7 +186,6 @@ class Devices {
         }
       });
     });
-
   }
 
   void refreshDevicesStatus(data) async {
@@ -191,7 +211,7 @@ class Devices {
     }
   }
 
-  void updateButton(ButtonElement btn, Map dev) async {
+  void updateButton(ButtonElement btn, Map dev) {
     switch(dev[btn.dataset['status']]) { 
       case "on": {
         btn.classes.add('orange');
@@ -209,7 +229,7 @@ class Devices {
    }   
   }
 
-  void updateElement(Element el, Map data) async {
+  void updateElement(Element el, Map data) {
     String status = el.dataset['status'];
     
     switch (status) {
@@ -239,13 +259,13 @@ class Devices {
     }
   }
 
-  void sendWriteCmd(String sid, String cmdname, dynamic cmdvalue) async {
+  void sendWriteCmd(String sid, String cmdname, dynamic cmdvalue) {
     Map<String, dynamic> msg = new Map();
     msg['cmd'] = 'write';
     msg['sid'] = sid;
     msg['data'] = {cmdname: cmdvalue};
     print(msg);
-    await this.ws.send(json.encode(msg));
+    this.ws.send(json.encode(msg));
   }
 }
 
@@ -444,32 +464,32 @@ class Tabs {
 Future main() async {
   new Devices();
 
-  if (sw.isNotSupported) {
-    _log('ServiceWorkers are not supported.');
-    return;
-  }
+  // if (sw.isNotSupported) {
+  //   _log('ServiceWorkers are not supported.');
+  //   return;
+  // }
 
-  await sw.register('/static/devices/sw.dart.js');
-  _log('registered');
+  // await sw.register('/static/devices/sw.dart.js');
+  // _log('registered');
 
-  sw.ServiceWorkerRegistration registration = await sw.ready;
-  _log('ready');
+  // sw.ServiceWorkerRegistration registration = await sw.ready;
+  // _log('ready');
 
-  sw.onMessage.listen((MessageEvent event) {
-    _log('reply received: ${event.data}');
-  });
+  // sw.onMessage.listen((MessageEvent event) {
+  //   _log('reply received: ${event.data}');
+  // });
 
-  var message = 'Sample message: ${new DateTime.now()}';
-  _log('Sending message: `$message`');
-  registration.active.postMessage(message);
-  _log('Message sent: `$message`');
+  // var message = 'Sample message: ${new DateTime.now()}';
+  // _log('Sending message: `$message`');
+  // registration.active.postMessage(message);
+  // _log('Message sent: `$message`');
 
-  try {
-    var subs = await registration.pushManager
-        .subscribe(new sw.PushSubscriptionOptions(userVisibleOnly: true));
-    _log('endpoint: ${subs.endpoint}');
-  } on DomException catch (e) {
-    _log('Error: Adding push subscription failed.');
-    _log('       See github.com/isoos/service_worker/issues/10');
-  }
+  // try {
+  //   var subs = await registration.pushManager
+  //       .subscribe(new sw.PushSubscriptionOptions(userVisibleOnly: true));
+  //   _log('endpoint: ${subs.endpoint}');
+  // } on DomException catch (e) {
+  //   _log('Error: Adding push subscription failed.');
+  //   _log('       See github.com/isoos/service_worker/issues/10');
+  // }
 }

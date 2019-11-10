@@ -18,9 +18,9 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 __author__ = 'Sebastian Zwierzchowski'
-__copyright__ = 'Copyright 2014-2019 Sebastian Zwierzchowski'
+__copyright__ = 'Copyright 2019 Sebastian Zwierzchowski'
 __license__ = 'GPL2'
-__version__ = '0.9'
+__version__ = '0.1'
 
 
 from flask import Flask
@@ -31,35 +31,27 @@ from flask import url_for
 from flask import session
 from functools import wraps
 import json
-import asyncio
 from pycouchdb import Server
 import operator
 from os import urandom
-from hashlib import sha256
-from time import sleep
+from google.oauth2 import id_token
+from google.auth.transport import requests
+
+
 app = Flask(__name__)
-
-
-async def send_event(msg):
-    reader, writer = await asyncio.open_connection(db['config']['tcp']['ip'],
-                                                   db['config']['tcp']['port'])
-    writer.write(msg.encode())
-    await writer.drain()
-    data = await reader.read(100)
-    writer.close()
-    return 'ok'
 
 
 def login_required(func):
     @wraps(func)
     def decorated_function(*args, **kwargs):
-        if 'admin' not in session:
+        if 'userid' not in session:
             return redirect(url_for('login', next=request.url))
         return func(*args, **kwargs)
     return decorated_function
 
 # www
 @app.route('/')
+@login_required
 def index():
     devs = [d for d in db['devices']]
     devs_data = dict()
@@ -69,24 +61,28 @@ def index():
 
 
 @app.route('/dev/config')
+@login_required
 def dev_conf():
     ret = db['config'].get('websocket', {'ip': 'localhost', 'port': 9000})
     return json.dumps(ret)
 
 
 @app.route('/dev/<sid>')
+@login_required
 def dev(sid):
     ret = db['devices'].get(sid)
     return json.dumps(ret)
 
 
 @app.route('/dev/data/<sid>')
+@login_required
 def dev_data(sid):
     ret = db['devices-data'].get(sid)
     return json.dumps(ret)
 
 
 @app.route('/dev/data/all')
+@login_required
 def dev_data_all():
     device_data = list() 
     for d in db['devices-data']:
@@ -94,40 +90,8 @@ def dev_data_all():
     return json.dumps(device_data)
 
 
-@app.route('/dev/write', methods=['GET', 'POST'])
-def dev_write():
-    """Send"""
-    if request.method == 'GET':
-        return request.args.get('status', 'ooops something is wrong')
-    elif request.method == 'POST':
-        msg = {'cmd': 'write',
-               'model': request.form.get('model'),
-               'sid': request.form.get('sid'),
-               'data': {request.form.get('cmdname'): request.form.get('cmdvalue')}}
-        asyncio.run(send_event(json.dumps(msg)))
-    return redirect(f'/dev/write/?status=ok')
-
-
-@app.route('/tv')
-def tv_pilot():
-    return render_template('tvpilot.html')
-
-
-@app.route('/tv/button/<name>', methods=['GET', 'POST'])
-def tv_button(name):
-    """Send"""
-    if request.method == 'GET':
-        return request.args.get('status', 'ooops something is wrong')
-    elif request.method == 'POST':
-        msg = {'cmd': 'write',
-               'model': 'bravia',
-               'sid': 'tv01',
-               'data': {'button': name}}
-        status = asyncio.run(send_event(json.dumps(msg)))
-    return redirect('/tv/button/{}?status={}'.format(name, status))
-
-
 @app.route('/devices')
+@login_required
 def devices():
     devs = sorted([d for d in db['devices']], key=operator.itemgetter('name'))
     sc_list = list()
@@ -141,66 +105,47 @@ def devices():
                            scenes=sc_list)
 
 
-# ______Admin______ #
-@app.route('/admin/login', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
-        user = request.form['user']
-        password = request.form['passwd']
-        pwd = sha256(password.encode()).hexdigest()
-        if user == db['config']['user'].get('user') and pwd == db['config']['user'].get('password'):
-            session['admin'] = 'admin'
-            return request.args.get('next', '/admin')
-        else:
-            return 'ko'
-    elif request.method == 'GET':
-        return render_template('admin/login.html')
+    if request.method == 'GET':
+        if 'userid' in session:
+            return redirect('/')
+        return render_template('login.html')
+    elif request.method == 'POST':
+        token = request.form.get('idtoken')
+        try:
+            # Specify the CLIENT_ID of the app that accesses the backend:
+            idinfo = id_token.verify_oauth2_token(token, requests.Request(), '185939031950-ofl3lt8mhuvl1tho2p0i308vqcum5reg.apps.googleusercontent.com')
+            if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
+                raise ValueError('Wrong issuer.')
+
+            # ID token is valid. Get the user's Google Account ID from the decoded token.
+            try:
+                print(idinfo['sub'])
+                if idinfo['sub'] in db['config']['user']['gusers']:
+                    
+                    session['userid'] = idinfo['sub']
+                    return 'ok'
+                else:
+                    return 'not_registred'
+                    
+            except KeyError:
+                return 'db error'
+        except ValueError:
+            return 'Invalid token'
 
 
-@app.route('/admin/logout')
+@app.route('/logout')
 def logout():
-    # remove the username from the session if it's there
-    # session.pop('username', None)
     session.clear()
-    return redirect(url_for('login'))
-
-
-@app.route('/admin')
-@login_required
-def admin():
-    return render_template('admin/admin.html')
-
-@app.route('/admin/config', methods=['GET', 'POST'])
-@login_required
-def admin_config():
-    if request.method == 'POST':
-        pass
-    elif request.method == 'GET':  
-        config = [d for d in db['config']]  
-        return render_template('admin/config.html', config=config)
-
-
-@app.route('/admin/devices')
-@login_required
-def admin_devices():
-    devs = [d for d in db['devices']]
-    return render_template('admin/devices.html', devices=sorted(devs, key=operator.itemgetter('name')))
-
-
-# def connect_db():
-#     db = None
-#     for x in range(0,10):
-#         try:
-#             db = Server()
-#             break
-#         except ConnectionRefusedError:
-#             sleep(1)
-#     return db
-
-
-# db = connect_db()
+    return redirect('/login')
+    
 db = Server()
 app.secret_key = urandom(24)
+# app.config.update(
+    #     SESSION_COOKIE_SECURE=True,
+    #     SESSION_COOKIE_HTTPONLY=True,
+    #     SESSION_COOKIE_SAMESITE='Lax')
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', use_reloader=False) #, port=80)

@@ -51,6 +51,9 @@ ledpilotcss: $(path)/ledpilot/ledpilot.scss
 install:
 	python3 setup.py -v install --prefix=$(PREFIX) --record files.txt
 
+install_www:
+	echo "dupa"
+
 uninstall:
 	rm -rf $(DESTDIR)/var/www/smarthouse
 	./uninstall.py
