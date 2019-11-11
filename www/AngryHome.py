@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# SmartHouse.py
-# Copyright (C) 2014  Sebastian Zwierzchowski <sebastian.zwierzchowski@gmail.com>
+# AngryHome.py
+# Copyright (C) 2019 Sebastian Zwierzchowski <sebastian.zwierzchowski@gmail.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -121,7 +121,6 @@ def login():
 
             # ID token is valid. Get the user's Google Account ID from the decoded token.
             try:
-                print(idinfo['sub'])
                 if idinfo['sub'] in db['config']['user']['gusers']:
                     
                     session['userid'] = idinfo['sub']
@@ -138,7 +137,7 @@ def login():
 @app.route('/logout')
 def logout():
     session.clear()
-    return redirect('/login')
+    return render_template('logout.html')
     
 db = Server()
 app.secret_key = urandom(24)

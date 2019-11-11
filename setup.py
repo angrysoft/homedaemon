@@ -12,13 +12,6 @@ def get_files(name):
 
 
 scenes = glob('files/scenes/*.py')
-wwwStatic = get_files('www/static')
-wwwStaticDevs = get_files('www/static/devices')
-wwwStaticTv = get_files('www/static/tvpilot')
-wwwStaticLed = get_files('www/static/ledpilot')
-wwwStaticAdmin = get_files('www/static/admin')
-wwwTemp = get_files('www/templates')
-wwwTempAdmin = get_files('www/templates/admin')
 
 setup(
     name='AngryHome',
@@ -32,13 +25,5 @@ setup(
     scripts=['homed.py'],
     requires=["flask", "pyserial", "pyxiaomi", "websockets", 'pycouchdb'],
     data_files=[('/etc/angryhome/scenes', scenes),
-                ('/var/www/angryhome', ['www/AngryHome.py']),
-                ('/var/www/angryhome/static', wwwStatic),
-                ('/var/www/angryhome/static/devices', wwwStaticDevs),
-                ('/var/www/angryhome/static/tvpilot', wwwStaticTv),
-                ('/var/www/angryhome/static/ledpilot', wwwStaticLed),
-                ('/var/www/angryhome/static/admin', wwwStaticAdmin),
-                ('/var/www/angryhome/templates', wwwTemp),
-                ('/var/www/angryhome/templates/admin', wwwTempAdmin),
                 ('/usr/lib/systemd/system', ['homed.service'])],
 )

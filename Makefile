@@ -24,10 +24,6 @@ tvpilot: $(path)/tvpilot/tvpilot.dart
 	$(dart) $(path)/tvpilot/tvpilot.dart.js $(path)/tvpilot/tvpilot.dart
 	$(dart) $(path)/tvpilot/sw.dart.js $(path)/tvpilot/sw.dart
 
-ledpilot: $(path)/ledpilot/ledpilot.dart
-	$(dart) $(path)/ledpilot/ledpilot.dart.js $(path)/ledpilot/ledpilot.dart
-	$(dart) $(path)/ledpilot/sw.dart.js $(path)/ledpilot/sw.dart
-
 admindevices: $(path)/admin/devices.dart
 	$(dart) $(path)/admin/devices.dart.js $(path)/admin/devices.dart
 
@@ -52,7 +48,12 @@ install:
 	python3 setup.py -v install --prefix=$(PREFIX) --record files.txt
 
 install_www:
-	echo "dupa"
+	install -v -m 755  -g $(GRP) -o $(USR) -d /var/www/angryhome
+	install -v -m 755  -g $(GRP) -o $(USR) -D www/* /var/www/angryhome
+
+install_panel:
+	install -v -m 755  -g $(GRP) -o $(USR) -d /var/www/panel
+	install -v -m 755  -g $(GRP) -o $(USR) -D www/* /var/www/panel
 
 uninstall:
 	rm -rf $(DESTDIR)/var/www/smarthouse
