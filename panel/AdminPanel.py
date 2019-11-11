@@ -67,81 +67,8 @@ def index():
     return render_template('index.html', devices=sorted(devs, key=operator.itemgetter('name')), devdata=devs_data, scenses=[])
 
 
-@app.route('/dev/config')
-def dev_conf():
-    ret = db['config'].get('websocket', {'ip': 'localhost', 'port': 9000})
-    return json.dumps(ret)
-
-
-@app.route('/dev/<sid>')
-def dev(sid):
-    ret = db['devices'].get(sid)
-    return json.dumps(ret)
-
-
-@app.route('/dev/data/<sid>')
-def dev_data(sid):
-    ret = db['devices-data'].get(sid)
-    return json.dumps(ret)
-
-
-@app.route('/dev/data/all')
-def dev_data_all():
-    device_data = list() 
-    for d in db['devices-data']:
-        device_data.append(d)
-    return json.dumps(device_data)
-
-
-@app.route('/dev/write', methods=['GET', 'POST'])
-def dev_write():
-    """Send"""
-    if request.method == 'GET':
-        return request.args.get('status', 'ooops something is wrong')
-    elif request.method == 'POST':
-        msg = {'cmd': 'write',
-               'model': request.form.get('model'),
-               'sid': request.form.get('sid'),
-               'data': {request.form.get('cmdname'): request.form.get('cmdvalue')}}
-        asyncio.run(send_event(json.dumps(msg)))
-    return redirect(f'/dev/write/?status=ok')
-
-
-@app.route('/tv')
-def tv_pilot():
-    return render_template('tvpilot.html')
-
-
-@app.route('/tv/button/<name>', methods=['GET', 'POST'])
-def tv_button(name):
-    """Send"""
-    if request.method == 'GET':
-        return request.args.get('status', 'ooops something is wrong')
-    elif request.method == 'POST':
-        msg = {'cmd': 'write',
-               'model': 'bravia',
-               'sid': 'tv01',
-               'data': {'button': name}}
-        status = asyncio.run(send_event(json.dumps(msg)))
-    return redirect('/tv/button/{}?status={}'.format(name, status))
-
-
-@app.route('/devices')
-def devices():
-    devs = sorted([d for d in db['devices']], key=operator.itemgetter('name'))
-    sc_list = list()
-    for s in db['config']['scenes_list']['list']:
-        if not s.get('automaitc'):
-            sc_list.append(s)
-    return render_template('devices.html',
-                           devices=devs,
-                           websock=db['config']['websocket']['ip'],
-                           wp=db['config']['websocket']['port'],
-                           scenes=sc_list)
-
-
 # ______Admin______ #
-@app.route('/admin/login', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         user = request.form['user']
@@ -156,7 +83,7 @@ def login():
         return render_template('admin/login.html')
 
 
-@app.route('/admin/logout')
+@app.route('/logout')
 def logout():
     # remove the username from the session if it's there
     # session.pop('username', None)
