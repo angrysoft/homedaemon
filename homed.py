@@ -66,6 +66,8 @@ class HomeDaemon:
     def notify_clients(self, msg):
         if 'websocket' in self.inputs:
             asyncio.run(self.inputs['websocket'].send(msg))
+        if 'websocket_clietn' in self.inputs:
+            self.inputs['websocket_client'].send(msg)
 
     def _load_inputs(self):
         for _input_name in self.inputs_list:

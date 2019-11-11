@@ -74,13 +74,13 @@ def login():
         user = request.form['user']
         password = request.form['passwd']
         pwd = sha256(password.encode()).hexdigest()
-        if user == db['config']['user'].get('user') and pwd == db['config']['user'].get('password'):
+        if user == db['config']['panel'].get('user') and pwd == db['config']['panel'].get('password'):
             session['admin'] = 'admin'
             return request.args.get('next', '/admin')
         else:
             return 'ko'
     elif request.method == 'GET':
-        return render_template('admin/login.html')
+        return render_template('/login.html')
 
 
 @app.route('/logout')
@@ -94,7 +94,7 @@ def logout():
 @app.route('/admin')
 @login_required
 def admin():
-    return render_template('admin/admin.html')
+    return render_template('admin.html')
 
 @app.route('/admin/config', methods=['GET', 'POST'])
 @login_required
@@ -103,14 +103,14 @@ def admin_config():
         pass
     elif request.method == 'GET':  
         config = [d for d in db['config']]  
-        return render_template('admin/config.html', config=config)
+        return render_template('/config.html', config=config)
 
 
 @app.route('/admin/devices')
 @login_required
 def admin_devices():
     devs = [d for d in db['devices']]
-    return render_template('admin/devices.html', devices=sorted(devs, key=operator.itemgetter('name')))
+    return render_template('/devices.html', devices=sorted(devs, key=operator.itemgetter('name')))
 
 
 # def connect_db():

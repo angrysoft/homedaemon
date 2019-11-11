@@ -130,7 +130,7 @@ class Register:
 
             for c in config:
                 self.config[c] = config[c]
-            self.config['user'] = {'user': 'admin',
+            self.config['panel'] = {'user': 'admin',
                                    'password': '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918'}
             print('Config added')
     
