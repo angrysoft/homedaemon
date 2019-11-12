@@ -39,6 +39,7 @@ from homedaemon.scenes import Triggers
 
 logger = logging.getLogger('homed')
 
+
 class HomeDaemon:
     def __init__(self):
         self.loop = asyncio.get_event_loop()
@@ -48,6 +49,7 @@ class HomeDaemon:
             'arduino',
             'tcp',
             'websocket',
+            'websocket_client',
             'yeelight',
             'timer'
         ]
@@ -66,8 +68,8 @@ class HomeDaemon:
     def notify_clients(self, msg):
         if 'websocket' in self.inputs:
             asyncio.run(self.inputs['websocket'].send(msg))
-        if 'websocket_clietn' in self.inputs:
-            self.inputs['websocket_client'].send(msg)
+        if 'websocket_client' in self.inputs:
+            asyncio.run(self.inputs['websocket_client'].send(msg))
 
     def _load_inputs(self):
         for _input_name in self.inputs_list:

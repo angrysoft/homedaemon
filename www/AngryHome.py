@@ -63,8 +63,12 @@ def index():
 @app.route('/dev/config')
 @login_required
 def dev_conf():
-    ret = db['config'].get('websocket', {'ip': 'localhost', 'port': 9000})
-    return json.dumps(ret)
+    ret = db['config']['websocket']
+    config = {'urltoken': ret['urltoken'],
+              'secret': ret['secret'],
+              'servers': ret['servers']}
+    config.update(ret['webserver'])
+    return json.dumps(config)
 
 
 @app.route('/dev/<sid>')
@@ -121,7 +125,7 @@ def login():
 
             # ID token is valid. Get the user's Google Account ID from the decoded token.
             try:
-                if idinfo['sub'] in db['config']['user']['gusers']:
+                if idinfo['sub'] in db['config']['users']['gusers']:
                     
                     session['userid'] = idinfo['sub']
                     return 'ok'

@@ -9,18 +9,23 @@ void _log(Object o) => print('  MAIN: $o');
 class WebSockets {
   WebSocket websock;
   List<String> urls;
-  Map<String,String> tokens;
+  String urltoken;
+  String secret;
   Function handler;
   num delayTime = 1000;
   num startTime;
   int curUrl = 0;
   bool secure;
 
-  WebSockets(List<String> _urls, Map<String,String> _tokens, {Function handler = print, bool secure = false}) {
-    this.urls = _urls;
+  WebSockets(Map<String,dynamic> config, {Function handler = print, bool secure = false}) {
+    print(config);
+    
+    this.urls = config['servers'];
+    print(this.urls);
     this.handler = handler;
-    this.tokens = _tokens;
-    this.secure = secure;
+    this.urltoken = config['urltoken'];
+    this.secret = config['secret'];
+    
     this.connect();
   }
 
@@ -29,8 +34,8 @@ class WebSockets {
 
     this.websock.onOpen.listen((e) {
       print('Connected!');
-      if (this.tokens.containsKey('hellotoken')) {
-        this.send(this.tokens['hellotoken']);
+      if (this.secret.isNotEmpty) {
+        this.send(this.secret);
       }
     });
 
@@ -47,20 +52,12 @@ class WebSockets {
   }
 
   String geturl() {
-    String proto = 'ws://';
     if (this.curUrl >= this.urls.length) {
       this.curUrl = 0;
     }
     String url = this.urls[this.curUrl];
     this.curUrl++;
-
-    if (this.secure) {
-      proto = "wss://";
-    }
-    if (this.tokens.containsKey('urltoken')) {
-      url = "${url}?${this.tokens['urltoken']}";
-    }
-    return '${proto}${url}';
+    return "${url}?${this.urltoken}";
   }
 
   void setStartTime(num start) {
@@ -92,7 +89,7 @@ class Devices {
   List<ButtonElement> colorSetButtons = new List();
   Modal colorSet;
   Map<String, List> deviceStatus = new Map();
-  Map<String, dynamic> config = new Map();
+  Map<String, dynamic> config;
   WebSockets ws;
   Element back;
   Tabs tabs = new Tabs();
@@ -164,7 +161,7 @@ class Devices {
   void connectWs() {
     HttpRequest.getString('/dev/config').then((String resp) {
       this.config = jsonDecode(resp);
-      this.ws = WebSockets(List.from(this.config['servers']), this.config['tokens'], handler: this.refreshDevicesStatus);
+      this.ws = WebSockets(this.config, handler: this.refreshDevicesStatus);
     });
   }
 

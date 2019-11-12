@@ -9,8 +9,8 @@ class Input(BaseInput):
     def __init__(self, queue, config):
         super(Input, self).__init__(queue)
         self.name = 'websocket_client'
-        self.url = config['websocket']['webserver']['ip']
-        self.port = config['websocket']['webserver']['port']
+        url = config['websocket']['webserver']['ip']
+        port = config['websocket']['webserver']['port']
         self.secret = config['websocket']['secret']
         self.urltoken = config['websocket']['urltoken']
         self.websocket = None
@@ -23,6 +23,7 @@ class Input(BaseInput):
         self._conn_task = None
         self._reader_task = None
         self._send_taks = None
+        self.loop.run_until_complete(self.connect())
     
     async def reader(self):
         while self.loop.is_running():
@@ -30,7 +31,7 @@ class Input(BaseInput):
             self.queue.put(msg)
     
     async def connect(self):
-        while True:
+        while self.loop.is_running():
             try:
                 self.websocket = await websockets.connect(self.uri)
                 if self.websocket.open:
@@ -39,11 +40,11 @@ class Input(BaseInput):
                     self._reader_task = self.loop.create_task(self.reader())
                     break
             except OSError:
-                print('try reconnect in 5 sec')
+                self.queue.put({'sid': 'logger', 'data': {'msg':'try reconnect in 5 sec'}})
                 await asyncio.sleep(5)
     
     def exception_handler(self, loop, context):
-        print(f'exception from input :{context}')
+        self.queue.put({'sid': 'logger', 'data': {'msg':f'exception from input :{context}'}})
         try:
             self._reader_task.cancel()
             self._conn_task.cancel()
@@ -54,14 +55,12 @@ class Input(BaseInput):
         self.websocket = None
         self._conn_task = self.loop.create_task(self.connect())
     
-    def send(self, msg):
+    async def send(self, msg):
         if self.websocket and self.websocket.open:
-            self._send_taks = self.loop.create_task(self._send(msg))
+            await self.websocket.send(msg)
         else:
+            print('cos sie zesrało z połączniem')
             raise ConnectionError
-    
-    async def _send(self, msg):
-        await self.websocket.send(msg)
     
     async def stop(self):
         if self.websocket:
@@ -71,7 +70,7 @@ class Input(BaseInput):
         if self.websocket:
             self.websocket.close()
 
-
+        
 class ConnectionError(Exception):
     pass
 
