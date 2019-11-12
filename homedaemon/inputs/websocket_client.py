@@ -35,7 +35,6 @@ class Input(BaseInput):
                 self.websocket = await websockets.connect(self.uri)
                 if self.websocket.open:
                     encoded = jwt.encode({'api':'1.0', 'client': 'homed'}, self.secret, algorithm='HS256')
-                    print(encoded.decode())
                     await self.websocket.send(encoded.decode())
                     self._reader_task = self.loop.create_task(self.reader())
                     break
@@ -71,10 +70,6 @@ class Input(BaseInput):
     def __del__(self):
         if self.websocket:
             self.websocket.close()
-
-    # async def send(self, msg):
-    #     if self.clients:
-    #         await asyncio.wait([client.send(msg) for client in self.clients])
 
 
 class ConnectionError(Exception):
