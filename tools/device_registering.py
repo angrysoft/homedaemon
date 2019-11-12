@@ -125,7 +125,7 @@ class Register:
             self.devices_data[d.get('sid')] = data
 
     def add_config(self):
-        with open('files/angryhome.json') as jconf:
+        with open('../files/angryhome.json') as jconf:
             config = json.load(jconf)
 
             for c in config:
