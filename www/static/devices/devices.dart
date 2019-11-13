@@ -164,7 +164,7 @@ class Devices {
   }
 
   void getDevicesStatus() {
-    _log('Reload divice data');
+    _log('Reload devices data');
     HttpRequest.getString('/dev/data/all').then((String resp) {
       List<dynamic> jdata = jsonDecode(resp);
       jdata.forEach((dev) {

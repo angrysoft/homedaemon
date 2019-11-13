@@ -1,6 +1,7 @@
 import asyncio
 import websockets
 import sys
+import ssl
 from homedaemon.inputs import BaseInput
 
 
@@ -10,6 +11,9 @@ class Input(BaseInput):
         self.name = 'websocket'
         self.url = config['websocket']['ip']
         self.port = config['websocket']['port']
+        self.ssl = config['websocket']['ssl']
+        self.pemfile = config['websocket']['pem']
+        self.keyfile = config['websocket']['key']
         self.clients = set()
         self.server = None
         self.srv = None
@@ -27,7 +31,12 @@ class Input(BaseInput):
 
     def start_server(self):
         print('Starting websocket server')
-        self.server = websockets.serve(self._handler, self.url, self.port)
+        if self.ssl:
+            context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+            context.load_cert_chain(self.pemfile, self.keyfile)
+            self.server = websockets.serve(self._handler, self.url, self.port, ssl=context)
+        else:
+            self.server = websockets.serve(self._handler, self.url, self.port)
         self.srv = self.loop.run_until_complete(self.server)
 
     def exception_handler(self, loop, context):
