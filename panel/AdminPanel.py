@@ -19,7 +19,7 @@
 __author__ = 'Sebastian Zwierzchowski'
 __copyright__ = 'Copyright 2014-2019 Sebastian Zwierzchowski'
 __license__ = 'GPL2'
-__version__ = '0.9'
+__version__ = '0.1'
 
 
 from flask import Flask
@@ -60,11 +60,7 @@ def login_required(func):
 # www
 @app.route('/')
 def index():
-    devs = [d for d in db['devices']]
-    devs_data = dict()
-    for dd in db['devices-data']:
-        devs_data[dd.get('sid')] = dd
-    return render_template('index.html', devices=sorted(devs, key=operator.itemgetter('name')), devdata=devs_data, scenses=[])
+    return render_template('admin.html')
 
 
 # ______Admin______ #
@@ -85,46 +81,27 @@ def login():
 
 @app.route('/logout')
 def logout():
-    # remove the username from the session if it's there
-    # session.pop('username', None)
     session.clear()
     return redirect(url_for('login'))
 
 
-@app.route('/admin')
-@login_required
-def admin():
-    return render_template('admin.html')
-
-@app.route('/admin/config', methods=['GET', 'POST'])
+@app.route('config', methods=['GET', 'POST'])
 @login_required
 def admin_config():
     if request.method == 'POST':
         pass
     elif request.method == 'GET':  
         config = [d for d in db['config']]  
-        return render_template('/config.html', config=config)
+        return render_template('config.html', config=config)
 
 
-@app.route('/admin/devices')
+@app.route('devices')
 @login_required
 def admin_devices():
     devs = [d for d in db['devices']]
-    return render_template('/devices.html', devices=sorted(devs, key=operator.itemgetter('name')))
+    return render_template('devices.html', devices=sorted(devs, key=operator.itemgetter('name')))
 
 
-# def connect_db():
-#     db = None
-#     for x in range(0,10):
-#         try:
-#             db = Server()
-#             break
-#         except ConnectionRefusedError:
-#             sleep(1)
-#     return db
-
-
-# db = connect_db()
 db = Server()
 app.secret_key = urandom(24)
 
