@@ -157,4 +157,8 @@ app.config.update(
         SESSION_COOKIE_SAMESITE='Lax')
 
 if __name__ == '__main__':
+    app.config.update(
+        SESSION_COOKIE_SECURE=False,
+        SESSION_COOKIE_HTTPONLY=True,
+        SESSION_COOKIE_SAMESITE='Lax')
     app.run(debug=True, host='0.0.0.0', use_reloader=False) #, port=80)

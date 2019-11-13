@@ -55,10 +55,9 @@ Future _initCache() async {
   _log('Init cache...');
   Cache cache = await caches.open('offline-v1');
   await cache.addAll([
-    '/tv/pilot'
-    '/static/main.dart',
+    '/tv',
     '/static/main.dart.js',
-    '/static/tvpilot/sw.dart',
+    '/static/tvpilot/tvpilot.dart.js',
     '/static/tvpilot/sw.dart.js',
     '/static/tvpilot/tvpilot.min.css',
     '/static/angry.min.css'

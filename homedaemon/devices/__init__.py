@@ -53,7 +53,7 @@ class Device:
         elif model == 'computer':
             from .computer import Computer
         elif model == 'timer':
-            return BaseDevice(data, daemon)
+            return TimerDev(data, daemon)
         else:
             raise ValueError(f'unrecognized device {model}')
 
@@ -118,3 +118,10 @@ class ButtonToggleOnOff(ButtonOnOff):
     def toggle(self):
         print('toogle')
         self.write({'data': {self.name: 'toggle'}})
+
+class TimerDev(BaseDevice):
+    def do(self):
+        pass
+    
+    
+    

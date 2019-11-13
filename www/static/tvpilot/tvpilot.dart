@@ -1,20 +1,42 @@
 import 'dart:async';
 import 'dart:html';
+import 'dart:convert';
+import '../lib/websock.dart';
 
 import 'package:service_worker/window.dart' as sw;
 
 void _log(Object o) => print('  MAIN: $o');
 
 class TvButtons {
+  WebSockets ws;
+  Map<String, dynamic> config;
 
   TvButtons() {
+    this.connectWs();
     querySelectorAll('.btn').onClick.listen((Event e) => this.clickBtn(e));
+  }
+
+  void connectWs() {
+    HttpRequest.getString('/dev/config').then((String resp) {
+      this.config = jsonDecode(resp);
+      this.ws = WebSockets(this.config, handler: this.onWsockMsg);
+    });
+  }
+
+  void onWsockMsg(String msg) {
+    return null;
   }
 
   void clickBtn(Event e) {
     ButtonElement btn = e.target;
-    HttpRequest.request('/tv/button/${btn.dataset['btn']}', method: 'POST');
+    Map<String, dynamic> msg = new Map();
+    msg['cmd'] = 'write';
+    msg['sid'] = 'tv01';
+    msg['data'] = {'button': btn.dataset['btn']};
+    print(msg);
+    this.ws.send(json.encode(msg));
   }
+
 }
 
 Future main() async {
