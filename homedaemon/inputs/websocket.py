@@ -17,7 +17,7 @@ class Input(BaseInput):
         self.pemfile = config['websocket']['pem']
         self.keyfile = config['websocket']['key']
         self.urltoken = config['websocket']['urltoken']
-        self.clients = set()
+        self.clients = dict()
         self.server = None
         self.srv = None
         self.loop.set_exception_handler(self.exception_handler)
@@ -53,9 +53,21 @@ class Input(BaseInput):
             return
         try:
             async for message in websocket:
-                self.queue.put(message)
+                await self.msg_handler(message, websocket)
         finally:
             await self._unregister(websocket)
+    
+    async def msg_handler(self, msg, wsock) -> None:
+        _id = id(wsock)
+        if _id not in self.clients:
+            await self._register(wsock, msg)
+            return
+            
+        for cli in self.clients:
+            if _id == cli:
+                continue
+            await self.clients[cli].send(msg)
+        await self.updatedb(msg)
     
     def _connect_token_check(self, path):
         args = urlparse(path)
@@ -75,17 +87,20 @@ class Input(BaseInput):
         except jwt.InvalidSignatureError as err:
             print(err)
         else:
-            self.clients.add(client)
+            self.clients[id(client)] = client
             return
         print('not registred')
         await client.close()
 
     async def _unregister(self, client):
-        self.clients.discard(client)
-        await client.close()
+        try:
+            self.clients.pop(id(client))
+            await client.close()
+        except KeyError:
+            pass
 
     async def send(self, msg):
         if self.clients:
-            await asyncio.wait([client.send(msg) for client in self.clients])
+            await asyncio.wait([self.clients[client].send(msg) for client in self.clients])
 
 
