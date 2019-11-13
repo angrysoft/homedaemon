@@ -40,7 +40,6 @@ class Input(BaseInput):
                     self._reader_task = self.loop.create_task(self.reader())
                     break
             except OSError:
-                self.queue.put({'sid': 'logger', 'data': {'msg':'try reconnect in 5 sec'}})
                 await asyncio.sleep(5)
     
     def exception_handler(self, loop, context):

@@ -33,6 +33,7 @@ from functools import wraps
 import json
 from pycouchdb import Server
 import operator
+import jwt
 from os import urandom
 from google.oauth2 import id_token
 from google.auth.transport import requests
@@ -65,7 +66,7 @@ def index():
 def dev_conf():
     ret = db['config']['websocket']
     config = {'urltoken': ret['urltoken'],
-              'secret': ret['secret'],
+              'secret': jwt.encode({'api':'1.0', 'client': 'browser'}, ret['secret'], algorithm='HS256').decode(),
               'servers': ret['servers']}
     config.update(ret['webserver'])
     return json.dumps(config)

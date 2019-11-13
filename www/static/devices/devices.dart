@@ -18,29 +18,27 @@ class WebSockets {
   bool secure;
 
   WebSockets(Map<String,dynamic> config, {Function handler = print, bool secure = false}) {
-    print(config);
-    
-    this.urls = config['servers'];
-    print(this.urls);
+    this.urls = new List();
+    config['servers'].forEach((e){
+      this.urls.add(e);
+    });
     this.handler = handler;
     this.urltoken = config['urltoken'];
     this.secret = config['secret'];
-    
     this.connect();
   }
 
   void connect() {
     this.websock = new WebSocket(this.geturl());
-
     this.websock.onOpen.listen((e) {
-      print('Connected!');
+      _log('Connected!');
       if (this.secret.isNotEmpty) {
         this.send(this.secret);
       }
     });
 
     this.websock.onClose.listen((e) {
-      print('Close');
+      _log('Close');
       window.animationFrame.then(this.setStartTime);
     });
 
@@ -57,7 +55,7 @@ class WebSockets {
     }
     String url = this.urls[this.curUrl];
     this.curUrl++;
-    return "${url}?${this.urltoken}";
+    return "${url}?token=${this.urltoken}";
   }
 
   void setStartTime(num start) {
@@ -105,10 +103,10 @@ class Devices {
     this.colorSet = new Modal.fromHtml('color-set');
     this.back = querySelector('#back');
     
-    this.getDevicesStatus();
-    // window.onPageShow.listen((event) {
-      // this.getDevicesStatus();
-    // });
+    // this.getDevicesStatus();
+    window.onPageShow.listen((event) {
+      this.getDevicesStatus();
+    });
 
     querySelectorAll('.device-status').forEach((dev) {
       if (this.deviceStatus.containsKey(dev.dataset['sid'])) {
@@ -166,6 +164,7 @@ class Devices {
   }
 
   void getDevicesStatus() {
+    _log('Reload divice data');
     HttpRequest.getString('/dev/data/all').then((String resp) {
       List<dynamic> jdata = jsonDecode(resp);
       jdata.forEach((dev) {
@@ -461,32 +460,32 @@ class Tabs {
 Future main() async {
   new Devices();
 
-  // if (sw.isNotSupported) {
-  //   _log('ServiceWorkers are not supported.');
-  //   return;
-  // }
+  if (sw.isNotSupported) {
+    _log('ServiceWorkers are not supported.');
+    return;
+  }
 
-  // await sw.register('/static/devices/sw.dart.js');
-  // _log('registered');
+  await sw.register('/static/devices/sw.dart.js');
+  _log('registered');
 
-  // sw.ServiceWorkerRegistration registration = await sw.ready;
-  // _log('ready');
+  sw.ServiceWorkerRegistration registration = await sw.ready;
+  _log('ready');
 
-  // sw.onMessage.listen((MessageEvent event) {
-  //   _log('reply received: ${event.data}');
-  // });
+  sw.onMessage.listen((MessageEvent event) {
+    _log('reply received: ${event.data}');
+  });
 
-  // var message = 'Sample message: ${new DateTime.now()}';
-  // _log('Sending message: `$message`');
-  // registration.active.postMessage(message);
-  // _log('Message sent: `$message`');
+  var message = 'Sample message: ${new DateTime.now()}';
+  _log('Sending message: `$message`');
+  registration.active.postMessage(message);
+  _log('Message sent: `$message`');
 
-  // try {
-  //   var subs = await registration.pushManager
-  //       .subscribe(new sw.PushSubscriptionOptions(userVisibleOnly: true));
-  //   _log('endpoint: ${subs.endpoint}');
-  // } on DomException catch (e) {
-  //   _log('Error: Adding push subscription failed.');
-  //   _log('       See github.com/isoos/service_worker/issues/10');
-  // }
+  try {
+    var subs = await registration.pushManager
+        .subscribe(new sw.PushSubscriptionOptions(userVisibleOnly: true));
+    _log('endpoint: ${subs.endpoint}');
+  } on DomException catch (e) {
+    _log('Error: Adding push subscription failed.');
+    _log('       See github.com/isoos/service_worker/issues/10');
+  }
 }

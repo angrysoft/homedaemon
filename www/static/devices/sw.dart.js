@@ -1431,7 +1431,7 @@ cx:function(){var u=0,t=P.hN(null),s,r,q
 var $async$cx=P.hV(function(a,b){if(a===1)return P.hJ(b,t)
 while(true)switch(u){case 0:P.S("WORKER: Init cache...")
 s=$.ai()
-r=["/devices/static/main.dart","/static/main.dart.js","/static/devices/sw.dart","/static/devices/sw.dart.js","/static/devices/devices.min.css","/static/angry.min.css"]
+r=["/devices","/static/main.dart.js","/static/devices/devices.dart.js","/static/devices/sw.dart.js","/static/devices/devices.min.css","/static/angry.min.css"]
 u=2
 return P.fd(s.gao(s).bd(0,"offline-v1"),$async$cx)
 case 2:s=b.a
