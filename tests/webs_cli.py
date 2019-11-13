@@ -11,4 +11,4 @@ async def hello(uri):
             print(data)
 
 asyncio.get_event_loop().run_until_complete(
-    hello('ws://localhost:9000'))
+    hello('wss://192.168.1.4:9000'))

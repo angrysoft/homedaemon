@@ -2,7 +2,9 @@ import asyncio
 import websockets
 import sys
 import ssl
+import jwt
 from homedaemon.inputs import BaseInput
+from urllib.parse import urlparse, parse_qs
 
 
 class Input(BaseInput):
@@ -43,16 +45,39 @@ class Input(BaseInput):
         print(f'exception from input :{context}')
         self.restart_server()
 
-    async def _handler(self, _websocket, path):
-        await self._register(_websocket)
+    async def _handler(self, websocket, path):
+        if not self._connect_token_check(path):
+            await websocket.close()
+            print(f'closing connection for {websocket.host}')
+            return
         try:
-            async for message in _websocket:
-                self.queue.put(message)
+            async for message in websocket:
+                await self.queue.put(message)
         finally:
-            await self._unregister(_websocket)
+            await self._unregister(websocket)
+    
+    def _connect_token_check(self, path):
+        args = urlparse(path)
+        token = parse_qs(args.query).get('token', [''])[0]
+        if token == self.config['urltoken']:
+            return True
+        else:
+            return False
 
-    async def _register(self, client):
-        self.clients.add(client)
+    async def _register(self, client, token):
+        try:
+            decoded = jwt.decode(token, self.secret, algorithms='HS256')
+        except jwt.InvalidTokenError as err:
+            logger.error(err)
+        except jwt.DecodeError as err:
+            logger.error(err)
+        except jwt.InvalidSignatureError as err:
+            logger.error(err)
+        else:
+            self.clients[id(client)] = client
+            return
+        logger.error('not registred')
+        await client.close()
 
     async def _unregister(self, client):
         self.clients.discard(client)
