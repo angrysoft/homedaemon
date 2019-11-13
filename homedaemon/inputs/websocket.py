@@ -53,7 +53,7 @@ class Input(BaseInput):
             return
         try:
             async for message in websocket:
-                await self.queue.put(message)
+                self.queue.put(message)
         finally:
             await self._unregister(websocket)
     
