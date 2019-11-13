@@ -16,6 +16,7 @@ class Input(BaseInput):
         self.ssl = config['websocket']['ssl']
         self.pemfile = config['websocket']['pem']
         self.keyfile = config['websocket']['key']
+        self.urltoken = config['websocket']['urltoken']
         self.clients = set()
         self.server = None
         self.srv = None
@@ -59,7 +60,7 @@ class Input(BaseInput):
     def _connect_token_check(self, path):
         args = urlparse(path)
         token = parse_qs(args.query).get('token', [''])[0]
-        if token == self.config['urltoken']:
+        if token == self.urltoken:
             return True
         else:
             return False
@@ -68,15 +69,15 @@ class Input(BaseInput):
         try:
             decoded = jwt.decode(token, self.secret, algorithms='HS256')
         except jwt.InvalidTokenError as err:
-            logger.error(err)
+            print(err)
         except jwt.DecodeError as err:
-            logger.error(err)
+            print(err)
         except jwt.InvalidSignatureError as err:
-            logger.error(err)
+            print(err)
         else:
             self.clients[id(client)] = client
             return
-        logger.error('not registred')
+        print('not registred')
         await client.close()
 
     async def _unregister(self, client):

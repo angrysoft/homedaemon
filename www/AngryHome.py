@@ -110,6 +110,12 @@ def devices():
                            scenes=sc_list)
 
 
+@app.route('/tv')
+@login_required
+def tv():
+    return render_template('tvpilot.html')
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
@@ -127,7 +133,6 @@ def login():
             # ID token is valid. Get the user's Google Account ID from the decoded token.
             try:
                 if idinfo['sub'] in db['config']['users']['gusers']:
-                    
                     session['userid'] = idinfo['sub']
                     return 'ok'
                 else:

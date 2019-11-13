@@ -19,11 +19,11 @@ class WebSockets {
   bool secure;
 
   WebSockets(Map<String,dynamic> config, {Function handler = print, bool secure = false}) {
-    this.loader.classes.add('show-loader');
     this.urls = new List();
     config['servers'].forEach((e){
       this.urls.add(e);
     });
+    
     this.handler = handler;
     this.urltoken = config['urltoken'];
     this.secret = config['secret'];
@@ -31,7 +31,9 @@ class WebSockets {
   }
 
   void connect() {
+    this.loader.classes.add('show-loader');
     this.websock = new WebSocket(this.geturl());
+
     this.websock.onOpen.listen((e) {
       _log('Connected!');
       if (this.secret.isNotEmpty) {
