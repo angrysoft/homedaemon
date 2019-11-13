@@ -16,8 +16,12 @@ class Scene(BaseScene):
             wallsw = self.get_device('158d0002a18c2b')
             if entrance.get_value('status') == 'open':
                 wallsw.all_on()
+                lamp = self.get_device('0x0000000007e7bae0')
+                lamp.on()
                 self.sleep(25)
-                wallsw.all_off()
+                wallsw.channel_1.off()
+                self.sleep(10)
+                wallsw.channel_2.off()
             else:
                 wallsw.channel_1.on()
                 self.sleep(25)
