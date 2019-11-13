@@ -4,6 +4,8 @@ sasss = sassc -t compressed
 INSTALL=install -C
 USR=nginx
 GRP=uwsgi
+USRPAN=http
+GRPPAN=uwsgi
 PREFIX = /usr
 
 all: alldart allcss
@@ -55,9 +57,18 @@ install_www:
 	chmod -R g+w /var/www/angryhome
 
 install_panel:
-	install -v -m 755  -g $(GRP) -o $(USR) -d /var/www/panel
-	install -v -m 755  -g $(GRP) -o $(USR) -D www/* /var/www/panel
+	install -v -m 755  -g $(GRP) -o $(USR) -d /var/www/adminpanel
+	cp -r panel/* /var/www/adminpanel
+	chown -R $(GRP).$(USR) /var/www/adminpanel
+	chmod -R a+r /var/www/adminpanel
+	chmod -R g+w /var/www/adminpanel
 
 uninstall:
-	rm -rf $(DESTDIR)/var/www/smarthouse
+	rm -rf $(DESTDIR)/etc/angryhome
 	./uninstall.py
+
+unistall_www:
+	rm -rvf $(DESTDIR)/var/www/angryhome
+
+uninstall_panel:
+	rm -rf $(DESTDIR)/var/www/adminpanel

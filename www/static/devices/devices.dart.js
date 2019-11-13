@@ -1677,14 +1677,14 @@ eX:function eX(a){this.a=a},
 eY:function eY(){},
 b8:function b8(a){this.a=a},
 f5:function f5(a){this.a=a}},M={
-l0:function(a,b){var u=new M.cp()
+l0:function(a,b){var u=new M.cp(H.f(document.querySelector("#loader"),"$iT"))
 u.bD(a,b,!1)
 return u},
-kz:function(){var u,t,s=H.f(document.querySelector("#loader"),"$iT"),r=[W.N],q=H.R([],r)
-r=H.R([],r)
+kz:function(){var u,t,s=[W.N],r=H.R([],s)
+s=H.R([],s)
 u=P.d
 t=M.kZ()
-s=new M.c7(s,q,r,new H.ac([u,[P.n,,]]),t,new H.ac([u,M.c5]))
+s=new M.c7(r,s,new H.ac([u,[P.n,,]]),t,new H.ac([u,M.c5]))
 s.bB()
 return s},
 kw:function(a,b){var u=document
@@ -1736,24 +1736,24 @@ break
 case 8:case 1:return P.jC(s,t)
 case 2:return P.jB(q,t)}})
 return P.jD($async$bg,t)},
-cp:function cp(){var _=this
-_.r=_.e=_.d=_.c=_.b=_.a=null
-_.x=0},
+cp:function cp(a){var _=this
+_.a=a
+_.x=_.f=_.e=_.d=_.c=_.b=null
+_.y=0},
 fL:function fL(a){this.a=a},
 fM:function fM(a){this.a=a},
 fN:function fN(a){this.a=a},
 fO:function fO(a){this.a=a},
 fP:function fP(a){this.a=a},
-c7:function c7(a,b,c,d,e,f){var _=this
+c7:function c7(a,b,c,d,e){var _=this
 _.a=a
 _.b=b
-_.c=c
-_.d=null
-_.e=d
-_.x=_.r=_.f=null
-_.y=e
-_.Q=f
-_.ch=null},
+_.c=null
+_.d=c
+_.r=_.f=_.e=null
+_.x=d
+_.z=e
+_.Q=null},
 dV:function dV(a){this.a=a},
 dW:function dW(a){this.a=a},
 dX:function dX(a){this.a=a},
@@ -4267,57 +4267,59 @@ L.b8.prototype={}
 L.f5.prototype={$ic:1}
 M.cp.prototype={
 bD:function(a,b,c){var u,t=this
+t.a.classList.add("show-loader")
 t.scD(H.R([],[P.d]))
 u=J.al(a)
 J.b1(u.i(a,"servers"),new M.fL(t))
-t.e=b
-t.c=H.z(u.i(a,"urltoken"))
-t.d=H.z(u.i(a,"secret"))
+t.f=b
+t.d=H.z(u.i(a,"urltoken"))
+t.e=H.z(u.i(a,"secret"))
 t.as()},
-as:function(){var u,t,s=this,r=s.x,q=s.b,p=q.length
-if(r>=p)r=s.x=0
+as:function(){var u,t,s=this,r=s.y,q=s.c,p=q.length
+if(r>=p)r=s.y=0
 if(r>=p)return H.v(q,r)
 u=q[r]
-s.x=r+1
-r=W.l_(H.j(u)+"?token="+H.j(s.c))
-s.a=r
+s.y=r+1
+r=W.l_(H.j(u)+"?token="+H.j(s.d))
+s.b=r
 q=W.h
 p={func:1,ret:-1,args:[q]}
 W.P(r,"open",H.e(new M.fM(s),p),!1,q)
-r=s.a
+r=s.b
 r.toString
 t=W.aB
 W.P(r,"close",H.e(new M.fN(s),{func:1,ret:-1,args:[t]}),!1,t)
-t=s.a
+t=s.b
 t.toString
 W.P(t,"error",H.e(new M.fO(s),p),!1,q)
-q=s.a
+q=s.b
 q.toString
 p=W.V
 W.P(q,"message",H.e(new M.fP(s),{func:1,ret:-1,args:[p]}),!1,p)},
-bu:function(a){this.r=H.ja(a)
+bu:function(a){this.x=H.ja(a)
 C.j.gap(window).F(0,this.gb6(),-1)},
 ca:function(a){var u,t=this
 H.ja(a)
-u=t.a
+u=t.b
 if(u!=null&&u.readyState===1||u.readyState===0)return
-else{u=t.r
+else{u=t.x
 if(typeof u!=="number")return u.G()
 if(typeof a!=="number")return a.bp()
-if(a>=u+1000){t.r=a
+if(a>=u+1000){t.x=a
 t.as()}}C.j.gap(window).F(0,t.gb6(),-1)},
-aD:function(a,b){var u=this.a
+aD:function(a,b){var u=this.b
 if(u!=null&&u.readyState===1)u.send(b)},
-scD:function(a){this.b=H.B(a,"$in",[P.d],"$an")}}
+scD:function(a){this.c=H.B(a,"$in",[P.d],"$an")}}
 M.fL.prototype={
-$1:function(a){C.a.m(this.a.b,H.z(a))},
+$1:function(a){C.a.m(this.a.c,H.z(a))},
 $S:2}
 M.fM.prototype={
 $1:function(a){var u,t
 P.Q("  MAIN: Connected!")
 u=this.a
-t=u.d
-if(t.length!==0)u.aD(0,t)},
+t=u.e
+if(t.length!==0)u.aD(0,t)
+u.a.classList.remove("show-loader")},
 $S:3}
 M.fN.prototype={
 $1:function(a){H.f(a,"$iaB")
@@ -4329,11 +4331,10 @@ $1:function(a){return this.a.as()},
 $S:34}
 M.fP.prototype={
 $1:function(a){var u=new P.cq([],[]).b8(H.f(a,"$iV").data,!0)
-this.a.e.$1(u)},
+this.a.f.$1(u)},
 $S:16}
 M.c7.prototype={
-bB:function(){var u,t,s,r,q=this,p="The type argument '",o="' is not a subtype of the type variable bound '",n="' of type variable 'T' in 'querySelectorAll'.",m=q.a
-m.classList.add("show-loader")
+bB:function(){var u,t,s,r,q=this,p="The type argument '",o="' is not a subtype of the type variable bound '",n="' of type variable 'T' in 'querySelectorAll'."
 q.ce()
 u=W.N
 t=document
@@ -4349,27 +4350,26 @@ r.b=H.f(t.querySelector("#color-set .modal-content"),"$iT")
 r.c=H.f(t.querySelector("#color-set .modal-header"),"$iT")
 r.d=H.f(t.querySelector("#color-set .modal-body"),"$iT")
 r.e=H.f(t.querySelector("#color-set .modal-footer"),"$iT")
-q.d=r
-q.x=t.querySelector("#back")
+q.c=r
+q.r=t.querySelector("#back")
 r=W.h
 W.P(window,"pageshow",H.e(new M.dV(q),{func:1,ret:-1,args:[r]}),!1,r)
 H.dn(s,s,p,o,n)
 s=new W.aT(t.querySelectorAll(".device-status"),[s])
 s.l(s,new M.dW(q))
-s=J.kk(q.x)
+s=J.kk(q.r)
 t=H.i(s,0)
 W.P(s.a,s.b,H.e(new M.dX(q),{func:1,ret:-1,args:[t]}),!1,t)
-J.b1(q.b,new M.dY(q))
-J.b1(q.c,new M.dZ(q))
-m.classList.remove("show-loader")},
+J.b1(q.a,new M.dY(q))
+J.b1(q.b,new M.dZ(q))},
 ce:function(){W.ix("/dev/config").F(0,new M.e_(this),P.p)},
-bq:function(){P.Q("  MAIN: Reload divice data")
+bq:function(){P.Q("  MAIN: Reload devices data")
 W.ix("/dev/data/all").F(0,new M.e2(this),P.p)},
 aw:function(a){return this.cu(a)},
 cu:function(a){var u=0,t=P.jF(null),s=[],r=this,q,p,o,n
 var $async$aw=P.jM(function(b,c){if(b===1)return P.jB(c,t)
 while(true)switch(u){case 0:try{q=H.B(C.f.cf(0,H.z(a)),"$ix",[P.d,null],"$ax")
-o=r.e
+o=r.d
 if(o.n(0,J.c1(q,"sid"))&&H.a7(J.ii(q,"data"))){p=o.i(0,J.c1(q,"sid"))
 J.b1(p,new M.e3(r,q))}}catch(m){H.a8(m)
 P.Q("error: "+H.j(a))}return P.jC(null,t)}})
@@ -4400,17 +4400,17 @@ t.k(0,"cmd","write")
 t.k(0,"sid",a)
 t.k(0,"data",P.jp([b,c],u,null))
 P.Q(t)
-this.r.aD(0,C.f.ci(t))},
-sc9:function(a,b){this.b=H.B(b,"$in",[W.N],"$an")},
-scb:function(a){this.c=H.B(a,"$in",[W.N],"$an")},
-scd:function(a){this.f=H.B(a,"$ix",[P.d,null],"$ax")}}
+this.f.aD(0,C.f.ci(t))},
+sc9:function(a,b){this.a=H.B(b,"$in",[W.N],"$an")},
+scb:function(a){this.b=H.B(a,"$in",[W.N],"$an")},
+scd:function(a){this.e=H.B(a,"$ix",[P.d,null],"$ax")}}
 M.dV.prototype={
 $1:function(a){this.a.bq()},
 $S:3}
 M.dW.prototype={
 $1:function(a){var u
 H.f(a,"$iU")
-u=this.a.e
+u=this.a.d
 a.toString
 if(u.n(0,a.getAttribute("data-"+new W.L(new W.M(a)).u("sid"))))J.ke(u.i(0,a.getAttribute("data-"+new W.L(new W.M(a)).u("sid"))),a)
 else u.k(0,a.getAttribute("data-"+new W.L(new W.M(a)).u("sid")),[a])},
@@ -4419,9 +4419,9 @@ M.dX.prototype={
 $1:function(a){var u
 H.f(a,"$iJ")
 u=this.a
-u.d.a.classList.remove("modal-show")
-u.y.d=!0
-u=u.Q.i(0,u.ch)
+u.c.a.classList.remove("modal-show")
+u.x.d=!0
+u=u.z.i(0,u.Q)
 u.Q.K(0)
 u.ch.K(0)
 u.cx.K(0)},
@@ -4447,7 +4447,7 @@ $1:function(a){var u,t
 H.f(a,"$iN")
 u=this.a
 a.toString
-u.Q.k(0,a.getAttribute("data-"+new W.L(new W.M(a)).u("sid")),M.kw(a.getAttribute("data-"+new W.L(new W.M(a)).u("sid")),u.gbs()))
+u.z.k(0,a.getAttribute("data-"+new W.L(new W.M(a)).u("sid")),M.kw(a.getAttribute("data-"+new W.L(new W.M(a)).u("sid")),u.gbs()))
 t=W.J
 W.P(a,"click",H.e(new M.dT(u,a),{func:1,ret:-1,args:[t]}),!1,t)},
 $S:18}
@@ -4455,16 +4455,16 @@ M.dT.prototype={
 $1:function(a){var u,t
 H.f(a,"$iJ")
 u=this.a
-u.y.d=!1
+u.x.d=!1
 t=this.b
 W.ix("/dev/data/"+H.j(t.getAttribute("data-"+new W.L(new W.M(t)).u("sid")))).F(0,new M.dS(u,t),P.p)
-u.d.a.classList.add("modal-show")},
+u.c.a.classList.add("modal-show")},
 $S:4}
 M.dS.prototype={
 $1:function(a){var u,t,s,r,q,p,o,n,m="rgb",l=C.f.a3(0,H.z(a),null),k=J.aX(l)
 if(H.a7(k.n(l,"sid"))){u=this.a
 t=this.b
-s=u.Q.i(0,t.getAttribute("data-"+new W.L(new W.M(t)).u("sid")))
+s=u.z.i(0,t.getAttribute("data-"+new W.L(new W.M(t)).u("sid")))
 H.B(l,"$ix",[P.d,null],"$ax")
 s.toString
 if(H.a7(k.n(l,"bright")))s.r.value=J.aH(k.i(l,"bright"))
@@ -4478,18 +4478,18 @@ n=C.e.P(q,16)&255
 P.Q(""+n+"."+o+"."+p)
 s.y.value=s.bg(n,o,p)}else if(H.a7(k.n(l,"red"))&&H.a7(k.n(l,"green"))&&H.a7(k.n(l,"blue")))s.y.value=s.bg(H.l(k.i(l,"red")),H.l(k.i(l,"green")),H.l(k.i(l,"blue")))
 s.cE()
-u.ch=t.getAttribute("data-"+new W.L(new W.M(t)).u("sid"))}},
+u.Q=t.getAttribute("data-"+new W.L(new W.M(t)).u("sid"))}},
 $S:10}
 M.e_.prototype={
 $1:function(a){var u=this.a
 u.scd(H.B(C.f.a3(0,H.z(a),null),"$ix",[P.d,null],"$ax"))
-u.r=M.l0(u.f,u.gct())},
+u.f=M.l0(u.e,u.gct())},
 $S:10}
 M.e2.prototype={
 $1:function(a){J.b1(H.j8(C.f.a3(0,H.z(a),null)),new M.e1(this.a))},
 $S:10}
 M.e1.prototype={
-$1:function(a){var u=this.a,t=u.e,s=J.al(a)
+$1:function(a){var u=this.a,t=u.d,s=J.al(a)
 if(t.n(0,s.i(a,"sid")))J.b1(t.i(0,s.i(a,"sid")),new M.e0(u,a))},
 $S:2}
 M.e0.prototype={

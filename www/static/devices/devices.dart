@@ -7,6 +7,7 @@ import '../lib/modal.dart';
 void _log(Object o) => print('  MAIN: $o');
 
 class WebSockets {
+  DivElement loader = querySelector('#loader');
   WebSocket websock;
   List<String> urls;
   String urltoken;
@@ -18,6 +19,7 @@ class WebSockets {
   bool secure;
 
   WebSockets(Map<String,dynamic> config, {Function handler = print, bool secure = false}) {
+    this.loader.classes.add('show-loader');
     this.urls = new List();
     config['servers'].forEach((e){
       this.urls.add(e);
@@ -35,6 +37,7 @@ class WebSockets {
       if (this.secret.isNotEmpty) {
         this.send(this.secret);
       }
+      this.loader.classes.remove('show-loader');
     });
 
     this.websock.onClose.listen((e) {
@@ -82,7 +85,6 @@ class WebSockets {
 }
 
 class Devices {
-  DivElement loader = querySelector('#loader');
   List<ButtonElement> buttons = new List();
   List<ButtonElement> colorSetButtons = new List();
   Modal colorSet;
@@ -96,7 +98,7 @@ class Devices {
   String activeSetter;
 
   Devices() {
-    this.loader.classes.add('show-loader');
+    
     this.connectWs();
     this.buttons = querySelectorAll('button.device-status');
     this.colorSetButtons = querySelectorAll('.color-set-button');
@@ -152,7 +154,6 @@ class Devices {
         this.colorSet.show();
       });
     });
-    this.loader.classes.remove('show-loader');
   }
 
 
