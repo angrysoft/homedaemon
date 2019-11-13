@@ -49,7 +49,9 @@ install:
 
 install_www:
 	install -v -m 755  -g $(GRP) -o $(USR) -d /var/www/angryhome
-	install -v -m 755  -g $(GRP) -o $(USR) -D www/* /var/www/angryhome
+	cp -r www/* /var/www/angryhome
+	chown -R $(GRP).$(USR) /var/www/angryhome
+	chmod -R a+r g+w /var/www/angryhome
 
 install_panel:
 	install -v -m 755  -g $(GRP) -o $(USR) -d /var/www/panel
