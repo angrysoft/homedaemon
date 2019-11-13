@@ -146,10 +146,10 @@ def logout():
     
 db = Server()
 app.secret_key = urandom(24)
-# app.config.update(
-    #     SESSION_COOKIE_SECURE=True,
-    #     SESSION_COOKIE_HTTPONLY=True,
-    #     SESSION_COOKIE_SAMESITE='Lax')
+app.config.update(
+        SESSION_COOKIE_SECURE=True,
+        SESSION_COOKIE_HTTPONLY=True,
+        SESSION_COOKIE_SAMESITE='Lax')
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', use_reloader=False) #, port=80)
