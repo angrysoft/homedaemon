@@ -75,7 +75,7 @@ class Input(BaseInput):
         except jwt.InvalidSignatureError as err:
             print(err)
         else:
-            self.clients[id(client)] = client
+            self.clients.add(client)
             return
         print('not registred')
         await client.close()
