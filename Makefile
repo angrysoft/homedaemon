@@ -52,14 +52,14 @@ install:
 install_www:
 	install -v -m 755  -g $(GRP) -o $(USR) -d /var/www/angryhome
 	cp -rv www/* /var/www/angryhome
-	chown -R $(GRP).$(USR) /var/www/angryhome
+	chown -R $(USR).$(GRP) /var/www/angryhome
 	chmod -R a+r /var/www/angryhome
 	chmod -R g+w /var/www/angryhome
 
 install_panel:
 	install -v -m 755  -g $(GRPPAN) -o $(USRPAN) -d /var/www/adminpanel
 	cp -rv panel/* /var/www/adminpanel
-	chown -R $(GRPPAN).$(USRPAN) /var/www/adminpanel
+	chown -R $(USRPAN).$(GRPPAN) /var/www/adminpanel
 	chmod -R a+r /var/www/adminpanel
 	chmod -R g+w /var/www/adminpanel
 
