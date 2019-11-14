@@ -64,10 +64,7 @@ class Input(BaseInput):
             await self._register(wsock, msg)
             return
             
-        for cli in self.clients:
-            if _id == cli:
-                continue
-            await self.clients[cli].send(msg)
+        self.queue.put(msg)
     
     def _connect_token_check(self, path):
         args = urlparse(path)
