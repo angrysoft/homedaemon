@@ -14,6 +14,7 @@ class Input(BaseInput):
         self.url = config['websocket']['ip']
         self.port = config['websocket']['port']
         self.ssl = config['websocket']['ssl']
+        self.secret = config['websocket']['secret']
         self.pemfile = config['websocket']['pem']
         self.keyfile = config['websocket']['key']
         self.urltoken = config['websocket']['urltoken']
@@ -67,7 +68,6 @@ class Input(BaseInput):
             if _id == cli:
                 continue
             await self.clients[cli].send(msg)
-        await self.updatedb(msg)
     
     def _connect_token_check(self, path):
         args = urlparse(path)
@@ -80,11 +80,11 @@ class Input(BaseInput):
     async def _register(self, client, token):
         try:
             decoded = jwt.decode(token, self.secret, algorithms='HS256')
-        except jwt.InvalidTokenError as err:
+        except jwt.InvalidSignatureError as err:
             print(err)
         except jwt.DecodeError as err:
             print(err)
-        except jwt.InvalidSignatureError as err:
+        except jwt.InvalidTokenError as err:
             print(err)
         else:
             self.clients[id(client)] = client
