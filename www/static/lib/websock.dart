@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:html';
 
 void _log(Object o) => print('  Websocket: $o');
@@ -5,7 +6,8 @@ void _log(Object o) => print('  Websocket: $o');
 class WebSockets {
   DivElement loader = querySelector('#loader');
   WebSocket websock;
-  List<String> urls;
+  String internet;
+  String localnetwork;
   String urltoken;
   String secret;
   Function handler;
@@ -15,11 +17,8 @@ class WebSockets {
   bool secure;
 
   WebSockets(Map<String,dynamic> config, {Function handler = print, bool secure = false}) {
-    this.urls = new List();
-    config['servers'].forEach((e){
-      this.urls.add(e);
-    });
-    
+    this.internet = config['internet'];
+    this.localnetwork = config['localnetwork'];
     this.handler = handler;
     this.urltoken = config['urltoken'];
     this.secret = config['secret'];
@@ -51,11 +50,25 @@ class WebSockets {
   }
 
   String geturl() {
-    if (this.curUrl >= this.urls.length) {
-      this.curUrl = 0;
+    String url = '';
+    Navigator nav = window.navigator;
+    switch(nav.connection.type) {
+      case 'wifi':
+      {
+        url = this.localnetwork;
+      }
+      break;
+      case 'cellular':
+      {
+        url = this.internet;
+      }
+      break;
+      default:
+      {
+        url = this.localnetwork;
+      }
     }
-    String url = this.urls[this.curUrl];
-    this.curUrl++;
+
     return "${url}?token=${this.urltoken}";
   }
 

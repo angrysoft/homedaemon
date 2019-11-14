@@ -22,8 +22,7 @@ class Devices {
   String activeSetter;
 
   Devices() {
-    Navigator nav = window.navigator;
-    print(nav.connection.type);
+    
     this.connectWs();
     this.buttons = querySelectorAll('button.device-status');
     this.colorSetButtons = querySelectorAll('.color-set-button');
