@@ -67,7 +67,7 @@ uninstall:
 	rm -rvf $(DESTDIR)/etc/angryhome
 	./uninstall.py
 
-unistall_www:
+uninstall_www:
 	rm -rvf $(DESTDIR)/var/www/angryhome
 
 uninstall_panel:
