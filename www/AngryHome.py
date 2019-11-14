@@ -67,7 +67,8 @@ def dev_conf():
     ret = db['config']['websocket']
     config = {'urltoken': ret['urltoken'],
               'secret': jwt.encode({'api':'1.0', 'client': 'browser'}, ret['secret'], algorithm='HS256').decode(),
-              'servers': ret['servers']}
+              'internet': ret['internet'],
+              'localnetwork': ret['localnetwork']}
     config.update(ret['webserver'])
     return json.dumps(config)
 

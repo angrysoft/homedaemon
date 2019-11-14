@@ -68,7 +68,7 @@ class WebSockets {
         url = this.localnetwork;
       }
     }
-
+    print('url: ${url}?token=${this.urltoken}');
     return "${url}?token=${this.urltoken}";
   }
 
