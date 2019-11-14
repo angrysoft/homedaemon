@@ -8,6 +8,7 @@ import '../lib/websock.dart';
 void _log(Object o) => print('  MAIN: $o');
 
 class Devices {
+  
   List<ButtonElement> buttons = new List();
   List<ButtonElement> colorSetButtons = new List();
   Modal colorSet;
@@ -21,19 +22,23 @@ class Devices {
   String activeSetter;
 
   Devices() {
-    
+    Navigator nav = window.navigator;
+    print(nav.connection.type);
     this.connectWs();
     this.buttons = querySelectorAll('button.device-status');
     this.colorSetButtons = querySelectorAll('.color-set-button');
     this.colorSet = new Modal.fromHtml('color-set');
     this.back = querySelector('#back');
     
-    // this.getDevicesStatus();
     window.onPageShow.listen((event) {
       this.getDevicesStatus();
     });
 
-    document.onVisibilityChange.listen((event) => this.getDevicesStatus());
+    document.onVisibilityChange.listen((event) {
+      if (! document.hidden) {
+        this.getDevicesStatus();
+      }
+    });
 
     querySelectorAll('.device-status').forEach((dev) {
       if (this.deviceStatus.containsKey(dev.dataset['sid'])) {

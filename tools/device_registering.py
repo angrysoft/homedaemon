@@ -38,7 +38,8 @@ class Register:
                       '158d0002a67612': 'Bedroom window',
                       'tv01': 'Bravia',
                       'rgb01': 'Tv Rgb',
-                      '7c49eb17b2a0': 'Gateway'}
+                      '7c49eb17b2a0': 'Gateway',
+                      'timer': 'clock'}
 
     def clear_db(self):
         print('Remove all device and device data')
@@ -83,6 +84,8 @@ class Register:
         list_devs.append({'cmd': 'write', 'model': 'bravia', 'sid': 'tv01', 'ip': '192.168.1.129',
                           'mac': 'FC:F1:52:2A:9B:1E',
                           'data': {'button': ''}})
+        list_devs.append({'cmd': 'report', 'model': 'timer',
+                          'sid': 'timer', 'data': {'dummy': 0}})
         print('Find custom devices')
         ye.discover()
         print('find yeelight devices')
