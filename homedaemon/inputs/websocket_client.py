@@ -46,6 +46,9 @@ class Input(BaseInput):
     
     def exception_handler(self, loop, context):
         print(f'Exception {context}')
+        self.restart()
+        
+    def restart(self):
         try:
             self._reader_task.cancel()
             self._conn_task.cancel()
@@ -61,7 +64,8 @@ class Input(BaseInput):
             await self.websocket.send(msg)
         else:
             print('cos sie zesrało z połączniem')
-            raise ConnectionError
+            self.restart()
+            # raise ConnectionError
     
     async def stop(self):
         if self.websocket:
