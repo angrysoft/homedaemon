@@ -45,6 +45,7 @@ class Input(BaseInput):
     
     def exception_handler(self, loop, context):
         print(f'Exception {context}')
+        self.loop.create_task(self.websocket.close())
     
     async def send(self, msg):
         await self.websocket.send(msg)
