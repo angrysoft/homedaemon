@@ -414,7 +414,7 @@ Future main() async {
         .subscribe(new sw.PushSubscriptionOptions(userVisibleOnly: true));
     _log('endpoint: ${subs.endpoint}');
   } on DomException catch (e) {
-    _log('Error: Adding push subscription failed.');
+    _log('Error: Adding push subscription failed. ${e}');
     _log('       See github.com/isoos/service_worker/issues/10');
   }
 }

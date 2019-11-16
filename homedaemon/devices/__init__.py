@@ -120,7 +120,7 @@ class ButtonToggleOnOff(ButtonOnOff):
         self.write({'data': {self.name: 'toggle'}})
 
 class TimerDev(BaseDevice):
-    def do(self):
+    def do(self, data):
         pass
     
     

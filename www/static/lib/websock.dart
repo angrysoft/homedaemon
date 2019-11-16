@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:html';
 
 void _log(Object o) => print('  Websocket: $o');

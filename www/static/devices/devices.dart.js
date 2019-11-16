@@ -186,7 +186,7 @@ bg:function(a){throw H.b(P.aI(a))},
 ax:function(a){var u,t,s,r,q,p
 a=H.lC(a.replace(String({}),'$receiver$'))
 u=a.match(/\\\$[a-zA-Z]+\\\$/g)
-if(u==null)u=H.P([],[P.d])
+if(u==null)u=H.Q([],[P.d])
 t=u.indexOf("\\$arguments\\$")
 s=u.indexOf("\\$argumentsExpr\\$")
 r=u.indexOf("\\$expr\\$")
@@ -418,7 +418,7 @@ lc:function(a){throw H.b(new H.fN(a))},
 lD:function(a){throw H.b(new P.dO(a))},
 kO:function(a){return new H.f2(a)},
 jK:function(a){return v.getIsolateTag(a)},
-P:function(a,b){a.$ti=b
+Q:function(a,b){a.$ti=b
 return a},
 aY:function(a){if(a==null)return
 return a.$ti},
@@ -446,7 +446,7 @@ if('futureOr' in a)return"FutureOr<"+H.aU("type" in a?a.type:null,b)+">"
 return"unknown-reified-type"},
 l3:function(a,a0){var u,t,s,r,q,p,o,n,m,l,k,j,i,h,g,f,e,d,c,b=", "
 if("bounds" in a){u=a.bounds
-if(a0==null){a0=H.P([],[P.d])
+if(a0==null){a0=H.Q([],[P.d])
 t=null}else t=a0.length
 s=a0.length
 for(r=u.length,q=r;q>0;--q)C.a.l(a0,"T"+(s+q))
@@ -759,7 +759,7 @@ if(u==null)return C.p
 if(u===Object.prototype)return C.p
 if(typeof s=="function"){Object.defineProperty(s,$.j3(),{value:C.i,enumerable:false,writable:true,configurable:true})
 return C.i}return C.i},
-ku:function(a,b){return J.jb(H.P(a,[b]))},
+ku:function(a,b){return J.jb(H.Q(a,[b]))},
 jb:function(a){a.fixed$length=Array
 return a},
 jc:function(a){if(a<256)switch(a){case 9:case 10:case 11:case 12:case 13:case 32:case 133:case 160:return!0
@@ -1017,7 +1017,7 @@ hK:function hK(a){this.a=a},
 hN:function hN(a){this.a=a},
 fU:function fU(a,b){this.a=a
 this.$ti=b},
-Q:function Q(a,b,c,d){var _=this
+R:function R(a,b,c,d){var _=this
 _.dx=0
 _.fr=_.dy=null
 _.x=a
@@ -1137,7 +1137,7 @@ u.c=a.e
 return u},
 kt:function(a,b,c){var u,t
 if(P.iU(a)){if(b==="("&&c===")")return"(...)"
-return b+"..."+c}u=H.P([],[P.d])
+return b+"..."+c}u=H.Q([],[P.d])
 C.a.l($.Z,a)
 try{P.l4(a,u)}finally{if(0>=$.Z.length)return H.v($.Z,-1)
 $.Z.pop()}t=P.jl(b,H.lv(u,"$io"),", ")+c
@@ -1264,7 +1264,7 @@ if(u!=null)return u
 throw H.b(P.ij(a,null))},
 kq:function(a){if(a instanceof H.bm)return a.j(0)
 return"Instance of '"+H.i(H.bC(a))+"'"},
-kA:function(a,b,c){var u,t=H.P([],[c])
+kA:function(a,b,c){var u,t=H.Q([],[c])
 for(u=J.i7(a);u.v();)C.a.l(t,H.u(u.gA(u),c))
 return t},
 kN:function(a){return new H.ej(a,H.kx(a,!1,!0,!1,!1,!1))},
@@ -1301,7 +1301,7 @@ iO:function(a){return new P.fA(a)},
 ff:function(a){return new P.b4(a)},
 aI:function(a){return new P.dF(a)},
 ij:function(a,b){return new P.ea(a,b)},
-R:function(a){H.lz(H.i(a))},
+P:function(a){H.lz(H.i(a))},
 eN:function eN(a,b){this.a=a
 this.b=b},
 ba:function ba(){},
@@ -1650,8 +1650,8 @@ eW:function eW(a){this.a=a},
 eX:function eX(){},
 b3:function b3(a){this.a=a},
 f4:function f4(a){this.a=a}},M={
-kp:function(){var u,t,s=[W.O],r=H.P([],s)
-s=H.P([],s)
+kp:function(){var u,t,s=[W.O],r=H.Q([],s)
+s=H.Q([],s)
 u=P.d
 t=M.kQ()
 s=new M.c4(r,s,new H.a8([u,[P.n,,]]),t,new H.a8([u,M.c2]))
@@ -1664,41 +1664,43 @@ return u},
 kQ:function(){var u=new M.fn()
 u.bB({})
 return u},
-bd:function(){var u=0,t=P.jw(null),s,r=2,q,p=[],o,n,m,l,k,j,i
+bd:function(){var u=0,t=P.jw(null),s,r=2,q,p=[],o,n,m,l,k,j,i,h
 var $async$bd=P.jD(function(a,b){if(a===1){q=b
 u=r}while(true)switch(u){case 0:M.kp()
-m=$.jT()
-if(m==null){P.R("  MAIN: ServiceWorkers are not supported.")
+l=$.jT()
+if(l==null){P.P("  MAIN: ServiceWorkers are not supported.")
 u=1
 break}u=3
-return P.iR(m.cs(0,"/static/devices/sw.dart.js",null),$async$bd)
-case 3:P.R("  MAIN: registered")
+return P.iR(l.cs(0,"/static/devices/sw.dart.js",null),$async$bd)
+case 3:P.P("  MAIN: registered")
 u=4
-return P.iR(m.gcp(m),$async$bd)
+return P.iR(l.gcp(l),$async$bd)
 case 4:o=b
-P.R("  MAIN: ready")
-m.gcn(m).cl(new M.hY())
-l="Sample message: "+new P.bq(Date.now(),!1).j(0)
-P.R("  MAIN: "+("Sending message: `"+l+"`"))
-m=L.kP(H.i3(o.a.active,null))
-m=m.a
-H.i3(m.postMessage.apply(m,[l]),null)
-P.R("  MAIN: "+("Message sent: `"+l+"`"))
+P.P("  MAIN: ready")
+l.gcn(l).cl(new M.hY())
+k="Sample message: "+new P.bq(Date.now(),!1).j(0)
+P.P("  MAIN: "+("Sending message: `"+k+"`"))
+l=L.kP(H.i3(o.a.active,null))
+l=l.a
+H.i3(l.postMessage.apply(l,[k]),null)
+P.P("  MAIN: "+("Message sent: `"+k+"`"))
 r=6
-m=o
-k=m.b
-m=k==null?m.b=new L.eW(H.i3(m.a.pushManager,null)):k
+l=o
+j=l.b
+l=j==null?l.b=new L.eW(H.i3(l.a.pushManager,null)):j
 u=9
-return P.iR(m.bt(0,{userVisibleOnly:!0}),$async$bd)
+return P.iR(l.bt(0,{userVisibleOnly:!0}),$async$bd)
 case 9:n=b
-P.R("  MAIN: "+("endpoint: "+H.i(H.i3(n.a.endpoint,null))))
+P.P("  MAIN: "+("endpoint: "+H.i(H.i3(n.a.endpoint,null))))
 r=2
 u=8
 break
 case 6:r=5
-i=q
-if(!!J.E(H.ak(i)).$ibr){P.R("  MAIN: Error: Adding push subscription failed.")
-P.R("  MAIN:        See github.com/isoos/service_worker/issues/10")}else throw i
+h=q
+l=H.ak(h)
+if(!!J.E(l).$ibr){m=l
+P.P("  MAIN: "+("Error: Adding push subscription failed. "+H.i(m)))
+P.P("  MAIN:        See github.com/isoos/service_worker/issues/10")}else throw h
 u=8
 break
 case 5:u=2
@@ -2311,15 +2313,15 @@ P.hN.prototype={
 $2:function(a,b){this.a(H.k(a),b)},
 $S:20}
 P.fU.prototype={}
-P.Q.prototype={
+P.R.prototype={
 ai:function(){},
 aj:function(){},
-sM:function(a){this.dy=H.C(a,"$iQ",this.$ti,"$aQ")},
-sV:function(a){this.fr=H.C(a,"$iQ",this.$ti,"$aQ")}}
+sM:function(a){this.dy=H.C(a,"$iR",this.$ti,"$aR")},
+sV:function(a){this.fr=H.C(a,"$iR",this.$ti,"$aR")}}
 P.bI.prototype={
 gaf:function(){return this.c<4},
 bX:function(a){var u,t
-H.C(a,"$iQ",this.$ti,"$aQ")
+H.C(a,"$iR",this.$ti,"$aR")
 u=a.fr
 t=a.dy
 if(u==null)this.saU(t)
@@ -2337,11 +2339,11 @@ o.bZ()
 return o}u=$.A
 t=d?1:0
 s=p.$ti
-r=new P.Q(p,u,t,s)
+r=new P.R(p,u,t,s)
 r.bC(a,b,c,d,o)
 r.sV(r)
 r.sM(r)
-H.C(r,"$iQ",s,"$aQ")
+H.C(r,"$iR",s,"$aR")
 r.dx=p.c&1
 q=p.e
 p.saW(r)
@@ -2372,8 +2374,8 @@ t=r}else t=t.dy}q.c&=4294967293
 if(q.d==null)q.aL()},
 aL:function(){if((this.c&4)!==0&&null.gcG())null.a8(null)
 P.jA(this.b)},
-saU:function(a){this.d=H.C(a,"$iQ",this.$ti,"$aQ")},
-saW:function(a){this.e=H.C(a,"$iQ",this.$ti,"$aQ")},
+saU:function(a){this.d=H.C(a,"$iR",this.$ti,"$aR")},
+saW:function(a){this.e=H.C(a,"$iR",this.$ti,"$aR")},
 $ilY:1,
 $ib6:1}
 P.hC.prototype={
@@ -2901,7 +2903,7 @@ if(typeof r=="undefined"){r=P.hL(q.a[s])
 q.b[s]=r}b.$2(s,r)
 if(u!==q.c)throw H.b(P.aI(q))}},
 T:function(){var u=H.iZ(this.c)
-if(u==null)u=this.c=H.P(Object.keys(this.a),[P.d])
+if(u==null)u=this.c=H.Q(Object.keys(this.a),[P.d])
 return u},
 bT:function(a){var u
 if(!Object.prototype.hasOwnProperty.call(this.a,a))return
@@ -3358,7 +3360,7 @@ u=a.entries()
 for(;!0;){t=u.next()
 if(t.done)return
 b.$2(t.value[0],P.a2(t.value[1]))}},
-gu:function(a){var u=H.P([],[P.d])
+gu:function(a){var u=H.Q([],[P.d])
 this.n(a,new W.eB(u))
 return u},
 gh:function(a){return a.size},
@@ -3378,7 +3380,7 @@ u=a.entries()
 for(;!0;){t=u.next()
 if(t.done)return
 b.$2(t.value[0],P.a2(t.value[1]))}},
-gu:function(a){var u=H.P([],[P.d])
+gu:function(a){var u=H.Q([],[P.d])
 this.n(a,new W.eD(u))
 return u},
 gh:function(a){return a.size},
@@ -3464,7 +3466,7 @@ u=a.entries()
 for(;!0;){t=u.next()
 if(t.done)return
 b.$2(t.value[0],P.a2(t.value[1]))}},
-gu:function(a){var u=H.P([],[P.d])
+gu:function(a){var u=H.Q([],[P.d])
 this.n(a,new W.f1(u))
 return u},
 gh:function(a){return a.size},
@@ -3527,7 +3529,7 @@ H.h(b,{func:1,ret:-1,args:[P.d,P.d]})
 for(u=0;!0;++u){t=a.key(u)
 if(t==null)return
 b.$2(t,a.getItem(t))}},
-gu:function(a){var u=H.P([],[P.d])
+gu:function(a){var u=H.Q([],[P.d])
 this.n(a,new W.fi(u))
 return u},
 gh:function(a){return a.length},
@@ -3736,7 +3738,7 @@ n:function(a,b){var u,t,s,r,q
 H.h(b,{func:1,ret:-1,args:[P.d,P.d]})
 for(u=this.gu(this),t=u.length,s=this.a,r=0;r<u.length;u.length===t||(0,H.bg)(u),++r){q=u[r]
 b.$2(q,s.getAttribute(q))}},
-gu:function(a){var u,t,s,r=this.a.attributes,q=H.P([],[P.d])
+gu:function(a){var u,t,s,r=this.a.attributes,q=H.Q([],[P.d])
 for(u=r.length,t=0;t<u;++t){if(t>=r.length)return H.v(r,t)
 s=H.e(r[t],"$ibH")
 if(s.namespaceURI==null)C.a.l(q,s.name)}return q},
@@ -3751,12 +3753,12 @@ W.L.prototype={
 m:function(a,b){return this.a.a.hasAttribute("data-"+this.t(b))},
 i:function(a,b){return this.a.a.getAttribute("data-"+this.t(H.x(b)))},
 n:function(a,b){this.a.n(0,new W.fY(this,H.h(b,{func:1,ret:-1,args:[P.d,P.d]})))},
-gu:function(a){var u=H.P([],[P.d])
+gu:function(a){var u=H.Q([],[P.d])
 this.a.n(0,new W.fZ(this,u))
 return u},
 gh:function(a){return this.gu(this).length},
 gw:function(a){return this.gu(this).length===0},
-b1:function(a){var u,t,s=H.P(a.split("-"),[P.d])
+b1:function(a){var u,t,s=H.Q(a.split("-"),[P.d])
 for(u=1;u<s.length;++u){t=s[u]
 if(t.length>0)C.a.k(s,u,t[0].toUpperCase()+J.kc(t,1))}return C.a.P(s,"")},
 t:function(a){var u,t,s,r,q
@@ -4034,7 +4036,7 @@ u=a.entries()
 for(;!0;){t=u.next()
 if(t.done)return
 b.$2(t.value[0],P.a2(t.value[1]))}},
-gu:function(a){var u=H.P([],[P.d])
+gu:function(a){var u=H.Q([],[P.d])
 this.n(a,new P.dv(u))
 return u},
 gh:function(a){return a.size},
@@ -4178,7 +4180,7 @@ W.N(s.a,s.b,H.h(new M.dW(q),{func:1,ret:-1,args:[t]}),!1,t)
 J.bi(q.a,new M.dX(q))
 J.bi(q.b,new M.dY(q))},
 cb:function(){W.im("/dev/config").F(0,new M.dZ(this),P.p)},
-aB:function(){P.R("  MAIN: Reload devices data")
+aB:function(){P.P("  MAIN: Reload devices data")
 W.im("/dev/data/all").F(0,new M.e1(this),P.p)},
 av:function(a){return this.cr(a)},
 cr:function(a){var u=0,t=P.jw(null),s=[],r=this,q,p,o,n
@@ -4187,7 +4189,7 @@ while(true)switch(u){case 0:try{q=H.C(C.f.cc(0,H.x(a)),"$iw",[P.d,null],"$aw")
 o=r.d
 if(o.m(0,J.bZ(q,"sid"))&&H.a1(J.i6(q,"data"))){p=o.i(0,J.bZ(q,"sid"))
 J.bi(p,new M.e2(r,q))}}catch(m){H.ak(m)
-P.R("error: "+H.i(a))}return P.jt(null,t)}})
+P.P("error: "+H.i(a))}return P.jt(null,t)}})
 return P.ju($async$av,t)},
 bj:function(a,b){switch(J.bZ(b,a.getAttribute("data-"+new W.L(new W.M(a)).t("status")))){case"on":a.classList.add("orange")
 a.value=a.textContent="off"
@@ -4292,7 +4294,7 @@ if(typeof q!=="number")return q.cD()
 p=q&255
 o=C.e.N(q,8)&255
 n=C.e.N(q,16)&255
-P.R(""+n+"."+o+"."+p)
+P.P(""+n+"."+o+"."+p)
 s.y.value=s.bf(n,o,p)}else if(H.a1(k.m(l,"red"))&&H.a1(k.m(l,"green"))&&H.a1(k.m(l,"blue")))s.y.value=s.bf(H.k(k.i(l,"red")),H.k(k.i(l,"green")),H.k(k.i(l,"blue")))
 s.cA()
 u.Q=t.getAttribute("data-"+new W.L(new W.M(t)).t("sid"))}},
@@ -4363,7 +4365,7 @@ q=s.y
 q.toString
 s.cx=W.N(q,r,H.h(new M.dE(s),t),!1,u)},
 bf:function(a,b,c){var u="#"+C.b.au(J.i8(a,16),2,"0")+C.b.au(J.i8(b,16),2,"0")+C.b.au(J.i8(c,16),2,"0")
-P.R(u)
+P.P(u)
 return u}}
 M.dA.prototype={
 $1:function(a){var u
@@ -4381,7 +4383,7 @@ u.e.classList.remove("show")},
 $S:4}
 M.dC.prototype={
 $1:function(a){var u,t=this.a,s=t.r.value
-P.R(t.a)
+P.P(t.a)
 u=t.a
 t.z.$3(u,"set_bright",s)},
 $S:3}
@@ -4455,7 +4457,7 @@ M.fo.prototype={
 $1:function(a){J.k8(H.e(a,"$iU")).a2(0,"active")},
 $S:14}
 M.hY.prototype={
-$1:function(a){P.R("  MAIN: "+("reply received: "+H.i(new P.co([],[]).b7(H.e(a,"$iV").data,!0))))},
+$1:function(a){P.P("  MAIN: "+("reply received: "+H.i(new P.co([],[]).b7(H.e(a,"$iV").data,!0))))},
 $S:17}
 D.eF.prototype={}
 S.cn.prototype={
@@ -4465,7 +4467,8 @@ switch(window.navigator.connection.type){case"wifi":u=p.d
 break
 case"cellular":u=p.c
 break
-default:u=p.d}t=W.kR(H.i(u)+"?token="+H.i(p.e))
+default:u=p.d}P.P("url: "+H.i(u)+"?token="+H.i(p.e))
+t=W.kR(H.i(u)+"?token="+H.i(p.e))
 p.b=t
 s=W.f
 r={func:1,ret:-1,args:[s]}
@@ -4496,7 +4499,7 @@ aD:function(a,b){var u=this.b
 if(u!=null&&u.readyState===1)u.send(b)}}
 S.fG.prototype={
 $1:function(a){var u,t
-P.R("  Websocket: Connected!")
+P.P("  Websocket: Connected!")
 u=this.a
 t=u.f
 if(t.length!==0)u.aD(0,t)
@@ -4504,7 +4507,7 @@ u.a.classList.remove("show-loader")},
 $S:3}
 S.fH.prototype={
 $1:function(a){H.e(a,"$iaz")
-P.R("  Websocket: Close")
+P.P("  Websocket: Close")
 C.j.gam(window).F(0,this.a.gbr(),-1)},
 $S:36}
 S.fI.prototype={
@@ -4566,7 +4569,7 @@ s(P.bD,[P.hz,W.h2])
 t(P.cs,P.hz)
 t(P.fU,P.cs)
 t(P.fV,P.aR)
-t(P.Q,P.fV)
+t(P.R,P.fV)
 t(P.hC,P.bI)
 s(P.cr,[P.bG,P.hE])
 t(P.h_,P.h0)
@@ -4851,7 +4854,7 @@ C.d=new P.ht()
 C.B=new P.en(null)
 C.C=new P.eo(null)
 C.m=u([])
-C.D=H.P(u([]),[P.au])
+C.D=H.Q(u([]),[P.au])
 C.n=new H.dI(0,{},C.D,[P.au,null])
 C.E=new H.bE("call")})();(function staticFields(){$.am=0
 $.bl=null

@@ -28,6 +28,7 @@ class Input(BaseInput):
     async def reader(self):
         while self.loop.is_running():
             msg = await self.websocket.recv()
+            print(f'wsock cli {msg}')
             self.queue.put(msg)
     
     async def connect(self):
@@ -40,10 +41,11 @@ class Input(BaseInput):
                     self._reader_task = self.loop.create_task(self.reader())
                     break
             except OSError:
+                print('websock cli reconnect')
                 await asyncio.sleep(5)
     
     def exception_handler(self, loop, context):
-        self.queue.put({'sid': 'logger', 'data': {'msg':f'exception from input :{context}'}})
+        print(f'Exception {context}')
         try:
             self._reader_task.cancel()
             self._conn_task.cancel()
@@ -64,6 +66,14 @@ class Input(BaseInput):
     async def stop(self):
         if self.websocket:
             await self.websocket.close()
+            await self.websocket.wait_closed()
+        await self.loop.close()
+    
+    def run(self):
+        try:
+            self.loop.run_forever()
+        except KeyboardInterrupt:
+            self.loop.run_until_complete(self.stop())
      
     def __del__(self):
         if self.websocket:
