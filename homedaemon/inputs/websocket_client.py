@@ -33,16 +33,20 @@ class Input(BaseInput):
     
     async def connect(self):
         while self.loop.is_running():
+            if self.websocket and self.websocket.open:
+                await asyncio.sleep(5)
+                continue
             try:
+                print('websock cli connect')
                 self.websocket = await websockets.connect(self.uri)
                 if self.websocket.open:
                     encoded = jwt.encode({'api':'1.0', 'client': 'homed'}, self.secret, algorithm='HS256')
                     await self.websocket.send(encoded.decode())
+                    if self._reader_task:
+                        self._reader_task.cancel()
                     self._reader_task = self.loop.create_task(self.reader())
-                    break
             except OSError:
-                print('websock cli reconnect')
-                await asyncio.sleep(5)
+                await asyncio.sleep(3)
     
     def exception_handler(self, loop, context):
         print(f'Exception {context}')
@@ -60,12 +64,7 @@ class Input(BaseInput):
         self._conn_task = self.loop.create_task(self.connect())
     
     async def send(self, msg):
-        # if self.websocket and self.websocket.open:
         await self.websocket.send(msg)
-        # else:
-            # print('cos sie zesrało z połączniem')
-            # self.restart()
-            # raise ConnectionError
     
     async def stop(self):
         if self.websocket:
