@@ -25,7 +25,6 @@ class Input(BaseInput):
     async def reader(self):
         while self.loop.is_running():
             msg = await self.websocket.recv()
-            print(f'wsock cli {msg}')
             self.queue.put(msg)
     
     async def connect(self):
