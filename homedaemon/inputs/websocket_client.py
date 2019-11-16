@@ -60,11 +60,11 @@ class Input(BaseInput):
         self._conn_task = self.loop.create_task(self.connect())
     
     async def send(self, msg):
-        if self.websocket and self.websocket.open:
-            await self.websocket.send(msg)
-        else:
-            print('cos sie zesrało z połączniem')
-            self.restart()
+        # if self.websocket and self.websocket.open:
+        await self.websocket.send(msg)
+        # else:
+            # print('cos sie zesrało z połączniem')
+            # self.restart()
             # raise ConnectionError
     
     async def stop(self):
