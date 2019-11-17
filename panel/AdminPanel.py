@@ -36,6 +36,7 @@ import operator
 from os import urandom
 from hashlib import sha256
 from time import sleep
+import subprocess
 app = Flask(__name__)
 
 
@@ -85,7 +86,7 @@ def logout():
     return redirect(url_for('login'))
 
 
-@app.route('config', methods=['GET', 'POST'])
+@app.route('/config', methods=['GET', 'POST'])
 @login_required
 def admin_config():
     if request.method == 'POST':
@@ -95,12 +96,32 @@ def admin_config():
         return render_template('config.html', config=config)
 
 
-@app.route('devices')
+@app.route('/devices')
 @login_required
 def admin_devices():
     devs = [d for d in db['devices']]
     return render_template('devices.html', devices=sorted(devs, key=operator.itemgetter('name')))
 
+@app.route('/system/restart', methods=['GET', 'POST'])
+def system_restart():
+    if request.method == 'GET':
+        return request.args.get('status', 'ooops something is wrong')
+    elif request.method == 'POST':
+        subprocess.call(['systemctl', 'restart', 'homed.service'])
+        subprocess.call(['systemctl', 'restart', 'emperor.uwsgi.service'])
+        status = 'ok'
+        return redirect(f'/system/restart?status={status}')
+    
+    
+@app.route('/system/reboot', methods=['GET', 'POST'])
+def system_reboot():
+    if request.method == 'GET':
+        return request.args.get('status', 'ooops something is wrong')
+    elif request.method == 'POST':
+        subprocess.call(['systemctl', 'reboot', '-i'])
+        status = 'ok'
+        return redirect(f'/system/restart?status={status}')
+    
 
 db = Server()
 app.secret_key = urandom(24)
