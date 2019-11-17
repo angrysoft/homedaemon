@@ -111,12 +111,14 @@ class ButtonOnOff:
 
     def off(self):
         self.write({'data': {self.name: 'off'}})
+    
+    def toggle(self):
+        self.write({'data': {self.name: 'toggle'}})
 
 
 class ButtonToggleOnOff(ButtonOnOff):
 
     def toggle(self):
-        print('toogle')
         self.write({'data': {self.name: 'toggle'}})
 
 class TimerDev(BaseDevice):

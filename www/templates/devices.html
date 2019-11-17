@@ -24,7 +24,7 @@
   <script defer src="/static/devices/devices.dart.js" type="text/javascript"></script>
 </head>
 <body>
-{% from 'deviceswidgets.html' import ctrl_neutral1, ctrl_neutral2, plug, bslamp1, rgbstrip, color, loader %}
+{% from 'deviceswidgets.html' import ctrl_neutral1, ctrl_neutral2, plug, bslamp1, rgbstrip, color, tv, loader %}
 {% from 'deviceswidgets.html' import sensor_ht, weather_v1, sensor_motion_aq2, magnet %}
 {% from 'deviceswidgets.html' import colorset %}
 {% from 'deviceswidgets.html' import scene %}
@@ -52,6 +52,8 @@
       {{ rgbstrip(d) }}
       {% elif d.get('model') == 'color' %}
       {{ color(d) }}
+      {% elif d.get('model') == 'bravia' %}
+      {{ tv(d) }}
       {% endif %}
     {% endfor %}
     </div>
