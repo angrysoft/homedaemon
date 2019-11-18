@@ -15,42 +15,45 @@ class Input(BaseInput):
         self.port = config['websocket']['port']
         self.ssl = config['websocket']['ssl']
         self.secret = config['websocket']['secret']
-        pemfile = config['websocket']['pem']
-        keyfile = config['websocket']['key']
         self.urltoken = config['websocket']['urltoken']
         self.clients = set()
         self.server = None
         self.srv = None
-        if pemfile and keyfile:
-            context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-            context.load_cert_chain(pemfile, keyfile)
-            server = websockets.serve(self._handler, self.url, self.port, ssl=context)
+        if 'pem' in config['websocket'] and 'key' in config['websocket']:
+            self.pemfile = config['websocket']['pem']
+            self.keyfile = config['websocket']['key']
+            self.ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+            self.ssl_context.load_cert_chain(pemfile, keyfile)
+        self.loop.create_task(self.watch_server())
+        self.start_server()
+    
+    async def watch_server(self):
+        while self.loop.is_running():
+            await asyncio.sleep(15)
+            if not self.server.ws_server.is_serving():
+                self.restart_server()
+
+    def restart_server(self):
+        print('Restarting server')
+        self.loop.stop()
+        self.clients.clear()
+        del self.server
+        self.server = None
+        self.start_server()
+
+
+    def start_server(self):
+        print('Starting websocket server')
+        if self.ssl:
+            self.server = websockets.serve(self._handler, self.url, self.port,
+                                           ssl=self.ssl_context)
         else:
-            server = websockets.serve(self._handler, self.url, self.port)
-        self.loop.run_until_complete(server)
-
-    # def restart_server(self):
-    #     print('Restarting server')
-    #     self.loop.stop()
-    #     self.clients.clear()
-    #     del self.server
-    #     self.server = None
-    #     self.start_server()
-
-
-    # def start_server(self):
-    #     print('Starting websocket server')
-    #     if self.ssl:
-    #         context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-    #         context.load_cert_chain(self.pemfile, self.keyfile)
-    #         self.server = websockets.serve(self._handler, self.url, self.port, ssl=context)
-    #     else:
-    #         self.server = websockets.serve(self._handler, self.url, self.port)
-    #     self.srv = self.loop.run_until_complete(self.server)
+            self.server = websockets.serve(self._handler, self.url, self.port)
+        self.srv = self.loop.run_until_complete(self.server)
 
     def exception_handler(self, loop, context):
         print(f'exception from input :{context}')
-        self.restart_server()
+        # self.restart_server()
 
     async def _handler(self, websocket, path):
         if not self._connect_token_check(path):
