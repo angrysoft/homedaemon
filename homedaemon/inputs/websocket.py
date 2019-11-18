@@ -24,7 +24,7 @@ class Input(BaseInput):
             keyfile = config['websocket']['key']
             self.ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
             self.ssl_context.load_cert_chain(pemfile, keyfile)
-        self.loop.create_task(self.watch_server())
+        # self.loop.create_task(self.watch_server())
         self.start_server()
     
     async def watch_server(self):
