@@ -20,8 +20,8 @@ class Input(BaseInput):
         self.server = None
         self.srv = None
         if 'pem' in config['websocket'] and 'key' in config['websocket']:
-            self.pemfile = config['websocket']['pem']
-            self.keyfile = config['websocket']['key']
+            pemfile = config['websocket']['pem']
+            keyfile = config['websocket']['key']
             self.ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
             self.ssl_context.load_cert_chain(pemfile, keyfile)
         self.loop.create_task(self.watch_server())
