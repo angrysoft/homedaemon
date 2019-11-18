@@ -18,30 +18,37 @@ class Input(BaseInput):
         self.pemfile = config['websocket']['pem']
         self.keyfile = config['websocket']['key']
         self.urltoken = config['websocket']['urltoken']
-        self.clients = dict()
+        self.clients = set()
         self.server = None
         self.srv = None
-        self.loop.set_exception_handler(self.exception_handler)
-        self.start_server()
-
-    def restart_server(self):
-        print('Restarting server')
-        self.loop.stop()
-        self.clients.clear()
-        del self.server
-        self.server = None
-        self.start_server()
-
-
-    def start_server(self):
-        print('Starting websocket server')
-        if self.ssl:
+        if 'pem' in self.config and 'key' in self.config:
+            pemfile = self.config['pem']
+            keyfile = self.config['key']
             context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-            context.load_cert_chain(self.pemfile, self.keyfile)
-            self.server = websockets.serve(self._handler, self.url, self.port, ssl=context)
+            context.load_cert_chain(pemfile, keyfile)
+            server = websockets.serve(self._handler, self.url, self.port, ssl=context)
         else:
-            self.server = websockets.serve(self._handler, self.url, self.port)
-        self.srv = self.loop.run_until_complete(self.server)
+            server = websockets.serve(self._handler, self.url, self.port)
+        self.loop.run_until_complete(server)
+
+    # def restart_server(self):
+    #     print('Restarting server')
+    #     self.loop.stop()
+    #     self.clients.clear()
+    #     del self.server
+    #     self.server = None
+    #     self.start_server()
+
+
+    # def start_server(self):
+    #     print('Starting websocket server')
+    #     if self.ssl:
+    #         context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    #         context.load_cert_chain(self.pemfile, self.keyfile)
+    #         self.server = websockets.serve(self._handler, self.url, self.port, ssl=context)
+    #     else:
+    #         self.server = websockets.serve(self._handler, self.url, self.port)
+    #     self.srv = self.loop.run_until_complete(self.server)
 
     def exception_handler(self, loop, context):
         print(f'exception from input :{context}')
@@ -84,15 +91,15 @@ class Input(BaseInput):
         except jwt.InvalidTokenError as err:
             print(err)
         else:
-            self.clients[id(client)] = client
+            self.clients.add(client)
             return
         print('not registred')
         await client.close()
 
     async def _unregister(self, client):
+        await client.close()
         try:
-            self.clients.pop(id(client))
-            await client.close()
+            self.clients.discard(client)
         except KeyError:
             pass
 

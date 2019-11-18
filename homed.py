@@ -190,9 +190,10 @@ class Queue:
 if __name__ == '__main__':
     if len(sys.argv) < 2:
         logger.addHandler(JournalHandler())
-    else:
         logger.setLevel(logging.DEBUG)
+    else:
+        
         logging.basicConfig(filename="home.log")
-    hd = HomeDaemon()
     
+    hd = HomeDaemon()
     hd.run()
