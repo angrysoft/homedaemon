@@ -53,7 +53,7 @@ class Input(BaseInput):
 
     def exception_handler(self, loop, context):
         print(f'exception from input :{context}')
-        # self.restart_server()
+        self.restart_server()
 
     async def _handler(self, websocket, path):
         if not self._connect_token_check(path):
