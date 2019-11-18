@@ -22,8 +22,6 @@ class Input(BaseInput):
         self.server = None
         self.srv = None
         if pemfile and keyfile:
-            pemfile = self.config['pem']
-            keyfile = self.config['key']
             context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
             context.load_cert_chain(pemfile, keyfile)
             server = websockets.serve(self._handler, self.url, self.port, ssl=context)
