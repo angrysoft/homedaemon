@@ -29,7 +29,7 @@ class Input(BaseInput):
     
     async def watch_server(self):
         while self.loop.is_running():
-            await asyncio.sleep(15)
+            await asyncio.sleep(5)
             if not self.server.ws_server.is_serving():
                 self.restart_server()
 
