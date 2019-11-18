@@ -25,7 +25,7 @@ class Input(BaseInput):
             self.ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
             self.ssl_context.load_cert_chain(pemfile, keyfile)
         # self.loop.create_task(self.watch_server())
-        self.loop.call_exception_handler(self.exception_handler
+        self.loop.call_exception_handler(self.exception_handler)
         self.start_server()
     
     async def watch_server(self):
