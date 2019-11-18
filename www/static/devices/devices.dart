@@ -8,7 +8,6 @@ import '../lib/websock.dart';
 void _log(Object o) => print('  MAIN: $o');
 
 class Devices {
-  
   List<ButtonElement> buttons = new List();
   List<ButtonElement> colorSetButtons = new List();
   Modal colorSet;

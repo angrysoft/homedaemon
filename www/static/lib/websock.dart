@@ -10,10 +10,11 @@ class WebSockets {
   String urltoken;
   String secret;
   Function handler;
-  num delayTime = 1000;
+  num delayTime = 2000;
   num startTime;
   int curUrl = 0;
   bool secure;
+  bool autoReconnect = true;
 
   WebSockets(Map<String,dynamic> config, {Function handler = print, bool secure = false}) {
     this.internet = config['internet'];
@@ -25,6 +26,7 @@ class WebSockets {
   }
 
   void connect() {
+    this.autoReconnect = true;
     this.loader.classes.add('show-loader');
     this.websock = new WebSocket(this.geturl());
 
@@ -41,11 +43,22 @@ class WebSockets {
       window.animationFrame.then(this.setStartTime);
     });
 
-    this.websock.onError.listen((_) => this.connect());
+    this.websock.onError.listen((_) => this.reconnect());
 
     this.websock.onMessage.listen((e) {
       this.handler(e.data);
     });
+  }
+
+  void disconnect() {
+    this.autoReconnect = false;
+    this.websock.close();
+  }
+
+  void reconnect() async {
+    if (this.autoReconnect) {
+      await this.connect();
+    }
   }
 
   String geturl() {
@@ -81,7 +94,7 @@ class WebSockets {
       return;
     } else if (frame >= (this.startTime + this.delayTime)) {
       this.startTime = frame;
-      this.connect();
+      this.reconnect();
     }
     window.animationFrame.then(this.checkConnection);
   }

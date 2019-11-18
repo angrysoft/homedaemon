@@ -21,7 +21,7 @@ class Input(BaseInput):
         self.clients = dict()
         self.server = None
         self.srv = None
-        self.loop.set_exception_handler(self.exception_handler)
+        # self.loop.set_exception_handler(self.exception_handler)
         self.start_server()
 
     def restart_server(self):
@@ -31,7 +31,6 @@ class Input(BaseInput):
         del self.server
         self.server = None
         self.start_server()
-
 
     def start_server(self):
         print('Starting websocket server')
@@ -62,8 +61,7 @@ class Input(BaseInput):
         _id = id(wsock)
         if _id not in self.clients:
             await self._register(wsock, msg)
-            return
-            
+            return        
         self.queue.put(msg)
     
     def _connect_token_check(self, path):
@@ -84,6 +82,7 @@ class Input(BaseInput):
         except jwt.InvalidTokenError as err:
             print(err)
         else:
+            print(f'Register {decoded}')
             self.clients[id(client)] = client
             return
         print('not registred')
@@ -99,5 +98,3 @@ class Input(BaseInput):
     async def send(self, msg):
         if self.clients:
             await asyncio.wait([self.clients[client].send(msg) for client in self.clients])
-
-
