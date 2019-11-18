@@ -15,8 +15,8 @@ class Input(BaseInput):
         self.port = config['websocket']['port']
         self.ssl = config['websocket']['ssl']
         self.secret = config['websocket']['secret']
-        self.pemfile = config['websocket']['pem']
-        self.keyfile = config['websocket']['key']
+        pemfile = config['websocket']['pem']
+        keyfile = config['websocket']['key']
         self.urltoken = config['websocket']['urltoken']
         self.clients = set()
         self.server = None
