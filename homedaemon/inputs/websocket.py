@@ -107,6 +107,6 @@ class Input(BaseInput):
 
     async def send(self, msg):
         if self.clients:
-            await asyncio.wait([self.clients[client].send(msg) for client in self.clients])
+            await asyncio.wait([client.send(msg) for client in self.clients])
 
 
