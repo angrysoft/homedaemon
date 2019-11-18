@@ -21,7 +21,7 @@ class Input(BaseInput):
         self.clients = set()
         self.server = None
         self.srv = None
-        if 'pem' in self.config and 'key' in self.config:
+        if pemfile and keyfile:
             pemfile = self.config['pem']
             keyfile = self.config['key']
             context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
