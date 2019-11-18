@@ -15,24 +15,14 @@ class Input(BaseInput):
         self.port = config['websocket']['port']
         self.ssl = config['websocket']['ssl']
         self.secret = config['websocket']['secret']
+        self.pemfile = config['websocket']['pem']
+        self.keyfile = config['websocket']['key']
         self.urltoken = config['websocket']['urltoken']
-        self.clients = set()
+        self.clients = dict()
         self.server = None
         self.srv = None
-        if 'pem' in config['websocket'] and 'key' in config['websocket']:
-            pemfile = config['websocket']['pem']
-            keyfile = config['websocket']['key']
-            self.ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-            self.ssl_context.load_cert_chain(pemfile, keyfile)
-        # self.loop.create_task(self.watch_server())
         self.loop.set_exception_handler(self.exception_handler)
         self.start_server()
-    
-    async def watch_server(self):
-        while self.loop.is_running():
-            await asyncio.sleep(5)
-            if not self.server.ws_server.is_serving():
-                self.restart_server()
 
     def restart_server(self):
         print('Restarting server')
@@ -46,8 +36,9 @@ class Input(BaseInput):
     def start_server(self):
         print('Starting websocket server')
         if self.ssl:
-            self.server = websockets.serve(self._handler, self.url, self.port,
-                                           ssl=self.ssl_context)
+            context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+            context.load_cert_chain(self.pemfile, self.keyfile)
+            self.server = websockets.serve(self._handler, self.url, self.port, ssl=context)
         else:
             self.server = websockets.serve(self._handler, self.url, self.port)
         self.srv = self.loop.run_until_complete(self.server)
@@ -93,20 +84,20 @@ class Input(BaseInput):
         except jwt.InvalidTokenError as err:
             print(err)
         else:
-            self.clients.add(client)
+            self.clients[id(client)] = client
             return
         print('not registred')
         await client.close()
 
     async def _unregister(self, client):
-        await client.close()
         try:
-            self.clients.discard(client)
+            self.clients.pop(id(client))
+            await client.close()
         except KeyError:
             pass
 
     async def send(self, msg):
         if self.clients:
-            await asyncio.wait([client.send(msg) for client in self.clients])
+            await asyncio.wait([self.clients[client].send(msg) for client in self.clients])
 
 
