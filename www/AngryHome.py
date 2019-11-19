@@ -92,6 +92,7 @@ def dev_data(sid):
 def dev_data_all():
     device_data = list() 
     for d in db['devices-data']:
+        d['model'] = db['devices'][d['sid']]['model']
         device_data.append(d)
     return json.dumps(device_data)
 
