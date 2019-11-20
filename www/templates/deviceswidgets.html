@@ -43,7 +43,7 @@
 {%- endmacro %}
 
 {% macro plug(data) -%}
-<div class="col-xs-5 col-md-2  round-8 padding-05 device"  id="{{ data.get('sid') }}">
+<div class="col-xs-5 col-md-2 round-8 padding-05 device"  id="{{ data.get('sid') }}">
   <div class="row center-xs">
     <div class="col-xs-12">
       <p class="txt-center">{{ data.get('name') }}</p>
@@ -52,7 +52,7 @@
   
   <div class="row center-xs">
     <div class="col-xs-6" >
-      <button class="btn-small device-status"  data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="status" value="on">On</button>
+      <button class="btn-small device-status status"  data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="status" value="on">On</button>
     </div>
   </div>
 </div>
@@ -68,7 +68,7 @@
   
   <div class="row center-xs">
     <div class="col-xs-6" >
-      <button class="btn-small device-status" data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="power" data-cmd="set_power" value="on">On</button>
+      <button class="btn-small device-status power" data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="power" data-cmd="set_power" value="on">On</button>
     </div>
 
     <div class="col-xs-6" >
@@ -88,7 +88,7 @@
   
   <div class="row center-xs">
     <div class="col-xs-6" >
-      <button class="btn-small device-status" data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="status" value="on">On</button>
+      <button class="btn-small device-status status" data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="status" value="on">On</button>
     </div>
 
     <div class="col-xs-6" >
@@ -108,7 +108,7 @@
   
   <div class="row center-xs">
     <div class="col-xs-6" >
-      <button class="btn-small device-status" data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="power" data-cmd="set_power" value="on">On</button>
+      <button class="btn-small device-status power" data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="power" data-cmd="set_power" value="on">On</button>
     </div>
 
     <div class="col-xs-6" >
