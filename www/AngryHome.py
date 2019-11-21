@@ -29,6 +29,7 @@ from flask import render_template
 from flask import redirect
 from flask import url_for
 from flask import session
+from flask import Response
 from functools import wraps
 import json
 from pycouchdb import Server
@@ -38,9 +39,15 @@ from os import urandom
 from google.oauth2 import id_token
 from google.auth.transport import requests
 
+from time import sleep
+
 
 app = Flask(__name__)
 
+class C:
+    def __init__(self):
+        self.i = 0
+    
 
 def login_required(func):
     @wraps(func)
@@ -150,7 +157,19 @@ def login():
 def logout():
     session.clear()
     return render_template('logout.html')
-    
+
+@app.route('/stream')
+def stream():
+    return Response(event(), mimetype='text/event-stream', headers={'Cache-Control': 'no-cache',
+                                                                    'Access-Control-Allow-Origin': '*'})
+
+def event():
+    while True:
+        yield f"data: {c.i}\n\n"
+        c.i+= 1
+        sleep(3)
+
+c = C()
 db = Server()
 app.secret_key = urandom(24)
 app.config.update(
