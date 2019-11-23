@@ -48,8 +48,8 @@ class HomeDaemon:
             'gateway',
             'arduino',
             'tcp',
-            'websocket',
-            'websocket_client',
+            # 'websocket',
+            # 'websocket_client',
             'yeelight',
             'timer'
         ]
