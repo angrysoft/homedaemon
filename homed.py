@@ -47,7 +47,8 @@ class HomeDaemon:
         self.inputs_list = [
             'gateway',
             'arduino',
-            'tcp',
+            'tcpclient',
+            # 'tcp',
             # 'websocket',
             # 'websocket_client',
             'yeelight',
@@ -66,6 +67,8 @@ class HomeDaemon:
         self.triggers = Triggers()
 
     def notify_clients(self, msg):
+        if 'tcpclient' in self.inputs:
+            self.inputs['tcpclient'].send(msg)
         if 'websocket' in self.inputs:
             asyncio.run(self.inputs['websocket'].send(msg))
         if 'websocket_client' in self.inputs:
@@ -188,9 +191,10 @@ class Queue:
 
 
 if __name__ == '__main__':
+    logger.setLevel(logging.DEBUG)
+    
     if len(sys.argv) < 2:
-        logger.addHandler(JournalHandler())
-        logger.setLevel(logging.DEBUG)
+        logger.addHandler(JournalHandler())    
     else:
         
         logging.basicConfig(filename="home.log")
