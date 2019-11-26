@@ -17,11 +17,11 @@ class Input(BaseInput):
         self.loop.create_task(self.conn_watcher())
         self.reader = None
         self.writer = None
-        self.ssl_context = ssl._create_unverified_context()
+        self.ssl_context = ssl.create_default_context()
+        # self.ssl_context = ssl._create_unverified_context()
 
     async def connect(self):
         print('Connect...')
-        socket.timeout = 5
         try:
             self.reader, self.writer = await asyncio.open_connection(self.ip,
                                                                      self.port, ssl=self.ssl_context)
@@ -59,9 +59,6 @@ class Input(BaseInput):
             except json.JSONDecodeError as err:
                 print(err)
                 return
-        else:
-            print('Wrong data {msg}')
-            return
             
         self.writer.write(f'{msg}\n'.encode())
         await self.writer.drain()
