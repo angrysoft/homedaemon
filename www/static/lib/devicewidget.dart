@@ -170,7 +170,9 @@ class DeviceWidget implements BaseDeviceWidget {
     msg['cmd'] = 'write';
     msg['sid'] = this.sid;
     msg['data'] = {cmdname: btn.value};
-    this.evSend(json.encode(msg));
+    String data = json.encode(msg);
+    HttpRequest.request('/dev/write', method: 'POST', sendData: data);
+    print(data);
   }
 
 }

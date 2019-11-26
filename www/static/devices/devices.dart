@@ -3,20 +3,14 @@ import 'dart:html';
 import 'dart:convert';
 import 'package:service_worker/window.dart' as sw;
 import '../lib/modal.dart';
-import '../lib/websock.dart';
 import '../lib/devicewidget.dart';
 
 void _log(Object o) => print('  MAIN: $o');
 
 class Page {
   Devices devices = new Devices();
-  WebSockets ws;
 
   Page() {
-    HttpRequest.getString('/dev/config').then((String resp) {
-      Map<String, dynamic> config = jsonDecode(resp);
-      this.ws = WebSockets(config, handler: this.devices.refresh);
-    });
 
     HttpRequest.getString('/dev/data/all').then((String resp) {
       List<dynamic> jdata = jsonDecode(resp);

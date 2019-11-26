@@ -38,6 +38,7 @@ import jwt
 from os import urandom
 from google.oauth2 import id_token
 from google.auth.transport import requests
+from utils import TcpClient
 
 from time import sleep
 
@@ -85,6 +86,11 @@ def dev_conf():
 def dev(sid):
     ret = db['devices'].get(sid)
     return json.dumps(ret)
+
+@app.route('/dev/write', methods=['GET', 'POST'])
+@login_required
+def dev_write():
+    tcp.send()
 
 
 @app.route('/dev/data/<sid>')
@@ -164,13 +170,11 @@ def stream():
                                                                     'Access-Control-Allow-Origin': '*'})
 
 def event():
-    while True:
-        yield f"data: {c.i}\n\n"
-        c.i+= 1
-        sleep(3)
+    yield tcp.msg_reader()
 
 c = C()
 db = Server()
+tcp = TcpClient()
 app.secret_key = urandom(24)
 app.config.update(
         SESSION_COOKIE_SECURE=True,
