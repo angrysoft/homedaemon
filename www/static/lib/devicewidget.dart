@@ -1,6 +1,8 @@
 import 'dart:html';
 import 'dart:convert';
 
+import 'dart:mirrors';
+
 class Devices {
   Map<String,DeviceWidget> _devices;
 
@@ -39,6 +41,11 @@ class Devices {
       case 'rgbstrip':
       {
         this._devices[devData['sid']] = new RgbStrip(devData, evSend);
+      }
+      break;
+      case 'sensor_ht':
+      {
+        this._devices[devData['sid']] = new SensorHt(devData);
       }
       break;
     }
@@ -177,6 +184,48 @@ class DeviceWidget implements BaseDeviceWidget {
 
 }
 
+class WeatherV1 extends SensorHt {
+  Label pressure;
+  WeatherV1(Map<String,dynamic> devData) : super(devData) {
+    this.pressure = new Label('pressure', this.sid);
+  } 
+}
+
+class SensorHt extends ReadOnlyDevice {
+  Label temp;
+  Label humidity;
+  Label vol;
+
+  SensorHt(Map<String,dynamic> devData) : super(devData) {
+    this.temp = new Label('temperature', this.sid);
+    this.humidity = new Label('humidity', this.sid);
+    this.vol = new Label('voltage', this.sid);
+  }
+}
+
+class ReadOnlyDevice implements BaseDeviceWidget {
+  Map<String,dynamic> devData;
+  ReadOnlyDevice(Map<String,dynamic> devData) {
+    this.devData = devData;
+  }
+
+  String get sid {return this.devData['sid'];}
+
+  void set sid(String _sid) {
+    this.devData['sid'] = _sid;
+  }
+
+  String get model {return this.devData['model'];}
+  void set model(String _model) {
+    this.devData['model'] = _model;
+  }
+
+  void refreshStatus(Map<String,dynamic> devData) {
+    print('${this.devData['sid']} $devData');
+  }
+
+}
+
 abstract class BaseDeviceWidget {
   void refreshStatus(Map<String,String> devData);
   String get sid;
@@ -224,4 +273,18 @@ class SetButton {
   SetButton(String sid) {
     this.btn = querySelector('button.color-set-button[data-sid="${sid}"]');
   }
+}
+
+class Label {
+  String name;
+  SpanElement info;
+
+  Label(String name , String sid) {
+    this.name = name;
+    this.info = querySelector('span.${name}[data-sid="${sid}"]');
+  }
+
+  setStatus(String st) {
+      this.info.text = st;
+  } 
 }
