@@ -37,18 +37,14 @@ import operator
 import jwt
 from os import urandom
 from google.oauth2 import id_token
-from google.auth.transport import requests
+from google.auth.transport import requests as g_requests
 from utils import TcpClient
-
+from threading import Thread
 from time import sleep
 
 
 app = Flask(__name__)
 
-class C:
-    def __init__(self):
-        self.i = 0
-    
 
 def login_required(func):
     @wraps(func)
@@ -90,7 +86,9 @@ def dev(sid):
 @app.route('/dev/write', methods=['GET', 'POST'])
 @login_required
 def dev_write():
-    tcp.send()
+    # tcp.send()
+    print(request.data)
+    return 'ok'
 
 
 @app.route('/dev/data/<sid>')
@@ -141,7 +139,7 @@ def login():
         token = request.form.get('idtoken')
         try:
             # Specify the CLIENT_ID of the app that accesses the backend:
-            idinfo = id_token.verify_oauth2_token(token, requests.Request(), '185939031950-ofl3lt8mhuvl1tho2p0i308vqcum5reg.apps.googleusercontent.com')
+            idinfo = id_token.verify_oauth2_token(token, g_requests.Request(), '185939031950-ofl3lt8mhuvl1tho2p0i308vqcum5reg.apps.googleusercontent.com')
             if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
                 raise ValueError('Wrong issuer.')
 
@@ -170,11 +168,18 @@ def stream():
                                                                     'Access-Control-Allow-Origin': '*'})
 
 def event():
-    yield tcp.msg_reader()
+    while True:
+        if not tcp.queue.empty():
+            yield tcp.queue.get()
+        else:
+            sleep(0.1)
 
-c = C()
 db = Server()
 tcp = TcpClient()
+
+watcher = Thread(name='tcp', target=tcp.run)
+watcher.start()
+
 app.secret_key = urandom(24)
 app.config.update(
         SESSION_COOKIE_SECURE=True,

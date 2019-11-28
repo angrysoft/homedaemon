@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'dart:mirrors';
 
 class Devices {
-  Map<String,DeviceWidget> _devices;
+  Map<String,BaseDeviceWidget> _devices;
 
   Devices() {
     this._devices = new Map();
@@ -48,9 +48,23 @@ class Devices {
         this._devices[devData['sid']] = new SensorHt(devData);
       }
       break;
+      case 'weather.v1':
+      {
+        this._devices[devData['sid']] = new WeatherV1(devData);
+      }
+      break;
+      case 'magnet':
+      {
+        this._devices[devData['sid']] = new Magnet(devData);
+      }
+      break;
+      case 'bravia':
+      {
+        this._devices[devData['sid']] = new Bravia(devData, evSend);
+      }
+      break;
     }
   }
-
 
   void refresh(String data) {
     try {
@@ -113,8 +127,7 @@ class RgbStrip extends DeviceWidget {
     this.power = new Button('status', this.sid);
     this.power.setStatus(this.devData['status']);
     this.power.btn.onClick.listen((ev) {
-      print('rgb click');
-      // this.send(ev.target);
+      this.send(ev.target);
     });
     this.setBtn = new SetButton(this.sid);
   }
@@ -126,6 +139,9 @@ class Color extends Bslamp1 {
 
 }
 
+class Bravia extends Bslamp1 {
+  Bravia(Map<String,dynamic> devData, Function evSend) : super(devData, evSend);
+}
 
 class Bslamp1 extends DeviceWidget {
   Button power;
@@ -184,10 +200,23 @@ class DeviceWidget implements BaseDeviceWidget {
 
 }
 
+class Magnet extends ReadOnlyDevice {
+  Label status;
+  Label vol;
+  Magnet(Map<String,dynamic> devData) : super(devData) {
+    this.status = new Label('status', this.sid);
+    this.status.setStatus(devData['status']);
+    this.vol = new Label('voltage', this.sid);
+    this.vol.setStatus((devData['voltage']).toString());
+  }
+}
+
 class WeatherV1 extends SensorHt {
   Label pressure;
+
   WeatherV1(Map<String,dynamic> devData) : super(devData) {
     this.pressure = new Label('pressure', this.sid);
+    this.pressure.setStatus((int.parse(devData['pressure'])/100).floor().toString());
   } 
 }
 
@@ -198,8 +227,11 @@ class SensorHt extends ReadOnlyDevice {
 
   SensorHt(Map<String,dynamic> devData) : super(devData) {
     this.temp = new Label('temperature', this.sid);
+    this.temp.setStatus((int.parse(devData['temperature'])/100).toString());
     this.humidity = new Label('humidity', this.sid);
+    this.humidity.setStatus((int.parse(devData['humidity'])/100).floor().toString());
     this.vol = new Label('voltage', this.sid);
+    this.vol.setStatus((devData['voltage']).toString());
   }
 }
 

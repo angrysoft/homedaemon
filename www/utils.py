@@ -2,34 +2,36 @@
 import asyncio
 import jwt
 from pycouchdb import Server
-from aquara import GatewayWatcher
 import json
 import socket
 import ssl
 
 class TcpClient:
-    def __init__(self, loop=None):
-        if loop:
-            self.loop = loop
-        else:
-            self.loop = asyncio.get_event_loop()
-                
+    def __init__(self):
+        super().__init__()
+        self.loop = asyncio.get_event_loop()
+         
         db_srv = Server()
         config = db_srv.db('config')
         self.ip = config['tcp']['client']['ip']
         self.port = config['tcp']['client']['port']
         self.secret = config['tcp']['secret']
+        self.queue = Queue()
         self.loop.create_task(self.conn_watcher())
         self.reader = None
         self.writer = None
-        # pem = config['tcp']['client']['pem']
-        # key = config['tcp']['client']['key']
-        
-        self.ssl_context = ssl._create_unverified_context()
-        
+        self.ssl_context = ssl.create_default_context()
+        # self.ssl_context = ssl._create_unverified_context()
+    
+    def run(self):
+        try:
+            self.loop.run_forever()
+        except KeyboardInterrupt:
+            self.loop.stop()
+            print('omg')
+
     async def connect(self):
         print('Connect...')
-        socket.settimeout = 5
         try:
             self.reader, self.writer = await asyncio.open_connection(self.ip,
                                                                      self.port, ssl=self.ssl_context)
@@ -39,33 +41,26 @@ class TcpClient:
         except OSError as err:
             print(err)
             return
-        encoded = jwt.encode({'api':'1.0', 'client': 'homed'}, self.secret, algorithm='HS256')
+        encoded = jwt.encode({'api':'1.0', 'client': 'www'}, self.secret, algorithm='HS256')
         self.writer.write(encoded + '\n'.encode())
         await self.writer.drain()
-        # self.loop.create_task(self.msg_reader())
+        self.loop.create_task(self.msg_reader())
         
     async def conn_watcher(self, interval=5):
         while self.loop.is_running():
-            if self.writer is None or self.writer.is_closing() or self.reader.at_eof():
+            if not self.is_connected():
                 await self.connect()
             await asyncio.sleep(interval)
     
-    async def _msg_reader(self):
-        print('start msg watch')
-        while not self.reader.at_eof():
+    async def msg_reader(self):
+        while self.reader and not self.reader.at_eof():
             msg = await self.reader.readline()
             msg = msg.strip()
-            msg = msg.decode()
-            if msg:
-                yield msg
-                print(msg)
-        print('end msg watch')
-    
-    def msg_reader(self):
-        return self.loop.run_until_complete(self._msg_reader())
+            print(msg)
+            self.queue.put(msg.decode())
              
     async def _send(self, msg):
-        if not self.writer or self.writer.is_closing():
+        if not self.is_connected():
             print('closed')
             return
         
@@ -75,15 +70,38 @@ class TcpClient:
             except json.JSONDecodeError as err:
                 print(err)
                 return
-        else:
-            print('Wrong data {msg}')
-            return
-        try:
-            self.writer.write(f'{msg}\n'.encode())
-            await self.writer.drain()
-        except ConnectionResetError as err:
-            print(err)
+            
+        self.writer.write(f'{msg}\n'.encode())
+        await self.writer.drain()
     
     def send(self, msg):
         self.loop.create_task(self._send(msg))
+    
+    def is_connected(self):
+        if self.writer is None or self.writer.is_closing() or self.reader.at_eof():
+            return False
+        else:
+            return True
+
+class Queue:
+    def __init__(self):
+        self._queue = list()
+        self.lock = asyncio.Lock()
+
+    def put(self, item):
+        with self.lock:
+            self._queue.append(item)
+
+    def get(self):
+        if self._queue:
+            with self.lock:
+                return self._queue.pop(0)
+        else:
+            return None
+
+    def empty(self):
+        if self._queue:
+            return False
+        else:
+            return True
  
