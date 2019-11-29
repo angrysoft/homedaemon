@@ -18,6 +18,7 @@ class TcpClient:
         self.secret = config['tcp']['secret']
         self.queue = Queue()
         self.loop.create_task(self.conn_watcher())
+        self.loop.create_task(self.msg_reader())
         self.reader = None
         self.writer = None
         self.ssl_context = ssl.create_default_context()
@@ -105,3 +106,7 @@ class Queue:
         else:
             return True
  
+if __name__ == "__main__":
+    t = TcpClient()
+    t.run()
+     

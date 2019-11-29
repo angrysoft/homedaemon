@@ -139,7 +139,8 @@ def login():
         token = request.form.get('idtoken')
         try:
             # Specify the CLIENT_ID of the app that accesses the backend:
-            idinfo = id_token.verify_oauth2_token(token, g_requests.Request(), '185939031950-ofl3lt8mhuvl1tho2p0i308vqcum5reg.apps.googleusercontent.com')
+            idinfo = id_token.verify_oauth2_token(token, g_requests.Request(),
+                                                  '185939031950-ofl3lt8mhuvl1tho2p0i308vqcum5reg.apps.googleusercontent.com')
             if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
                 raise ValueError('Wrong issuer.')
 

@@ -255,7 +255,6 @@ class ReadOnlyDevice implements BaseDeviceWidget {
   void refreshStatus(Map<String,dynamic> devData) {
     print('${this.devData['sid']} $devData');
   }
-
 }
 
 abstract class BaseDeviceWidget {
