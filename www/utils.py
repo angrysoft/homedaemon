@@ -56,7 +56,6 @@ class TcpClient:
         while self.reader and not self.reader.at_eof():
             msg = await self.reader.readline()
             msg = msg.strip()
-            print(f'{msg}')
             self.queue.put(msg.decode())
              
     async def _send(self, msg):
@@ -64,14 +63,11 @@ class TcpClient:
             print('closed')
             return
         
-        if type(msg) == dict:
-            try:
-                msg = json.dumps(msg)
-            except json.JSONDecodeError as err:
-                print(err)
-                return
-            
-        self.writer.write(f'{msg}\n'.encode())
+        if type(msg) == bytes:
+            msg += b'\n'
+        else:
+            msg = f'{msg}\n'.encode()
+        self.writer.write(msg)
         await self.writer.drain()
     
     def send(self, msg):
@@ -104,9 +100,5 @@ class Queue:
             return True
         else:
             return False
-    
- 
-if __name__ == "__main__":
-    t = TcpClient()
-    t.run()
+
      

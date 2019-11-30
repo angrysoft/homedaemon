@@ -59,9 +59,12 @@ class Input(BaseInput):
             except json.JSONDecodeError as err:
                 print(err)
                 return
-            
-        self.writer.write(f'{msg}\n'.encode())
-        await self.writer.drain()
+        try:    
+            self.writer.write(f'{msg}\n'.encode())
+            await self.writer.drain()
+        except ConnectionRefusedError as err:
+            self.writer = None
+        
     
     def send(self, msg):
         self.loop.create_task(self._send(msg))

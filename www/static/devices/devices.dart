@@ -12,17 +12,25 @@ class Page {
   EventSource events;
 
   Page() {
-
     HttpRequest.getString('/dev/data/all').then((String resp) {
       List<dynamic> jdata = jsonDecode(resp);
       jdata.forEach((dev) {
         this.devices.register(dev, print);
       });
     });
+    
     this.events = new EventSource('/stream');
     this.events.onMessage.listen((ev) {
-      this.devices.refresh(ev.data.toString());
+      this.devices.refresh(ev.data);
     });
+    this.events.onOpen.listen((e){
+      print('conn');
+      print('${this.events.url} ${this.events.readyState}');
+    });
+    this.events.onError.listen((er){
+      print('err ${er}');
+    });
+    print('${this.events.url} ${this.events.readyState}');
   }
 }
 

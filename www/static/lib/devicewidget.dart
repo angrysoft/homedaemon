@@ -89,7 +89,12 @@ class CtrlNeutral2 extends CtrlNeutral1 {
       this.send(ev.target);
     });
   }
-  
+
+  @override
+  void refreshStatus(Map<String, dynamic> devData) {
+    super.refreshStatus(devData);
+    this.channel_1.setStatus(devData['channel_1']);
+  }
 }
 
 
@@ -103,6 +108,11 @@ class CtrlNeutral1 extends DeviceWidget {
       this.send(ev.target);
     });
   }
+
+  @override
+  void refreshStatus(Map<String, dynamic> devData) {
+    this.channel_0.setStatus(devData['channel_0']);
+  }
 }
 
 
@@ -115,6 +125,11 @@ class Plug extends DeviceWidget {
     this.power.btn.onClick.listen((ev) {
       this.send(ev.target);
     });
+  }
+
+  @override
+  void refreshStatus(Map<String,dynamic> devData) {
+    this.power.setStatus(devData['status']);
   }
 }
 
@@ -136,7 +151,6 @@ class RgbStrip extends DeviceWidget {
 
 class Color extends Bslamp1 {
   Color(Map<String,dynamic> devData, Function evSend) : super(devData, evSend);
-
 }
 
 class Bravia extends Bslamp1 {
@@ -205,8 +219,13 @@ class Magnet extends ReadOnlyDevice {
   Label vol;
   Magnet(Map<String,dynamic> devData) : super(devData) {
     this.status = new Label('status', this.sid);
-    this.status.setStatus(devData['status']);
     this.vol = new Label('voltage', this.sid);
+    this.refreshStatus(devData);
+  }
+
+  @override
+  void refreshStatus(Map<String,dynamic> devData) {
+    this.status.setStatus(devData['status']);
     this.vol.setStatus((devData['voltage']).toString());
   }
 }
@@ -216,8 +235,13 @@ class WeatherV1 extends SensorHt {
 
   WeatherV1(Map<String,dynamic> devData) : super(devData) {
     this.pressure = new Label('pressure', this.sid);
+  }
+
+  @override
+  void refreshStatus(Map<String,dynamic> devData) {
+    super.refreshStatus(devData);
     this.pressure.setStatus((int.parse(devData['pressure'])/100).floor().toString());
-  } 
+  }
 }
 
 class SensorHt extends ReadOnlyDevice {
@@ -227,10 +251,14 @@ class SensorHt extends ReadOnlyDevice {
 
   SensorHt(Map<String,dynamic> devData) : super(devData) {
     this.temp = new Label('temperature', this.sid);
-    this.temp.setStatus((int.parse(devData['temperature'])/100).toString());
     this.humidity = new Label('humidity', this.sid);
-    this.humidity.setStatus((int.parse(devData['humidity'])/100).floor().toString());
     this.vol = new Label('voltage', this.sid);
+  }
+
+  @override
+  void refreshStatus(Map<String,dynamic> devData) {
+    this.temp.setStatus((int.parse(devData['temperature'])/100).toString());
+    this.humidity.setStatus((int.parse(devData['humidity'])/100).floor().toString());
     this.vol.setStatus((devData['voltage']).toString());
   }
 }
@@ -258,7 +286,7 @@ class ReadOnlyDevice implements BaseDeviceWidget {
 }
 
 abstract class BaseDeviceWidget {
-  void refreshStatus(Map<String,String> devData);
+  void refreshStatus(Map<String,dynamic> devData);
   String get sid;
   void set sid(String _sid);
   String get model;

@@ -86,7 +86,7 @@ def dev(sid):
 @app.route('/dev/write', methods=['GET', 'POST'])
 @login_required
 def dev_write():
-    # tcp.send()
+    tcp.send(request.data)
     print(request.data)
     return 'ok'
 
@@ -171,7 +171,7 @@ def stream():
 def event():
     while True:
         if tcp.queue.not_empty():
-            yield tcp.queue.get()
+            yield f'data: {tcp.queue.get()}\n\n'
         else:
             sleep(0.1)
 
