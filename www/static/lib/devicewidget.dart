@@ -1,8 +1,6 @@
 import 'dart:html';
 import 'dart:convert';
 
-import 'dart:mirrors';
-
 class Devices {
   Map<String,BaseDeviceWidget> _devices;
 
@@ -93,7 +91,9 @@ class CtrlNeutral2 extends CtrlNeutral1 {
   @override
   void refreshStatus(Map<String, dynamic> devData) {
     super.refreshStatus(devData);
-    this.channel_1.setStatus(devData['channel_1']);
+    if (devData.containsKey('channel_1')) {
+      this.channel_1.setStatus(devData['channel_1']);
+    }
   }
 }
 
@@ -111,7 +111,9 @@ class CtrlNeutral1 extends DeviceWidget {
 
   @override
   void refreshStatus(Map<String, dynamic> devData) {
-    this.channel_0.setStatus(devData['channel_0']);
+    if (devData.containsKey('channel_0')) {
+      this.channel_0.setStatus(devData['channel_0']);
+    }
   }
 }
 
@@ -128,8 +130,10 @@ class Plug extends DeviceWidget {
   }
 
   @override
-  void refreshStatus(Map<String,dynamic> devData) {
-    this.power.setStatus(devData['status']);
+  void refreshStatus(Map<String, dynamic> devData) {
+    if (devData.containsKey('status')) {
+      this.power.setStatus(devData['status']);
+    }
   }
 }
 
@@ -146,6 +150,13 @@ class RgbStrip extends DeviceWidget {
     });
     this.setBtn = new SetButton(this.sid);
   }
+
+  @override
+  void refreshStatus(Map<String, dynamic> devData) {
+    if (devData.containsKey('status')) {
+      this.power.setStatus(devData['status']);
+    }
+  }
 }
 
 
@@ -161,13 +172,20 @@ class Bslamp1 extends DeviceWidget {
   Button power;
   SetButton setBtn;
 
-  Bslamp1(Map<String,dynamic> devData, Function evSend) : super(devData, evSend) {
+  Bslamp1(Map<String, dynamic> devData, Function evSend) : super(devData, evSend) {
     this.power = new Button('power', this.sid);
     this.power.setStatus(this.devData['power']);
     this.power.btn.onClick.listen((ev) {
       this.send(ev.target);
     });
     this.setBtn = new SetButton(this.sid);
+  }
+
+  @override
+  void refreshStatus(Map<String, dynamic> devData) {
+    if (devData.containsKey('power')) {
+      this.power.setStatus(devData['power']);
+    }
   }
 }
 
@@ -225,8 +243,12 @@ class Magnet extends ReadOnlyDevice {
 
   @override
   void refreshStatus(Map<String,dynamic> devData) {
-    this.status.setStatus(devData['status']);
-    this.vol.setStatus((devData['voltage']).toString());
+    if (devData.containsKey('status')) {
+      this.status.setStatus(devData['status']);
+    }
+    if (devData.containsKey('voltage')) {
+      this.vol.setStatus((devData['voltage']).toString());
+    }
   }
 }
 
@@ -235,12 +257,16 @@ class WeatherV1 extends SensorHt {
 
   WeatherV1(Map<String,dynamic> devData) : super(devData) {
     this.pressure = new Label('pressure', this.sid);
+    this.refreshStatus(devData);
   }
 
   @override
   void refreshStatus(Map<String,dynamic> devData) {
+    print(this.pressure.runtimeType);
     super.refreshStatus(devData);
-    this.pressure.setStatus((int.parse(devData['pressure'])/100).floor().toString());
+    if (devData.containsKey('pressure')) {
+      this.pressure.setStatus((int.parse(devData['pressure'])/100).floor().toString());
+    }
   }
 }
 
@@ -253,13 +279,21 @@ class SensorHt extends ReadOnlyDevice {
     this.temp = new Label('temperature', this.sid);
     this.humidity = new Label('humidity', this.sid);
     this.vol = new Label('voltage', this.sid);
+    this.refreshStatus(devData);
   }
 
   @override
   void refreshStatus(Map<String,dynamic> devData) {
-    this.temp.setStatus((int.parse(devData['temperature'])/100).toString());
-    this.humidity.setStatus((int.parse(devData['humidity'])/100).floor().toString());
-    this.vol.setStatus((devData['voltage']).toString());
+    
+    if (devData.containsKey('temperature')) {
+      this.temp.setStatus((int.parse(devData['temperature'])/100).toString());
+    }
+    if (devData.containsKey('humidity')) {
+      this.humidity.setStatus((int.parse(devData['humidity'])/100).floor().toString());
+    }
+    if (devData.containsKey('voltage')) {
+      this.vol.setStatus((devData['voltage']).toString());
+    }
   }
 }
 
