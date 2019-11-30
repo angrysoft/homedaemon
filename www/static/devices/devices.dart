@@ -9,6 +9,7 @@ void _log(Object o) => print('  MAIN: $o');
 
 class Page {
   Devices devices = new Devices();
+  EventSource events;
 
   Page() {
 
@@ -17,6 +18,10 @@ class Page {
       jdata.forEach((dev) {
         this.devices.register(dev, print);
       });
+    });
+    this.events = new EventSource('/stream');
+    this.events.onMessage.listen((ev) {
+      this.devices.refresh(ev.data.toString());
     });
   }
 }

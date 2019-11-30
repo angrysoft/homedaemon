@@ -170,7 +170,7 @@ def stream():
 
 def event():
     while True:
-        if not tcp.queue.empty():
+        if tcp.queue.not_empty():
             yield tcp.queue.get()
         else:
             sleep(0.1)

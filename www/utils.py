@@ -29,7 +29,6 @@ class TcpClient:
             self.loop.run_forever()
         except KeyboardInterrupt:
             self.loop.stop()
-            print('omg')
 
     async def connect(self):
         print('Connect...')
@@ -57,7 +56,7 @@ class TcpClient:
         while self.reader and not self.reader.at_eof():
             msg = await self.reader.readline()
             msg = msg.strip()
-            print(msg)
+            print(f'{msg}')
             self.queue.put(msg.decode())
              
     async def _send(self, msg):
@@ -86,25 +85,26 @@ class TcpClient:
 
 class Queue:
     def __init__(self):
-        self._queue = list()
+        self._queue = None
         self.lock = asyncio.Lock()
 
     def put(self, item):
-        with self.lock:
-            self._queue.append(item)
+        self._queue = item
 
     def get(self):
         if self._queue:
-            with self.lock:
-                return self._queue.pop(0)
+                msg = self._queue
+                self._queue = None
+                return msg
         else:
             return None
 
-    def empty(self):
+    def not_empty(self):
         if self._queue:
-            return False
-        else:
             return True
+        else:
+            return False
+    
  
 if __name__ == "__main__":
     t = TcpClient()
