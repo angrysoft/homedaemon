@@ -48,7 +48,7 @@ class Input(BaseInput):
             msg = msg.strip()
             self.queue.put(msg.decode())
              
-    async def _send(self, msg):
+    async def send(self, msg):
         if not self.is_connected():
             print('closed')
             return
@@ -64,10 +64,6 @@ class Input(BaseInput):
             await self.writer.drain()
         except ConnectionRefusedError as err:
             self.writer = None
-        
-    
-    def send(self, msg):
-        self.loop.create_task(self._send(msg))
     
     def is_connected(self):
         if self.writer is None or self.writer.is_closing() or self.reader.at_eof():

@@ -169,6 +169,7 @@ def stream():
                                                                     'Access-Control-Allow-Origin': '*'})
 
 def event():
+    yield "connecting"
     while True:
         if tcp.queue.not_empty():
             yield f'data: {tcp.queue.get()}\n\n'

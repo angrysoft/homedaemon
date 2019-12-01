@@ -71,7 +71,7 @@ class TcpClient:
         await self.writer.drain()
     
     def send(self, msg):
-        self.loop.create_task(self._send(msg))
+        asyncio.run(self._send(msg))
     
     def is_connected(self):
         if self.writer is None or self.writer.is_closing() or self.reader.at_eof():

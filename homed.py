@@ -67,8 +67,9 @@ class HomeDaemon:
         self.triggers = Triggers()
 
     def notify_clients(self, msg):
+        # TODO subscribe msg  + msg bus.... 
         if 'tcpclient' in self.inputs:
-            self.inputs['tcpclient'].send(msg)
+            asyncio.run(self.inputs['tcpclient'].send(msg))
         if 'websocket' in self.inputs:
             asyncio.run(self.inputs['websocket'].send(msg))
         if 'websocket_client' in self.inputs:

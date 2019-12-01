@@ -30,7 +30,6 @@ class Page {
     this.events.onError.listen((er){
       print('err ${er}');
     });
-    print('${this.events.url} ${this.events.readyState}');
   }
 }
 

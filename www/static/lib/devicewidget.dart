@@ -64,11 +64,12 @@ class Devices {
     }
   }
 
-  void refresh(String data) {
+  Future refresh(String data) async {
     try {
+      print(data);
       Map<String, dynamic> info = json.decode(data);
       if (this._devices.containsKey(info['sid']) && info.containsKey('data')) {
-        this._devices[info['sid']].refreshStatus(info['data']);
+        await this._devices[info['sid']].refreshStatus(info['data']);
       }
     } catch (e) {
       print('error:$e ${data}');
@@ -214,7 +215,7 @@ class DeviceWidget implements BaseDeviceWidget {
     print('${this.devData['sid']} $devData');
   }
 
-  void send(ButtonElement btn) {
+  Future<void> send(ButtonElement btn) async {
     Map<String, dynamic> msg = new Map();
     String cmdname = '';
     if (btn.dataset.containsKey('cmd')) {
@@ -226,10 +227,12 @@ class DeviceWidget implements BaseDeviceWidget {
     msg['sid'] = this.sid;
     msg['data'] = {cmdname: btn.value};
     String data = json.encode(msg);
-    HttpRequest.request('/dev/write', method: 'POST', sendData: data);
-    print(data);
-  }
 
+    await HttpRequest.request('/dev/write', method: 'POST', sendData: data)
+      .then((HttpRequest resp) {
+      print('$data : ${resp.responseText}');
+    }); 
+  }
 }
 
 class Magnet extends ReadOnlyDevice {
@@ -260,7 +263,6 @@ class WeatherV1 extends SensorHt {
     this.refreshStatus(devData);
   }
 
-  @override
   void refreshStatus(Map<String,dynamic> devData) {
     print(this.pressure.runtimeType);
     super.refreshStatus(devData);
@@ -279,11 +281,15 @@ class SensorHt extends ReadOnlyDevice {
     this.temp = new Label('temperature', this.sid);
     this.humidity = new Label('humidity', this.sid);
     this.vol = new Label('voltage', this.sid);
-    this.refreshStatus(devData);
+    this._refreshStatus(devData);
   }
 
   @override
-  void refreshStatus(Map<String,dynamic> devData) {
+  void refreshStatus(Map<String, dynamic> devData) {
+    this._refreshStatus(devData);
+  }
+
+  void _refreshStatus(Map<String,dynamic> devData) {
     
     if (devData.containsKey('temperature')) {
       this.temp.setStatus((int.parse(devData['temperature'])/100).toString());
