@@ -442,7 +442,7 @@ class ColorSetterWindow {
     });
 
     this.eventColor = this.color.onChange.listen((e) {
-      this.send('set_rgb', this.hexToRgb(this.color.value).toString());
+      this.send('set_rgb', this.hexToRgb(this.color.value));
     });
   }
   

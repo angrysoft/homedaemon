@@ -38,8 +38,8 @@ class YeeligthDevice(BaseDevice):
     def bright(self, value):
         self.bulb.set_bright(int(value))
     
-    def set_rgb(self, r, g, b):
-        self.bulb.set_rgb(r, g, b)
+    def set_rgb(self, rgb):
+        self.bulb.set_rgb(rgb.get('red'), rgb.get('green'), rgb.get('blue'))
 
     def set_default(self, *args):
         self.bulb.set_default()

@@ -114,19 +114,21 @@ class RgbStrip(BaseDevice):
             rgb['blue'] = '255'
             rgb['bright'] = '100'
         self.daemon.device_data[self.sid]['default'] = rgb
+        return rgb
         
-
     def _rgb_to_send(self, data):
         return f"F.{data.get('red', '0')}.{data.get('green', '0')}.{data.get('blue', '0')}.{data.get('bright', '100')}"
 
     def off(self):
         if 'Arduino' in self.daemon.inputs:
-            self.set_default()
-            self.daemon.inputs['Arduino'].serial_write('F.0.0.0.0')
+            rgb = self.set_default()
+            rgb['bright'] = 0
+            self.daemon.inputs['Arduino'].serial_write(self._rgb_to_send(rgb))
 
     def on(self):
         color = self.daemon.device_data[self.sid].get('default',
                                                       {'red': '255', 'green': '255', 'blue': '255', 'bright': '100'})
+        print(color)
         if 'Arduino' in self.daemon.inputs:
             self.daemon.inputs['Arduino'].serial_write(self._rgb_to_send(color))
 
@@ -138,8 +140,7 @@ class RgbStrip(BaseDevice):
             
     def ct(self, data):
         rgb = self.kelvin_table.get(data.get('set_ct'))
-        # self.daemon.inputs['Arduino'].serial_write(self._rgb_to_send(rgb))
-        print(f'rgb {rgb} {data.get("set_ct")}')
+        self.daemon.inputs['Arduino'].serial_write(self._rgb_to_send(rgb))
         self.daemon.device_data[self.sid]['ct'] = data.get('set_ct')
     
     def set_rgb(self, data):
