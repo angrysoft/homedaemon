@@ -139,6 +139,7 @@ class HomeDaemon:
                 sleep(0.1)
                 continue
             data = self.queue.get()
+            self.logger.debug(data)
             if data.get('cmd') == 'report':
                 try:
                     self.logger.debug(f'trig: {data}')

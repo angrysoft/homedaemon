@@ -87,7 +87,6 @@ def dev(sid):
 @login_required
 def dev_write():
     tcp.send(request.data)
-    print(request.data)
     return 'ok'
 
 

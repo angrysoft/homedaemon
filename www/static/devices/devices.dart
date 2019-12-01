@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:html';
 import 'dart:convert';
 import 'package:service_worker/window.dart' as sw;
-import '../lib/modal.dart';
 import '../lib/devicewidget.dart';
 
 void _log(Object o) => print('  MAIN: $o');

@@ -24,7 +24,7 @@ class YeeligthDevice(BaseDevice):
          'set_bright': self.bright}.get(c, self.unknown)(v)
     
     def unknown(self, value):
-        self.daemon.logger.erro(f'unknown parametr {value}')
+        self.daemon.logger.error(f'unknown parametr {value}')
     
     def on(self):
         self.bulb.set_power('on')
