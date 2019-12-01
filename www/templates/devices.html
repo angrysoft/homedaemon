@@ -32,7 +32,7 @@
 {{ loader() }}
 {{ colorset() }}
 
-  <div class="container-fluid">
+  <div class="container-fluid" id="tabs">
     <div class="row around-xs tab scenes">
       {% for sc in scenes %}
         {{ scene(sc.get('name')) }}

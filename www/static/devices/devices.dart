@@ -33,8 +33,89 @@ class Page {
   }
 }
 
+class Tabs {
+  num currentTab = 0;
+  num lastTab;
+  List<DivElement> tabs;
+  bool _enable = true;
+  DivElement tabContainer;
+
+  Tabs() {
+    this.tabs = querySelectorAll('.tab');
+    this.tabContainer = querySelector('#tabs');
+    this.lastTab = tabs.length - 1;
+
+    Point tstart;
+    Point tend;
+    if (tabs.isNotEmpty) {
+      this.currentTab = 0;
+
+      if (window.localStorage.containsKey("currentTab")) {
+        this.currentTab = int.parse(window.localStorage["currentTab"]);
+      }
+
+      this.changeTab(this.currentTab);
+    }
+
+    this.tabContainer.onTouchStart.listen((e) {
+      tstart = new Point(e.touches[0].client.x, 0);
+    });
+
+    this.tabContainer.onTouchEnd.listen((e) {
+      if (this.enableTouch) {
+        tend = Point(e.changedTouches[0].client.x, 0);
+        num move = tstart.x - tend.x;
+        if (tend.distanceTo(tstart) > 100) {
+          if (move > 0) {
+            this.swipeLeft();
+          } else {
+            this.swipeRight();
+          }
+        }
+      }
+    });
+  }
+
+  bool get enableTouch {
+    return this._enable;
+  }
+
+  void set enableTouch(bool value) {
+    this._enable = value;
+  }
+
+  void swipeLeft() {
+    num nextTab = this.currentTab + 1;
+    if (this.lastTab >= nextTab) {
+      this.changeTab(nextTab);
+    } else {
+      this.changeTab(0);
+    }
+  }
+
+  void swipeRight() {
+    num nextTab = this.currentTab - 1;
+    if (nextTab >= 0) {
+      this.changeTab(nextTab);
+    } else {
+      this.changeTab(this.lastTab);
+    }
+  }
+
+  void changeTab(num tab) {
+    List<Element> active = querySelectorAll('.active');
+    active.forEach((a) {
+      a.classes.remove('active');
+    });
+    tabs[tab].classes.add('active');
+    this.currentTab = tab;
+    window.localStorage['currentTab'] = this.currentTab.toString();
+  }
+}
+
 Future main() async {
   new Page();
+  new Tabs();
 
   if (sw.isNotSupported) {
     _log('ServiceWorkers are not supported.');
