@@ -179,10 +179,10 @@ def event():
     yield "connecting"
     while True:
         if tcp.queue.not_empty():
-            # yield f'data: {tcp.queue.get()}\n\n'
-            yield f'loop'
+            yield f'data: {tcp.queue.get()}\n\n'
         else:
-            sleep(0.5)
+            sleep(0.1)
+        yield f'loop'
 
 db = Server()
 tcp = TcpClient()
