@@ -176,13 +176,12 @@ def msg():
         return 'empty'
 
 def event():
-    yield "connecting"
+    yield "data: hello\n\n"
     while True:
         if tcp.queue.not_empty():
             yield f'data: {tcp.queue.get()}\n\n'
         else:
             sleep(0.1)
-        yield f'loop'
 
 db = Server()
 tcp = TcpClient()
