@@ -165,7 +165,15 @@ def logout():
 @app.route('/stream')
 def stream():
     return Response(event(), mimetype='text/event-stream', headers={'Cache-Control': 'no-cache',
-                                                                    'Access-Control-Allow-Origin': '*'})
+                                                                    'Access-Control-Allow-Origin': '*',
+                                                                    'Connection': 'keep-alive'})
+
+@app.route('/msg')
+def msg():
+    if tcp.queue.not_empty():
+        return f'data: {tcp.queue.get()}\n\n'
+    else:
+        return 'empty'
 
 def event():
     yield "connecting"
