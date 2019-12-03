@@ -1,104 +1,70 @@
-
-import asyncio
 import jwt
-from pycouchdb import Server
 import json
 import socket
 import ssl
+from io import BytesIO
+import time
 
-class TcpClient:
-    def __init__(self):
-        super().__init__()
-        self.loop = asyncio.get_event_loop()
-         
-        db_srv = Server()
-        config = db_srv.db('config')
-        self.ip = config['tcp']['client']['ip']
-        self.port = config['tcp']['client']['port']
-        self.secret = config['tcp']['secret']
-        self.queue = Queue()
-        self.loop.create_task(self.conn_watcher())
-        self.loop.create_task(self.msg_reader())
-        self.reader = None
-        self.writer = None
-        self.ssl_context = ssl.create_default_context()
-        # self.ssl_context = ssl._create_unverified_context()
+class TcpRead:
+    def __init__(self, ip, port, secret):
+        self.ip = ip
+        self.port = port
+        self.secret = secret
     
-    def run(self):
-        try:
-            self.loop.run_forever()
-        except KeyboardInterrupt:
-            self.loop.stop()
-
-    async def connect(self):
-        print('Connect...')
-        try:
-            self.reader, self.writer = await asyncio.open_connection(self.ip,
-                                                                     self.port, ssl=self.ssl_context)
-        except ConnectionRefusedError as err:
-            print(err)
-            return
-        except OSError as err:
-            print(err)
-            return
-        encoded = jwt.encode({'api':'1.0', 'client': 'www'}, self.secret, algorithm='HS256')
-        self.writer.write(encoded + '\n'.encode())
-        await self.writer.drain()
-        self.loop.create_task(self.msg_reader())
+    def reader(self):
+        context = ssl.create_default_context()
+        context.check_hostname = False
+        with socket.create_connection((self.ip, self.port)) as sock:
+            with context.wrap_socket(sock, server_hostname='ferdek.angrysoft.ovh') as ssock:
+                encoded = jwt.encode({'api':'1.0', 'client': 'www'}, self.secret, algorithm='HS256')
+                ssock.send(encoded + '\n'.encode())
         
-    async def conn_watcher(self, interval=5):
-        while self.loop.is_running():
-            if not self.is_connected():
-                await self.connect()
-            await asyncio.sleep(interval)
+                with BytesIO() as buffer:
+                    while True:
+                        try:
+                            resp = ssock.recv(1024)       # Read in some number of bytes -- balance this
+                        except BlockingIOError:
+                            print("sleeping")           # Do whatever you want here, this just
+                            # time.sleep(2)               #   illustrates that it's nonblocking
+                        else:
+                            buffer.write(resp)          # Write to the BytesIO object
+                            buffer.seek(0)              # Set the file pointer to the SoF
+                            start_index = 0             # Count the number of characters processed
+                            for line in buffer:
+                                start_index += len(line)
+                                line = line.decode()
+                                yield line.strip()       # Do something with your line
+
+                            """ If we received any newline-terminated lines, this will be nonzero.
+                                In that case, we read the remaining bytes into memory, truncate
+                                the BytesIO object, reset the file pointer and re-write the
+                                remaining bytes back into it.  This will advance the file pointer
+                                appropriately.  If start_index is zero, the buffer doesn't contain
+                                any newline-terminated lines, so we set the file pointer to the
+                                end of the file to not overwrite bytes.
+                            """
+                    
+                            if start_index:
+                                buffer.seek(start_index)
+                                remaining = buffer.read()
+                                buffer.truncate(0)
+                                buffer.seek(0)
+                                buffer.write(remaining)
+                            else:
+                                buffer.seek(0, 2)
+
+
+class TcpWrite:
+    def __init__(self, ip, port, secret):
+        self.ip = ip
+        self.port = port
+        self.secret = secret
     
-    async def msg_reader(self):
-        while self.reader and not self.reader.at_eof():
-            msg = await self.reader.readline()
-            msg = msg.strip()
-            self.queue.put(msg.decode())
-             
-    async def _send(self, msg):
-        if not self.is_connected():
-            print('closed')
-            return
-        
-        if type(msg) == bytes:
-            msg += b'\n'
-        else:
-            msg = f'{msg}\n'.encode()
-        self.writer.write(msg)
-        await self.writer.drain()
-    
-    def send(self, msg):
-        asyncio.run(self._send(msg))
-    
-    def is_connected(self):
-        if self.writer is None or self.writer.is_closing() or self.reader.at_eof():
-            return False
-        else:
-            return True
-
-class Queue:
-    def __init__(self):
-        self._queue = None
-        self.lock = asyncio.Lock()
-
-    def put(self, item):
-        self._queue = item
-
-    def get(self):
-        if self._queue:
-                msg = self._queue
-                self._queue = None
-                return msg
-        else:
-            return None
-
-    def not_empty(self):
-        if self._queue:
-            return True
-        else:
-            return False
-
-     
+    def writer(self, msg):
+        context = ssl.create_default_context()
+        context.check_hostname = False
+        with socket.create_connection((self.ip, self.port)) as sock:
+            with context.wrap_socket(sock, server_hostname='ferdek.angrysoft.ovh') as ssock:
+                encoded = jwt.encode({'api':'1.0', 'client': 'www'}, self.secret, algorithm='HS256')
+                ssock.send(encoded + '\n'.encode())
+                ssock.send(msg + '\n'.encode())

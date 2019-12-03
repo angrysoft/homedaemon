@@ -38,7 +38,7 @@ import jwt
 from os import urandom
 from google.oauth2 import id_token
 from google.auth.transport import requests as g_requests
-from utils import TcpClient
+from utils import TcpRead, TcpWrite
 from threading import Thread
 from time import sleep
 
@@ -86,7 +86,8 @@ def dev(sid):
 @app.route('/dev/write', methods=['GET', 'POST'])
 @login_required
 def dev_write():
-    tcp.send(request.data)
+    tcp = TcpWrite(tcp_config['ip'], tcp_config['port'], tcp_config['secret'])
+    tcp.writer(request.data)
     return 'ok'
 
 
@@ -163,31 +164,23 @@ def logout():
     return render_template('logout.html')
 
 @app.route('/stream')
+@login_required
 def stream():
     return Response(event(), mimetype='text/event-stream', headers={'Cache-Control': 'no-cache',
                                                                     'Access-Control-Allow-Origin': '*',
                                                                     'Connection': 'keep-alive'})
 
-@app.route('/msg')
-def msg():
-    if tcp.queue.not_empty():
-        return f'data: {tcp.queue.get()}\n\n'
-    else:
-        return 'empty'
-
 def event():
     yield "data: hello\n\n"
-    while True:
-        if tcp.queue.not_empty():
-            yield f'data: {tcp.queue.get()}\n\n'
-        else:
-            sleep(0.1)
+    tcp = TcpRead(tcp_config['ip'], tcp_config['port'], tcp_config['secret'])
+    for msg in tcp.reader():
+        yield f'data: {msg}\n\n'
+
 
 db = Server()
-tcp = TcpClient()
-
-watcher = Thread(name='tcp', target=tcp.run)
-watcher.start()
+config = db.db('config')
+tcp_config = config['tcp']['client']
+tcp_config['secret'] = config['tcp']['secret']
 
 app.secret_key = urandom(24)
 app.config.update(
