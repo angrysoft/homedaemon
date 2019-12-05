@@ -76,7 +76,7 @@ class HomeDaemon:
             asyncio.run(self.inputs['websocket_client'].send(msg))
 
     def _load_inputs(self):
-        for _input_name in self.inputs_list:
+        for _input_name in self.config['inputs']['list']:
             _input = importlib.import_module(f'homedaemon.inputs.{_input_name}')
             inst = _input.Input(self.queue, self.config)
             self.inputs[inst.name] = inst

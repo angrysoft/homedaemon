@@ -6,10 +6,10 @@ class Device:
     def __new__(cls, data, daemon):
         model = data.get('model')
         if model == 'ctrl_neutral1':
-            from .aquaradevices import CtrlNeutral
+            from .aqaradevices import CtrlNeutral
             return CtrlNeutral(data, daemon)
         elif model == 'ctrl_neutral2':
-            from .aquaradevices import CtrlNeutral2
+            from .aqaradevices import CtrlNeutral2
             return CtrlNeutral2(data, daemon)
         elif model == '86sw1':
             return BaseDevice(data, daemon)
@@ -26,19 +26,19 @@ class Device:
         elif model == 'motion':
             return BaseDevice(data, daemon)
         elif model == 'sensor_motion.aq2':
-            from .aquaradevices import SensorMotionAq2
+            from .aqaradevices import SensorMotionAq2
             return SensorMotionAq2(data, daemon)
         elif model == 'sensor_switch.aq2':
-            from .aquaradevices import SensorSwitchAq2
+            from .aqaradevices import SensorSwitchAq2
             return SensorSwitchAq2(data, daemon)
         elif model == 'plug':
-            from .aquaradevices import Plug
+            from .aqaradevices import Plug
             return Plug(data, daemon)
         elif model == 'switch':
             return BaseDevice(data, daemon)
         elif model == 'gateway':
-            from .aquaradevices import AquaraGateway
-            return AquaraGateway(data, daemon)
+            from .aqaradevices import AqaraGateway
+            return AqaraGateway(data, daemon)
         elif model == 'dallastemp':
             return BaseDevice(data, daemon)
         elif model == 'rgbstrip':
@@ -67,7 +67,7 @@ class BaseDevice:
         self.device_data = daemon.device_data[self.sid]
         self.lock = RLock()
         self.cmds = {'write': self.write,
-                     'report': self.report,
+                     'report': self._report,
                      'heartbeat': self.heartbeat}
         
 
@@ -85,9 +85,12 @@ class BaseDevice:
 
     def heartbeat(self, data):
         pass
-
-    def report(self, data):
+    
+    def _report(self, data):
         self.daemon.notify_clients(json.dumps(data))
+        self.report(data)
+        
+    def report(self, data):
         self.update_dev_data(data.get('data'))
 
     def update_dev_data(self, data):
