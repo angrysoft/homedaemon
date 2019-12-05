@@ -65,16 +65,21 @@ def index():
     return render_template('index.html', devices=sorted(devs, key=operator.itemgetter('name')), devdata=devs_data, scenses=[])
 
 
-@app.route('/dev/config')
-@login_required
-def dev_conf():
-    ret = db['config']['websocket']
-    config = {'urltoken': ret['urltoken'],
-              'secret': jwt.encode({'api':'1.0', 'client': 'browser'}, ret['secret'], algorithm='HS256').decode(),
-              'internet': ret['internet'],
-              'localnetwork': ret['localnetwork']}
-    config.update(ret['webserver'])
-    return json.dumps(config)
+# @app.route('/dev/config')
+# @login_required
+# def dev_conf():
+#     ret = db['config']['websocket']
+#     config = {'urltoken': ret['urltoken'],
+#               'secret': jwt.encode({'api':'1.0', 'client': 'browser'}, ret['secret'], algorithm='HS256').decode(),
+#               'internet': ret['internet'],
+#               'localnetwork': ret['localnetwork']}
+#     config.update(ret['webserver'])
+#     return json.dumps(config)
+
+
+@app.route('/scenes/list')
+def scenes_list():
+    return ''
 
 
 @app.route('/dev/<sid>')
@@ -82,6 +87,7 @@ def dev_conf():
 def dev(sid):
     ret = db['devices'].get(sid)
     return json.dumps(ret)
+
 
 @app.route('/dev/write', methods=['GET', 'POST'])
 @login_required
