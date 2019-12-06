@@ -8,8 +8,8 @@ from os.path import exists
 
 
 class Input(BaseInput):
-    def __init__(self, queue, config):
-        super(Input, self).__init__(queue)
+    def __init__(self, bus, config):
+        super(Input, self).__init__(bus)
         self.name = 'Arduino'
         self.arduino = Serial()
         self.port = config['arduino']['port']
@@ -17,7 +17,6 @@ class Input(BaseInput):
             self.port = self._detect_port()
         self.baudrate = config['arduino']['baudrate']
         self.timeout = 0
-        self.queue = queue
         self.stopping = False
 
     async def _connect(self):
@@ -54,7 +53,7 @@ class Input(BaseInput):
             while not b == '\n':
                 data += b
                 b = self.arduino.read().decode()
-            self.queue.put(json.loads(data))
+            self.bus.emit_cmd(json.loads(data))
         except json.JSONDecodeError as er:
             stderr.write(f'{er}, : {data}\n')
         except SerialException:

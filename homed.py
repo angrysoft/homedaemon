@@ -36,6 +36,7 @@ from pycouchdb import Server
 from systemd.journal import JournalHandler
 from homedaemon.devices import Device
 from homedaemon.scenes import Triggers
+from homedaemon.bus import Bus
 
 logger = logging.getLogger('homed')
 
@@ -44,17 +45,7 @@ class HomeDaemon:
     def __init__(self):
         self.loop = asyncio.get_event_loop()
         self.inputs = dict()
-        self.inputs_list = [
-            'gateway',
-            'arduino',
-            'tcpclient',
-            # 'tcp',
-            # 'websocket',
-            # 'websocket_client',
-            'yeelight',
-            'timer'
-        ]
-        self.queue = Queue()
+        self.bus = Bus()
         self.db = Server()
         self.config = self.db['config']
         self.devicesdb = self.db['devices']
@@ -66,19 +57,11 @@ class HomeDaemon:
         self.scenes = dict()
         self.triggers = Triggers()
 
-    def notify_clients(self, msg):
-        # TODO subscribe msg  + msg bus.... 
-        if 'tcpclient' in self.inputs:
-            asyncio.run(self.inputs['tcpclient'].send(msg))
-        if 'websocket' in self.inputs:
-            asyncio.run(self.inputs['websocket'].send(msg))
-        if 'websocket_client' in self.inputs:
-            asyncio.run(self.inputs['websocket_client'].send(msg))
 
     def _load_inputs(self):
         for _input_name in self.config['inputs']['list']:
             _input = importlib.import_module(f'homedaemon.inputs.{_input_name}')
-            inst = _input.Input(self.queue, self.config)
+            inst = _input.Input(self.bus, self.config)
             self.inputs[inst.name] = inst
             self.logger.info(f'load input: {inst.name}')
             self.inputs[inst.name].start()
@@ -111,15 +94,13 @@ class HomeDaemon:
     def run(self):
         self.logger.info(f'main thread {current_thread()} loop {id(self.loop)}')
         self._load_devices()
-        self._load_scenes()
+        # self._load_scenes()
         self._load_inputs()
         self.loop.add_signal_handler(signal.SIGINT, self.stop)
         self.loop.add_signal_handler(signal.SIGHUP, self.stop)
         self.loop.add_signal_handler(signal.SIGQUIT, self.stop)
         self.loop.add_signal_handler(signal.SIGTERM, self.stop)
 
-        watcher = Thread(name='watcher', target=self.devices_watcher)
-        self.loop.call_later(0.5, watcher.start)
 
         try:
             self.logger.debug('Daemon is listening')
@@ -131,64 +112,6 @@ class HomeDaemon:
         self.logger.info('Stop homed')
         self.loop.stop()
 
-    def devices_watcher(self):
-        """This method is """
-        self.logger.debug(f'Waching Queue {current_thread()}')
-        while self.loop.is_running():
-            if self.queue.empty():
-                sleep(0.1)
-                continue
-            data = self.queue.get()
-            if data.get('cmd') == 'report':
-                try:
-                    self.logger.debug(f'trig: {data}')
-                    self.triggers.on_event(data)
-                except:
-                    self.logger.error(f'ooops something went wrong {data}')
-
-            sid = data.get('sid')
-            if sid in self.workers:
-                try:
-                    self.workers[sid].do(data)
-                except ValueError as err:
-                    self.logger.error(f'{sid} {err}')
-            elif sid in self.scenes:
-                try:
-                    self.scenes[sid].do(data.get('data', {}))
-                except ValueError as err:
-                    self.logger.error(f'{sid} {err}')
-            else:
-                self.logger.error(f'Unknown sid: {data}')
-        self.logger.debug('Stop watching')
-
-
-class Queue:
-    def __init__(self):
-        self._queue = list()
-        self.lock = RLock()
-
-    def put(self, item):
-        with self.lock:
-            if type(item) is not dict:
-                try:
-                    item = json.loads(item)
-                except json.JSONDecodeError:
-                    logger.warning(f'Wrong data: {item}')
-                    return
-            self._queue.append(item)
-
-    def get(self):
-        if self._queue:
-            with self.lock:
-                return self._queue.pop(0)
-        else:
-            return None
-
-    def empty(self):
-        if self._queue:
-            return False
-        else:
-            return True
 
 
 if __name__ == '__main__':

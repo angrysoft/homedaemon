@@ -7,13 +7,12 @@ import json
 
 
 class Input(BaseInput):
-    def __init__(self, queue, config):
-        super(Input, self).__init__(queue)
+    def __init__(self, bus, config):
+        super(Input, self).__init__(bus)
         self.name = 'tcpclient'
         self.ip = config['tcp']['client']['ip']
         self.port = config['tcp']['client']['port']
         self.secret = config['tcp']['secret']
-        self.queue = queue
         self.loop.create_task(self.conn_watcher())
         self.reader = None
         self.writer = None
@@ -46,7 +45,7 @@ class Input(BaseInput):
         while self.reader and not self.reader.at_eof():
             msg = await self.reader.readline()
             msg = msg.strip()
-            self.queue.put(msg.decode())
+            self.bus.emit_cmd(msg.decode())
              
     async def send(self, msg):
         if not self.is_connected():
