@@ -66,33 +66,18 @@ class BaseDevice:
         self.sid = data.get('sid')
         self.device_data = daemon.device_data[self.sid]
         self.lock = RLock()
-        self.daemon.bus.on(self.sid, self.do)
-        self.cmds = {'write': self.write,
-                     'report': self._report,
-                     'heartbeat': self.heartbeat}
-        
-
-    def do(self, data):
-        if 'data' in data:
-            self.cmds.get(data.get('cmd'), self._unknown_cmd)(data)
-        else:
-            self.cmds.get(data.get('cmd'), self._unknown_cmd)()
-
-    def _unknown_cmd(self, data):
-        self.daemon.logger.error(f'Unknown command:  {data}')
+        self.daemon.bus.on('report', self.sid, self.report, self.update_dev_data)
+        self.daemon.bus.on('write', self.sid, self.write)
+        self.daemon.bus.on('heartbeat', self.sid, self.heartbeat)
 
     def write(self, data):
         pass
 
     def heartbeat(self, data):
         pass
-    
-    def _report(self, data):
-        # self.daemon.emitjson.dumps(data))
-        self.report(data)
         
     def report(self, data):
-        self.update_dev_data(data.get('data'))
+        pass
 
     def update_dev_data(self, data):
         with self.lock:

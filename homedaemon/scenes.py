@@ -19,7 +19,9 @@ class BaseScene(Thread):
     
     @triggers.setter
     def triggers(self, value):
-        self._triggers.append(Trigger(value, self))
+        trig = Trigger(value, self)
+        self._triggers.append(trig)
+        self.daemon.bus.on('report', trig.sid, trig.pull)
         
     def do(self, cmd):
         if 'status' in cmd:
@@ -47,27 +49,6 @@ class BaseScene(Thread):
         return self.daemon.workers.get(sid)
 
 
-class Triggers:
-    def __init__(self):
-        self._triggers = dict()
-    
-    def register(self, trigger):
-        if not isinstance(trigger, Trigger):
-            raise ValueError('arg need to by Trigger instance')
-        if trigger.sid not in self._triggers:
-            self._triggers[trigger.sid] = list()
-        self._triggers[trigger.sid].append(trigger)
-
-    def unregister(self, sid):
-        if sid in self._triggers:
-            del self._triggers[sid]
-
-    def on_event(self, event):
-        for trigger in self._triggers.get(event.get('sid'), []):
-            if event.get('data', dict()).get(trigger.event) == trigger.value:
-                trigger.pull()
-
-
 class Trigger:
     sid = ''
     event = ''
@@ -79,8 +60,9 @@ class Trigger:
                 self.sid, self.event, self.value = _values
         self._scene = scene
     
-    def pull(self):
-        self._scene.do({'status': 'on'})
+    def pull(self, event):
+        if event.get('data', dict()).get(self.event) == self.value:
+            self._scene.do({'status': 'on'})
     
     def __repr__(self):
         return f'Trigger: {self.sid}.{self.event}.{self.value}'

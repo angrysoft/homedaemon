@@ -8,8 +8,8 @@ class RgbStrip(BaseDevice):
         self.writeable = True
         self.short_id = data.get('short_id')
         self.name = data.get('name')
-        self.cmds['off'] = self.off
-        self.cmds['on'] = self.on
+        # self.cmds['off'] = self.off
+        # self.cmds['on'] = self.on
         # https://andi-siess.de/rgb-to-color-temperature/
         self.kelvin_table = {'1700': {'red': '255', 'green': '121', 'blue': '0'},
                              '1800': {'red': '255', 'green': '126', 'blue': '0'},

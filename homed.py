@@ -35,7 +35,6 @@ from time import sleep
 from pycouchdb import Server
 from systemd.journal import JournalHandler
 from homedaemon.devices import Device
-from homedaemon.scenes import Triggers
 from homedaemon.bus import Bus
 
 logger = logging.getLogger('homed')
@@ -55,7 +54,6 @@ class HomeDaemon:
         self.token = None
         self.workers = dict()
         self.scenes = dict()
-        self.triggers = Triggers()
 
 
     def _load_inputs(self):
@@ -83,9 +81,6 @@ class HomeDaemon:
                     else:
                         self.logger.warning('scene duplcate name skiping ... {inst.name}')
                         continue
-                    for trigger in inst.triggers:
-                        self.triggers.register(trigger)
-                        self.logger.debug(f'register trigger {trigger.sid} for scene {inst.name}')
                     self.logger.info(f'loaded {inst.name}')
                     scene_list.append({'name': inst.name, 'automaitc': inst.automatic })
             self.config['scenes_list'] = {'list':scene_list}
