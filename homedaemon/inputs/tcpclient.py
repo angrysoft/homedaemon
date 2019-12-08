@@ -17,6 +17,7 @@ class Input(BaseInput):
         self.reader = None
         self.writer = None
         self.ssl_context = ssl.create_default_context()
+        self.bus.on('report', '*', print)
         # self.ssl_context = ssl._create_unverified_context()
 
     async def connect(self):
@@ -45,7 +46,13 @@ class Input(BaseInput):
         while self.reader and not self.reader.at_eof():
             msg = await self.reader.readline()
             msg = msg.strip()
-            self.bus.emit_cmd(msg.decode())
+            print(msg)
+            try:
+                msg = json.loads(msg)
+            except json.JSONDecodeError as err:
+                print(err)
+                return
+            self.bus.emit_cmd(msg)
              
     async def send(self, msg):
         if not self.is_connected():
