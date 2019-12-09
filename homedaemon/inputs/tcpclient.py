@@ -17,7 +17,7 @@ class Input(BaseInput):
         self.reader = None
         self.writer = None
         self.ssl_context = ssl.create_default_context()
-        self.bus.on('report', '*', print)
+        self.bus.on('report', '*', self.send)
         # self.ssl_context = ssl._create_unverified_context()
 
     async def connect(self):
@@ -54,7 +54,7 @@ class Input(BaseInput):
                 return
             self.bus.emit_cmd(msg)
              
-    async def send(self, msg):
+    async def _send(self, msg):
         if not self.is_connected():
             print('closed')
             return
@@ -70,6 +70,9 @@ class Input(BaseInput):
             await self.writer.drain()
         except ConnectionRefusedError as err:
             self.writer = None
+    
+    def send(self, msg):
+        asyncio.run(self._send(msg))
     
     def is_connected(self):
         if self.writer is None or self.writer.is_closing() or self.reader.at_eof():

@@ -95,7 +95,11 @@ class HomeDaemon:
         self.loop.add_signal_handler(signal.SIGHUP, self.stop)
         self.loop.add_signal_handler(signal.SIGQUIT, self.stop)
         self.loop.add_signal_handler(signal.SIGTERM, self.stop)
-
+        
+        # for e in self.bus._events:
+        #     print(f'{e}')
+        #     for x in self.bus._events[e]:
+        #         print(f'\t{x} {self.bus._events[e][x]}\n')
 
         try:
             self.logger.debug('Daemon is listening')

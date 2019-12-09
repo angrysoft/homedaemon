@@ -4,7 +4,7 @@ from pycouchdb import Server
 import json
 
 
-dblist = ('config', 'devices', 'devices-data')
+dblist = ('config',)#, 'devices', 'devices-data')
 srv = Server()
 dump = {}
 for dbname in dblist:

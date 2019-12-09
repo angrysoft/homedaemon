@@ -128,13 +128,10 @@ class Register:
             self.devices_data[d.get('sid')] = data
 
     def add_config(self):
-        with open('../files/angryhome.json') as jconf:
+        with open('config.json') as jconf:
             config = json.load(jconf)
-
-            for c in config:
-                self.config[c] = config[c]
-            self.config['panel'] = {'user': 'admin',
-                                   'password': '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918'}
+            for c in config.get('config'):
+                self.config.add(c)
             print('Config added')
     
         

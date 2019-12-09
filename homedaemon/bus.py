@@ -22,24 +22,33 @@ class Bus:
             self._events[_event] = list()
     
     def emit_cmd(self, event):
-        print(f'debug: {event}')
         awitable = list()
-        try:
-            for ev in self._events[event.get('cmd')][event.get('sid')]:
-                # awitable.append(ev(event))
+        event_list = self._events[event.get('cmd')].get(event.get('sid'), [])
+        event_list.extend(self._events[event.get('cmd')].get('*', []))
+        
+        for ev in event_list:
+            if self.is_async(ev):
+                print(f'async {ev.__name__} {event}')
+                asyncio.ensure_future(ev(event))
+            else:
+                print(f'sync {ev.__name__} {event}')
                 ev(event)
-            # self._event(awitable)
-            # Broadcast 
-            for ev in self._events[event.get('cmd')]['*']:
-                print(f'call {ev},')
-                ev(event)
-        except KeyError as err:
-            print(f'emit {err}')
-    
-    def _event(self, awitable):
-        loop = asyncio.get_event_loop()
+            
+        # self._event(awitable)
+    def is_async(self, ev):
+        if asyncio.iscoroutine(ev) or asyncio.iscoroutinefunction(ev):
+            return True
+        else:
+            return False
+            
+    def _event(self, ev):
         try:
-            loop.run_until_complete(asyncio.gather(awitable))
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            
+        try:
+            loop.run_until_complete(ev)
         finally:
             loop.stop()
     
