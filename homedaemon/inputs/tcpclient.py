@@ -7,8 +7,8 @@ import json
 
 
 class Input(BaseInput):
-    def __init__(self, bus, config):
-        super(Input, self).__init__(bus)
+    def __init__(self, bus, config, loop):
+        super(Input, self).__init__(bus, loop)
         self.name = 'tcpclient'
         self.ip = config['tcp']['client']['ip']
         self.port = config['tcp']['client']['port']
@@ -54,7 +54,7 @@ class Input(BaseInput):
                 return
             self.bus.emit_cmd(msg)
              
-    async def _send(self, msg):
+    async def send(self, msg):
         if not self.is_connected():
             print('closed')
             return
@@ -70,9 +70,6 @@ class Input(BaseInput):
             await self.writer.drain()
         except ConnectionRefusedError as err:
             self.writer = None
-    
-    def send(self, msg):
-        asyncio.run(self._send(msg))
     
     def is_connected(self):
         if self.writer is None or self.writer.is_closing() or self.reader.at_eof():

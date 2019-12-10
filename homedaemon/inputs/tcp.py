@@ -3,8 +3,8 @@ import asyncio
 
 
 class Input(BaseInput):
-    def __init__(self, bus, config):
-        super(Input, self).__init__(bus)
+    def __init__(self, bus, config, loop):
+        super(Input, self).__init__(bus, loop)
         self.name = 'Tcp'
         self.host = config['tcp']['ip']
         self.port = config['tcp']['port']

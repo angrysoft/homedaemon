@@ -1,10 +1,12 @@
 
 import asyncio
+from datetime import datetime
 
 
 class Bus:
-    def __init__(self):
+    def __init__(self, loop):
         self._events = dict()
+        self.loop = loop
         
     def on(self, event, _id, *handlers):
         """ Register event"""
@@ -28,10 +30,11 @@ class Bus:
         
         for ev in event_list:
             if self.is_async(ev):
-                print(f'async {ev.__name__} {event}')
-                asyncio.ensure_future(ev(event))
+                # asyncio.run_coroutine_threadsafe(ev(event), self.loop)
+                self.loop.run_until_complete(ev(event))
+                print(f'{datetime.now()} async {ev.__name__} {event}')
             else:
-                print(f'sync {ev.__name__} {event}')
+                print(f'{datetime.now()} sync {ev.__name__} {event}')
                 ev(event)
             
         # self._event(awitable)

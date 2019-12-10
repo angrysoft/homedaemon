@@ -3,13 +3,14 @@ import websockets
 import sys
 import ssl
 import jwt
+import json
 from homedaemon.inputs import BaseInput
 from urllib.parse import urlparse, parse_qs
 
 
 class Input(BaseInput):
-    def __init__(self, queue, config):
-        super(Input, self).__init__(queue)
+    def __init__(self, bus, config, loop):
+        super(Input, self).__init__(bus, loop)
         self.name = 'websocket'
         self.url = config['websocket']['ip']
         self.port = config['websocket']['port']
@@ -62,7 +63,12 @@ class Input(BaseInput):
         if _id not in self.clients:
             await self._register(wsock, msg)
             return        
-        self.queue.put(msg)
+        try:
+            msg = json.loads(msg)
+        except json.JSONDecodeError as err:
+            print(err)
+            return
+        self.bus.emit_cmd(msg)
     
     def _connect_token_check(self, path):
         args = urlparse(path)

@@ -4,8 +4,8 @@ from datetime import datetime
 
 
 class Input(BaseInput):
-    def __init__(self, bus, config):
-        super(Input, self).__init__(bus)
+    def __init__(self, bus, config, loop):
+        super(Input, self).__init__(bus, loop)
         self.name = 'timer'
         self.config = config
         self.loop.create_task(self.timer())

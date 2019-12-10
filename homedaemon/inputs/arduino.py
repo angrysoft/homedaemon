@@ -8,8 +8,8 @@ from os.path import exists
 
 
 class Input(BaseInput):
-    def __init__(self, bus, config):
-        super(Input, self).__init__(bus)
+    def __init__(self, bus, config, loop):
+        super(Input, self).__init__(bus, loop)
         self.name = 'Arduino'
         self.arduino = Serial()
         self.port = config['arduino']['port']
@@ -70,8 +70,5 @@ class Input(BaseInput):
 
     def run(self):
         self.loop.create_task(self._connect())
-        try:
-            self.loop.run_forever()
-        except KeyboardInterrupt:
-            pass
+        
 

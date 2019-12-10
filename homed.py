@@ -44,7 +44,7 @@ class HomeDaemon:
     def __init__(self):
         self.loop = asyncio.get_event_loop()
         self.inputs = dict()
-        self.bus = Bus()
+        self.bus = Bus(self.loop)
         self.db = Server()
         self.config = self.db['config']
         self.devicesdb = self.db['devices']
@@ -59,7 +59,7 @@ class HomeDaemon:
     def _load_inputs(self):
         for _input_name in self.config['inputs']['list']:
             _input = importlib.import_module(f'homedaemon.inputs.{_input_name}')
-            inst = _input.Input(self.bus, self.config)
+            inst = _input.Input(self.bus, self.config, self.loop)
             self.inputs[inst.name] = inst
             self.logger.info(f'load input: {inst.name}')
             self.inputs[inst.name].start()
