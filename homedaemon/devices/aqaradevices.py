@@ -79,7 +79,7 @@ class SensorMotionAq2(AqaraBaseDevice):
     
     def report(self, data):
         if 'status' in data['data']:
-            data['data']['status'] = datetime.now().isoformat()
+            data['data']['when'] = datetime.now().isoformat()
         self.update_dev_data(data['data'])
     
     @property

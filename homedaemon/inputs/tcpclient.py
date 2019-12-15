@@ -5,7 +5,6 @@ import socket
 import jwt
 import json
 
-
 class Input(BaseInput):
     def __init__(self, bus, config, loop):
         super(Input, self).__init__(bus, loop)
@@ -46,7 +45,6 @@ class Input(BaseInput):
         while self.reader and not self.reader.at_eof():
             msg = await self.reader.readline()
             msg = msg.strip()
-            print(msg)
             try:
                 msg = json.loads(msg)
             except json.JSONDecodeError as err:

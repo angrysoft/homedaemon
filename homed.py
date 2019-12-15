@@ -55,7 +55,6 @@ class HomeDaemon:
         self.workers = dict()
         self.scenes = dict()
 
-
     def _load_inputs(self):
         for _input_name in self.config['inputs']['list']:
             _input = importlib.import_module(f'homedaemon.inputs.{_input_name}')
@@ -85,11 +84,10 @@ class HomeDaemon:
                     scene_list.append({'name': inst.name, 'automaitc': inst.automatic })
             self.config['scenes_list'] = {'list':scene_list}
 
-
     def run(self):
         self.logger.info(f'main thread {current_thread()} loop {id(self.loop)}')
         self._load_devices()
-        # self._load_scenes()
+        self._load_scenes()
         self._load_inputs()
         self.loop.add_signal_handler(signal.SIGINT, self.stop)
         self.loop.add_signal_handler(signal.SIGHUP, self.stop)
@@ -99,7 +97,9 @@ class HomeDaemon:
         # for e in self.bus._events:
         #     print(f'{e}')
         #     for x in self.bus._events[e]:
-        #         print(f'\t{x} {self.bus._events[e][x]}\n')
+        #         print(f'\t{x}')
+        #         for y in self.bus._events[e][x]:
+        #             print(f'\t\t{y.__name__}')
 
         try:
             self.logger.debug('Daemon is listening')
