@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 
 class AqaraModels:
-    models = [
+    models = (
         'ctrl_neutral1',
         'ctrl_neutral2',
         '86sw1',
@@ -15,7 +15,13 @@ class AqaraModels:
         'sensor_motion.aq2',
         'sensor_switch.aq2',
         'plug',
-        ]
+        )
+    def __contains__(self, key):
+        if key in self.models:
+            return True
+        else:
+            return False
+        
 
 class AqaraDevice:
     pass
