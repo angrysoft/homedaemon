@@ -31,7 +31,6 @@ class Bus:
         for ev in event_list:
             if self.is_async(ev):
                 task = asyncio.run_coroutine_threadsafe(ev(event), self.loop)
-                # task.add_done_callback(functools.partial(self._remove_task, task))
                 print(f'{datetime.now()} async {ev.__name__} {ev}')
             else:
                 print(f'{datetime.now()} sync {ev.__name__} {ev}')
@@ -42,17 +41,6 @@ class Bus:
             return True
         else:
             return False
-            
-    def _event(self, ev):
-        try:
-            loop = asyncio.get_event_loop()
-        except RuntimeError:
-            loop = asyncio.new_event_loop()
-            
-        try:
-            loop.run_until_complete(ev)
-        finally:
-            loop.stop()
     
     def emit(self, event_id, msg=None):
         print(f'debug: {event_id}, {msg}')

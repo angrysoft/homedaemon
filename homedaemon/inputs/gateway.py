@@ -7,6 +7,6 @@ class Input(BaseInput):
         super(Input, self).__init__(bus, loop)
         self.name = 'AquaraGateway'
         self.gw = GatewayWatcher(self.bus.emit_cmd, loop=self.loop)
-        self.loop.run_until_complete(self.gw.listen())
+        self.loop.create_task(self.gw.listen())
 
 

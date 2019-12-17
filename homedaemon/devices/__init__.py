@@ -1,8 +1,18 @@
 from threading import RLock, Thread
 import json
+from aqaradevices import AqaraDevice
 
+class Devices:
+    def __init__(self):
+        self._devices = dict()
+    
+    def load(self, data):
+        model = data.get('model')
+        if model in AqaraModels:
+            self._devices[data.get('sid')] = AqaraDevice(data)
+        
 
-class Device:
+class Device__:
     def __new__(cls, data, daemon):
         model = data.get('model')
         if model == 'ctrl_neutral1':

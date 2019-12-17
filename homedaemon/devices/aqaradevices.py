@@ -3,6 +3,22 @@ from aquara import Gateway
 import json
 from datetime import datetime
 
+class AqaraModels:
+    models = [
+        'ctrl_neutral1',
+        'ctrl_neutral2',
+        '86sw1',
+        '86sw2',
+        'sensor_ht',
+        'weather.v1',
+        'magnet',
+        'sensor_motion.aq2',
+        'sensor_switch.aq2',
+        'plug',
+        ]
+
+class AqaraDevice:
+    pass
 
 class AqaraBaseDevice(BaseDevice):
     def __init__(self, data, daemon):
