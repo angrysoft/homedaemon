@@ -27,8 +27,3 @@ class Devices:
     
     def __contains__(self, key):
         return key in self._devices
-
-
-    
-    
-    
