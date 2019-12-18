@@ -8,11 +8,11 @@ class Devices:
     
     def load(self, data):
         model = data.get('model')
-        if model in AqaraModels:
+        if model in aqara_models:
             self._devices[data.get('sid')] = AqaraDevice(data)
         
 
-class Device__:
+class Device:
     def __new__(cls, data, daemon):
         model = data.get('model')
         if model == 'ctrl_neutral1':
