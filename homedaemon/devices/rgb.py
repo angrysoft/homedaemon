@@ -1,5 +1,9 @@
-from . import BaseDevice
+from .base import BaseDevice
 import json
+
+class RgbDevice:
+    def __init__(self, data):
+        pass
 
 
 class RgbStrip(BaseDevice):

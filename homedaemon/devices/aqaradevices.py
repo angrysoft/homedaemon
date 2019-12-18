@@ -1,26 +1,37 @@
-from . import BaseDevice, ButtonOnOff, ButtonToggleOnOff
-from aquara import Gateway
+from .base import BaseDevice, ButtonOnOff, ButtonToggleOnOff
+from aqara import Gateway
 import json
 from datetime import datetime
 
-aqara_models = (
-    'ctrl_neutral1',
-    'ctrl_neutral2',
-    '86sw1',
-    '86sw2',
-    'sensor_ht',
-    'weather.v1',
-    'magnet',
-    'sensor_motion.aq2',
-    'sensor_switch.aq2',
-    'plug',
-    'gateway',
+# aqara_models = (
+#     'ctrl_neutral1',
+#     'ctrl_neutral2',
+#     '86sw1',
+#     '86sw2',
+#     'sensor_ht',
+#     'weather.v1',
+#     'magnet',
+#     'sensor_motion.aq2',
+#     'sensor_switch.aq2',
+#     'plug',
+#     'gateway',
     
-    )
+#     )
     
 
 class AqaraDevice:
-    pass
+    def __new__(cls, data, daemon):
+        return {
+            'ctrl_neutral1': CtrlNeutral,
+            'ctrl_neutral2': CtrlNeutral2,
+            'sensor_ht': SensorHt,
+            'weather.v1': WeatherV1,
+            'magnet': Magnet,
+            'sensor_motion.aq2': SensorMotionAq2,
+            'sensor_switch.aq2': SensorSwitchAq2,
+            'plug': Plug,
+            'gateway': AqaraGateway}.get(data['model'], AqaraBaseDevice)(data, daemon)
+
 
 class AqaraBaseDevice(BaseDevice):
     def __init__(self, data, daemon):
@@ -83,6 +94,14 @@ class Plug(AqaraBaseDevice):
 class SensorSwitchAq2(AqaraBaseDevice):
     pass
 
+class SensorHt(AqaraBaseDevice):
+    pass
+
+class WeatherV1(AqaraBaseDevice):
+    pass
+
+class Magnet(AqaraBaseDevice):
+    pass
 
 class AqaraGateway(AqaraBaseDevice):
     def __init__(self, data, daemon):

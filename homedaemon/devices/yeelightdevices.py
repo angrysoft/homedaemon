@@ -1,8 +1,13 @@
-from . import BaseDevice, ButtonOnOff
+from .base import BaseDevice, ButtonOnOff
 from yeelight import Bulb
 
 
-class YeeligthDevice(BaseDevice):
+class YeeligthDevice:
+    def __init__(self, data):
+        pass
+
+
+class Color(BaseDevice):
     def __init__(self, data, daemon):
         super(YeeligthDevice, self).__init__(data, daemon)
         self.support = data.get('support')

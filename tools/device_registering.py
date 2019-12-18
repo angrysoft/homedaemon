@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from aquara import Gateway
+from aqara import Gateway
 from pycouchdb import Server
 from yeelight import Yeelight
 from urllib.parse import urlparse
@@ -39,7 +39,9 @@ class Register:
                       'tv01': 'Bravia',
                       'rgb01': 'Tv Rgb',
                       '7c49eb17b2a0': 'Gateway',
-                      'timer': 'clock'}
+                      'timer': 'clock',
+                      'dallasDS0': 'Arduino',
+                      '158d00044638db': 'Kitchen Window'}
 
     def clear_db(self):
         print('Remove all device and device data')
@@ -71,21 +73,34 @@ class Register:
         gw = Gateway()
         ye = Yeelight()
         gt = gw.whois()
-
-        list_devs = gw.read_all_devices()
-        list_devs.append(gw.read_device(gt.get('sid')))
+        
+        list_devs = list()
+        
+        for dev in gw.read_all_devices():
+            dev['family'] = 'aqara'
+            list_devs.append(dev)
+        gateway = gw.read_device(gt.get('sid'))
+        gateway['family'] = 'aqara'
+        list_devs.append(gateway)
         print('Find aquara devices')
+        
         list_devs.append({'cmd': 'report', 'model': 'dallastemp',
-                          'sid': 'dallasDS0', 'data': {'temp': 0}})
-        list_devs.append({'cmd': 'report', 'model': 'rgbstrip', 'sid': 'rgb01',
+                          'sid': 'dallasDS0', 'family': 'custom',
+                          'data': {'temp': 0}})
+        list_devs.append({'cmd': 'report', 'model': 'rgbstrip',
+                          'sid': 'rgb01', 'family': 'rgb',
                           'data': {'red': 0, 'green': 0, 'blue': 0, 'bright': 0, 'ct': 1700,
                                    'default': {'red': 0, 'green': 0, 'blue': 0, 'bright': 0, 'ct': 1700},
                                    'status': 'off'}})
-        list_devs.append({'cmd': 'write', 'model': 'bravia', 'sid': 'tv01', 'ip': '192.168.1.129',
+        list_devs.append({'cmd': 'write', 'model': 'bravia',
+                          'sid': 'tv01', 'family': 'tv',
+                          'ip': '192.168.1.129',
                           'mac': 'FC:F1:52:2A:9B:1E',
                           'data': {'button': ''}})
+        
         list_devs.append({'cmd': 'report', 'model': 'timer',
-                          'sid': 'timer', 'data': {'dummy': 0}})
+                          'sid': 'timer', 'family': 'virtual',
+                          'data': {'dummy': 0}})
         print('Find custom devices')
         ye.discover()
         print('find yeelight devices')
@@ -106,6 +121,7 @@ class Register:
                          }
             d['support'].append('on')
             d['support'].append('off')
+            d['family'] = 'yeelight'
             list_devs.append(d)
 
         return list_devs
