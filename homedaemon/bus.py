@@ -31,9 +31,9 @@ class Bus:
         for ev in event_list:
             if self.is_async(ev):
                 task = asyncio.run_coroutine_threadsafe(ev(event), self.loop)
-                print(f'{datetime.now()} async {ev.__name__} {ev}')
+                # print(f'{datetime.now()} async {ev.__name__} {ev}')
             else:
-                print(f'{datetime.now()} sync {ev.__name__} {ev}')
+                # print(f'{datetime.now()} sync {ev.__name__} {ev}')
                 ev(event)
             
     def is_async(self, ev):

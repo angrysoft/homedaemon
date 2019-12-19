@@ -51,3 +51,8 @@ class ButtonToggleOnOff(ButtonOnOff):
 
     def toggle(self):
         self.write({'data': {self.name: 'toggle'}})
+        
+
+class Dummy:
+    def __init__(self, data, daemon):
+        pass

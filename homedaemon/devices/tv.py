@@ -1,14 +1,14 @@
-from .base import BaseDevice
+from .base import BaseDevice, Dummy
 from homedaemon.bravia import Bravia
 
 class TvDevice:
-    def __init__(self, data):
-        pass
+    def __new__(cls, data, daemon):
+        return {'bravia': BraviaTv}.get(data.get('model'), Dummy)(data, daemon)
 
 
-class Bravia(BaseDevice):
+class BraviaTv(BaseDevice):
     def __init__(self, data, daemon):
-        super(Bravia, self).__init__(data, daemon)
+        super(BraviaTv, self).__init__(data, daemon)
         self.ip = data.get('ip')
         self.mac = data.get('mac')
         self.tv = Bravia(self.ip, macaddres=self.mac)

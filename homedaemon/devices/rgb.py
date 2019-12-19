@@ -1,14 +1,9 @@
-from .base import BaseDevice
+from .base import BaseDevice, Dummy
 import json
 
 class RgbDevice:
     def __new__(cls, data, daemon):
         return {'rgbstrip': RgbStrip}.get(data['model'], Dummy)(data, daemon)
-
-
-class Dummy:
-    def __init__(self, data, daemon):
-        pass
 
 
 class RgbStrip(BaseDevice):

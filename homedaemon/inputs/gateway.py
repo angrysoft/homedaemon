@@ -1,4 +1,4 @@
-from aquara import GatewayWatcher
+from aqara import GatewayWatcher
 from homedaemon.inputs import BaseInput
 
 

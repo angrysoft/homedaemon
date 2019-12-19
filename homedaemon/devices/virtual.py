@@ -1,10 +1,10 @@
-from .base import BaseDevice
+from .base import BaseDevice, Dummy
 
 class VirtualDevice:
-    def __init__(self, data):
-        pass
+    def __new__(cls, data, daemon):
+        return {'timer': TimerDev}.get(data.get('model'), Dummy)(data, daemon)
 
 
 class TimerDev(BaseDevice):
-    def do(self, data):
+    def do(self, data, daemon):
         pass

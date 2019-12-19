@@ -1,3 +1,3 @@
 class CustomDevice:
-    def __init__(self, data):
+    def __init__(self, data, daemon):
         pass
