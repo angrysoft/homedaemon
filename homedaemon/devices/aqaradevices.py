@@ -6,7 +6,6 @@ from datetime import datetime
 
 class AqaraDevice:
     def __new__(cls, data, daemon):
-        gw = AqaraGateway(data, daemon)
         return {
             'ctrl_neutral1': CtrlNeutral,
             'ctrl_neutral2': CtrlNeutral2,
@@ -16,7 +15,7 @@ class AqaraDevice:
             'sensor_motion.aq2': SensorMotionAq2,
             'sensor_switch.aq2': SensorSwitchAq2,
             'plug': Plug,
-            'gateway': AqaraGateway}.get(data['model'], AqaraBaseDevice)(data, datetime)
+            'gateway': AqaraGateway}.get(data['model'], AqaraBaseDevice)(data, daemon)
 
 
 class AqaraBaseDevice(BaseDevice):
@@ -57,6 +56,7 @@ class CtrlNeutral(AqaraBaseDevice):
         super(CtrlNeutral, self).__init__(data, daemon)
         self.writeable = True
         self.channel_0 = ButtonOnOff('channel_0', self.write)
+        
 
 class CtrlNeutral2(CtrlNeutral):
     def __init__(self, data, daemon):

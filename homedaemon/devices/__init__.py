@@ -11,7 +11,7 @@ class Devices:
     def __init__(self):
         self._devices = dict()
     
-    def load(self, data):
+    def load(self, data, daemon):
         device = {
             'aqara': AqaraDevice,
             'yeelight': YeeligthDevice,
@@ -19,11 +19,14 @@ class Devices:
             'tv': TvDevice,
             'rgb': RgbDevice,
             'virtual': VirtualDevice
-            }.get(data.get('family'), self._unknown_device_family)(data)
+            }.get(data.get('family'), self._unknown_device_family)(data, daemon)
         self._devices[data['sid']] = device
     
     def _unknown_device_family(self, data):
-        raise ValueError(f"Unkonown deivce family : {data.get('family')}")
+        raise ValueError(f"Unkonown deivce family : {data.get('family')} {data}")
     
     def __contains__(self, key):
         return key in self._devices
+    
+    def __getitem__(self, key):
+        return self._devices[key]

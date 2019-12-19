@@ -2,7 +2,12 @@ from .base import BaseDevice
 import json
 
 class RgbDevice:
-    def __init__(self, data):
+    def __new__(cls, data, daemon):
+        return {'rgbstrip': RgbStrip}.get(data['model'], Dummy)(data, daemon)
+
+
+class Dummy:
+    def __init__(self, data, daemon):
         pass
 
 
@@ -12,8 +17,6 @@ class RgbStrip(BaseDevice):
         self.writeable = True
         self.short_id = data.get('short_id')
         self.name = data.get('name')
-        # self.cmds['off'] = self.off
-        # self.cmds['on'] = self.on
         # https://andi-siess.de/rgb-to-color-temperature/
         self.kelvin_table = {'1700': {'red': '255', 'green': '121', 'blue': '0'},
                              '1800': {'red': '255', 'green': '126', 'blue': '0'},
@@ -85,13 +88,12 @@ class RgbStrip(BaseDevice):
                 self.set_rgb(_data)
             else:
                 self.daemon.inputs['Arduino'].serial_write(self._rgb_to_send(_data))
-
-    def report(self, data):
+        
+    def update_dev_data(self, data):
         if 'data' in data:
             data['data']['status'] = self._status(data['data'])
-
-        self.daemon.notify_clients(json.dumps(data))
-        self.update_dev_data(data.get('data'))
+        with self.lock:
+            self.daemon.device_data[self.sid] = data['data']
 
     @staticmethod
     def _status(data):

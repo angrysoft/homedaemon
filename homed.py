@@ -34,7 +34,7 @@ from threading import Thread, current_thread, RLock
 from time import sleep
 from pycouchdb import Server
 from systemd.journal import JournalHandler
-from homedaemon.devices import Device
+from homedaemon.devices import Devices
 from homedaemon.bus import Bus
 
 logger = logging.getLogger('homed')
@@ -51,8 +51,7 @@ class HomeDaemon:
         self.device_data = self.db['devices-data']
         self.logger = logger
         self.logger.info('Starting Daemon')
-        self.token = None
-        self.workers = dict()
+        self.devices = Devices()
         self.scenes = dict()
 
     def _load_inputs(self):
@@ -65,7 +64,7 @@ class HomeDaemon:
 
     def _load_devices(self):
         for dev in self.devicesdb:
-            self.workers[dev['sid']] = Device(dev, self)
+            self.devices.load(dev, self)
 
     def _load_scenes(self):
         sys.path.append(self.config['scenes']['path'])
@@ -93,13 +92,6 @@ class HomeDaemon:
         self.loop.add_signal_handler(signal.SIGHUP, self.stop)
         self.loop.add_signal_handler(signal.SIGQUIT, self.stop)
         self.loop.add_signal_handler(signal.SIGTERM, self.stop)
-        
-        # for e in self.bus._events:
-        #     print(f'{e}')
-        #     for x in self.bus._events[e]:
-        #         print(f'\t{x}')
-        #         for y in self.bus._events[e][x]:
-        #             print(f'\t\t{y.__name__}')
 
         try:
             self.logger.debug('Daemon is listening')
@@ -110,7 +102,6 @@ class HomeDaemon:
     def stop(self, *args, **kwargs):
         self.logger.info('Stop homed')
         self.loop.stop()
-
 
 
 if __name__ == '__main__':

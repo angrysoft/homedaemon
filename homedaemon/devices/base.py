@@ -23,7 +23,7 @@ class BaseDevice:
 
     def update_dev_data(self, data):
         with self.lock:
-            self.daemon.device_data[self.sid] = data
+            self.daemon.device_data[self.sid] = data['data']
     
     def get_value(self, value):
         if value in self.daemon.device_data[self.sid]:    
