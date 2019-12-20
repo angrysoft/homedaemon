@@ -22,6 +22,12 @@ class Devices:
             }.get(data.get('family'), self._unknown_device_family)(data, daemon)
         self._devices[data['sid']] = device
     
+    def get(self, key, ret=None):
+        try:
+            return self._devices[key]
+        except KeyError:
+            return ret            
+    
     def _unknown_device_family(self, data):
         raise ValueError(f"Unkonown deivce family : {data.get('family')} {data}")
     

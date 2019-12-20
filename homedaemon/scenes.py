@@ -46,7 +46,7 @@ class BaseScene(Thread):
         sleep(s)
 
     def get_device(self, sid):
-        return self.daemon.workers.get(sid)
+        return self.daemon.devices.get(sid)
 
 
 class Trigger:
