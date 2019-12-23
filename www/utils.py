@@ -13,6 +13,8 @@ class TcpRead:
         self.ssock = None
     
     def connect(self):
+        if self.ssock:
+            self.ssock.close()
         context = ssl.create_default_context()
         context.check_hostname = False
         sock = socket.create_connection((self.ip, self.port))
@@ -66,9 +68,7 @@ class TcpRead:
         with self.ssock.makefile() as recv:
             while True:
                 resp = recv.readline()
-                print(resp.strip())
                 yield resp.strip()
-        self.ssock.close()
                                 
     def writer(self, msg):
         self.ssock.sendall(msg)
