@@ -59,6 +59,6 @@ class TcpRead:
         with socket.create_connection((self.ip, self.port)) as sock:
             with context.wrap_socket(sock, server_hostname='ferdek.angrysoft.ovh') as ssock:
                 encoded = jwt.encode({'api':'1.0', 'client': 'www'}, self.secret, algorithm='HS256')
-                ssock.send(encoded + '\n'.encode())
-                ssock.send(msg + '\n'.encode())
+                ssock.sendall(encoded + '\n'.encode())
+                ssock.sendall(msg + '\n'.encode())
                 ssock.close()
