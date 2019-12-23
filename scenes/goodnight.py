@@ -19,12 +19,9 @@ class Scene(BaseScene):
             dev = self.get_device(_sid)
             if dev.model == 'plug':
                 dev.power.off()
-            elif dev.model == 'ctrl_neutral2':
-                dev.channel_0.off()
-                dev.channel_1.off()
             elif dev.model == 'ctrl_neutral1':
                 dev.channel_0.off()
-            elif dev.model in ('bslamp1', 'color', 'rgbstrip', 'bravia'):
+            elif dev.model in ('bslamp1', 'color', 'rgbstrip', 'bravia', 'ctrl_neutral2'):
                 dev.off()
         self.sleep(20)
         color.off()

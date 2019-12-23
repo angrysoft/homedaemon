@@ -20,6 +20,7 @@ class BraviaTv(BaseDevice):
             return
         if data.get('button') == 'PowerOn':
             self.tv.on()
+            self.get_tv_status()
         elif self.tv.power:
             self.tv.send_ircc(data['button'])
             # TODO: chekc if button is channel or src

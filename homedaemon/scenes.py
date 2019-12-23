@@ -9,7 +9,7 @@ class BaseScene(Thread):
         super().__init__()
         self.daemon = daemon
         self.name = ''
-        self.automatic = True
+        self._automatic = True
         self._triggers = list()
         self.running = False
     
@@ -19,10 +19,21 @@ class BaseScene(Thread):
     
     @triggers.setter
     def triggers(self, value):
-        trig = Trigger(value, self)
-        self._triggers.append(trig)
-        self.daemon.bus.on('report', trig.sid, trig.pull)
-        
+        if self._automatic:
+            trig = Trigger(value, self)
+            self._triggers.append(trig)
+            self.daemon.bus.on('report', trig.sid, trig.pull)
+    
+    @property
+    def automatic(self):
+        return self._automatic
+    
+    @autmatic.setter
+    def automatic(self, value):
+        self._automatic = value
+        if value is False:
+            self.daemon.bus.on('write', self.name, self.do)
+
     def do(self, cmd):
         if 'status' in cmd:
             sc = Thread(name=self.name, target={'on': self.on, 'off': self.off}.get(cmd['status'], self._unknown_cmd))
@@ -33,6 +44,16 @@ class BaseScene(Thread):
         else:
             self.daemon.logger.error(f'{self.name}: missing status')
     
+    def _runner(self, status):
+        cmd = {'cmd': 'report', 'sid': self.name, 'data':{'status': status, 'running': True}}
+        if status == 'on':
+            self.running = True
+            self.daemon.bus.emit('report', self.name, cmd)
+            self.on()
+        elif status == 'off':
+            self.running
+            
+            
     def on(self):
         pass
 

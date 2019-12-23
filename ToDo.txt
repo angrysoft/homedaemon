@@ -1,5 +1,1 @@
-2019-12-09 Async emit
-x 2019-12-09 2019-12-09 remove try  excpet
-x 2019-12-09 2019-12-09 check tcpclient on catch evry event
 2019-12-09 http2 error 200 in daviecs.dart
-2019-12-10 ThreadPoll one event loop  check

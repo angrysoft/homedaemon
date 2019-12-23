@@ -25,6 +25,9 @@ class BaseDevice:
         with self.lock:
             self.daemon.device_data[self.sid] = data['data']
     
+    def log_change(self,data):
+        pass
+    
     def get_value(self, value):
         if value in self.daemon.device_data[self.sid]:    
             return self.daemon.device_data[self.sid][value]
@@ -48,9 +51,7 @@ class ButtonOnOff:
 
 
 class ButtonToggleOnOff(ButtonOnOff):
-
-    def toggle(self):
-        self.write({'data': {self.name: 'toggle'}})
+    pass
         
 
 class Dummy:

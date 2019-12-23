@@ -49,6 +49,7 @@ class AqaraBaseDevice(BaseDevice):
                                   self.sid,
                                   self.short_id,
                                   data.get('data'))
+    
 
 
 class CtrlNeutral(AqaraBaseDevice):
@@ -63,10 +64,10 @@ class CtrlNeutral2(CtrlNeutral):
         super().__init__(data, daemon)
         self.channel_1 = ButtonOnOff('channel_1', self.write)
     
-    def all_on(self):
+    def on(self):
         self.write({'data': {'channel_0': 'on', 'channel_1': 'on'}})
         
-    def all_off(self):
+    def off(self):
         self.write({'data': {'channel_0': 'off', 'channel_1': 'off'}})
 
 
@@ -107,8 +108,7 @@ class SensorMotionAq2(AqaraBaseDevice):
     def update_dev_data(self, data):
         if 'status' in data['data']:
             data['data']['when'] = datetime.now().isoformat()
-        with self.lock:
-            self.daemon.device_data[self.sid] = data['data']
+        super().update_dev_data(data)
     
     @property
     def lux(self):
