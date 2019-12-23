@@ -38,7 +38,7 @@ import jwt
 from os import urandom
 from google.oauth2 import id_token
 from google.auth.transport import requests as g_requests
-from utils import TcpRead, TcpWrite
+from utils import TcpRead
 from threading import Thread
 from time import sleep
 
@@ -92,7 +92,7 @@ def dev(sid):
 @app.route('/dev/write', methods=['GET', 'POST'])
 @login_required
 def dev_write():
-    tcp = TcpWrite(tcp_config['ip'], tcp_config['port'], tcp_config['secret'])
+    # tcp = TcpWrite(tcp_config['ip'], tcp_config['port'], tcp_config['secret'])
     tcp.writer(request.data)
     return 'ok'
 

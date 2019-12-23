@@ -52,13 +52,6 @@ class TcpRead:
                                 buffer.write(remaining)
                             else:
                                 buffer.seek(0, 2)
-
-
-class TcpWrite:
-    def __init__(self, ip, port, secret):
-        self.ip = ip
-        self.port = port
-        self.secret = secret
     
     def writer(self, msg):
         context = ssl.create_default_context()
@@ -68,3 +61,4 @@ class TcpWrite:
                 encoded = jwt.encode({'api':'1.0', 'client': 'www'}, self.secret, algorithm='HS256')
                 ssock.send(encoded + '\n'.encode())
                 ssock.send(msg + '\n'.encode())
+                ssock.close()
