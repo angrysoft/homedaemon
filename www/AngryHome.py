@@ -92,8 +92,7 @@ def dev(sid):
 @app.route('/dev/write', methods=['GET', 'POST'])
 @login_required
 def dev_write():
-    # tcp = TcpWrite(tcp_config['ip'], tcp_config['port'], tcp_config['secret'])
-    tcp.connect()
+    tcp = TcpRead(tcp_config['ip'], tcp_config['port'], tcp_config['secret'])
     tcp.writer(request.data)
     return 'ok'
 
@@ -179,8 +178,7 @@ def stream():
 
 def event():
     yield "data: hello\n\n"
-    # tcp = TcpRead(tcp_config['ip'], tcp_config['port'], tcp_config['secret'])
-    tcp.connect()
+    tcp = TcpRead(tcp_config['ip'], tcp_config['port'], tcp_config['secret'])
     for msg in tcp.reader():
         yield f'data: {msg}\n\n'
 
@@ -189,7 +187,7 @@ db = Server()
 config = db.db('config')
 tcp_config = config['tcp']['client']
 tcp_config['secret'] = config['tcp']['secret']
-tcp = TcpRead(tcp_config['ip'], tcp_config['port'], tcp_config['secret'])
+# tcp = TcpRead(tcp_config['ip'], tcp_config['port'], tcp_config['secret'])
 
 app.secret_key = urandom(24)
 app.config.update(
