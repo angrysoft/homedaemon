@@ -10,15 +10,23 @@ class TcpRead:
         self.ip = ip
         self.port = port
         self.secret = secret
+        self.ssock = None
     
-    def reader(self):
+    def connect(self):
+        context = ssl.create_default_context()
+        context.check_hostname = False
+        sock = socket.create_connection((self.ip, self.port))
+        self.ssock = context.wrap_socket(sock, server_hostname='ferdek.angrysoft.ovh')
+        encoded = jwt.encode({'api':'1.0', 'client': 'www'}, self.secret, algorithm='HS256')
+        self.ssock.sendall(encoded + '\n'.encode())
+    
+    def _reader(self):
         context = ssl.create_default_context()
         context.check_hostname = False
         with socket.create_connection((self.ip, self.port)) as sock:
             with context.wrap_socket(sock, server_hostname='ferdek.angrysoft.ovh') as ssock:
                 encoded = jwt.encode({'api':'1.0', 'client': 'www'}, self.secret, algorithm='HS256')
                 ssock.sendall(encoded + '\n'.encode())
-                ssock.sendall('{"hello":"fcuk"}\n'.encode())
         
                 with BytesIO() as buffer:
                     while True:
@@ -54,12 +62,26 @@ class TcpRead:
                             else:
                                 buffer.seek(0, 2)
     
+    def reader(self):
+        with self.ssock.makefile() as recv:
+            while True:
+                resp = recv.readline()
+                print(resp.strip())
+                yield resp.strip()
+        self.ssock.close()
+                                
     def writer(self, msg):
-        context = ssl.create_default_context()
-        context.check_hostname = False
-        with socket.create_connection((self.ip, self.port)) as sock:
-            with context.wrap_socket(sock, server_hostname='ferdek.angrysoft.ovh') as ssock:
-                encoded = jwt.encode({'api':'1.0', 'client': 'www'}, self.secret, algorithm='HS256')
-                ssock.sendall(encoded + '\n'.encode())
-                ssock.sendall(msg + '\n'.encode())
-                ssock.close()
+        self.ssock.sendall(msg)
+        self.ssock.close()
+    
+    # def writer(self, msg):
+    #     context = ssl.create_default_context()
+    #     context.check_hostname = False
+    #     with socket.create_connection((self.ip, self.port)) as sock:
+    #         with context.wrap_socket(sock, server_hostname='ferdek.angrysoft.ovh') as ssock:
+    #             encoded = jwt.encode({'api':'1.0', 'client': 'www'}, self.secret, algorithm='HS256')
+    #             ssock.sendall(encoded + '\n'.encode())
+    #             ssock.sendall(msg + '\n'.encode())
+    #             ssock.close()
+    
+    

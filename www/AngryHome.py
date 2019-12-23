@@ -93,6 +93,7 @@ def dev(sid):
 @login_required
 def dev_write():
     # tcp = TcpWrite(tcp_config['ip'], tcp_config['port'], tcp_config['secret'])
+    tcp.connect()
     tcp.writer(request.data)
     return 'ok'
 
@@ -179,6 +180,7 @@ def stream():
 def event():
     yield "data: hello\n\n"
     # tcp = TcpRead(tcp_config['ip'], tcp_config['port'], tcp_config['secret'])
+    tcp.connect()
     for msg in tcp.reader():
         yield f'data: {msg}\n\n'
 
