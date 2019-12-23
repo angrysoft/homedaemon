@@ -16,10 +16,10 @@ class Input(BaseInput):
             await asyncio.sleep(30)
             tvstatus = dict()
             if self.tv.power:
-                tvstatus['status'] = 'on'
+                tvstatus['power'] = 'on'
                 tvstatus.update(self.tv.content_info())
             else:
-                tvstatus['status'] = 'off'
+                tvstatus['power'] = 'off'
                 
             self.bus.emit_cmd({'cmd': 'report', 'sid': 'tv01',  'data': tvstatus})
             

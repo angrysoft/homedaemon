@@ -1,4 +1,4 @@
-from .base import BaseDevice, ButtonOnOff, ButtonToggleOnOff
+from .base import BaseDevice
 from aqara import Gateway
 import json
 from datetime import datetime
@@ -56,13 +56,13 @@ class CtrlNeutral(AqaraBaseDevice):
     def __init__(self, data, daemon):
         super(CtrlNeutral, self).__init__(data, daemon)
         self.writeable = True
-        self.channel_0 = ButtonOnOff('channel_0', self.write)
+        self.channel_0 = Button('channel_0', self)
         
 
 class CtrlNeutral2(CtrlNeutral):
     def __init__(self, data, daemon):
         super().__init__(data, daemon)
-        self.channel_1 = ButtonOnOff('channel_1', self.write)
+        self.channel_1 = Button('channel_1', self)
     
     def on(self):
         self.write({'data': {'channel_0': 'on', 'channel_1': 'on'}})
@@ -74,7 +74,7 @@ class CtrlNeutral2(CtrlNeutral):
 class Plug(AqaraBaseDevice):
     def __init__(self, data, daemon):
         super(Plug, self).__init__(data, daemon)
-        self.power = ButtonToggleOnOff('status', self.write)
+        self.power = Button('status', self)
         self.writeable = True
 
 
@@ -91,7 +91,11 @@ class WeatherV1(AqaraBaseDevice):
 
 
 class Magnet(AqaraBaseDevice):
-    pass
+    
+    def update_dev_data(self, data):
+        if 'status' in data['data']:
+            data['data']['when'] = datetime.now().isoformat()
+        super().update_dev_data(data)
 
 
 class AqaraGateway(BaseDevice):
@@ -113,3 +117,29 @@ class SensorMotionAq2(AqaraBaseDevice):
     @property
     def lux(self):
         return self.daemon.device_data[self.sid].get['lux']
+
+class Button:
+    def __init__(self, name, device):
+        self.name = name
+        self.device = device
+        
+    def on(self):
+        self.device.write({'data': {self.name: 'on'}})
+
+    def off(self):
+        self.device.write({'data': {self.name: 'off'}})
+    
+    def toggle(self):
+        self.device.write({'data': {self.name: 'toggle'}})
+    
+    def is_on(self):
+        if self.device.get_value(self.name) == 'on':
+            return True
+        else:
+            return False
+        
+    def is_off(self):
+        if self.device.get_value(self.name) == 'off':
+            return True
+        else:
+            return False

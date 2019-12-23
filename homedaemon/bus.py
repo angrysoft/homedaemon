@@ -25,15 +25,18 @@ class Bus:
             self._events[_event] = list()
     
     def emit_cmd(self, event):
+        if event.get('cmd') not in self._events:
+            return
+        
         event_list = self._events[event.get('cmd')].get(event.get('sid'), []).copy()
         event_list.extend(self._events[event.get('cmd')].get('*', []))
         
         for ev in event_list:
             if self.is_async(ev):
                 task = asyncio.run_coroutine_threadsafe(ev(event), self.loop)
-                # print(f'{datetime.now()} async {ev.__name__} {ev}')
+                print(f'{datetime.now()} async {ev.__name__} {event}')
             else:
-                # print(f'{datetime.now()} sync {ev.__name__} {ev}')
+                print(f'{datetime.now()} sync {ev.__name__} {event}')
                 ev(event)
             
     def is_async(self, ev):
@@ -42,6 +45,7 @@ class Bus:
         else:
             return False
     
+    # TODO remove
     def emit(self, event_id, msg=None):
         print(f'debug: {event_id}, {msg}')
         for ev in self._events.get(event_id, []):

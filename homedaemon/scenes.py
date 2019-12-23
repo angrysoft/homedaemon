@@ -3,6 +3,14 @@ from threading import Thread
 from datetime import datetime, time
 from time import sleep
 
+class Scenes:
+    def __init__(self):
+        self._scenes = dict()
+    
+    def load(self, scene):
+        pass
+    
+    
 
 class BaseScene(Thread):
     def __init__(self, daemon):
@@ -28,32 +36,30 @@ class BaseScene(Thread):
     def automatic(self):
         return self._automatic
     
-    @autmatic.setter
+    @automatic.setter
     def automatic(self, value):
         self._automatic = value
         if value is False:
             self.daemon.bus.on('write', self.name, self.do)
 
     def do(self, cmd):
-        if 'status' in cmd:
-            sc = Thread(name=self.name, target={'on': self.on, 'off': self.off}.get(cmd['status'], self._unknown_cmd))
-            self.running = True
+        if 'status' in cmd and cmd['status'] in ['on', 'off']:
+            sc = Thread(name=self.name, target=self._runner, args=(cmd['status'],))
             sc.start()
-            # sc.join()
-            self.running = False
         else:
             self.daemon.logger.error(f'{self.name}: missing status')
     
     def _runner(self, status):
-        cmd = {'cmd': 'report', 'sid': self.name, 'data':{'status': status, 'running': True}}
-        if status == 'on':
-            self.running = True
-            self.daemon.bus.emit('report', self.name, cmd)
-            self.on()
-        elif status == 'off':
-            self.running
-            
-            
+        if self.running:
+            return
+        cmd = {'cmd': 'scene', 'sid': self.name, 'data':{'status': status, 'running': True}}
+        self.running = True
+        self.daemon.bus.emit_cmd(cmd)
+        {'on': self.on, 'off': self.off}.get(status, self._unknown_cmd)()
+        self.running = False
+        cmd['data']['running'] = False
+        self.daemon.bus.emit_cmd(cmd)
+                    
     def on(self):
         pass
 

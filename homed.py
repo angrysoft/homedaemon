@@ -49,6 +49,7 @@ class HomeDaemon:
         self.config = self.db['config']
         self.devicesdb = self.db['devices']
         self.device_data = self.db['devices-data']
+        self.scenesdb = None
         self.logger = logger
         self.logger.info('Starting Daemon')
         self.devices = Devices()
@@ -67,8 +68,11 @@ class HomeDaemon:
             self.devices.load(dev, self)
 
     def _load_scenes(self):
+        if 'scenes' in self.db:
+            self.db.delete('scenes')
+        self.db.create('scenes')
+        self.scenesdb = self.db['scenes'] 
         sys.path.append(self.config['scenes']['path'])
-        scene_list = list()
         with os.scandir(self.config['scenes']['path']) as it:
             for entry in it:
                 if entry.name.endswith('.py') and entry.is_file():
@@ -76,12 +80,12 @@ class HomeDaemon:
                     inst = _scene.Scene(self)
                     if inst.name not in self.scenes:
                         self.scenes[inst.name] = inst
+                        self.scenesdb[inst.name] = {'automatic': inst.automatic}
                     else:
-                        self.logger.warning('scene duplcate name skiping ... {inst.name}')
+                        self.logger.warning(f'scene duplcate name skiping ... {inst.name}')
                         continue
                     self.logger.info(f'loaded {inst.name}')
-                    scene_list.append({'name': inst.name, 'automaitc': inst.automatic })
-            self.config['scenes_list'] = {'list':scene_list}
+        print([sc for sc in self.scenesdb])
 
     def run(self):
         self.logger.info(f'main thread {current_thread()} loop {id(self.loop)}')
@@ -110,7 +114,6 @@ if __name__ == '__main__':
     if len(sys.argv) < 2:
         logger.addHandler(JournalHandler())    
     else:
-        
         logging.basicConfig(filename="home.log")
     
     hd = HomeDaemon()
