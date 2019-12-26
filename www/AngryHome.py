@@ -97,6 +97,7 @@ def dev(sid):
 @login_required
 def dev_write():
     if request.method == 'POST':
+        print(f'write {request.data}')
         tcp = TcpRead(tcp_config['ip'], tcp_config['port'], tcp_config['secret'])
         tcp.writer(request.data)
         return redirect('/dev/write?status=ok')
