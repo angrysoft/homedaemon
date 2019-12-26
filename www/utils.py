@@ -18,8 +18,8 @@ class TcpRead:
             self.ssock.close()
         context = ssl.create_default_context()
         context.check_hostname = False
-        sock = socket.create_connection((self.ip, self.port))
-        self.ssock = context.wrap_socket(sock, server_hostname='ferdek.angrysoft.ovh')
+        self.sock = socket.create_connection((self.ip, self.port))
+        self.ssock = context.wrap_socket(self.sock, server_hostname='ferdek.angrysoft.ovh')
         encoded = jwt.encode({'api':'1.0', 'client': 'www'}, self.secret, algorithm='HS256')
         self.ssock.sendall(encoded + '\n'.encode())
     
@@ -70,10 +70,12 @@ class TcpRead:
             while True:
                 resp = recv.readline()
                 yield resp.strip()
+        self.ssock.close()
                                 
     def writer(self, msg):
         self.ssock.sendall(msg)
         self.ssock.close()
+        self.sock.close()
     
     def _writer(self, msg):
         context = ssl.create_default_context()
@@ -85,4 +87,7 @@ class TcpRead:
                 ssock.sendall(msg + '\n'.encode())
                 ssock.close()
     
-    
+    def __del__(self):
+        if self.ssock:
+            self.ssock.close()
+            self.sock.close()
