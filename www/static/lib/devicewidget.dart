@@ -67,7 +67,7 @@ class Devices {
 
   Future refresh(String data) async {
     try {
-      print(data);
+      print('DEBUG ${data} END');
       Map<String, dynamic> info = json.decode(data);
       if (this._devices.containsKey(info['sid']) && info.containsKey('data')) {
         await this._devices[info['sid']].refreshStatus(info['data']);
