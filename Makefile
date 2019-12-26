@@ -51,6 +51,7 @@ install:
 
 install_www:
 	install -v -m 755  -g $(GRP) -o $(USR) -d $(DESTDIR)/var/www/angryhome
+	install -v -m 775  -g $(GRP) -o $(USR) -d $(DESTDIR)/var/run/angryhome
 	install -v -m 655 angryhome.service -D $(DESTDIR)/usr/lib/systemd/system/angryhome.service
 	cp -rv www/* $(DESTDIR)/var/www/angryhome
 	chown -R $(USR).$(GRP) $(DESTDIR)/var/www/angryhome
