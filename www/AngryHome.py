@@ -96,10 +96,13 @@ def dev(sid):
 @app.route('/dev/write', methods=['GET', 'POST'])
 @login_required
 def dev_write():
-    tcp = TcpRead(tcp_config['ip'], tcp_config['port'], tcp_config['secret'])
-    tcp.writer(request.data)
-    return 'ok'
-
+    if request.method == 'POST':
+        tcp = TcpRead(tcp_config['ip'], tcp_config['port'], tcp_config['secret'])
+        tcp.writer(request.data)
+        return redirect('/dev/write?status=ok')
+    elif request.method == 'GET':
+        return request.args.get('status', 'ooops something is wrong')
+ 
 
 @app.route('/dev/data/<sid>')
 @login_required
