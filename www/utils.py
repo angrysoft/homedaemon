@@ -73,7 +73,7 @@ class TcpRead:
         self.ssock.close()
                                 
     def writer(self, msg):
-        self.ssock.sendall(msg)
+        self.ssock.sendall(msg + '\n'.encode())
         self.ssock.close()
         self.sock.close()
     

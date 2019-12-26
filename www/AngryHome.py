@@ -159,7 +159,6 @@ def login():
                 raise ValueError('Wrong issuer.')
             
             # ID token is valid. Get the user's Google Account ID from the decoded token.
-            print(f"{idinfo['sub']}\n{db['config']['users']['gusers']} \n {session}")
             
             try:
                 if idinfo['sub'] in db['config']['users']['gusers']:
