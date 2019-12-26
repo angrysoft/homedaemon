@@ -42,6 +42,10 @@ from utils import TcpRead, TcpWrite
 from threading import Thread
 from time import sleep
 
+db = Server()
+config = db.db('config')
+tcp_config = config['tcp']['client']
+tcp_config['secret'] = config['tcp']['secret']
 
 app = Flask(__name__)
 
@@ -149,15 +153,16 @@ def login():
                                                   '185939031950-ofl3lt8mhuvl1tho2p0i308vqcum5reg.apps.googleusercontent.com')
             if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
                 raise ValueError('Wrong issuer.')
-
+            
             # ID token is valid. Get the user's Google Account ID from the decoded token.
+            print(f"{idinfo['sub']}\n{db['config']['users']['gusers']} \n {session}")
+            
             try:
                 if idinfo['sub'] in db['config']['users']['gusers']:
                     session['userid'] = idinfo['sub']
                     return 'ok'
                 else:
                     return 'not_registred'
-                    
             except KeyError:
                 return 'db error'
         except ValueError:
@@ -183,12 +188,8 @@ def event():
         yield f'data: {msg}\n\n'
 
 
-db = Server()
-config = db.db('config')
-tcp_config = config['tcp']['client']
-tcp_config['secret'] = config['tcp']['secret']
-
 app.secret_key = urandom(24)
+
 app.config.update(
         SESSION_COOKIE_SECURE=True,
         SESSION_COOKIE_HTTPONLY=True,

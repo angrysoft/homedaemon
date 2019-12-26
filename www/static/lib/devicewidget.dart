@@ -526,4 +526,5 @@ class TvSetterWindow {
   
   TvSetterWindow(String sid) {
     this.sid = sid;
+  }
 }

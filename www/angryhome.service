@@ -1,0 +1,20 @@
+[Unit]
+Description=Gunicorn instance to serve myproject
+Requires=couchdb.service
+After=couchdb.service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=nginx
+Group=nginx
+RuntimeDirectory=gunicorn
+WorkingDirectory=/var/www/angryhome
+ExecStart=/usr/bin/gunicorn --workers 2 --bind unix:/var/run/angryhome.sock -m 007 --timeout 120  --threads 2 AngryHome:app
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=5
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
