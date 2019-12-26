@@ -231,7 +231,7 @@ class DeviceWidget implements BaseDeviceWidget {
 
     await HttpRequest.request('/dev/write', method: 'POST', sendData: data)
       .then((HttpRequest resp) {
-      print('$data : ${resp.responseText}');
+      print('RESPONSE TXT $data : ${resp.responseText} ENDTXT');
     }); 
   }
 }

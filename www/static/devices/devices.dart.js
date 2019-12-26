@@ -4405,7 +4405,7 @@ sD:function(a){this.a=H.y(a,"$iq",[P.d,null],"$aq")},
 $iaW:1}
 T.e7.prototype={
 $1:function(a){H.e(a,"$iW")
-P.I(this.a+" : "+H.f(a.responseText))},
+P.I("RESPONSE TXT "+this.a+" : "+H.f(a.responseText)+" ENDTXT")},
 $S:16}
 T.eB.prototype={
 A:function(a){var u,t,s
