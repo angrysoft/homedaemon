@@ -10,6 +10,17 @@ class TcpRead:
         self.ip = ip
         self.port = port
         self.secret = secret
+        self.ssock = None
+    
+    # def connect(self):
+    #     if self.ssock:
+    #         self.ssock.close()
+    #     context = ssl.create_default_context()
+    #     context.check_hostname = False
+    #     sock = socket.create_connection((self.ip, self.port))
+    #     self.ssock = context.wrap_socket(sock, server_hostname='ferdek.angrysoft.ovh')
+    #     encoded = jwt.encode({'api':'1.0', 'client': 'www'}, self.secret, algorithm='HS256')
+    #     self.ssock.sendall(encoded + '\n'.encode())
     
     def reader(self):
         context = ssl.create_default_context()
@@ -17,7 +28,7 @@ class TcpRead:
         with socket.create_connection((self.ip, self.port)) as sock:
             with context.wrap_socket(sock, server_hostname='ferdek.angrysoft.ovh') as ssock:
                 encoded = jwt.encode({'api':'1.0', 'client': 'www'}, self.secret, algorithm='HS256')
-                ssock.send(encoded + '\n'.encode())
+                ssock.sendall(encoded + '\n'.encode())
         
                 with BytesIO() as buffer:
                     while True:
@@ -52,13 +63,16 @@ class TcpRead:
                                 buffer.write(remaining)
                             else:
                                 buffer.seek(0, 2)
-
-
-class TcpWrite:
-    def __init__(self, ip, port, secret):
-        self.ip = ip
-        self.port = port
-        self.secret = secret
+    
+    # def reader(self):
+    #     with self.ssock.makefile() as recv:
+    #         while True:
+    #             resp = recv.readline()
+    #             yield resp.strip()
+                                
+    # def writer(self, msg):
+    #     self.ssock.sendall(msg)
+    #     self.ssock.close()
     
     def writer(self, msg):
         context = ssl.create_default_context()
@@ -66,5 +80,8 @@ class TcpWrite:
         with socket.create_connection((self.ip, self.port)) as sock:
             with context.wrap_socket(sock, server_hostname='ferdek.angrysoft.ovh') as ssock:
                 encoded = jwt.encode({'api':'1.0', 'client': 'www'}, self.secret, algorithm='HS256')
-                ssock.send(encoded + '\n'.encode())
-                ssock.send(msg + '\n'.encode())
+                ssock.sendall(encoded + '\n'.encode())
+                ssock.sendall(msg + '\n'.encode())
+                ssock.close()
+    
+    
