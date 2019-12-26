@@ -11,18 +11,19 @@ class TcpRead:
         self.port = port
         self.secret = secret
         self.ssock = None
+        self.connect()
     
-    # def connect(self):
-    #     if self.ssock:
-    #         self.ssock.close()
-    #     context = ssl.create_default_context()
-    #     context.check_hostname = False
-    #     sock = socket.create_connection((self.ip, self.port))
-    #     self.ssock = context.wrap_socket(sock, server_hostname='ferdek.angrysoft.ovh')
-    #     encoded = jwt.encode({'api':'1.0', 'client': 'www'}, self.secret, algorithm='HS256')
-    #     self.ssock.sendall(encoded + '\n'.encode())
+    def connect(self):
+        if self.ssock:
+            self.ssock.close()
+        context = ssl.create_default_context()
+        context.check_hostname = False
+        sock = socket.create_connection((self.ip, self.port))
+        self.ssock = context.wrap_socket(sock, server_hostname='ferdek.angrysoft.ovh')
+        encoded = jwt.encode({'api':'1.0', 'client': 'www'}, self.secret, algorithm='HS256')
+        self.ssock.sendall(encoded + '\n'.encode())
     
-    def reader(self):
+    def _reader(self):
         context = ssl.create_default_context()
         context.check_hostname = False
         with socket.create_connection((self.ip, self.port)) as sock:
@@ -64,17 +65,17 @@ class TcpRead:
                             else:
                                 buffer.seek(0, 2)
     
-    # def reader(self):
-    #     with self.ssock.makefile() as recv:
-    #         while True:
-    #             resp = recv.readline()
-    #             yield resp.strip()
+    def reader(self):
+        with self.ssock.makefile() as recv:
+            while True:
+                resp = recv.readline()
+                yield resp.strip()
                                 
-    # def writer(self, msg):
-    #     self.ssock.sendall(msg)
-    #     self.ssock.close()
-    
     def writer(self, msg):
+        self.ssock.sendall(msg)
+        self.ssock.close()
+    
+    def _writer(self, msg):
         context = ssl.create_default_context()
         context.check_hostname = False
         with socket.create_connection((self.ip, self.port)) as sock:
