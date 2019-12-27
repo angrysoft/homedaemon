@@ -38,8 +38,8 @@ import jwt
 from os import urandom
 from google.oauth2 import id_token
 from google.auth.transport import requests as g_requests
-from utils import TcpRead
-from threading import Thread
+from utils import TcpWrite
+import redis
 from time import sleep
 
 db = Server()
@@ -99,7 +99,7 @@ def dev(sid):
 def dev_write():
     if request.method == 'POST':
         print(f'write {request.data}')
-        tcp = TcpRead(tcp_config['ip'], tcp_config['port'], tcp_config['secret'])
+        tcp = TcpWrite(tcp_config['ip'], tcp_config['port'], tcp_config['secret'])
         tcp.writer(request.data)
         return redirect('/dev/write?status=ok')
     elif request.method == 'GET':
@@ -187,9 +187,19 @@ def stream():
 
 def event():
     yield "data: hello\n\n"
-    tcp = TcpRead(tcp_config['ip'], tcp_config['port'], tcp_config['secret'])
-    for msg in tcp.reader():
-        yield f'data: {msg}\n\n'
+    r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
+    channel = r.pubsub()
+    channel.subscribe('msg')
+    channel.get_message()
+    while True:
+        try:
+            msg = channel.get_message()
+            if msg:
+                print(type(msg), msg)
+                yield f'data: {msg.get("data")}\n\n'
+        except redis.exceptions.ConnectionError:
+            sleep(5)
+        sleep(0.001)
 
 
 app.secret_key = urandom(24)
