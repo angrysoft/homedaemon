@@ -18,5 +18,7 @@ class TcpWrite:
                 encoded = jwt.encode({'api':'1.0', 'client': 'www'}, self.secret, algorithm='HS256')
                 ssock.sendall(encoded + '\n'.encode())
                 ssock.sendall(msg + '\n'.encode())
+                ssock.shutdown()
                 ssock.close()
+            sock.shutdown()
             sock.close()
