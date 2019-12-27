@@ -62,6 +62,7 @@ def login_required(func):
 @app.route('/')
 @login_required
 def index():
+    print(request.cookies)
     devs = [d for d in db['devices']]
     devs_data = dict()
     for dd in db['devices-data']:
