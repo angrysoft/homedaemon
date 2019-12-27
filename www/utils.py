@@ -20,5 +20,3 @@ class TcpWrite:
                 ssock.sendall(msg + '\n'.encode())
                 ssock.shutdown(socket.SHUT_RDWR)
                 ssock.close()
-            sock.shutdown(socket.SHUT_RDWR)
-            sock.close()
