@@ -30,6 +30,7 @@ from flask import redirect
 from flask import url_for
 from flask import session
 from flask import Response
+from flask import stream_with_context
 from functools import wraps
 import json
 from pycouchdb import Server
@@ -101,6 +102,7 @@ def dev_write():
         print(f'write {request.data}')
         tcp = TcpWrite(tcp_config['ip'], tcp_config['port'], tcp_config['secret'])
         tcp.writer(request.data)
+        sleep(0.1)
         return redirect('/dev/write?status=ok')
     elif request.method == 'GET':
         return request.args.get('status', 'ooops something is wrong')
@@ -184,7 +186,7 @@ def stream():
     return Response(event(), mimetype='text/event-stream', headers={'Cache-Control': 'no-cache',
                                                                     'Access-Control-Allow-Origin': '*',
                                                                     'Connection': 'keep-alive'})
-
+@stream_with_context
 def event():
     yield "data: hello\n\n"
     r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)

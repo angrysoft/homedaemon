@@ -19,3 +19,4 @@ class TcpWrite:
                 ssock.sendall(encoded + '\n'.encode())
                 ssock.sendall(msg + '\n'.encode())
                 ssock.close()
+            sock.close()

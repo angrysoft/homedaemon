@@ -33,10 +33,15 @@ class Page {
   // TODO: check
   Future refreshStatus() async {
     HttpRequest.getString('/dev/data/all').then((String resp) {
-      List<dynamic> jdata = jsonDecode(resp);
-      jdata.forEach((dev) {
-        this.devices.refresh(dev);
-      });
+      try {
+        List<dynamic> jdata = jsonDecode(resp);
+        jdata.forEach((dev) {
+          this.devices.refresh(dev);
+        });
+      }
+      on FormatException {
+        print('Data pare err');
+      }
     });
   }
 }
