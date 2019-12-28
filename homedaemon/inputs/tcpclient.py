@@ -17,6 +17,7 @@ class Input(BaseInput):
         self.writer = None
         self.ssl_context = ssl.create_default_context()
         self.bus.on('report', '*', self.send)
+        self.bus.on('scene', '*', self.send)
         # self.ssl_context = ssl._create_unverified_context()
 
     async def connect(self):

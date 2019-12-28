@@ -196,7 +196,6 @@ def event():
         try:
             msg = channel.get_message()
             if msg:
-                print(type(msg), msg)
                 yield f'data: {msg.get("data")}\n\n'
         except redis.exceptions.ConnectionError:
             sleep(5)
