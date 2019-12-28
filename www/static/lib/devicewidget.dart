@@ -67,7 +67,7 @@ class Devices {
 
   Future refresh(String data) async {
     try {
-      print(data);
+      print('DEBUG ${data} END');
       Map<String, dynamic> info = json.decode(data);
       if (this._devices.containsKey(info['sid']) && info.containsKey('data')) {
         await this._devices[info['sid']].refreshStatus(info['data']);
@@ -231,7 +231,7 @@ class DeviceWidget implements BaseDeviceWidget {
 
     await HttpRequest.request('/dev/write', method: 'POST', sendData: data)
       .then((HttpRequest resp) {
-      print('$data : ${resp.responseText}');
+      print('RESPONSE TXT $data : ${resp.responseText} ENDTXT');
     }); 
   }
 }
