@@ -129,8 +129,8 @@ def dev_data_all():
 def devices():
     devs = sorted([d for d in db['devices']], key=operator.itemgetter('name'))
     sc_list = list()
-    for s in db['config']['scenes_list']['list']:
-        if not s.get('automaitc'):
+    for s in db['scenes']:
+        if not s.get('automatic'):
             sc_list.append(s)
     return render_template('devices.html',
                            devices=devs,
@@ -142,7 +142,8 @@ def devices():
 @app.route('/tv')
 @login_required
 def tv():
-    return render_template('tvpilot.html')
+    tvinfo = db['devices-data']['tv01']
+    return render_template('tvpilot.html', tvinfo=tvinfo)
 
 
 @app.route('/login', methods=['GET', 'POST'])

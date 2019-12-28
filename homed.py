@@ -80,18 +80,18 @@ class HomeDaemon:
                     inst = _scene.Scene(self)
                     if inst.name not in self.scenes:
                         self.scenes[inst.name] = inst
-                        self.scenesdb[inst.name] = {'automatic': inst.automatic}
+                        self.scenesdb[inst.name] = {'automatic': inst.automatic, 'name': inst.name}
                     else:
                         self.logger.warning(f'scene duplcate name skiping ... {inst.name}')
                         continue
                     self.logger.info(f'loaded {inst.name}')
-        print([sc for sc in self.scenesdb])
+        self.bus.emit_cmd({'cmd': 'scene', 'sid': 'all', 'data': {'scenes': [sc for sc in self.scenesdb]}})
 
     def run(self):
         self.logger.info(f'main thread {current_thread()} loop {id(self.loop)}')
         self._load_devices()
-        self._load_scenes()
         self._load_inputs()
+        self._load_scenes()
         self.loop.add_signal_handler(signal.SIGINT, self.stop)
         self.loop.add_signal_handler(signal.SIGHUP, self.stop)
         self.loop.add_signal_handler(signal.SIGQUIT, self.stop)
