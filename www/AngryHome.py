@@ -30,6 +30,7 @@ from flask import redirect
 from flask import url_for
 from flask import session
 from flask import Response
+from flask import stream_with_context
 from functools import wraps
 import json
 from pycouchdb import Server
@@ -38,10 +39,14 @@ import jwt
 from os import urandom
 from google.oauth2 import id_token
 from google.auth.transport import requests as g_requests
-from utils import TcpRead, TcpWrite
-from threading import Thread
+from utils import TcpWrite
+import redis
 from time import sleep
 
+db = Server()
+config = db.db('config')
+tcp_config = config['tcp']['client']
+tcp_config['secret'] = config['tcp']['secret']
 
 app = Flask(__name__)
 
@@ -58,6 +63,7 @@ def login_required(func):
 @app.route('/')
 @login_required
 def index():
+    print(request.cookies)
     devs = [d for d in db['devices']]
     devs_data = dict()
     for dd in db['devices-data']:
@@ -92,10 +98,14 @@ def dev(sid):
 @app.route('/dev/write', methods=['GET', 'POST'])
 @login_required
 def dev_write():
-    tcp = TcpWrite(tcp_config['ip'], tcp_config['port'], tcp_config['secret'])
-    tcp.writer(request.data)
-    return 'ok'
-
+    if request.method == 'POST':
+        print(f'write {request.data}')
+        tcp = TcpWrite(tcp_config['ip'], tcp_config['port'], tcp_config['secret'])
+        tcp.writer(request.data)
+        return redirect('/dev/write?status=ok')
+    elif request.method == 'GET':
+        return request.args.get('status', 'ooops something is wrong')
+ 
 
 @app.route('/dev/data/<sid>')
 @login_required
@@ -149,15 +159,15 @@ def login():
                                                   '185939031950-ofl3lt8mhuvl1tho2p0i308vqcum5reg.apps.googleusercontent.com')
             if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
                 raise ValueError('Wrong issuer.')
-
+            
             # ID token is valid. Get the user's Google Account ID from the decoded token.
+            
             try:
                 if idinfo['sub'] in db['config']['users']['gusers']:
                     session['userid'] = idinfo['sub']
                     return 'ok'
                 else:
                     return 'not_registred'
-                    
             except KeyError:
                 return 'db error'
         except ValueError:
@@ -175,21 +185,26 @@ def stream():
     return Response(event(), mimetype='text/event-stream', headers={'Cache-Control': 'no-cache',
                                                                     'Access-Control-Allow-Origin': '*',
                                                                     'Connection': 'keep-alive'})
-
+@stream_with_context
 def event():
     yield "data: hello\n\n"
-    # tcp = TcpRead(tcp_config['ip'], tcp_config['port'], tcp_config['secret'])
-    for msg in tcp.reader():
-        yield f'data: {msg}\n\n'
+    r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
+    channel = r.pubsub()
+    channel.subscribe('msg')
+    channel.get_message()
+    while True:
+        try:
+            msg = channel.get_message()
+            if msg:
+                print(type(msg), msg)
+                yield f'data: {msg.get("data")}\n\n'
+        except redis.exceptions.ConnectionError:
+            sleep(5)
+        sleep(0.001)
 
-
-db = Server()
-config = db.db('config')
-tcp_config = config['tcp']['client']
-tcp_config['secret'] = config['tcp']['secret']
-tcp = TcpRead(tcp_config['ip'], tcp_config['port'], tcp_config['secret'])
 
 app.secret_key = urandom(24)
+
 app.config.update(
         SESSION_COOKIE_SECURE=True,
         SESSION_COOKIE_HTTPONLY=True,

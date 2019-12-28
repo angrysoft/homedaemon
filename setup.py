@@ -23,7 +23,7 @@ setup(
     author_email='sebastian.zwierzchowski@gmail.com',
     description='',
     scripts=['homed.py'],
-    requires=["flask", "pyserial", "pyxiaomi", "websockets", 'pycouchdb'],
+    requires=["flask", "pyserial", "pyxiaomi", "redis", 'pycouchdb'],
     data_files=[('/etc/angryhome/scenes', scenes),
                 ('/usr/lib/systemd/system', ['homed.service'])],
 )
