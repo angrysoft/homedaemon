@@ -102,7 +102,6 @@ def dev_write():
         print(f'write {request.data}')
         tcp = TcpWrite(tcp_config['ip'], tcp_config['port'], tcp_config['secret'])
         tcp.writer(request.data)
-        sleep(0.1)
         return redirect('/dev/write?status=ok')
     elif request.method == 'GET':
         return request.args.get('status', 'ooops something is wrong')
