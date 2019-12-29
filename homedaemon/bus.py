@@ -2,10 +2,13 @@
 import asyncio
 import functools
 from datetime import datetime
+from threading import Thread
 
 
-class Bus:
+class Bus(Thread):
     def __init__(self, loop):
+        super().__init__()
+        self.daemon = True
         self._events = dict()
         self.loop = loop
         

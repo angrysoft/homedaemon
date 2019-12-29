@@ -12,10 +12,10 @@ class Input(BaseInput):
         self.ip = config['tcp']['client']['ip']
         self.port = config['tcp']['client']['port']
         self.secret = config['tcp']['secret']
-        self.loop.create_task(self.conn_watcher())
+        self.ssl_context = ssl.create_default_context()
         self.reader = None
         self.writer = None
-        self.ssl_context = ssl.create_default_context()
+        self.loop.create_task(self.conn_watcher())
         self.bus.on('report', '*', self.send)
         self.bus.on('scene', '*', self.send)
         # self.ssl_context = ssl._create_unverified_context()

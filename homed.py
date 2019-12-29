@@ -45,6 +45,7 @@ class HomeDaemon:
         self.loop = asyncio.get_event_loop()
         self.inputs = dict()
         self.bus = Bus(self.loop)
+        self.bus.start()
         self.db = Server()
         self.config = self.db['config']
         self.devicesdb = self.db['devices']
@@ -85,13 +86,22 @@ class HomeDaemon:
                         self.logger.warning(f'scene duplcate name skiping ... {inst.name}')
                         continue
                     self.logger.info(f'loaded {inst.name}')
-        self.bus.emit_cmd({'cmd': 'scene', 'sid': 'all', 'data': {'scenes': [sc for sc in self.scenesdb]}})
+        self.loop.call_later(5, self._announce_scene_list)
+        
+    def _announce_scene_list(self):
+        sc_list = list()
+        for s in self.scenesdb:
+            if not s.get('automatic'):
+                del s['_rev']
+                sc_list.append(s)
+        print({'cmd': 'scene', 'sid': 'all', 'data': {'scenes': sc_list}})
+        self.bus.emit_cmd({'cmd': 'scene', 'sid': 'all', 'data': {'scenes': sc_list}})
 
     def run(self):
         self.logger.info(f'main thread {current_thread()} loop {id(self.loop)}')
         self._load_devices()
-        self._load_inputs()
         self._load_scenes()
+        self._load_inputs()
         self.loop.add_signal_handler(signal.SIGINT, self.stop)
         self.loop.add_signal_handler(signal.SIGHUP, self.stop)
         self.loop.add_signal_handler(signal.SIGQUIT, self.stop)

@@ -74,6 +74,12 @@ class BaseScene(Thread):
 
     def get_device(self, sid):
         return self.daemon.devices.get(sid)
+    
+    def save_device_state(self, sid):
+        pass
+    
+    def restore_devices_state(self, sid):
+        pass
 
 
 class Trigger:
