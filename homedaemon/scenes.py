@@ -43,6 +43,7 @@ class BaseScene(Thread):
             self.daemon.bus.on('write', self.name, self.do)
 
     def do(self, cmd):
+        print(type(cmd), cmd)
         data = cmd.get('data', {})
         sc = Thread(name=self.name, target=self._runner, args=(data.get('status'),))
         sc.start()
