@@ -43,11 +43,9 @@ class BaseScene(Thread):
             self.daemon.bus.on('write', self.name, self.do)
 
     def do(self, cmd):
-        if 'status' in cmd and cmd['status'] in ['on', 'off']:
-            sc = Thread(name=self.name, target=self._runner, args=(cmd['status'],))
-            sc.start()
-        else:
-            self.daemon.logger.error(f'{self.name}: missing status')
+        data = cmd.get('data', {})
+        sc = Thread(name=self.name, target=self._runner, args=(data.get('status'),))
+        sc.start()
     
     def _runner(self, status):
         if self.running:
@@ -55,7 +53,10 @@ class BaseScene(Thread):
         cmd = {'cmd': 'scene', 'sid': self.name, 'data':{'status': status, 'running': True}}
         self.running = True
         self.daemon.bus.emit_cmd(cmd)
-        {'on': self.on, 'off': self.off}.get(status, self._unknown_cmd)()
+        try:
+            {'on': self.on, 'off': self.off}.get(status, self._unknown_cmd)()
+        except:
+            self.daemon.logger.error(f'scene running error {self.name}')
         self.running = False
         cmd['data']['running'] = False
         self.daemon.bus.emit_cmd(cmd)
@@ -75,10 +76,13 @@ class BaseScene(Thread):
     def get_device(self, sid):
         return self.daemon.devices.get(sid)
     
-    def save_device_state(self, sid):
+    def store_device_state(self, *sids):
         pass
+        # self.daemon.scenesdb[self.name]['state'] = {}
+        # for sid in sids:
+        #     self.daemon.scenesdb[self.name]['state'][sid] = self.daemon.device_data[sid]
     
-    def restore_devices_state(self, sid):
+    def restore_devices_state(self, *sids):
         pass
 
 
@@ -95,7 +99,7 @@ class Trigger:
     
     def pull(self, event):
         if event.get('data', dict()).get(self.event) == self.value:
-            self._scene.do({'status': 'on'})
+            self._scene.do({'data':{'status': 'on'}})
     
     def __repr__(self):
         return f'Trigger: {self.sid}.{self.event}.{self.value}'

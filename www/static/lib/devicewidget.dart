@@ -62,6 +62,11 @@ class Devices {
         this._devices[devData['sid']] = new Bravia(devData, evSend);
       }
       break;
+      case 'scene':
+      {
+        this._devices[devData['sid']] = new Scene(devData, evSend);
+      }
+      break;
     }
   }
 
@@ -191,6 +196,37 @@ class Bslamp1 extends DeviceWidget {
   }
 }
 
+class Scene extends DeviceWidget {
+  SceneButton runOn;
+  SceneButton runOff;
+
+  Scene(Map<String, dynamic> devData, Function evSend) : super(devData, evSend) {
+    this.runOn = new SceneButton('sceneon', sid);
+    this.runOn.btn.onClick.listen((ev) {
+      this.send(ev.target);
+    });
+    this.runOff = new SceneButton('sceneoff', sid);
+    this.runOff.btn.onClick.listen((ev) {
+      this.send(ev.target);
+    });
+  }
+
+  void refreshStatus(Map<String,dynamic> devData) {
+    switch(devData['status']) {
+      case 'on':
+      {
+        this.runOn.setRunning(devData['running']);
+      }
+      break;
+
+      case 'off':
+      {
+        this.runOff.setRunning(devData['running']);
+      }
+      break;
+    }
+  }
+}
 
 class DeviceWidget implements BaseDeviceWidget {
   Map<String,dynamic> devData;
@@ -304,6 +340,7 @@ class SensorHt extends ReadOnlyDevice {
   }
 }
 
+
 class ReadOnlyDevice implements BaseDeviceWidget {
   Map<String,dynamic> devData;
   ReadOnlyDevice(Map<String,dynamic> devData) {
@@ -365,6 +402,20 @@ class Button {
         ..value = 'on';
     }
   }  
+}
+
+class SceneButton extends Button {
+  SceneButton(String name, String sid) : super(name, sid);
+  
+  setRunning(bool running) {
+    if (running) {
+      this._status = true;
+      this.btn.classes.add('orange');
+    } else {
+      this._status = false;
+      this.btn.classes.remove('orange');
+    }
+  }
 }
 
 class Label {

@@ -36,6 +36,7 @@ from pycouchdb import Server
 from systemd.journal import JournalHandler
 from homedaemon.devices import Devices
 from homedaemon.bus import Bus
+from asyncio import tasks
 
 logger = logging.getLogger('homed')
 
@@ -81,7 +82,7 @@ class HomeDaemon:
                     inst = _scene.Scene(self)
                     if inst.name not in self.scenes:
                         self.scenes[inst.name] = inst
-                        self.scenesdb[inst.name] = {'automatic': inst.automatic, 'name': inst.name}
+                        self.scenesdb[inst.name] = {'automatic': inst.automatic, 'name': inst.name, 'sid': inst.name}
                     else:
                         self.logger.warning(f'scene duplcate name skiping ... {inst.name}')
                         continue
@@ -94,7 +95,6 @@ class HomeDaemon:
             if not s.get('automatic'):
                 del s['_rev']
                 sc_list.append(s)
-        print({'cmd': 'scene', 'sid': 'all', 'data': {'scenes': sc_list}})
         self.bus.emit_cmd({'cmd': 'scene', 'sid': 'all', 'data': {'scenes': sc_list}})
 
     def run(self):
@@ -102,20 +102,47 @@ class HomeDaemon:
         self._load_devices()
         self._load_scenes()
         self._load_inputs()
-        self.loop.add_signal_handler(signal.SIGINT, self.stop)
-        self.loop.add_signal_handler(signal.SIGHUP, self.stop)
-        self.loop.add_signal_handler(signal.SIGQUIT, self.stop)
-        self.loop.add_signal_handler(signal.SIGTERM, self.stop)
+        # self.loop.add_signal_handler(signal.SIGINT, self.stop)
+        # self.loop.add_signal_handler(signal.SIGHUP, self.stop)
+        # self.loop.add_signal_handler(signal.SIGQUIT, self.stop)
+        # self.loop.add_signal_handler(signal.SIGTERM, self.stop)
 
         try:
             self.logger.debug('Daemon is listening')
             self.loop.run_forever()
         except KeyboardInterrupt:
             pass
+        finally:
+            try:
+                self._cancel_all_tasks()
+                self.loop.run_until_complete(self.loop.shutdown_asyncgens())
+            finally:
+                self.loop.close()
 
     def stop(self, *args, **kwargs):
         self.logger.info('Stop homed')
         self.loop.stop()
+    
+    def _cancel_all_tasks(self):
+        to_cancel = tasks.all_tasks(self.loop)
+        if not to_cancel:
+            return
+
+        for task in to_cancel:
+            task.cancel()
+
+        self.loop.run_until_complete(
+            tasks.gather(*to_cancel, loop=self.loop, return_exceptions=True))
+
+        for task in to_cancel:
+            if task.cancelled():
+                continue
+            if task.exception() is not None:
+                self.loop.call_exception_handler({
+                    'message': 'unhandled exception during asyncio.run() shutdown',
+                    'exception': task.exception(),
+                    'task': task,
+                })
 
 
 if __name__ == '__main__':

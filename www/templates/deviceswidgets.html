@@ -257,21 +257,22 @@
 </div>
 {%- endmacro %}
 
+
 {% macro scene(data) -%}
-<div class="col-xs-5 col-md-2  round-8 padding-05 device"  id="{{ name }}">
+<div class="col-xs-5 col-md-2  round-8 padding-05 device"  id="{{ data.get('name') }}">
   <div class="row center-xs">
     <div class="col-xs-12">
-      <p class="txt-center">{{ name }}</p>
+      <p class="txt-center">{{ data.get('name') }}</p>
     </div>
   </div>
   
   <div class="row center-xs">
     <div class="col-xs-6" >
-      <button class="btn-small device-status status" data-sid="{{ data.get('name') }}" data-status="status" value="on">On</button>
+      <button class="btn-small device-status sceneon" data-sid="{{ data.get('name') }}" data-status="status" value="on">On</button>
     </div>
     
     <div class="col-xs-6" >
-      <button class="btn-small device-status status" data-sid="{{ data.get('name') }}" data-status="status" value="off">Off</button>
+      <button class="btn-small device-status sceneoff" data-sid="{{ data.get('name') }}" data-status="status" value="off">Off</button>
     </div>
     
   </div>

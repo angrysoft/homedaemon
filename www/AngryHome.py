@@ -83,9 +83,14 @@ def index():
 #     return json.dumps(config)
 
 
-@app.route('/scenes/list')
+@app.route('/scene/list')
 def scenes_list():
-    return ''
+    sc_list = list()
+    for s in db['scenes']:
+        if not s.get('automatic'):
+            sc_list.append(s)
+    print(sc_list)
+    return json.dumps(sc_list)
 
 
 @app.route('/dev/<sid>')
