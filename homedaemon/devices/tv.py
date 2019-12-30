@@ -1,5 +1,9 @@
-from . import BaseDevice
-from homedaemon.bravia import Bravia
+from .base import BaseDevice, Dummy
+from pytvremote import Bravia
+
+class TvDevice:
+    def __new__(cls, data, daemon):
+        return {'bravia': BraviaTv}.get(data.get('model'), Dummy)(data, daemon)
 
 
 class BraviaTv(BaseDevice):
@@ -15,18 +19,31 @@ class BraviaTv(BaseDevice):
             self.daemon.logger.error(f'wrong command {cmd}')
             return
         if data.get('button') == 'PowerOn':
-            self.tv.power_on()
-        elif self.tv.is_on():
-            self.tv.send_command(data['button'])
+            self.tv.on()
+            self.get_tv_status()
+        elif self.tv.power:
+            self.tv.send_ircc(data['button'])
+            # TODO: chekc if button is channel or src
+            self.get_tv_status()
         else:
             self.daemon.logger.warning('tv is off')
     
+    def get_tv_status(self):
+        tvstatus = dict()
+        if self.tv.power:
+            tvstatus['status'] = 'on'
+            tvstatus.update(self.tv.content_info())
+        else:
+            tvstatus['status'] = 'off'
+                
+        self.daemon.bus.emit_cmd({'cmd': 'report', 'sid': 'tv01',  'data': tvstatus})
+        
     def on(self):
-        self.tv.power_on()
+        self.tv.on()
     
     def off(self):
-        self.tv.power_off()
+        self.tv.off()
     
     @property
     def power(self):
-        return self.tv.is_on()
+        return self.tv.power

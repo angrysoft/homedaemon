@@ -1,5 +1,8 @@
-from . import BaseDevice
+from .base import BaseDevice
 import subprocess
+
+class ComputerDevice:
+    pass
 
 class Computer(BaseDevice):
     def __init__(self, data, daemon):

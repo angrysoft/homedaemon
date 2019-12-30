@@ -2,12 +2,13 @@ import asyncio
 import websockets
 import sys
 import jwt
+import json
 from homedaemon.inputs import BaseInput
 
 
 class Input(BaseInput):
-    def __init__(self, queue, config):
-        super(Input, self).__init__(queue)
+    def __init__(self, bus, config, loop):
+        super(Input, self).__init__(bus, loop)
         self.name = 'websocket_client'
         url = config['websocket']['webserver']['ip']
         port = config['websocket']['webserver']['port']
@@ -25,7 +26,12 @@ class Input(BaseInput):
     async def reader(self):
         while self.loop.is_running():
             msg = await self.websocket.recv()
-            self.queue.put(msg)
+            try:
+                msg = json.loads(msg)
+            except json.JSONDecodeError as err:
+                print(err)
+                return
+            self.bus.emit_cmd(msg)
     
     async def connect(self):
         while self.loop.is_running():
@@ -50,13 +56,8 @@ class Input(BaseInput):
         await self.websocket.send(msg)
     
     def run(self):
-        try:
-            self.loop.create_task(self.connect())
-            self.loop.run_forever()
-        except KeyboardInterrupt:
-            self.loop.stop()
-            self.loop.run_until_complete(self.websocket.close())
-            self.loop.run_until_complete(self.websocket.wait_closed())
+        self.loop.create_task(self.connect())
+            
      
 
 

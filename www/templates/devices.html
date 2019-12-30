@@ -35,7 +35,7 @@
   <div class="container-fluid" id="tabs">
     <div class="row around-xs tab scenes">
       {% for sc in scenes %}
-        {{ scene(sc.get('name')) }}
+        {{ scene(sc) }}
       {% endfor %}
     </div>
     <div class="row around-xs tab lights">

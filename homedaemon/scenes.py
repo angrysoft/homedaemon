@@ -3,13 +3,21 @@ from threading import Thread
 from datetime import datetime, time
 from time import sleep
 
+class Scenes:
+    def __init__(self):
+        self._scenes = dict()
+    
+    def load(self, scene):
+        pass
+    
+    
 
 class BaseScene(Thread):
     def __init__(self, daemon):
         super().__init__()
         self.daemon = daemon
         self.name = ''
-        self.automatic = True
+        self._automatic = True
         self._triggers = list()
         self.running = False
     
@@ -19,18 +27,40 @@ class BaseScene(Thread):
     
     @triggers.setter
     def triggers(self, value):
-        self._triggers.append(Trigger(value, self))
-        
-    def do(self, cmd):
-        if 'status' in cmd:
-            sc = Thread(name=self.name, target={'on': self.on, 'off': self.off}.get(cmd['status'], self._unknown_cmd))
-            self.running = True
-            sc.start()
-            # sc.join()
-            self.running = False
-        else:
-            self.daemon.logger.error(f'{self.name}: missing status')
+        if self._automatic:
+            trig = Trigger(value, self)
+            self._triggers.append(trig)
+            self.daemon.bus.on('report', trig.sid, trig.pull)
     
+    @property
+    def automatic(self):
+        return self._automatic
+    
+    @automatic.setter
+    def automatic(self, value):
+        self._automatic = value
+        if value is False:
+            self.daemon.bus.on('write', self.name, self.do)
+
+    def do(self, cmd):
+        data = cmd.get('data', {})
+        sc = Thread(name=self.name, target=self._runner, args=(data.get('status'),))
+        sc.start()
+    
+    def _runner(self, status):
+        if self.running:
+            return
+        cmd = {'cmd': 'scene', 'sid': self.name, 'data':{'status': status, 'running': True}}
+        self.running = True
+        self.daemon.bus.emit_cmd(cmd)
+        try:
+            {'on': self.on, 'off': self.off}.get(status, self._unknown_cmd)()
+        except:
+            self.daemon.logger.error(f'scene running error {self.name}')
+        self.running = False
+        cmd['data']['running'] = False
+        self.daemon.bus.emit_cmd(cmd)
+                    
     def on(self):
         pass
 
@@ -44,28 +74,16 @@ class BaseScene(Thread):
         sleep(s)
 
     def get_device(self, sid):
-        return self.daemon.workers.get(sid)
-
-
-class Triggers:
-    def __init__(self):
-        self._triggers = dict()
+        return self.daemon.devices.get(sid)
     
-    def register(self, trigger):
-        if not isinstance(trigger, Trigger):
-            raise ValueError('arg need to by Trigger instance')
-        if trigger.sid not in self._triggers:
-            self._triggers[trigger.sid] = list()
-        self._triggers[trigger.sid].append(trigger)
-
-    def unregister(self, sid):
-        if sid in self._triggers:
-            del self._triggers[sid]
-
-    def on_event(self, event):
-        for trigger in self._triggers.get(event.get('sid'), []):
-            if event.get('data', dict()).get(trigger.event) == trigger.value:
-                trigger.pull()
+    def store_device_state(self, *sids):
+        pass
+        # self.daemon.scenesdb[self.name]['state'] = {}
+        # for sid in sids:
+        #     self.daemon.scenesdb[self.name]['state'][sid] = self.daemon.device_data[sid]
+    
+    def restore_devices_state(self, *sids):
+        pass
 
 
 class Trigger:
@@ -79,8 +97,9 @@ class Trigger:
                 self.sid, self.event, self.value = _values
         self._scene = scene
     
-    def pull(self):
-        self._scene.do({'status': 'on'})
+    def pull(self, event):
+        if event.get('data', dict()).get(self.event) == self.value:
+            self._scene.do({'data':{'status': 'on'}})
     
     def __repr__(self):
         return f'Trigger: {self.sid}.{self.event}.{self.value}'

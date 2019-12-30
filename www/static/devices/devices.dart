@@ -8,12 +8,21 @@ void _log(Object o) => print('  MAIN: $o');
 
 class Page {
   Devices devices = new Devices();
+  // Scenes scenes = new Scenes();
   EventSource events;
 
   Page() {
     HttpRequest.getString('/dev/data/all').then((String resp) {
       List<dynamic> jdata = jsonDecode(resp);
       jdata.forEach((dev) {
+        this.devices.register(dev, print);
+      });
+    });
+
+    HttpRequest.getString('/scene/list').then((String resp) {
+      List<dynamic> jdata = jsonDecode(resp);
+      jdata.forEach((dev) {
+        dev['model'] = 'scene';
         this.devices.register(dev, print);
       });
     });

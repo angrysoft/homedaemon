@@ -34,8 +34,9 @@ from threading import Thread, current_thread, RLock
 from time import sleep
 from pycouchdb import Server
 from systemd.journal import JournalHandler
-from homedaemon.devices import Device
-from homedaemon.scenes import Triggers
+from homedaemon.devices import Devices
+from homedaemon.bus import Bus
+from asyncio import tasks
 
 logger = logging.getLogger('homed')
 
@@ -44,52 +45,36 @@ class HomeDaemon:
     def __init__(self):
         self.loop = asyncio.get_event_loop()
         self.inputs = dict()
-        self.inputs_list = [
-            'gateway',
-            'arduino',
-            'tcpclient',
-            # 'tcp',
-            # 'websocket',
-            # 'websocket_client',
-            'yeelight',
-            'timer'
-        ]
-        self.queue = Queue()
+        self.bus = Bus(self.loop)
+        self.bus.start()
         self.db = Server()
         self.config = self.db['config']
         self.devicesdb = self.db['devices']
         self.device_data = self.db['devices-data']
+        self.scenesdb = None
         self.logger = logger
         self.logger.info('Starting Daemon')
-        self.token = None
-        self.workers = dict()
+        self.devices = Devices()
         self.scenes = dict()
-        self.triggers = Triggers()
-
-    def notify_clients(self, msg):
-        # TODO subscribe msg  + msg bus.... 
-        if 'tcpclient' in self.inputs:
-            asyncio.run(self.inputs['tcpclient'].send(msg))
-        if 'websocket' in self.inputs:
-            asyncio.run(self.inputs['websocket'].send(msg))
-        if 'websocket_client' in self.inputs:
-            asyncio.run(self.inputs['websocket_client'].send(msg))
 
     def _load_inputs(self):
         for _input_name in self.config['inputs']['list']:
             _input = importlib.import_module(f'homedaemon.inputs.{_input_name}')
-            inst = _input.Input(self.queue, self.config)
+            inst = _input.Input(self.bus, self.config, self.loop)
             self.inputs[inst.name] = inst
             self.logger.info(f'load input: {inst.name}')
             self.inputs[inst.name].start()
 
     def _load_devices(self):
         for dev in self.devicesdb:
-            self.workers[dev['sid']] = Device(dev, self)
+            self.devices.load(dev, self)
 
     def _load_scenes(self):
+        if 'scenes' in self.db:
+            self.db.delete('scenes')
+        self.db.create('scenes')
+        self.scenesdb = self.db['scenes'] 
         sys.path.append(self.config['scenes']['path'])
-        scene_list = list()
         with os.scandir(self.config['scenes']['path']) as it:
             for entry in it:
                 if entry.name.endswith('.py') and entry.is_file():
@@ -97,98 +82,67 @@ class HomeDaemon:
                     inst = _scene.Scene(self)
                     if inst.name not in self.scenes:
                         self.scenes[inst.name] = inst
+                        self.scenesdb[inst.name] = {'automatic': inst.automatic, 'name': inst.name, 'sid': inst.name}
                     else:
-                        self.logger.warning('scene duplcate name skiping ... {inst.name}')
+                        self.logger.warning(f'scene duplcate name skiping ... {inst.name}')
                         continue
-                    for trigger in inst.triggers:
-                        self.triggers.register(trigger)
-                        self.logger.debug(f'register trigger {trigger.sid} for scene {inst.name}')
                     self.logger.info(f'loaded {inst.name}')
-                    scene_list.append({'name': inst.name, 'automaitc': inst.automatic })
-            self.config['scenes_list'] = {'list':scene_list}
-
+        self.loop.call_later(5, self._announce_scene_list)
+        
+    def _announce_scene_list(self):
+        sc_list = list()
+        for s in self.scenesdb:
+            if not s.get('automatic'):
+                del s['_rev']
+                sc_list.append(s)
+        self.bus.emit_cmd({'cmd': 'scene', 'sid': 'all', 'data': {'scenes': sc_list}})
 
     def run(self):
         self.logger.info(f'main thread {current_thread()} loop {id(self.loop)}')
         self._load_devices()
         self._load_scenes()
         self._load_inputs()
-        self.loop.add_signal_handler(signal.SIGINT, self.stop)
-        self.loop.add_signal_handler(signal.SIGHUP, self.stop)
-        self.loop.add_signal_handler(signal.SIGQUIT, self.stop)
-        self.loop.add_signal_handler(signal.SIGTERM, self.stop)
-
-        watcher = Thread(name='watcher', target=self.devices_watcher)
-        self.loop.call_later(0.5, watcher.start)
+        # self.loop.add_signal_handler(signal.SIGINT, self.stop)
+        # self.loop.add_signal_handler(signal.SIGHUP, self.stop)
+        # self.loop.add_signal_handler(signal.SIGQUIT, self.stop)
+        # self.loop.add_signal_handler(signal.SIGTERM, self.stop)
 
         try:
             self.logger.debug('Daemon is listening')
             self.loop.run_forever()
         except KeyboardInterrupt:
             pass
+        finally:
+            try:
+                self._cancel_all_tasks()
+                self.loop.run_until_complete(self.loop.shutdown_asyncgens())
+            finally:
+                self.loop.close()
 
     def stop(self, *args, **kwargs):
         self.logger.info('Stop homed')
         self.loop.stop()
+    
+    def _cancel_all_tasks(self):
+        to_cancel = tasks.all_tasks(self.loop)
+        if not to_cancel:
+            return
 
-    def devices_watcher(self):
-        """This method is """
-        self.logger.debug(f'Waching Queue {current_thread()}')
-        while self.loop.is_running():
-            if self.queue.empty():
-                sleep(0.1)
+        for task in to_cancel:
+            task.cancel()
+
+        self.loop.run_until_complete(
+            tasks.gather(*to_cancel, loop=self.loop, return_exceptions=True))
+
+        for task in to_cancel:
+            if task.cancelled():
                 continue
-            data = self.queue.get()
-            if data.get('cmd') == 'report':
-                try:
-                    self.logger.debug(f'trig: {data}')
-                    self.triggers.on_event(data)
-                except:
-                    self.logger.error(f'ooops something went wrong {data}')
-
-            sid = data.get('sid')
-            if sid in self.workers:
-                try:
-                    self.workers[sid].do(data)
-                except ValueError as err:
-                    self.logger.error(f'{sid} {err}')
-            elif sid in self.scenes:
-                try:
-                    self.scenes[sid].do(data.get('data', {}))
-                except ValueError as err:
-                    self.logger.error(f'{sid} {err}')
-            else:
-                self.logger.error(f'Unknown sid: {data}')
-        self.logger.debug('Stop watching')
-
-
-class Queue:
-    def __init__(self):
-        self._queue = list()
-        self.lock = RLock()
-
-    def put(self, item):
-        with self.lock:
-            if type(item) is not dict:
-                try:
-                    item = json.loads(item)
-                except json.JSONDecodeError:
-                    logger.warning(f'Wrong data: {item}')
-                    return
-            self._queue.append(item)
-
-    def get(self):
-        if self._queue:
-            with self.lock:
-                return self._queue.pop(0)
-        else:
-            return None
-
-    def empty(self):
-        if self._queue:
-            return False
-        else:
-            return True
+            if task.exception() is not None:
+                self.loop.call_exception_handler({
+                    'message': 'unhandled exception during asyncio.run() shutdown',
+                    'exception': task.exception(),
+                    'task': task,
+                })
 
 
 if __name__ == '__main__':
@@ -197,7 +151,6 @@ if __name__ == '__main__':
     if len(sys.argv) < 2:
         logger.addHandler(JournalHandler())    
     else:
-        
         logging.basicConfig(filename="home.log")
     
     hd = HomeDaemon()
