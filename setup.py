@@ -11,7 +11,7 @@ def get_files(name):
             continue
 
 
-scenes = glob('files/scenes/*.py')
+scenes = glob('scenes/*.py')
 
 setup(
     name='AngryHome',
@@ -23,7 +23,7 @@ setup(
     author_email='sebastian.zwierzchowski@gmail.com',
     description='',
     scripts=['homed.py'],
-    requires=["flask", "pyserial", "pyxiaomi", "redis", 'pycouchdb'],
+    requires=["flask", "pyserial", "pyxiaomi", 'pycouchdb'],
     data_files=[('/etc/angryhome/scenes', scenes),
                 ('/usr/lib/systemd/system', ['homed.service'])],
 )
