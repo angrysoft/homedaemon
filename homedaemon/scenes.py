@@ -55,8 +55,8 @@ class BaseScene(Thread):
         self.daemon.bus.emit_cmd(cmd)
         try:
             {'on': self.on, 'off': self.off}.get(status, self._unknown_cmd)()
-        except:
-            self.daemon.logger.error(f'scene running error {self.name}')
+        except Exception as err:
+            self.daemon.logger.error(f'scene running error {self.name} {err}')
         self.running = False
         cmd['data']['running'] = False
         self.daemon.bus.emit_cmd(cmd)
