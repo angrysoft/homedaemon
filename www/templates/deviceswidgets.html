@@ -237,6 +237,48 @@
 </div>
 {%- endmacro %}
 
+{% macro tv(data) -%}
+<div class="col-xs-5 col-md-2  round-8 padding-05 device"  id="{{ data.get('sid') }}">
+  <div class="row center-xs">
+    <div class="col-xs-12">
+      <p class="txt-center">{{ data.get('name') }}</p>
+    </div>
+  </div>
+  
+  <div class="row center-xs">
+    <div class="col-xs-6" >
+      <button class="btn-small device-status power" data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="power" value="on">On</button>
+    </div>
+
+    <div class="col-xs-6" >
+      <button class="btn-small color-set-button" data-sid="{{ data.get('sid') }}">Set</button>
+    </div>
+  </div>
+</div>
+{%- endmacro %}
+
+{% macro scene(data) -%}
+<div class="col-xs-5 col-md-2  round-8 padding-05 device"  id="{{ name }}">
+  <div class="row center-xs">
+    <div class="col-xs-12">
+      <p class="txt-center">{{ name }}</p>
+    </div>
+  </div>
+  
+  <div class="row center-xs">
+    <div class="col-xs-6" >
+      <button class="btn-small device-status status" data-sid="{{ data.get('name') }}" data-status="status" value="on">On</button>
+    </div>
+    
+    <div class="col-xs-6" >
+      <button class="btn-small device-status status" data-sid="{{ data.get('name') }}" data-status="status" value="off">Off</button>
+    </div>
+    
+  </div>
+</div>
+{%- endmacro %}
+
+
 {% macro colorset() -%}
 <div class="modal-dialog dark" id="color-set">
   <div class="modal-content">
@@ -304,47 +346,6 @@
         </div>
           
       </div>
-    </div>
-  </div>
-</div>
-{%- endmacro %}
-
-{% macro scene(name) -%}
-<div class="col-xs-5 col-md-2  round-8 padding-05 device"  id="{{ name }}">
-  <div class="row center-xs">
-    <div class="col-xs-12">
-      <p class="txt-center">{{ name }}</p>
-    </div>
-  </div>
-  
-  <div class="row center-xs">
-    <div class="col-xs-6" >
-      <button class="btn-small device-status" data-sid="{{ name }}" data-status="status" value="on">On</button>
-    </div>
-    
-    <div class="col-xs-6" >
-      <button class="btn-small device-status" data-sid="{{ name }}" data-status="status" value="off">Off</button>
-    </div>
-    
-  </div>
-</div>
-{%- endmacro %}
-
-{% macro tv(data) -%}
-<div class="col-xs-5 col-md-2  round-8 padding-05 device"  id="{{ data.get('sid') }}">
-  <div class="row center-xs">
-    <div class="col-xs-12">
-      <p class="txt-center">{{ data.get('name') }}</p>
-    </div>
-  </div>
-  
-  <div class="row center-xs">
-    <div class="col-xs-6" >
-      <button class="btn-small device-status power" data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="power" value="on">On</button>
-    </div>
-
-    <div class="col-xs-6" >
-      <button class="btn-small color-set-button" data-sid="{{ data.get('sid') }}">Set</button>
     </div>
   </div>
 </div>
