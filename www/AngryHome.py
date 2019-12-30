@@ -87,9 +87,8 @@ def index():
 def scenes_list():
     sc_list = list()
     for s in db['scenes']:
-        if not s.get('automatic'):
+        if s.get('automatic') == False:
             sc_list.append(s)
-    print(sc_list)
     return json.dumps(sc_list)
 
 
@@ -135,7 +134,7 @@ def devices():
     devs = sorted([d for d in db['devices']], key=operator.itemgetter('name'))
     sc_list = list()
     for s in db['scenes']:
-        if not s.get('automatic'):
+        if s.get('automatic') == False:
             sc_list.append(s)
     return render_template('devices.html',
                            devices=devs,
