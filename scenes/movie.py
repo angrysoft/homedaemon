@@ -12,10 +12,10 @@ class Scene(BaseScene):
         tvrgb = self.get_device('rgb01')
         color = self.get_device('0x0000000007e7bae0')
         tvrgb.on()
-        tvrgb.set_rgb({'red':0 ,'green':0, 'blue': 255})
-        tvrgb.bright(80)
+        tvrgb.set_rgb({'red':255 ,'green':38, 'blue': 0})
+        tvrgb.bright(60)
         color.on()
-        color.bright(50)
+        color.bright(1)
         color.set_rgb({'red':0 ,'green':0, 'blue': 255})
         self.sleep(1)
         for _sid in dev_to_off:
