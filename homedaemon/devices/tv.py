@@ -14,17 +14,19 @@ class BraviaTv(BaseDevice):
         self.tv = Bravia(self.ip, macaddres=self.mac)
 
     def write(self, cmd):
+        print('cmd', cmd)
         data = cmd.get('data')
         if 'power' in data:
             {'on': self.on, 'off': self.off}.get(data['power'], self.unknown_cmd)()
-            self.get_tv_status()
         elif data.get('button') == 'PowerOn':
             self.tv.on()
-            self.get_tv_status()
         elif self.tv.power:
             self.tv.send_ircc(data['button'])
             # TODO: chekc if button is channel or src
-            self.get_tv_status()
+            if data['button'] in ['ChannelUp', 'ChannelDown', 'Input',
+                                  'Num0', 'Num1', 'Num2', 'Num3', 'Num4',
+                                  'Num5','Num6', 'Num7', 'Num8', 'Num9']:
+                self.get_tv_status()
         else:
             self.daemon.logger.warning('tv is off')
     
