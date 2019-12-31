@@ -11,7 +11,7 @@ class Scene(BaseScene):
     def on(self):
         wallsw = self.get_device('158d0002abac97')
         if wallsw.channel_1.is_on():
-            self.sleep(300)
+            self.sleep(180)
             if self.running and wallsw.channel_1.is_on():
                 wallsw.channel_0.on()
         elif wallsw.channel_1.is_off():
