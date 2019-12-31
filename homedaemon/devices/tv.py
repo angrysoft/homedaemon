@@ -15,7 +15,9 @@ class BraviaTv(BaseDevice):
 
     def write(self, cmd):
         data = cmd.get('data')
-        if 'button' not in data:
+        if 'power' in data:
+            {'on': self.on, 'off': self.off}.get(data['power'], self.unknown_cmd)()
+        elif 'button' not in data:
             self.daemon.logger.error(f'wrong command {cmd}')
             return
         if data.get('button') == 'PowerOn':
@@ -27,6 +29,9 @@ class BraviaTv(BaseDevice):
             self.get_tv_status()
         else:
             self.daemon.logger.warning('tv is off')
+    
+    def unknown_cmd(self):
+        self.daemon.logger.error(f'wrong command')    
     
     def get_tv_status(self):
         tvstatus = dict()
