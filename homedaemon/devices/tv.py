@@ -17,10 +17,7 @@ class BraviaTv(BaseDevice):
         data = cmd.get('data')
         if 'power' in data:
             {'on': self.on, 'off': self.off}.get(data['power'], self.unknown_cmd)()
-        elif 'button' not in data:
-            self.daemon.logger.error(f'wrong command {cmd}')
-            return
-        if data.get('button') == 'PowerOn':
+        elif data.get('button') == 'PowerOn':
             self.tv.on()
             self.get_tv_status()
         elif self.tv.power:
