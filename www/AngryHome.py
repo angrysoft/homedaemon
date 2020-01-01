@@ -42,13 +42,18 @@ from google.auth.transport import requests as g_requests
 from utils import TcpWrite
 import redis
 from time import sleep
+import logging
+from gasistant import OAuth, Actions
 
-db = Server()
-config = db.db('config')
+srv = Server()
+config = srv.db('config')
 tcp_config = config['tcp']['client']
 tcp_config['secret'] = config['tcp']['secret']
 
 app = Flask(__name__)
+
+logging.basicConfig(filename='gast.log', filemode='w', format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %H:%M:%S')
+logging.warning('app starts')
 
 
 def login_required(func):
@@ -205,6 +210,71 @@ def event():
         except redis.exceptions.ConnectionError:
             sleep(5)
         sleep(0.001)
+
+### Google Asistant ###
+@app.route('/auth')
+def auth():
+    """Auth"""
+    if request.method == 'GET':
+        logging.warning('auth get {}, {}'.format(request.args,
+                                                         request.headers))
+        url = '/auth'
+        if request.args.get('response_type', '') == 'code':
+            g_auth = OAuth(srv)
+            url = g_auth.auth(request.args)
+            logging.warning(url)
+        return render_template('auth.html', uri=url)
+
+
+@app.route('/auth/token', methods=['POST'])
+def token():
+    """Token"""
+    logging.warning('token post {}, {}'.format(request.form,
+                                                       request.headers))
+    g_auth = OAuth(srv)
+    status = 400
+    data = '{"error": "invalid_grant"}'
+    if request.form.get('grant_type') == 'authorization_code':
+        status, data = g_auth.get_new_token(request.form)
+    elif request.form.get('grant_type') == 'refresh_token':
+        status, data = g_auth.refresh_token(request.form)
+    elif request.form.get('grant_type') == 'urn:ietf:params:oauth:grant-type:jwt-bearer':
+        pass
+
+    logging.warning(f'token: {status}, {data}')
+
+    return app.response_class(response=data,
+                              status=status,
+                              mimetype='application/json')
+
+
+@app.route('/status', methods=['GET', 'POST'])
+def status():
+    """Status"""
+    g_auth = OAuth(srv)
+    _response = ''
+    _status = 200
+    if request.method == 'GET':
+        logging.warning('status get {}, {}, {}, {}'.format(request.args,
+                                                          request.form,
+                                                          request.data,
+                                                          request.headers))
+        return request.args.get('status', 'ooops something is wrong')
+
+    elif request.method == 'POST':
+        logging.warning('status post {}, {}'.format(request.data, request.headers.get('Authorization')))
+
+        if g_auth.log_by_token(request.headers.get('Authorization', '')):
+            g_action = Actions(request.data)
+            _response = g_action.response
+        else:
+            _response = '{"error":"user_not_found"}'
+            _status = 401
+
+        return app.response_class(response=_response,
+                                  status=_status,
+                                  mimetype='application/json')
+
 
 
 app.secret_key = urandom(24)
