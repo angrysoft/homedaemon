@@ -1,5 +1,5 @@
 import json
-from . import get_devices_list
+from .devices import get_devices_list
 # https://developers.google.com/actions/reference/smarthome/errors-exceptions
 
 
