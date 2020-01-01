@@ -1,4 +1,5 @@
 import json
+from . import get_devices_list
 # https://developers.google.com/actions/reference/smarthome/errors-exceptions
 
 
@@ -6,7 +7,7 @@ class Actions:
     def __init__(self, data):
         try:
             self.req = json.loads(data)
-        except json.JSONDecodeError as err:
+        except json.JSONDecodeError:
             return
 
         self.requestId = self.req.get('requestId')
@@ -64,8 +65,7 @@ class Sync:
         return _response
 
     def _get_devices(self):
-        all_devices = list()
-        return all_devices
+        return get_devices_list()
 
 
 class Query(Intent):
