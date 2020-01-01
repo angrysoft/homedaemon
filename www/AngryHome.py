@@ -45,8 +45,8 @@ from time import sleep
 import logging
 from gasistant import OAuth, Actions
 
-srv = Server()
-config = srv.db('config')
+db = Server()
+config = db.db('config')
 tcp_config = config['tcp']['client']
 tcp_config['secret'] = config['tcp']['secret']
 
@@ -211,6 +211,7 @@ def event():
             sleep(5)
         sleep(0.001)
 
+
 ### Google Asistant ###
 @app.route('/auth')
 def auth():
@@ -220,7 +221,7 @@ def auth():
                                                          request.headers))
         url = '/auth'
         if request.args.get('response_type', '') == 'code':
-            g_auth = OAuth(srv)
+            g_auth = OAuth(db)
             url = g_auth.auth(request.args)
             logging.warning(url)
         return render_template('auth.html', uri=url)
@@ -231,7 +232,7 @@ def token():
     """Token"""
     logging.warning('token post {}, {}'.format(request.form,
                                                        request.headers))
-    g_auth = OAuth(srv)
+    g_auth = OAuth(db)
     status = 400
     data = '{"error": "invalid_grant"}'
     if request.form.get('grant_type') == 'authorization_code':
@@ -251,7 +252,7 @@ def token():
 @app.route('/status', methods=['GET', 'POST'])
 def status():
     """Status"""
-    g_auth = OAuth(srv)
+    g_auth = OAuth(db)
     _response = ''
     _status = 200
     if request.method == 'GET':
