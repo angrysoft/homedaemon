@@ -46,7 +46,7 @@ class OAuth:
                 "refresh_token": token['refresh_token'],
                 "expires_in": token['expires_in']})
 
-        return 400, json.dumps({"error": "invalid_grant", "erro_msg": f"{err}"})
+        return 400, json.dumps({"error": "invalid_grant", "erro_msg": f"{}"})
 
     def refresh_token(self, args):
         err = None
@@ -68,16 +68,13 @@ class OAuth:
         return 400, json.dumps({"error": "invalid_grant", "erro_msg": f"{err}"})
 
     def log_by_token(self, auth):
-        print(auth)
         if auth.find(' ') > 0:
             token_type, token = auth.split(' ', 1)
             try:
-                user_token = self.tokendb.find(selector={'acces_token': token}, limit=1)[0]
-                if user_token:
+                user_tokens = self.tokendb.find(selector={'access_token': token}, limit=1)
+                if user_tokens.get('docs'):
                     return True
-            except DatabaseError as err:
-                return False
-            except IndexError:
+            except Exception:
                 return False
         return False
 
