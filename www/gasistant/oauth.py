@@ -71,7 +71,7 @@ class OAuth:
         if auth.find(' ') > 0:
             token_type, token = auth.split(' ', 1)
             try:
-                user_token = self.tokendb.find(selctor={'acces_token': token}, limit=1)[0]
+                user_token = self.tokendb.find(selector={'acces_token': token}, limit=1)[0]
                 if user_token:
                     return True
             except DatabaseError as err:
