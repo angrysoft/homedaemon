@@ -9,7 +9,7 @@ class OAuth:
         self.srv = srv
         self.usersdb = self._get_db('google-users')
         self.codesdb = self._get_db('google-codes')
-        self.tokendb = self._get_db('google-token')
+        self.tokendb = self._get_db('google-tokens')
         self.codes = dict()
         
     def _get_db(self, dbname):
@@ -39,7 +39,7 @@ class OAuth:
                      'refresh_token': self._token(20),
                      'expires_in': 3600}
 
-            self.tokendb[token] = token
+            self.tokendb[client_id] = token
             return 200, json.dumps({
                 "token_type": token['token_type'],
                 "access_token": token['access_token'],
@@ -68,6 +68,7 @@ class OAuth:
         return 400, json.dumps({"error": "invalid_grant", "erro_msg": f"{err}"})
 
     def log_by_token(self, auth):
+        print(auth)
         if auth.find(' ') > 0:
             token_type, token = auth.split(' ', 1)
             try:
