@@ -46,7 +46,7 @@ class OAuth:
                 "refresh_token": token['refresh_token'],
                 "expires_in": token['expires_in']})
 
-        return 400, json.dumps({"error": "invalid_grant", "erro_msg": f"{}"})
+        return 400, json.dumps({"error": "invalid_grant", "erro_msg": f"client_secret"})
 
     def refresh_token(self, args):
         err = None
