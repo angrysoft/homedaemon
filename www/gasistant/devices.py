@@ -1,5 +1,71 @@
+#!/usr/bin/python3
 import json
-# https://developers.google.com/actions/reference/smarthome/errors-exceptions
+import pprint
+
+a_exec = '''{
+  "requestId": "ff36a3cc-ec34-11e6-b1a0-64510650abcf",
+  "inputs": [{
+    "intent": "action.devices.EXECUTE",
+    "payload": {
+      "commands": [{
+        "devices": [{
+          "id": "123",
+          "customData": {
+            "fooValue": 74,
+            "barValue": true,
+            "bazValue": "sheepdip"
+          }
+        },{
+          "id": "456",
+          "customData": {
+            "fooValue": 36,
+            "barValue": false,
+            "bazValue": "moarsheep"
+          }
+        }],
+        "execution": [{
+          "command": "action.devices.commands.OnOff",
+          "params": {
+            "on": true
+          }
+        }]
+      }]
+    }
+  }]
+}
+'''
+a_query = '''
+{
+  "requestId": "ff36a3cc-ec34-11e6-b1a0-64510650abcf",
+  "inputs": [{
+    "intent": "action.devices.QUERY",
+    "payload": {
+      "devices": [{
+        "id": "123",
+        "customData": {
+          "fooValue": 74,
+          "barValue": true,
+          "bazValue": "foo"
+        }
+      },{
+        "id": "456",
+        "customData": {
+          "fooValue": 12,
+          "barValue": false,
+          "bazValue": "bar"
+        }
+      }]
+    }
+  }]
+}
+'''
+
+a_sync = '''{
+  "requestId": "ff36a3cc-ec34-11e6-b1a0-64510650abcf",
+  "inputs": [{
+    "intent": "action.devices.SYNC"
+  }]
+}'''
 
 
 class Actions:
@@ -10,7 +76,7 @@ class Actions:
         try:
             self.req = json.loads(data)
         except json.JSONDecodeError as err:
-            return
+            return err
 
         self.requestId = self.req.get('requestId')
         self.intent = ''
@@ -26,7 +92,7 @@ class Actions:
         for i in self.req.get('inputs', []):
             if type(i) == dict:
                 self.intent = i.get('intent', '')
-                self.payload = i.get('payload', {})
+                self.payload= i.get('payload', {})
 
     def _action(self):
         _intent = None
@@ -89,3 +155,47 @@ class Disconnect:
     def response():
         return {}
 
+
+# gex = Actions(a_exec)
+# gq = Actions(a_query)
+gs = Actions(a_sync)
+print(gs.response)
+
+
+class Devices:
+    def __init__(self):
+        self.id = -1
+        self.type = ''
+        self.traits = list()
+        self.name = {
+            'defaultNames': [],
+            'name': '',
+            'nicknames': []
+        }
+        self.willReportState = False
+        self.roomHint = ''
+        self.deviceInfo = {
+            'manufacturer': '',
+            'model': '',
+            'hwVersion': '',
+            'swVersion': ''
+        }
+        self.customData = {}
+        self.attributes = {}
+
+
+class Outlet(Devices):
+    def __init__(self):
+        super(Outlet, self).__init__()
+        self.type = 'action.devices.types.OUTLET'
+        self.traits.append('action.devices.traits.OnOff')
+
+
+class Light(Devices):
+    def __init__(self):
+        super(Light, self).__init__()
+        self.type = 'action.devices.types.LIGHT'
+
+
+d = Devices()
+print(d.__dict__)
