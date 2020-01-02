@@ -184,4 +184,4 @@ class Scene(GoogleDevice):
         super().__init__(data)
         self.type = 'action.devices.types.SCENE'
         self.traits.append('action.devices.traits.Scene')
-        self.attributes['sceneReversible'] = True
+        self.attributes['sceneReversible'] = data.get('reversable', False)
