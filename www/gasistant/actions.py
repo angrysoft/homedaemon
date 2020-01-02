@@ -1,5 +1,5 @@
 import json
-from .devices import get_devices_list, QueryDevice
+from .devices import get_devices_list, QueryDevice, ExecuteDevice
 # https://developers.google.com/actions/reference/smarthome/errors-exceptions
 
 
@@ -18,6 +18,7 @@ class Actions:
                           'payload': {
                               'errorCode': 'notSupported'
                           }}
+        self.execute = None
         self._action()
 
     def _get_inputs(self):
@@ -34,6 +35,7 @@ class Actions:
             _intent = Query(self.requestId, self.payload)
         elif self.intent == 'action.devices.EXECUTE':
             _intent = Execute(self.requestId, self.payload)
+            self.execute = _intent.execute()
         elif self.intent == 'action.devices.DISCONNECT':
             _intent = Disconnect()
 
@@ -86,9 +88,19 @@ class Query:
 
 
 class Execute:
-
+    def __init__(self, requestId, payload):
+        self.requestId = requestId
+        self.payload = payload
+        
     def response(self):
-        return {}
+        _response = dict()
+        _response['requestId'] = self.requestId
+        _response['payload'] = dict()
+        return _response
+    
+    def execute(self):
+        dev = ExecuteDevice(self.payload)
+        return dev.cmd()
 
 
 class Disconnect:

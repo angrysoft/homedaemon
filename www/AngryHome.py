@@ -268,10 +268,13 @@ def status():
         if g_auth.log_by_token(request.headers.get('Authorization', '')):
             g_action = Actions(request.data)
             _response = g_action.response
+            if g_action.intent == 'action.devices.EXECUTE':
+                tcp = TcpWrite(tcp_config['ip'], tcp_config['port'], tcp_config['secret'])
+                tcp.writer(g_action.execute())
         else:
             _response = '{"error":"user_not_found"}'
             _status = 401
-
+        logging.warning(f'{_response}')
         return app.response_class(response=_response,
                                   status=_status,
                                   mimetype='application/json')

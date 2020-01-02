@@ -41,6 +41,7 @@ class QueryDevice:
     def __init__(self, sid):
         srv = Server()
         self.devbd = srv.db('device')
+        self.scenedb = srv.db('scenes')
         self.datadb = srv.db('device-data')
         self.channel = None
         self.sid = sid
@@ -48,24 +49,58 @@ class QueryDevice:
             sid, channel = sid.rsplit('.', 1)
     
     def query(self):
-        dev = self.devbd.get(self.sid)
-        devdata = self.datadb.get(self.sid)
-        model = dev.get('model')
-        devinfo = None
-        if model in ['bslamp1', 'color']:
-            devinfo = Bslamp1(dev)
-        elif model == 'ctrl_neutral1':
-            devinfo = Ctrl1(dev)
-        elif model == 'ctrl_neutral2':
-            devinfo = Ctrl2(dev)
-            return devinfo.query(devdata, self.channel)
-        elif model == 'plug':
-            devinfo = Plug(dev)
+        if self.sid in self.datadb:
+            dev = self.devbd.get(self.sid)
+            devdata = self.datadb.get(self.sid)
+            model = dev.get('model')
+            devinfo = None
+            if model in ['bslamp1', 'color']:
+                devinfo = Bslamp1(dev)
+            elif model == 'ctrl_neutral1':
+                devinfo = Ctrl1(dev)
+            elif model == 'ctrl_neutral2':
+                devinfo = Ctrl2(dev, self.channel)
+            elif model == 'plug':
+                devinfo = Plug(dev)
+            return devinfo.query(devdata)
+        elif self.sid in self.scenedb:
+            return {'online': True}
         
-        return devinfo.query(devdata)
         
+class ExecuteDevice:
+    def __init__(self, data):
+        self.data = data
+        srv = Server()
+        self.devbd = srv.db('device')
+        self.channel = None
+        self.sid = sid = self.data['commands']['devices'][0]['id']
+        if sid[-2] == '.':
+            sid, channel = sid.rsplit('.', 1)
+    
+    def execute(self):
+        _dev = None
+        if self.sid in self.datadb:
+            dev = self.devbd.get(self.sid)
+            devdata = self.datadb.get(self.sid)
+            model = dev.get('model')
+            devinfo = None
+            if model in ['bslamp1', 'color']:
+                _dev = Bslamp1(dev)
+            elif model == 'ctrl_neutral1':
+                _dev = Ctrl1(dev)
+            elif model == 'ctrl_neutral2':
+                _dev = Ctrl2(dev, self.channel)
+            elif model == 'plug':
+                _dev = Plug(dev)
+            
+        elif self.sid in self.scenedb:
+            dev = self.devbd.get(self.sid)
+            _dev = Scene(dev)
         
-        
+        if _dev:
+            return _dev.exectute(self.data)
+            
+                      
 class GoogleDevice:
     def __init__(self, data):
         self.id = data.get('_id')
@@ -103,8 +138,8 @@ class GoogleDevice:
     def query(self, devdata):
         pass
     
-    def exectute(self):
-        pass
+    def exectute(self, data):
+        return {}
     
     def _power(self, status):
         return {'on': True, 'off': False}.get(status)
@@ -131,11 +166,13 @@ class Bslamp1(GoogleDevice):
             'on': self._power(devdata['power']),
             'online': True,
             'brightness': int(devdata['bright']),
-            'spectrumRgb': devdata['rgb'],
+            'color': {},
             'temperatureK': devdata['ct']
         }
-        # if devdata['color_mode'] == 2:
-        #     ret['color'][]
+        if devdata['color_mode'] == 1:
+            ret['color']['spectrumRgb'] = int(devdata['rgb'])
+        elif devdata['color_mode'] == 2:
+            ret['color']['temperatureK'] = int(devdata['ct'])
         return ret
 
 
@@ -158,9 +195,13 @@ class Ctrl1(GoogleDevice):
         
 
 class Ctrl2(Ctrl1):
-    def query(self, devdata, channel):            
+    def __init__(self, data, channel):
+        super().__init__(data)
+        self.channel = channel
+        
+    def query(self, devdata):            
         ret = {
-            'on': self._power(devdata[f'channel_{channel}']),
+            'on': self._power(devdata[f'channel_{self.channel}']),
             'online': True,
         }
         return ret
@@ -185,3 +226,9 @@ class Scene(GoogleDevice):
         self.type = 'action.devices.types.SCENE'
         self.traits.append('action.devices.traits.Scene')
         self.attributes['sceneReversible'] = data.get('reversable', False)
+    
+    @staticmethod
+    def query():            
+        return {
+            'online': True,
+        }
