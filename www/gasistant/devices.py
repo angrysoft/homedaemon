@@ -40,9 +40,9 @@ def get_devices_list():
 class QueryDevice:
     def __init__(self, sid):
         srv = Server()
-        self.devdb = srv.db('device')
+        self.devdb = srv.db('devices')
         self.scenedb = srv.db('scenes')
-        self.datadb = srv.db('device-data')
+        self.datadb = srv.db('devices-data')
         self.channel = None
         self.sid = sid
         if sid[-2] == '.':
@@ -71,7 +71,7 @@ class ExecuteDevice:
     def __init__(self, data):
         self.data = data
         srv = Server()
-        self.devdb = srv.db('device')
+        self.devdb = srv.db('devices')
         self.scenedb = srv.db('scenes')
         self.channel = None
         self.sid = sid = self.data['commands']['devices'][0]['id']
