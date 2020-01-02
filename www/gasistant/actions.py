@@ -18,8 +18,8 @@ class Actions:
                           'payload': {
                               'errorCode': 'notSupported'
                           }}
-        self.execute = None
-        self._action()
+        
+        self.action = self._action()
 
     def _get_inputs(self):
         for i in self.req.get('inputs', []):
@@ -28,23 +28,23 @@ class Actions:
                 self.payload = i.get('payload', {})
 
     def _action(self):
-        _intent = None
+        
         if self.intent == 'action.devices.SYNC':
-            _intent = Sync(self.requestId)
+            action = Sync(self.requestId)
         elif self.intent == 'action.devices.QUERY':
-            _intent = Query(self.requestId, self.payload)
+            action = Query(self.requestId, self.payload)
         elif self.intent == 'action.devices.EXECUTE':
-            _intent = Execute(self.requestId, self.payload)
-            self.execute = _intent.execute()
+            action = Execute(self.requestId, self.payload)
         elif self.intent == 'action.devices.DISCONNECT':
-            _intent = Disconnect()
-
-        if _intent:
-            self._response = _intent.response()
+            action = Disconnect()
+        return action
 
     @property
     def response(self):
-        return json.dumps(self._response)
+        return json.dumps(self.action.response())
+    
+    def execute(self):
+        return self.action.execute()
 
 
 class Sync:
@@ -100,7 +100,7 @@ class Execute:
     
     def execute(self):
         dev = ExecuteDevice(self.payload)
-        return dev.cmd()
+        return dev.execute()
 
 
 class Disconnect:

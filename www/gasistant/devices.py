@@ -74,7 +74,7 @@ class ExecuteDevice:
         self.devdb = srv.db('devices')
         self.scenedb = srv.db('scenes')
         self.channel = None
-        self.sid = sid = self.data['commands']['devices'][0]['id']
+        self.sid = sid = self.data['commands'][0]['devices'][0]['id']
         if sid[-2] == '.':
             self.sid, self.channel = sid.rsplit('.', 1)
     
@@ -96,10 +96,10 @@ class ExecuteDevice:
             dev = self.devdb.get(self.sid)
             _dev = Scene(dev)
         
-        try:
-            return _dev.exectute(self.data['commnads']['execution'][0])
-        except Exception:
-            return {}
+        # try:
+        return _dev.exectute(self.data['commands'][0]['execution'][0])
+        # except Exception:
+            # return {}
             
                       
 class GoogleDevice:
@@ -183,11 +183,14 @@ class Bslamp1(GoogleDevice):
             'action.devices.commands.BrightnessAbsolute': 'set_bright',
             'action.devices.commands.ColorAbsolute': 'set_color'
             }.get(execution['command'],'unknown')
-        param = {
-            'set_power': self._power(execution['params']['on']),
-            'set_bright': execution['params']['brightness'],
-            'set_color': execution['params']
-            }.get(arg, 'unknown')
+        
+        param = 'unknown'
+        if arg == 'set_power':
+            param = self._power(execution['params']['on'])
+        elif arg == 'set_bright':
+            param = execution['params']['brightness']
+        elif arg == 'set_color':
+            param = execution['params']
         return {
             'sid': self.id,
             'cmd': 'write',
