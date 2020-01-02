@@ -16,11 +16,11 @@ def get_devices_list():
         elif model == 'ctrl_neutral1':
             devinfo = Ctrl1(dev)
         elif model == 'ctrl_neutral2':
-            devinfo = Ctrl2(dev)
+            devinfo = Ctrl2(dev, 0)
             devinfo.id += '.0'
             devinfo.name['name'] += ' channel 0'
             devices_list.append(devinfo.sync())
-            devinfo = Ctrl2(dev)
+            devinfo = Ctrl2(dev, 1)
             devinfo.id += '.1'
             devinfo.name['name'] += ' channel 1'
         elif model == 'plug':
