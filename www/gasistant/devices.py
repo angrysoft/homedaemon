@@ -6,6 +6,7 @@ from pycouchdb import Server
 def get_devices_list():
     srv = Server()
     devicesdb = srv.db('devices')
+    scenedb = srv.db('scenes')
     devices_list = list()
     for dev in devicesdb:
         model = dev.get('model')
@@ -27,6 +28,12 @@ def get_devices_list():
     
         if devinfo:
             devices_list.append(devinfo.sync())
+    for scene in scenedb:
+        if scene.get('automatic') == False:
+            sc = Scene(scene)
+            devices_list.append(sc.sync())
+            
+    
     return devices_list
 
 
@@ -72,8 +79,8 @@ class GoogleDevice:
         self.willReportState = False
         self.roomHint = ''
         self.deviceInfo = {
-            'manufacturer': data.get('family'),
-            'model': data.get('model'),
+            'manufacturer': data.get('family', ''),
+            'model': data.get('model', ''),
             'hwVersion': '',
             'swVersion': ''
         }
@@ -171,3 +178,10 @@ class Plug(GoogleDevice):
             'online': True,
         }
         return ret
+
+class Scene(GoogleDevice):
+    def __init__(self, data):
+        super().__init__(data)
+        self.type = 'action.devices.types.SCENE'
+        self.traits.append('action.devices.traits.Scene')
+        self.attributes['sceneReversible'] = True

@@ -82,7 +82,10 @@ class HomeDaemon:
                     inst = _scene.Scene(self)
                     if inst.name not in self.scenes:
                         self.scenes[inst.name] = inst
-                        self.scenesdb[inst.name] = {'automatic': inst.automatic, 'name': inst.name, 'sid': inst.name}
+                        self.scenesdb[inst.name] = {'automatic': inst.automatic,
+                                                    'name': inst.name,
+                                                    'sid': inst.name,
+                                                    'reversable': inst.reversable}
                     else:
                         self.logger.warning(f'scene duplcate name skiping ... {inst.name}')
                         continue
@@ -92,7 +95,7 @@ class HomeDaemon:
     def _announce_scene_list(self):
         sc_list = list()
         for s in self.scenesdb:
-            if not s.get('automatic'):
+            if s.get('automatic') == False:
                 del s['_rev']
                 sc_list.append(s)
         self.bus.emit_cmd({'cmd': 'scene', 'sid': 'all', 'data': {'scenes': sc_list}})

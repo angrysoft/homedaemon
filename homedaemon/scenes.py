@@ -18,6 +18,7 @@ class BaseScene(Thread):
         self.daemon = daemon
         self.name = ''
         self._automatic = True
+        self.reversable = False
         self._triggers = list()
         self.running = False
     
