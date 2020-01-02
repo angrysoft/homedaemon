@@ -105,7 +105,7 @@ class Execute:
     
     def execute(self):
         dev = ExecuteDevice(self.payload)
-        return dev.execute()
+        return json.dumps(dev.execute())
 
 
 class Disconnect:

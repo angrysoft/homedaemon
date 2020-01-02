@@ -272,7 +272,7 @@ def status():
                 cmd = g_action.execute()
                 logging.warning(f'{cmd}')
                 tcp = TcpWrite(tcp_config['ip'], tcp_config['port'], tcp_config['secret'])
-                tcp.writer(cmd)
+                tcp.writer(cmd.encode())
         else:
             _response = '{"error":"user_not_found"}'
             _status = 401
