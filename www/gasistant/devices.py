@@ -40,17 +40,17 @@ def get_devices_list():
 class QueryDevice:
     def __init__(self, sid):
         srv = Server()
-        self.devbd = srv.db('device')
+        self.devdb = srv.db('device')
         self.scenedb = srv.db('scenes')
         self.datadb = srv.db('device-data')
         self.channel = None
         self.sid = sid
         if sid[-2] == '.':
-            sid, channel = sid.rsplit('.', 1)
+            self.sid, self.channel = sid.rsplit('.', 1)
     
     def query(self):
         if self.sid in self.datadb:
-            dev = self.devbd.get(self.sid)
+            dev = self.devdb.get(self.sid)
             devdata = self.datadb.get(self.sid)
             model = dev.get('model')
             devinfo = None
@@ -71,19 +71,18 @@ class ExecuteDevice:
     def __init__(self, data):
         self.data = data
         srv = Server()
-        self.devbd = srv.db('device')
+        self.devdb = srv.db('device')
+        self.scenedb = srv.db('scenes')
         self.channel = None
         self.sid = sid = self.data['commands']['devices'][0]['id']
         if sid[-2] == '.':
-            sid, channel = sid.rsplit('.', 1)
+            self.sid, self.channel = sid.rsplit('.', 1)
     
     def execute(self):
         _dev = None
-        if self.sid in self.datadb:
-            dev = self.devbd.get(self.sid)
-            devdata = self.datadb.get(self.sid)
+        if self.sid in self.devdb:
+            dev = self.devdb.get(self.sid)
             model = dev.get('model')
-            devinfo = None
             if model in ['bslamp1', 'color']:
                 _dev = Bslamp1(dev)
             elif model == 'ctrl_neutral1':
@@ -94,11 +93,13 @@ class ExecuteDevice:
                 _dev = Plug(dev)
             
         elif self.sid in self.scenedb:
-            dev = self.devbd.get(self.sid)
+            dev = self.devdb.get(self.sid)
             _dev = Scene(dev)
         
-        if _dev:
-            return _dev.exectute(self.data)
+        try:
+            return _dev.exectute(self.data['commnads']['execution'][0])
+        except Exception:
+            return {}
             
                       
 class GoogleDevice:
@@ -142,7 +143,8 @@ class GoogleDevice:
         return {}
     
     def _power(self, status):
-        return {'on': True, 'off': False}.get(status)
+        return {'on': True, 'off': False, True : 'on', False: 'off'}.get(status)
+    
     
 
 
@@ -174,7 +176,24 @@ class Bslamp1(GoogleDevice):
         elif devdata['color_mode'] == 2:
             ret['color']['temperatureK'] = int(devdata['ct'])
         return ret
-
+    
+    def exectute(self, execution):
+        arg = {
+            'action.devices.commands.OnOff': 'set_power',
+            'action.devices.commands.BrightnessAbsolute': 'set_bright',
+            'action.devices.commands.ColorAbsolute': 'set_color'
+            }.get(execution['command'],'unknown')
+        param = {
+            'set_power': self._power(execution['params']['on']),
+            'set_bright': execution['params']['brightness'],
+            'set_color': execution['params']
+            }.get(arg, 'unknown')
+        return {
+            'sid': self.id,
+            'cmd': 'write',
+            'data' : {arg: param}
+            }
+    
 
 class Color(Bslamp1):
     pass
@@ -192,6 +211,19 @@ class Ctrl1(GoogleDevice):
             'online': True,
         }
         return ret
+    
+    def exectute(self, execution):
+        arg = {
+            'action.devices.commands.OnOff': 'channel_0'
+            }.get(execution['command'],'unknown')
+        param = {
+            'channel_0': self._power(execution['params']['on']),
+            }.get(arg, 'unknown')
+        return {
+            'sid': self.id,
+            'cmd': 'write',
+            'data' : {arg: param}
+            }
         
 
 class Ctrl2(Ctrl1):
@@ -205,6 +237,20 @@ class Ctrl2(Ctrl1):
             'online': True,
         }
         return ret
+    
+    def exectute(self, execution):
+        arg = {
+            'action.devices.commands.OnOff': 'channel_'
+            }.get(execution['command'],'unknown')
+        param = {
+            'channel_': self._power(execution['params']['on']),
+            }.get(arg, 'unknown')
+        arg += self.channel
+        return {
+            'sid': self.id,
+            'cmd': 'write',
+            'data' : {arg: param}
+            }
 
 
 class Plug(GoogleDevice):
@@ -219,6 +265,19 @@ class Plug(GoogleDevice):
             'online': True,
         }
         return ret
+    
+    def exectute(self, execution):
+        arg = {
+            'action.devices.commands.OnOff': 'status'
+            }.get(execution['command'],'unknown')
+        param = {
+            'status': self._power(execution['params']['on']),
+            }.get(arg, 'unknown')
+        return {
+            'sid': self.id,
+            'cmd': 'write',
+            'data' : {arg: param}
+            }
 
 class Scene(GoogleDevice):
     def __init__(self, data):
@@ -232,3 +291,18 @@ class Scene(GoogleDevice):
         return {
             'online': True,
         }
+        
+    def exectute(self, execution):
+        arg = {
+            'action.devices.commands.ActivateScene': 'status'
+            }.get(execution['command'],'unknown')
+        if execution['params']['deactivate']:
+            param = 'off'
+        else:
+            param = 'on'
+            
+        return {
+            'sid': self.id,
+            'cmd': 'write',
+            'data' : {arg: param}
+            }
