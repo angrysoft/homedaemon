@@ -61,6 +61,9 @@ class Sync:
 
     def _get_devices(self):
         return get_devices_list()
+    
+    def execute(self):
+        pass
 
 
 class Query:
@@ -85,7 +88,9 @@ class Query:
         _response['payload']['agentUserId'] = '2ed39'
         _response['payload']['devices'] = self._get_devices_status()
         return _response
-
+    
+    def execute(self):
+        pass
 
 class Execute:
     def __init__(self, requestId, payload):
@@ -108,4 +113,7 @@ class Disconnect:
     @staticmethod
     def response():
         return {}
+    
+    def execute(self):
+        pass
 

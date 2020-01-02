@@ -287,7 +287,9 @@ class Scene(GoogleDevice):
         super().__init__(data)
         self.type = 'action.devices.types.SCENE'
         self.traits.append('action.devices.traits.Scene')
-        self.attributes['sceneReversible'] = data.get('reversable', False)
+        self.attributes['sceneReversible'] = data.get('reversible', False)
+        self.deviceInfo['manufacturer'] = 'AngryHome'
+        self.deviceInfo['model'] = 'scene'
     
     @staticmethod
     def query():            

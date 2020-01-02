@@ -85,7 +85,7 @@ class HomeDaemon:
                         self.scenesdb[inst.name] = {'automatic': inst.automatic,
                                                     'name': inst.name,
                                                     'sid': inst.name,
-                                                    'reversable': inst.reversable}
+                                                    'reversible': inst.reversible}
                     else:
                         self.logger.warning(f'scene duplcate name skiping ... {inst.name}')
                         continue
