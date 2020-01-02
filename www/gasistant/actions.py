@@ -1,5 +1,5 @@
 import json
-from .devices import get_devices_list
+from .devices import get_devices_list, QueryDevice
 # https://developers.google.com/actions/reference/smarthome/errors-exceptions
 
 
@@ -45,33 +45,44 @@ class Actions:
         return json.dumps(self._response)
 
 
-class Intent:
-    def __init__(self, requestId, _payload):
-        self.requestId = requestId
-        print(self.__class__.__name__)
-        for i in _payload:
-            print(type(_payload[i]), i)
-
-
 class Sync:
     def __init__(self, requestId):
         self.requestId = requestId
 
     def response(self):
         _response = dict()
-        _response['payload'] = dict()
-        _response['payload']['devices'] = self._get_devices()
         _response['requestId'] = self.requestId
+        _response['payload'] = dict()
+        _response['payload']['agentUserId'] = '2ed39'
+        _response['payload']['devices'] = self._get_devices()
         return _response
 
     def _get_devices(self):
         return get_devices_list()
 
 
-class Query(Intent):
-
+class Query:
+    def __init__(self, requestId, payload):
+        self.requestId = requestId
+        self.payload = payload
+    
+    def _get_devices_status(self):
+        ret = dict()
+        try: 
+            for dev in self.payload['devices']:
+                q = QueryDevice(dev)
+                ret[dev['id']] = q.query()
+        except Exception:
+            return {}
+        return ret
+        
     def response(self):
-        return {}
+        _response = dict()
+        _response['requestId'] = self.requestId
+        _response['payload'] = dict()
+        _response['payload']['agentUserId'] = '2ed39'
+        _response['payload']['devices'] = self._get_devices_status()
+        return _response
 
 
 class Execute(Intent):
