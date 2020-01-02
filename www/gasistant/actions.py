@@ -85,7 +85,7 @@ class Query:
         return _response
 
 
-class Execute(Intent):
+class Execute:
 
     def response(self):
         return {}
