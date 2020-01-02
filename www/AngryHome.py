@@ -269,8 +269,10 @@ def status():
             g_action = Actions(request.data)
             _response = g_action.response
             if g_action.intent == 'action.devices.EXECUTE':
+                cmd = g_action.execute()
+                logging.warning(f'{cmd}')
                 tcp = TcpWrite(tcp_config['ip'], tcp_config['port'], tcp_config['secret'])
-                tcp.writer(g_action.execute())
+                tcp.writer(cmd)
         else:
             _response = '{"error":"user_not_found"}'
             _status = 401
