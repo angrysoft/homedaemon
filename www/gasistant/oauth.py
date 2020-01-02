@@ -9,7 +9,7 @@ class OAuth:
         self.srv = srv
         self.usersdb = self._get_db('google-users')
         self.codesdb = self._get_db('google-codes')
-        self.tokendb = self._get_db('google-tokens')
+        self.tokensdb = self._get_db('google-tokens')
         self.codes = dict()
         
     def _get_db(self, dbname):
@@ -39,7 +39,7 @@ class OAuth:
                      'refresh_token': self._token(20),
                      'expires_in': 3600}
 
-            self.tokendb[client_id] = token
+            self.tokensdb[client_id] = token
             return 200, json.dumps({
                 "token_type": token['token_type'],
                 "access_token": token['access_token'],
@@ -55,7 +55,7 @@ class OAuth:
             token = self.tokensdb.get(client_id)
             if token and token['refresh_token'] == args.get('refresh_token'):
                 token['access_token'] = self._token(20)
-                self.tokendb[client_id] = token
+                self.tokensdb[client_id] = token
                 return 200, json.dumps({
                     "token_type": token['token_type'],
                     "access_token": token['access_token'],
@@ -71,7 +71,7 @@ class OAuth:
         if auth.find(' ') > 0:
             token_type, token = auth.split(' ', 1)
             try:
-                user_tokens = self.tokendb.find(selector={'access_token': token}, limit=1)
+                user_tokens = self.tokensdb.find(selector={'access_token': token}, limit=1)
                 if user_tokens.get('docs'):
                     return True
             except Exception:
