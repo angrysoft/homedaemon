@@ -40,7 +40,8 @@ class Bus(Thread):
                 # print(f'{datetime.now()} async {ev.__name__} {event}')
             else:
                 # print(f'{datetime.now()} sync {ev.__name__} {event}')
-                self.loop.call_soon(ev, event)
+                # self.loop.call_soon(ev, event)
+                ev(event)
             
     def is_async(self, ev):
         if asyncio.iscoroutine(ev) or asyncio.iscoroutinefunction(ev):

@@ -75,9 +75,9 @@ class Query:
         ret = dict()
         try: 
             for dev in self.payload['devices']:
-                q = QueryDevice(dev)
+                q = QueryDevice(dev['id'])
                 ret[dev['id']] = q.query()
-        except Exception:
+        except Exception as err:
             return {}
         return ret
         

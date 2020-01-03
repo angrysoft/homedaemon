@@ -168,12 +168,11 @@ class Bslamp1(GoogleDevice):
             'on': self._power(devdata['power']),
             'online': True,
             'brightness': int(devdata['bright']),
-            'color': {},
-            'temperatureK': devdata['ct']
+            'color': {}
         }
-        if devdata['color_mode'] == 1:
+        if devdata['color_mode'] == '1':
             ret['color']['spectrumRgb'] = int(devdata['rgb'])
-        elif devdata['color_mode'] == 2:
+        elif devdata['color_mode'] == '2':
             ret['color']['temperatureK'] = int(devdata['ct'])
         return ret
     

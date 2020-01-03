@@ -42,14 +42,14 @@ a_query = '''
     "intent": "action.devices.QUERY",
     "payload": {
       "devices": [{
-        "id": "123",
+        "id": "0x0000000007e7bae0",
         "customData": {
           "fooValue": 74,
           "barValue": true,
           "bazValue": "foo"
         }
       },{
-        "id": "456",
+        "id": "158d00024e2e5b",
         "customData": {
           "fooValue": 12,
           "barValue": false,
@@ -70,6 +70,6 @@ a_sync = '''{
 
 from gasistant import Actions
 
-gs = Actions(a_sync)
+gs = Actions(a_query)
 print(gs.execute())
 pprint(gs.response)
