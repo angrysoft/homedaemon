@@ -35,6 +35,38 @@ a_exec = '''{
   }]
 }
 '''
+a_exec_sc = '''{
+  "requestId": "ff36a3cc-ec34-11e6-b1a0-64510650abcf",
+  "inputs": [{
+    "intent": "action.devices.EXECUTE",
+    "payload": {
+      "commands": [{
+        "devices": [{
+          "id": "Movie",
+          "customData": {
+            "fooValue": 74,
+            "barValue": true,
+            "bazValue": "sheepdip"
+          }
+        },{
+          "id": "456",
+          "customData": {
+            "fooValue": 36,
+            "barValue": false,
+            "bazValue": "moarsheep"
+          }
+        }],
+        "execution": [{
+          "command": "action.devices.commands.ActivateScene",
+          "params": {
+            "deactivate": true
+          }
+        }]
+      }]
+    }
+  }]
+}
+'''
 a_query = '''
 {
   "requestId": "ff36a3cc-ec34-11e6-b1a0-64510650abcf",
@@ -70,6 +102,6 @@ a_sync = '''{
 
 from gasistant import Actions
 
-gs = Actions(a_exec)
+gs = Actions(a_exec_sc)
 print(gs.execute())
 pprint(gs.response)

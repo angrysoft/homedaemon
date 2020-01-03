@@ -25,6 +25,8 @@ def get_devices_list():
             devinfo.name['name'] += ' channel 1'
         elif model == 'plug':
             devinfo = Plug(dev)
+        elif model == 'bravia':
+            pass
     
         if devinfo:
             devices_list.append(devinfo.sync())
@@ -93,7 +95,7 @@ class ExecuteDevice:
                 _dev = Plug(dev)
             
         elif self.sid in self.scenedb:
-            dev = self.devdb.get(self.sid)
+            dev = self.scenedb.get(self.sid)
             _dev = Scene(dev)
         else:
             return {}
