@@ -26,6 +26,7 @@ class Color(BaseDevice):
         
         {'set_power': self.set_power,
          'set_rgb': self.set_rgb,
+         'set_color': self.set_color,
          'set_ct_abx': self.set_ct_abx,
          'set_bright': self.bright}.get(c, self.unknown)(v)
     
@@ -46,6 +47,9 @@ class Color(BaseDevice):
     
     def set_rgb(self, rgb):
         asyncio.run_coroutine_threadsafe(self.bulb.set_rgb(rgb.get('red'), rgb.get('green'), rgb.get('blue')), self.daemon.loop)
+        
+    def set_color(self, irgb):
+        asyncio.run_coroutine_threadsafe(self.bulb.set_color(irgb), self.daemon.loop)
 
     def set_default(self, *args):
         asyncio.run_coroutine_threadsafe(self.bulb.set_default(), self.daemon.loop)

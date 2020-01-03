@@ -193,7 +193,13 @@ class Bslamp1(GoogleDevice):
         elif arg == 'set_bright':
             param = execution['params']['brightness']
         elif arg == 'set_color':
-            param = execution['params']
+            if 'temperature' in execution['params']['color']:
+                arg = 'set_ct_abx'
+                param = execution['params']['color']['temperature']
+            elif 'spectrumRGB' in execution['params']['color']:
+                param = execution['params']['color']['spectrumRGB']
+            else:
+                param = execution['params']
         return {
             'sid': self.id,
             'cmd': 'write',

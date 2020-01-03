@@ -19,7 +19,7 @@ class Scene(BaseScene):
                 lamp = self.get_device('0x0000000007e7bae0')
                 lamp.on()
                 self.sleep(25)
-                wallsw.channel_2.off()
+                wallsw.channel_0.off()
                 self.sleep(10)
                 wallsw.channel_1.off()
             else:
