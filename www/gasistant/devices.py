@@ -68,15 +68,15 @@ class QueryDevice:
         
         
 class ExecuteDevice:
-    def __init__(self, data):
-        self.data = data
+    def __init__(self, devdata, cmd):
         srv = Server()
         self.devdb = srv.db('devices')
         self.scenedb = srv.db('scenes')
         self.channel = None
-        self.sid = sid = self.data['commands'][0]['devices'][0]['id']
-        if sid[-2] == '.':
-            self.sid, self.channel = sid.rsplit('.', 1)
+        self.sid = devdata['id']
+        if self.sid[-2] == '.':
+            self.sid, self.channel = self.sid.rsplit('.', 1)
+        self.cmd = cmd
     
     def execute(self):
         _dev = None
@@ -95,9 +95,11 @@ class ExecuteDevice:
         elif self.sid in self.scenedb:
             dev = self.devdb.get(self.sid)
             _dev = Scene(dev)
+        else:
+            return {}
         
         # try:
-        return _dev.exectute(self.data['commands'][0]['execution'][0])
+        return _dev.exectute(self.cmd)
         # except Exception:
             # return {}
             

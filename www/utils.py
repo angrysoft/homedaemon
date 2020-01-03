@@ -17,6 +17,11 @@ class TcpWrite:
             with context.wrap_socket(sock, server_hostname='ferdek.angrysoft.ovh') as ssock:
                 encoded = jwt.encode({'api':'1.0', 'client': 'www'}, self.secret, algorithm='HS256')
                 ssock.sendall(encoded + '\n'.encode())
-                ssock.sendall(msg + '\n'.encode())
+                if type(msg) == list:
+                    for m in msg:
+                        ssock.sendall(m + '\n'.encode())
+                else:
+                    ssock.sendall(msg + '\n'.encode())
+                    
                 ssock.shutdown(socket.SHUT_RDWR)
                 ssock.close()

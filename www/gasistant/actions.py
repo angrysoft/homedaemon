@@ -96,16 +96,32 @@ class Execute:
     def __init__(self, requestId, payload):
         self.requestId = requestId
         self.payload = payload
+        self.response_ret = list()
         
     def response(self):
         _response = dict()
         _response['requestId'] = self.requestId
-        _response['payload'] = dict()
+        _response['payload'] = {'commands': self.response_ret}
         return _response
     
     def execute(self):
-        dev = ExecuteDevice(self.payload)
-        return json.dumps(dev.execute())
+        ret = []
+        for cmd in self.payload['commands']:
+            for dev in cmd['devices']:
+                for exe in cmd['execution']:
+                    _dev = ExecuteDevice(dev ,exe)
+                    result = _dev.execute()
+                    if result:
+                        ret.append(json.dumps(_dev.execute()).encode())
+                        status= 'SUCCESS'
+                    else:
+                        status = 'ERROR'
+                        
+                    self.response_ret.append({
+                        'ids': [dev['id']],
+                        'status': status
+                        })
+        return ret
 
 
 class Disconnect:

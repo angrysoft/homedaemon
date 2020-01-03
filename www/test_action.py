@@ -10,7 +10,7 @@ a_exec = '''{
     "payload": {
       "commands": [{
         "devices": [{
-          "id": "158d000283b219",
+          "id": "158d000283b219.1",
           "customData": {
             "fooValue": 74,
             "barValue": true,
@@ -49,7 +49,7 @@ a_query = '''
           "bazValue": "foo"
         }
       },{
-        "id": "158d00024e2e5b",
+        "id": "158d00024e2e5b.1",
         "customData": {
           "fooValue": 12,
           "barValue": false,
@@ -70,6 +70,6 @@ a_sync = '''{
 
 from gasistant import Actions
 
-gs = Actions(a_query)
+gs = Actions(a_exec)
 print(gs.execute())
 pprint(gs.response)
