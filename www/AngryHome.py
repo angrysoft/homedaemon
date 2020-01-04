@@ -293,7 +293,9 @@ def home_status():
         return request.args.get('status', 'ooops something is wrong')
 
     elif request.method == 'POST':
-        logging.warning('status post {}, {}'.format(request.data, request.headers.get('Authorization')))
+        logging.warning(f'{json.loads(request.data)}')
+        
+        return ''
 
 app.secret_key = urandom(24)
 
