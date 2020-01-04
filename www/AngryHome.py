@@ -282,6 +282,18 @@ def status():
                                   mimetype='application/json')
 
 
+@app.route('/home/status', methods=['GET', 'POST'])
+def home_status():
+    """Status"""
+    if request.method == 'GET':
+        logging.warning('status get {}, {}, {}, {}'.format(request.args,
+                                                          request.form,
+                                                          request.data,
+                                                          request.headers))
+        return request.args.get('status', 'ooops something is wrong')
+
+    elif request.method == 'POST':
+        logging.warning('status post {}, {}'.format(request.data, request.headers.get('Authorization')))
 
 app.secret_key = urandom(24)
 
