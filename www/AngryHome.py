@@ -43,7 +43,7 @@ from utils import TcpWrite
 import redis
 from time import sleep
 import logging
-from gasistant import OAuth, Actions
+from gasistant import OAuth, Actions, WebHook
 
 db = Server()
 config = db.db('config')
@@ -293,7 +293,9 @@ def home_status():
         return request.args.get('status', 'ooops something is wrong')
 
     elif request.method == 'POST':
-        logging.warning(f'{json.loads(request.data)}')
+        _data = json.loads(request.data)
+        logging.warning(f'{_data}')
+        webhook = WebHook(data)
         
         return ''
 
