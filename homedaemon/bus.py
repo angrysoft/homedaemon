@@ -5,12 +5,11 @@ from datetime import datetime
 from threading import Thread
 
 
-class Bus(Thread):
+class Bus:
     def __init__(self, loop):
-        super().__init__()
-        self.daemon = True
         self._events = dict()
         self.loop = loop
+        self.running = []
         
     def on(self, event, _id, *handlers):
         """ Register event"""
@@ -28,6 +27,11 @@ class Bus(Thread):
             self._events[_event] = list()
     
     def emit_cmd(self, event):
+        th = Thread(target=self._event_runner, args=(event,))
+        # self.running.append(th)
+        th.start()
+    
+    def _event_runner(self, event):
         if event.get('cmd') not in self._events:
             return
         

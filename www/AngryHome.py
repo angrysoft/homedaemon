@@ -293,11 +293,15 @@ def home_status():
         return request.args.get('status', 'ooops something is wrong')
 
     elif request.method == 'POST':
+        _response = ''
+        _status = 200
         _data = json.loads(request.data)
         logging.warning(f'{_data}')
-        webhook = WebHook(data)
-        
-        return ''
+        webhook = WebHook(_data)
+        _response = webhook.response()
+        return app.response_class(response=_response,
+                                  status=_status,
+                                  mimetype='application/json')
 
 app.secret_key = urandom(24)
 

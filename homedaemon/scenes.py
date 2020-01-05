@@ -1,5 +1,5 @@
 import json
-from threading import Thread
+from threading import Thread, Event
 from datetime import datetime, time
 from time import sleep
 
@@ -73,6 +73,9 @@ class BaseScene(Thread):
 
     def sleep(self, s):
         sleep(s)
+        
+    def run_after(self, delay, callback, cancelable=False):
+        pass
 
     def get_device(self, sid):
         return self.daemon.devices.get(sid)

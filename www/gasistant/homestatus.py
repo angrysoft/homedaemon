@@ -4,7 +4,7 @@ class WebHook:
         self.request = WebHookRequest(data)
     
     def response(self, data):
-        pass
+        return ''
 
 class WebHookRequest:
     """{'responseId': '70fcb8f3-b737-4978-91e1-ff0256b13814-b4ef8d5f', 
