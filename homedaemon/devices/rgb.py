@@ -71,8 +71,7 @@ class RgbStrip(BaseDevice):
         if 'Arduino' in self.daemon.inputs and 'data' in data:
             _data = data.get('data')
             c, v = _data.popitem()
-            print(c,v)
-            {'set_power': self.set_power,
+            {'status': self.set_power,
              'set_rgb': self.set_rgb,
              'set_color': self.set_color,
              'set_ct_abx': self.set_ct_abx,
