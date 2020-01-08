@@ -55,7 +55,7 @@ class HomeDaemon:
         self.logger.info('Starting Daemon')
         self.devices = Devices()
         self.scenes = dict()
-        self.bud.on('report', '*', self.logger.debug)
+        self.bus.on('report', '*', self.logger.debug)
 
     def _load_inputs(self):
         for _input_name in self.config['inputs']['list']:
