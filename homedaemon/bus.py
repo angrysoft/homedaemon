@@ -5,8 +5,9 @@ from datetime import datetime
 from threading import Thread
 
 
-class Bus:
+class Bus(Thread):
     def __init__(self, loop):
+        super().__init__()
         self._events = dict()
         self.loop = loop
         self.running = []

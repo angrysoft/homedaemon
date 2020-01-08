@@ -46,6 +46,7 @@ class HomeDaemon:
         self.loop = asyncio.get_event_loop()
         self.inputs = dict()
         self.bus = Bus(self.loop)
+        self.bus.start()
         self.db = Server()
         self.config = self.db['config']
         self.devicesdb = self.db['devices']
