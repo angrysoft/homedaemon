@@ -144,6 +144,7 @@ class RgbStrip(BaseDevice):
     
     def _send_data(self, data):
         _cmd = f"F.{data.get('red', '0')}.{data.get('green', '0')}.{data.get('blue', '0')}.{data.get('bright', '100')}"
+        self.daemon.logger.debug(_cmd)
         if 'Arduino' in self.daemon.inputs:
             self.daemon.inputs['Arduino'].serial_write(_cmd)
             return True
