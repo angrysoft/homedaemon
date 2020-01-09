@@ -5,7 +5,7 @@ class Scene(BaseScene):
         super().__init__(daemon)
         self.name = 'Movie'
         self.automatic = False
-        self.reversable = True
+        self.reversible = True
     
     def on(self):
         dev_to_off = ['158d00027d0065', '158d00029b1929', '158d0002bffe5a']
