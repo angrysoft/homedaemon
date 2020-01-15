@@ -73,60 +73,32 @@ class RgbStrip(BaseDevice):
             c, v = _data.popitem()
             {'status': self.set_power,
              'set_rgb': self.set_rgb,
-             'set_color': self.set_color,
              'set_ct_abx': self.set_ct_abx,
              'set_bright': self.bright}.get(c, self.unknown)(v)
             
     def unknown(self, value=''):
         self.daemon.logger.error(f'unknown parametr {value}')
-        
-    def update_dev_data(self, data):
-        if 'data' in data:
-            data['data']['status'] = self._status(data['data'])
-        with self.lock:
-            self.daemon.device_data[self.sid] = data['data']
     
     def set_power(self, status):
         {'on': self.on, 'off': self.off}.get(status, self.unknown)()
 
     def off(self):
-        rgb = self.set_default()
-        rgb['bright'] = 0
-        self._send_data(rgb)
+        self._send_data('P.0')
 
     def on(self):
-        rgb = self.daemon.device_data[self.sid].get('default',
-                                                    {'red': '255', 'green': '255', 'blue': '255', 'bright': '100'})
-        
-        self._send_data(rgb)
+        self._send_data('P.1')
 
     def bright(self, value):
-        rgb = self.get_rgb()
-        rgb['bright'] = value
-        self._send_data(rgb)
+        self._send_data(f'B.{value}')
             
     def set_ct_abx(self, ct):
         rgb = self.kelvin_table.get(ct)
-        self._send_data(rgb)
+        self.set_rgb(rgb)
         self.daemon.device_data[self.sid]['ct'] = ct
     
     def set_rgb(self, data):
-        if 'bright' not in data:
-            data['bright'] = self.daemon.device_data[self.sid].get('bright', 100)
-        
-        self._send_data(data)
-    
-    def set_color(self, rgb):
-        pass
-
-    @staticmethod
-    def _status(data):
-        rgb = (int(data.get('red', '0')) + int(data.get('green', '0')) + int(data.get('blue', '0')))
-
-        if rgb > 0 and data.get('bright') > 0:
-            return 'on'
-        else:
-            return 'off'
+        rgb = (data['red'] << 16) +(data['green'] << 8) + data['blue'];        
+        self._send_data(f'c.{rgb}')
 
     def get_rgb(self):
         r = self.daemon.device_data[self.sid].get('red', 0)
@@ -143,10 +115,9 @@ class RgbStrip(BaseDevice):
         return rgb
     
     def _send_data(self, data):
-        _cmd = f"F.{data.get('red', '0')}.{data.get('green', '0')}.{data.get('blue', '0')}.{data.get('bright', '100')}"
-        self.daemon.logger.debug(_cmd)
+        self.daemon.logger.debug(data)
         if 'Arduino' in self.daemon.inputs:
-            self.daemon.inputs['Arduino'].serial_write(_cmd)
+            self.daemon.inputs['Arduino'].serial_write(data)
             return True
         else:
             return False
