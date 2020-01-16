@@ -145,25 +145,8 @@ class Plug extends DeviceWidget {
 }
 
 
-class RgbStrip extends DeviceWidget {
-  Button power;
-  SetButton setBtn;
-  
-  RgbStrip(Map<String,dynamic> devData, Function evSend) : super(devData, evSend) {
-    this.power = new Button('status', this.sid);
-    this.power.setStatus(this.devData['status']);
-    this.power.btn.onClick.listen((ev) {
-      this.send(ev.target);
-    });
-    this.setBtn = new SetButton(this.sid);
-  }
-
-  @override
-  void refreshStatus(Map<String, dynamic> devData) {
-    if (devData.containsKey('status')) {
-      this.power.setStatus(devData['status']);
-    }
-  }
+class RgbStrip extends Bslamp1 {
+  RgbStrip(Map<String,dynamic> devData, Function evSend) : super(devData, evSend);
 }
 
 
