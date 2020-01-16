@@ -101,7 +101,7 @@ class RgbStrip(BaseDevice):
         g = int(data['green'])
         b = int (data['blue'])
         rgb = (r << 16) + (g << 8) + b;        
-        self._send_data(f'c.{rgb}')
+        self._send_data(f'C.{rgb}')
 
     def get_rgb(self):
         r = self.daemon.device_data[self.sid].get('red', 0)
