@@ -12,7 +12,7 @@ class Scene(BaseScene):
         self.store_device_state('158d00027d0065', '158d00029b1929', '158d0002bffe5a', 'rgb01', '0x0000000007e7bae0')
         tvrgb = self.get_device('rgb01')
         color = self.get_device('0x0000000007e7bae0')
-        tvrgb.set_rgb({'red':255 ,'green':38, 'blue': 0, 'bright': 80})
+        tvrgb.set_rgb({'red':255 ,'green':38, 'blue': 0})
         color.on()
         color.bright(1)
         color.set_rgb({'red':0 ,'green':0, 'blue': 255})

@@ -3,7 +3,7 @@ from homedaemon.scenes import BaseScene
 class Scene(BaseScene):
     def __init__(self, daemon):
         super().__init__(daemon)
-        self.name = 'goobye'
+        self.name = 'goodbye'
         self.automatic = False
     
     def on(self):
