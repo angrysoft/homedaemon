@@ -154,8 +154,25 @@ class Color extends Bslamp1 {
   Color(Map<String,dynamic> devData, Function evSend) : super(devData, evSend);
 }
 
-class Bravia extends Bslamp1 {
-  Bravia(Map<String,dynamic> devData, Function evSend) : super(devData, evSend);
+class Bravia extends DeviceWidget {
+  Button power;
+  TvSetButton setBtn;
+
+  Bravia(Map<String,dynamic> devData, Function evSend) : super(devData, evSend) {
+    this.power = new Button('power', this.sid);
+    this.power.setStatus(this.devData['power']);
+    this.power.btn.onClick.listen((ev) {
+      this.send(ev.target);
+    });
+    this.setBtn = new TvSetButton(this.sid);
+  }
+
+  @override
+  void refreshStatus(Map<String, dynamic> devData) {
+    if (devData.containsKey('power')) {
+      this.power.setStatus(devData['power']);
+    }
+  }
 }
 
 class Bslamp1 extends DeviceWidget {
@@ -554,11 +571,45 @@ class ColorSetterWindow {
   }
 }
 
+class TvSetButton {
+  ButtonElement btn;
+  TvSetterWindow tvWnd;
+  TvSetButton(String sid) {
+    this.tvWnd = new TvSetterWindow(sid);
+    this.btn = querySelector('button.tv-set-button[data-sid="${sid}"]');
+    this.btn.onClick.listen((ev) {
+      this.tvWnd.showWindow();
+    });
+  }
+}
 
 class TvSetterWindow {
+  Modal tvWnd;
+  Element back;
   String sid;
+  bool current = false;
   
   TvSetterWindow(String sid) {
     this.sid = sid;
+    this.tvWnd = new Modal.fromHtml('tv-set');
+    this.back = querySelector('#back-tv');
+    this.back.onClick.listen((e) {
+      this.closeWindow();
+    });
+  }
+
+  showWindow() {
+    this.setData();
+    this.current = true;
+    this.tvWnd.show();
+  }
+
+  closeWindow() {
+    this.current = false;
+    this.tvWnd.hide();
+  }
+
+  void setData() {
+
   }
 }

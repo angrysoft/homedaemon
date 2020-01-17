@@ -26,11 +26,12 @@
 <body>
 {% from 'deviceswidgets.html' import ctrl_neutral1, ctrl_neutral2, plug, bslamp1, rgbstrip, color, tv, loader %}
 {% from 'deviceswidgets.html' import sensor_ht, weather_v1, sensor_motion_aq2, magnet %}
-{% from 'deviceswidgets.html' import colorset %}
+{% from 'deviceswidgets.html' import colorset, tvset %}
 {% from 'deviceswidgets.html' import scene %}
 
 {{ loader() }}
 {{ colorset() }}
+{{ tvset() }}
 
   <div class="container-fluid" id="tabs">
     <div class="row around-xs tab scenes">
