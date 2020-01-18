@@ -284,11 +284,12 @@
 <div class="modal-dialog dark" id="color-set">
   <div class="modal-content">
     <div class="modal-header">
-        <div class="row between-xs">
-            <div class="col-xs-1"><i class="material-icons" id="back">arrow_back</i></div>
-            <div class="col-xs-3">Color</div>   
-        </div>
+      <div class="row between-xs">
+          <div class="col-xs-1"><i class="material-icons" id="back">arrow_back</i></div>
+          <div class="col-xs-3">Color</div>   
+      </div>
     </div>
+
     <div class="modal-body">
       <div class="row center-xs middle-xs">
         <div class="col-xs-6">
@@ -333,21 +334,20 @@
 
     <div class="row center-xs padding-10" id="ct-tab">
       <div class="col-xs-12">
-
         <div class="row center-xs">
           <div class="col-xs-12 txt-center">
             <label class="label">Color temperature: </label>
           </div>
         </div>
+      </div>
     
-        <div class="row center-xs">
-          <div class="col-xs-12 txt-center">
-            <input class="color-range" id="ct" type="range" step="100" min="1700" max="6500" value="6500">
-          </div>
+      <div class="row center-xs">
+        <div class="col-xs-12 txt-center">
+          <input class="color-range" id="ct" type="range" step="100" min="1700" max="6500" value="6500">
         </div>
-          
       </div>
     </div>
+
   </div>
 </div>
 {%- endmacro %}
@@ -356,88 +356,209 @@
 <div class="modal-dialog dark" id="tv-set">
   <div class="modal-content">
     <div class="modal-header">
-        <div class="row between-xs">
-            <div class="col-xs-1"><i class="material-icons" id="back-tv">arrow_back</i></div>
-            <div class="col-xs-3">Tv</div>   
-        </div>
+      <div class="row between-xs">
+        <div class="col-xs-1"><i class="material-icons" id="back-tv">arrow_back</i></div>
+        <div class="col-xs-3">Tv</div>   
+      </div>
     </div>
+
     <div class="modal-body">
-        <div class="row center-xs btn-group">
-          <div class="col-xs-2">
-            <button class="btn white" data-btn="Num1">1</button>
-          </div>
-          <div class="col-xs-2">
-            <button class="btn white" data-btn="Num2">2</button>
-          </div>
-          <div class="col-xs-2">
-            <button class="btn white" data-btn="Num3">3</button>
-          </div>
-          <div class="col-xs-2">
-            <button class="btn white" data-btn="Num4">4</button>
-          </div>
+      <div class="row center-xs btn-group">
+        <div class="col-xs-3">
+          <button class="btn white" data-btn="Input">Src</button>
         </div>
+      </div>
+
+      <div class="row center-xs btn-group">
+        <div class="col-xs-6">
+          <select class="select" name="SRC">
+            <option value="tv">TV</option>
+            <option value="hdmi1">hdmi1</option>
+            <option value="hdmi2">hdmi2</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="row center-xs btn-group">
+        <div class="col-xs-3">
+          <button class="btn lime" data-btn="Up">Up</button>
+        </div>
+      </div>
+      
+      <div class="row center-xs btn-group">
+        <div class="col-xs-3">
+          <button class="btn lime" data-btn="Left">Left</button>
+        </div>
+        <div class="col-xs-3">
+          <button class="btn white" data-btn="Confirm">Ok</button>
+        </div>
+        <div class="col-xs-3">
+          <button class="btn lime" data-btn="Right">Right</button>
+        </div>
+      </div>
+      
+      <div class="row center-xs btn-group">
+        <div class="col-xs-3">
+          <button class="btn white" data-btn="Return">Ret</button>
+        </div>
+        <div class="col-xs-3">
+          <button class="btn lime" data-btn="Down">Down</button>
+        </div>
+        <div class="col-xs-3">
+          <button class="btn white" data-btn="Exit">Exit</button>
+        </div>
+      </div>
+      
+      <div class="row center-xs btn-group">
+        <div class="col-xs-3">
+          <button class="btn white" data-btn="Num1">1</button>
+        </div>
+        <div class="col-xs-3">
+          <button class="btn white" data-btn="Num2">2</button>
+        </div>
+        <div class="col-xs-3">
+          <button class="btn white" data-btn="Num3">3</button>
+        </div>
+        <div class="col-xs-3">
+          <button class="btn white" data-btn="Num4">4</button>
+        </div>
+      </div>
+  
+      <div class="row center-xs btn-group">
+       
+        <div class="col-xs-3">
+          <button class="btn white" data-btn="Num5">5</button>
+        </div>
+        <div class="col-xs-3">
+          <button class="btn white" data-btn="Num6">6</button>
+        </div>
+        <div class="col-xs-3">
+          <button class="btn white" data-btn="Num7">7</button>
+        </div>
+        <div class="col-xs-3">
+          <button class="btn white" data-btn="Num8">8</button>
+        </div>
+      </div>
+  
+      <div class="row center-xs btn-group">
+        <div class="col-xs-3">
+          <button class="btn white" data-btn="Num9">9</button>
+        </div>
+        <div class="col-xs-3">
+          <button class="btn white" data-btn="Num0">0</button>
+        </div>
+      </div>
+  
+      <div class="row center-xs btn-group">
+        <div class="col-xs-3">
+          <button class="btn light-blue" data-btn="Play">Play</button>
+        </div>
+        <div class="col-xs-3">
+          <button class="btn light-blue" data-btn="Pause">| |</button>
+        </div>
+        <div class="col-xs-3">
+          <button class="btn light-blue" data-btn="Stop">Stop</button>
+        </div>
+      </div>
         
-        <div class="row center-xs btn-group">
-     
-          <div class="col-xs-2">
-            <button class="btn white" data-btn="Num5">5</button>
-          </div>
-          <div class="col-xs-2">
-            <button class="btn white" data-btn="Num6">6</button>
-          </div>
-          <div class="col-xs-2">
-            <button class="btn white" data-btn="Num7">7</button>
-          </div>
-          <div class="col-xs-2">
-            <button class="btn white" data-btn="Num8">8</button>
-          </div>
+      <div class="row between-xs btn-group">
+        <div class="col-xs-4">
+          <button class="btn white" data-btn="VolumeUp">Vol+</button>
         </div>
-
-        <div class="row center-xs btn-group">
-          <div class="col-xs-3">
-            <button class="btn red" data-btn="ChannelUp">Ch+</button>
-          </div>
-          <div class="col-xs-2">
-            <button class="btn white" data-btn="Num9">9</button>
-          </div>
-          <div class="col-xs-2">
-            <button class="btn white" data-btn="Num0">0</button>
-          </div>
-          <div class="col-xs-3">
-            <button class="btn green" data-btn="ChannelDown">Ch-</button>
-          </div>
+        <div class="col-xs-3">
+          <button class="btn white" data-btn="GGuide">I+</button>
         </div>
-
-        <div class="row center-xs btn-group">
-          <div class="col-xs-3">
-            <button class="btn white" data-btn="VolumeUP">Vol+</button>
-          </div>
-          <div class="col-xs-2 col-xs-offset-1">
-            <button class="btn white" data-btn="Mute">Mute</button>
-          </div>
-          <div class="col-xs-3 col-xs-offset-1">
-            <button class="btn white" data-btn="VolumeDown">Vol-</button>
-          </div>
+        <div class="col-xs-4">
+          <button class="btn white" data-btn="ChannelUp">Ch+</button>
         </div>
-
-        <div class="row center-xs btn-group">
-          <div class="col-xs-2">
-            <button class="btn light-blue" data-btn="Prev"><<</button>
-          </div>
-          <div class="col-xs-2">
-            <button class="btn light-blue" data-btn="Play">Play</button>
-          </div>
-          <div class="col-xs-2">
-            <button class="btn light-blue" data-btn="Next">>></button>
-          </div>
-          <div class="col-xs-2">
-            <button class="btn light-blue" data-btn="Pause">| |</button>
-          </div>
-          <div class="col-xs-2">
-            <button class="btn light-blue" data-btn="Stop">Stop</button>
-          </div>
+      </div>
+      <div class="row between-xs btn-group">
+        <div class="col-xs-4">
+          <button class="btn white" data-btn="VolumeDown">Vol-</button>
         </div>
+        <div class="col-xs-3">
+          <button class="btn white" data-btn="Mute">Mute</button>
+        </div>
+        <div class="col-xs-4">
+          <button class="btn white" data-btn="ChannelDown">Ch-</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
+
 {%- endmacro %}
+
+<!-- <div class="row center-xs btn-group">
+  <div class="col-xs-2">
+    <button class="btn white" data-btn="Num5">5</button>
+  </div>
+
+  <div class="col-xs-2">
+    <button class="btn white" data-btn="Num6">6</button>
+  </div>
+
+  <div class="col-xs-2">
+    <button class="btn white" data-btn="Num7">7</button>
+  </div>
+
+<div class="col-xs-2">
+  <button class="btn white" data-btn="Num8">8</button>
+</div>
+</div>
+
+<div class="row center-xs btn-group">
+  <div class="col-xs-3">
+    <button class="btn red" data-btn="ChannelUp">Ch+</button>
+  </div>
+
+  <div class="col-xs-2">
+    <button class="btn white" data-btn="Num9">9</button>
+  </div>
+
+  <div class="col-xs-2">
+    <button class="btn white" data-btn="Num0">0</button>
+  </div>
+
+  <div class="col-xs-3">
+    <button class="btn green" data-btn="ChannelDown">Ch-</button>
+  </div>
+</div>
+
+<div class="row center-xs btn-group">
+  <div class="col-xs-3">
+    <button class="btn white" data-btn="VolumeUP">Vol+</button>
+  </div>
+
+  <div class="col-xs-2 col-xs-offset-1">
+    <button class="btn white" data-btn="Mute">Mute</button>
+  </div>
+
+  <div class="col-xs-3 col-xs-offset-1">
+    <button class="btn white" data-btn="VolumeDown">Vol-</button>
+  </div>
+</div>
+
+<div class="row center-xs btn-group">
+  <div class="col-xs-2">
+    <button class="btn light-blue" data-btn="Prev"><<</button>
+  </div>
+
+  <div class="col-xs-2">
+    <button class="btn light-blue" data-btn="Play">Play</button>
+  </div>
+
+  <div class="col-xs-2">
+    <button class="btn light-blue" data-btn="Next">>></button>
+  </div>
+
+  <div class="col-xs-2">
+    <button class="btn light-blue" data-btn="Pause">| |</button>
+  </div>
+
+  <div class="col-xs-2">
+    <button class="btn light-blue" data-btn="Stop">Stop</button>
+  </div>
+</div>
+</div>
+</div> -->

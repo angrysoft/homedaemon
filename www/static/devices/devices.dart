@@ -38,7 +38,15 @@ class Page {
     this.events.onError.listen((er){
       print('err ${er}');
     });
+
+    document.onVisibilityChange.listen((event) {
+      if (! document.hidden) {
+        this.refreshStatus();
+      }
+    });
+
   }
+
   // TODO: check
   Future refreshStatus() async {
     HttpRequest.getString('/dev/data/all').then((String resp) {
