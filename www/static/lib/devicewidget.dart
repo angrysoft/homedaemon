@@ -37,6 +37,11 @@ class Devices {
         this._devices[devData['sid']] = new Color(devData, evSend);
       }
       break;
+      case 'desklamp':
+      {
+        this._devices[devData['sid']] = new DeskLamp(devData, evSend);
+      }
+      break;
       case 'rgbstrip':
       {
         this._devices[devData['sid']] = new RgbStrip(devData, evSend);
@@ -154,17 +159,19 @@ class Color extends Bslamp1 {
   Color(Map<String,dynamic> devData, Function evSend) : super(devData, evSend);
 }
 
-class Bravia extends DeviceWidget {
-  Button power;
-  TvSetButton setBtn;
 
-  Bravia(Map<String,dynamic> devData, Function evSend) : super(devData, evSend) {
+class DeskLamp extends DeviceWidget {
+  Button power;
+  WhiteSetButton setBtn;
+
+  DeskLamp(Map<String,dynamic> devData, Function evSend) : super(devData, evSend) {
     this.power = new Button('power', this.sid);
     this.power.setStatus(this.devData['power']);
     this.power.btn.onClick.listen((ev) {
       this.send(ev.target);
     });
-    this.setBtn = new TvSetButton(this.sid);
+    
+    this.setBtn = new WhiteSetButton(sid);
   }
 
   @override
@@ -173,11 +180,13 @@ class Bravia extends DeviceWidget {
       this.power.setStatus(devData['power']);
     }
   }
+
 }
+
 
 class Bslamp1 extends DeviceWidget {
   Button power;
-  SetButton setBtn;
+  ColorSetButton setBtn;
 
   Bslamp1(Map<String, dynamic> devData, Function evSend) : super(devData, evSend) {
     this.power = new Button('power', this.sid);
@@ -185,7 +194,7 @@ class Bslamp1 extends DeviceWidget {
     this.power.btn.onClick.listen((ev) {
       this.send(ev.target);
     });
-    this.setBtn = new SetButton(this.sid);
+    this.setBtn = new ColorSetButton(this.sid);
   }
 
   @override
@@ -227,6 +236,29 @@ class Scene extends DeviceWidget {
     }
   }
 }
+
+
+class Bravia extends DeviceWidget {
+  Button power;
+  TvSetButton setBtn;
+
+  Bravia(Map<String,dynamic> devData, Function evSend) : super(devData, evSend) {
+    this.power = new Button('power', this.sid);
+    this.power.setStatus(this.devData['power']);
+    this.power.btn.onClick.listen((ev) {
+      this.send(ev.target);
+    });
+    this.setBtn = new TvSetButton(this.sid);
+  }
+
+  @override
+  void refreshStatus(Map<String, dynamic> devData) {
+    if (devData.containsKey('power')) {
+      this.power.setStatus(devData['power']);
+    }
+  }
+}
+
 
 class DeviceWidget implements BaseDeviceWidget {
   Map<String,dynamic> devData;
@@ -432,14 +464,96 @@ class Label {
   } 
 }
 
-class SetButton {
+class WhiteSetButton {
+  ButtonElement btn;
+  WhiteSetterWindow whiteWnd;
+  WhiteSetButton(String sid) {
+    this.whiteWnd = new WhiteSetterWindow(sid);
+    this.btn = querySelector('button.white-set-button[data-sid="${sid}"]');
+    this.btn.onClick.listen((ev) {
+      this.whiteWnd.showWindow();
+    });
+  }
+}
+
+class ColorSetButton {
   ButtonElement btn;
   ColorSetterWindow colorWnd;
-  SetButton(String sid) {
+  ColorSetButton(String sid) {
     this.colorWnd = new ColorSetterWindow(sid);
     this.btn = querySelector('button.color-set-button[data-sid="${sid}"]');
     this.btn.onClick.listen((ev) {
       this.colorWnd.showWindow();
+    });
+  }
+}
+
+class WhiteSetterWindow {
+  Modal whiteWnd;
+  Element back;
+  String sid;
+  ButtonElement btnRgb;
+  RangeInputElement bright = querySelector('#white-bright');
+  RangeInputElement ct = querySelector('#white-ct');
+  StreamSubscription eventBright;
+  StreamSubscription eventCt;
+  bool current = false;
+
+  WhiteSetterWindow(String sid) {
+    this.sid = sid;
+    this.whiteWnd = new Modal.fromHtml('white-set');
+    this.back = querySelector('#back-white');
+    this.back.onClick.listen((e) {
+      this.closeWindow();
+    });
+
+    this.eventBright = this.bright.onChange.listen((e) {
+      this.send('set_bright', this.bright.value);
+    });
+
+    this.eventCt = this.ct.onChange.listen((e) {
+      this.send('set_ct_abx', this.ct.value);
+    });
+
+  }
+  
+  showWindow() {
+    this.setData();
+    this.current = true;
+    this.whiteWnd.show();
+  }
+
+  closeWindow() {
+    this.current = false;
+    this.whiteWnd.hide();
+  }
+
+  Future<void> send(String key, dynamic value) async {
+    if (! this.current) {
+      return;
+    }
+    Map<String, dynamic> msg = new Map();
+    msg['cmd'] = 'write';
+    msg['sid'] = this.sid;
+    msg['data'] = {key: value};
+
+    String data = json.encode(msg);
+    await HttpRequest.request('/dev/write', method: 'POST', sendData: data)
+      .then((HttpRequest resp) {
+      print('$data : ${resp.responseText}');
+    }); 
+  }
+
+  setData() {
+    HttpRequest.getString('/dev/data/${this.sid}').then((String resp) {
+        var data = jsonDecode(resp);
+        if (data.containsKey('bright')) {
+          this.bright.value = data['bright'].toString();
+        }
+
+        if (data.containsKey('ct')) {
+          this.ct.value = data['ct'].toString();
+        }
     });
   }
 }
@@ -596,6 +710,7 @@ class TvSetterWindow {
     this.back.onClick.listen((e) {
       this.closeWindow();
     });
+    querySelectorAll('#tv-set .btn').onClick.listen((Event e) => this.send(e));
   }
 
   showWindow() {
@@ -607,6 +722,16 @@ class TvSetterWindow {
   closeWindow() {
     this.current = false;
     this.tvWnd.hide();
+  }
+
+  Future<void> send(Event e) async {
+    ButtonElement btn = e.target;
+    Map<String, dynamic> msg = new Map();
+    msg['cmd'] = 'write';
+    msg['sid'] = 'tv01';
+    msg['data'] = {'button': btn.dataset['btn']};
+    String data = json.encode(msg);
+    await HttpRequest.request('/dev/write', method: 'POST', sendData: data); 
   }
 
   void setData() {
