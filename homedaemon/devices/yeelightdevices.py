@@ -9,18 +9,14 @@ class YeeligthDevice:
                 'desklamp': DeskLamp}.get(data.get('model'), Dummy)(data, daemon)
 
 
-class DeskLamp(BaseDevice):
-    def __init__(self, data, daemon):
-        super().__init__(data, daemon)
-        self.dev = DeskLamp()
 
 
-class Color(BaseDevice):
+class White(BaseDevice):
     def __init__(self, data, daemon):
         super().__init__(data, daemon)
         self.support = data.get('support')
         self.ip = data.get('ip')
-        self.bulb = Bulb(data.get('ip'))
+        self.dev = Bulb(data.get('ip'))
         self.power = ButtonOnOff('set_power', self.write)
 
     def write(self, data):
@@ -79,3 +75,8 @@ class Color(BaseDevice):
 
 class Bslamp1(Color):
     pass
+
+class DeskLamp(BaseDevice):
+    def __init__(self, data, daemon):
+        super().__init__(data, daemon)
+        self.dev = DeskLamp()
