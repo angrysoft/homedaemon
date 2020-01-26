@@ -53,7 +53,8 @@ class Page {
       try {
         List<dynamic> jdata = jsonDecode(resp);
         jdata.forEach((dev) {
-          this.devices.refresh(dev);
+          print(dev);
+          // this.devices.refresh(dev);
         });
       }
       on FormatException {
