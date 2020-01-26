@@ -17,6 +17,7 @@ class Register:
         self.scenes = None
         self.names = {'0x000000000545b741': 'Bedroom Lamp',
                       '0x0000000007e7bae0': 'Living room lamp',
+                      '0x0000000007200259': 'Desk lamp',
                       '158d00027d0065': 'Kitchen Strip',
                       '158d000283b219': 'Bedroom speakers',
                       '158d00029b1929': 'Living room ',

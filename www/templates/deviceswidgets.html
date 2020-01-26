@@ -78,6 +78,26 @@
 </div>
 {%- endmacro %}
 
+{% macro desklamp(data) -%}
+<div class="col-xs-5 col-md-2  round-8 padding-05 device"  id="{{ data.get('sid') }}">
+  <div class="row center-xs">
+    <div class="col-xs-12">
+      <p class="txt-center">{{ data.get('name') }}</p>
+    </div>
+  </div>
+  
+  <div class="row center-xs">
+    <div class="col-xs-6" >
+      <button class="btn-small  power" data-sid="{{ data.get('sid') }}" data-model="{{ data.get('model') }}" data-status="power" data-cmd="set_power" value="on">On</button>
+    </div>
+
+    <div class="col-xs-6" >
+      <button class="btn-small white-set-button" data-sid="{{ data.get('sid') }}">Set</button>
+    </div>
+  </div>
+</div>
+{%- endmacro %}
+
 {% macro rgbstrip(data) -%}
 <div class="col-xs-5 col-md-2  round-8 padding-05 device"  id="{{ data.get('sid') }}">
   <div class="row center-xs">
@@ -279,6 +299,50 @@
 </div>
 {%- endmacro %}
 
+{% macro whiteset() -%}
+<div class="modal-dialog dark" id="white-set">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="row between-xs">
+          <div class="col-xs-1"><i class="material-icons" id="back">arrow_back</i></div>
+          <div class="col-xs-3">Color</div>   
+      </div>
+    </div>
+
+    <div class="modal-body">
+
+      <div class="row center-xs padding-10">
+        <div class="col-xs-12 txt-center">
+            <label class="label">Bright: </label>
+        </div>
+      </div>
+
+      <div class="row center-xs">
+        <div class="col-xs-12 txt-center">
+          <input class="color-range" id="bright" type="range" step="1" min="1" max="100" value="100">
+        </div>
+      </div>
+
+      <div class="row center-xs">
+        <div class="col-xs-12">
+          <div class="row center-xs">
+            <div class="col-xs-12 txt-center">
+              <label class="label">Color temperature: </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="row center-xs">
+        <div class="col-xs-12 txt-center">
+          <input class="color-range" id="ct" type="range" step="100" min="1700" max="6500" value="6500">
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{%- endmacro %}
 
 {% macro colorset() -%}
 <div class="modal-dialog dark" id="color-set">
@@ -291,6 +355,7 @@
     </div>
 
     <div class="modal-body">
+
       <div class="row center-xs middle-xs">
         <div class="col-xs-6">
           <button class="btn" id="rgb-btn">Color</button>
@@ -315,7 +380,6 @@
 
       <div class="row center-xs padding-10" id="rgb-tab">
         <div class="col-xs-12">
-          
           <div class="row center-xs">
             <div class="col-xs-12 col-md-4 txt-center">
               <label class="label">Pick Color: </label>
@@ -330,24 +394,25 @@
 
         </div>
       </div>
-    </div>
 
-    <div class="row center-xs padding-10" id="ct-tab">
-      <div class="col-xs-12">
-        <div class="row center-xs">
-          <div class="col-xs-12 txt-center">
-            <label class="label">Color temperature: </label>
+      <div class="row center-xs padding-10" id="ct-tab">
+        <div class="col-xs-12">
+          <div class="row center-xs">
+            <div class="col-xs-12 txt-center">
+              <label class="label">Color temperature: </label>
+            </div>
           </div>
-        </div>
-      </div>
-    
-      <div class="row center-xs">
-        <div class="col-xs-12 txt-center">
-          <input class="color-range" id="ct" type="range" step="100" min="1700" max="6500" value="6500">
-        </div>
-      </div>
-    </div>
 
+          <div class="row center-xs">
+            <div class="col-xs-12 txt-center">
+              <input class="color-range" id="ct" type="range" step="100" min="1700" max="6500" value="6500">
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
   </div>
 </div>
 {%- endmacro %}
@@ -486,79 +551,4 @@
     </div>
   </div>
 </div>
-
 {%- endmacro %}
-
-<!-- <div class="row center-xs btn-group">
-  <div class="col-xs-2">
-    <button class="btn white" data-btn="Num5">5</button>
-  </div>
-
-  <div class="col-xs-2">
-    <button class="btn white" data-btn="Num6">6</button>
-  </div>
-
-  <div class="col-xs-2">
-    <button class="btn white" data-btn="Num7">7</button>
-  </div>
-
-<div class="col-xs-2">
-  <button class="btn white" data-btn="Num8">8</button>
-</div>
-</div>
-
-<div class="row center-xs btn-group">
-  <div class="col-xs-3">
-    <button class="btn red" data-btn="ChannelUp">Ch+</button>
-  </div>
-
-  <div class="col-xs-2">
-    <button class="btn white" data-btn="Num9">9</button>
-  </div>
-
-  <div class="col-xs-2">
-    <button class="btn white" data-btn="Num0">0</button>
-  </div>
-
-  <div class="col-xs-3">
-    <button class="btn green" data-btn="ChannelDown">Ch-</button>
-  </div>
-</div>
-
-<div class="row center-xs btn-group">
-  <div class="col-xs-3">
-    <button class="btn white" data-btn="VolumeUP">Vol+</button>
-  </div>
-
-  <div class="col-xs-2 col-xs-offset-1">
-    <button class="btn white" data-btn="Mute">Mute</button>
-  </div>
-
-  <div class="col-xs-3 col-xs-offset-1">
-    <button class="btn white" data-btn="VolumeDown">Vol-</button>
-  </div>
-</div>
-
-<div class="row center-xs btn-group">
-  <div class="col-xs-2">
-    <button class="btn light-blue" data-btn="Prev"><<</button>
-  </div>
-
-  <div class="col-xs-2">
-    <button class="btn light-blue" data-btn="Play">Play</button>
-  </div>
-
-  <div class="col-xs-2">
-    <button class="btn light-blue" data-btn="Next">>></button>
-  </div>
-
-  <div class="col-xs-2">
-    <button class="btn light-blue" data-btn="Pause">| |</button>
-  </div>
-
-  <div class="col-xs-2">
-    <button class="btn light-blue" data-btn="Stop">Stop</button>
-  </div>
-</div>
-</div>
-</div> -->

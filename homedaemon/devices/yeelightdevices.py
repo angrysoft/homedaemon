@@ -1,11 +1,18 @@
 from .base import BaseDevice, ButtonOnOff, Dummy
-from yeelight import Bulb
+from yeelight import DeskLamp, Bslamp1, Color
 import asyncio
 
 class YeeligthDevice:
     def __new__(cls, data, daemon):
         return {'color': Color,
-                'bslamp1': Bslamp1}.get(data.get('model'), Dummy)(data, daemon)
+                'bslamp1': Bslamp1,
+                'desklamp': DeskLamp}.get(data.get('model'), Dummy)(data, daemon)
+
+
+class DeskLamp(BaseDevice):
+    def __init__(self, data, daemon):
+        super().__init__(data, daemon)
+        self.dev = DeskLamp()
 
 
 class Color(BaseDevice):
