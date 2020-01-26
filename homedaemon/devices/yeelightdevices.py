@@ -77,7 +77,7 @@ class ColorDev(White):
     def set_color(self, irgb):
         asyncio.run_coroutine_threadsafe(self.dev.set_color(irgb), self.daemon.loop)
         
-class Bslamp1Dev(Color):
+class Bslamp1Dev(ColorDev):
     pass
 
 class DeskLampDev(White):
