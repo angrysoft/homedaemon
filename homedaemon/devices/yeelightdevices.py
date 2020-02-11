@@ -20,7 +20,7 @@ class White(BaseDevice):
                     'set_ct_abx': self.set_ct_abx,
                     'set_bright': self.bright}
 
-    def write(self, data):
+    async def write(self, data):
         print(data)
         _data = data.get('data')
         if _data is None:
@@ -28,7 +28,7 @@ class White(BaseDevice):
             return
         c, v = _data.popitem()
         
-        self.cmd.get(c, self.unknown)(v)
+        await self.cmd.get(c, self.unknown)(v)
     
     def unknown(self, value):
         self.daemon.logger.error(f'unknown parametr {value}')
@@ -51,9 +51,10 @@ class White(BaseDevice):
     def set_ct_abx(self, value):
         asyncio.run_coroutine_threadsafe(self.dev.set_ct_abx(int(value)), self.daemon.loop)
     
-    def set_power(self, value):
+    async def set_power(self, value):
         if type(value) is str:
-            asyncio.run_coroutine_threadsafe(self.dev.set_power(value), self.daemon.loop)
+            # asyncio.run_coroutine_threadsafe(self.dev.set_power(value), self.daemon.loop)
+            await self.dev.set_power(value)
         elif type(value) is dict:
             asyncio.run_coroutine_threadsafe(self.dev.set_power(value.get('power'),
                                                                  efx=value.get('efx', 'smooth'),
@@ -71,8 +72,9 @@ class ColorDev(White):
         self.cmd['set_color'] = self.set_color
         self.dev = Color(self.ip)
     
-    def set_rgb(self, rgb):
-        asyncio.run_coroutine_threadsafe(self.dev.set_rgb(rgb.get('red'), rgb.get('green'), rgb.get('blue')), self.daemon.loop)
+    async def set_rgb(self, rgb):
+        await self.dev.set_rgb(rgb.get('red'), rgb.get('green'), rgb.get('blue'))
+        # asyncio.run_coroutine_threadsafe(self.dev.set_rgb(rgb.get('red'), rgb.get('green'), rgb.get('blue')), self.daemon.loop)
         
     def set_color(self, irgb):
         asyncio.run_coroutine_threadsafe(self.dev.set_color(irgb), self.daemon.loop)

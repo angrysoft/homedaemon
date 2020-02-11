@@ -50,6 +50,7 @@ class BaseScene(Thread):
     
     def _runner(self, status):
         if self.running:
+            self.daemon.logger.debug(f'scene is running error {self.name}')
             return
         cmd = {'cmd': 'scene', 'sid': self.name, 'data':{'status': status, 'running': True}}
         self.running = True
@@ -62,6 +63,7 @@ class BaseScene(Thread):
             self.running = False
             cmd['data']['running'] = False
             self.daemon.bus.emit_cmd(cmd)
+        self.daemon.logger.debug(f'scene running debug {self.name} {status}')
                     
     def on(self):
         pass
