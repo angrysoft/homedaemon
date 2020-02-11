@@ -20,7 +20,7 @@ class White(BaseDevice):
                     'set_ct_abx': self.set_ct_abx,
                     'set_bright': self.bright}
 
-    async def write(self, data):
+    def write(self, data):
         print(data)
         _data = data.get('data')
         if _data is None:
@@ -28,42 +28,41 @@ class White(BaseDevice):
             return
         c, v = _data.popitem()
         
-        await self.cmd.get(c, self.unknown)(v)
+        self.cmd.get(c, self.unknown)(v)
     
     def unknown(self, value):
         self.daemon.logger.error(f'unknown parametr {value}')
     
     def on(self):
-        asyncio.run_coroutine_threadsafe(self.dev.set_power('on'), self.daemon.loop)
+        self.dev.set_power('on')
 
     def off(self):
-        asyncio.run_coroutine_threadsafe(self.dev.set_power('off'), self.daemon.loop)
+        self.dev.set_power('off')
 
     def toggle(self):
-        asyncio.run_coroutine_threadsafe(self.dev.toggle(), self.daemon.loop)
+        self.dev.toggle()
 
     def bright(self, value):
-        asyncio.run_coroutine_threadsafe(self.dev.set_bright(int(value)), self.daemon.loop)
+        self.dev.set_bright(int(value))
     
     def set_default(self, *args):
-        asyncio.run_coroutine_threadsafe(self.dev.set_default(), self.daemon.loop)
+        self.dev.set_default()
     
     def set_ct_abx(self, value):
-        asyncio.run_coroutine_threadsafe(self.dev.set_ct_abx(int(value)), self.daemon.loop)
+        self.dev.set_ct_abx(int(value))
     
-    async def set_power(self, value):
+    def set_power(self, value):
         if type(value) is str:
-            # asyncio.run_coroutine_threadsafe(self.dev.set_power(value), self.daemon.loop)
-            await self.dev.set_power(value)
+            self.dev.set_power(value)
         elif type(value) is dict:
-            asyncio.run_coroutine_threadsafe(self.dev.set_power(value.get('power'),
-                                                                 efx=value.get('efx', 'smooth'),
-                                                                 duration=value.get('duration', 500),
-                                                                 mode=value.get('mode', 0)), self.daemon.loop)
+            self.dev.set_power(value.get('power'),
+                               efx=value.get('efx', 'smooth'),
+                               duration=value.get('duration', 500),
+                               mode=value.get('mode', 0))
 
     def set_scene(self, value):
         if value is dict and {'scene_class', 'args'}.issubset(value):
-            asyncio.run_coroutine_threadsafe(self.dev.set_scene(value['scene_class'], value['args']), self.daemon.loop)
+            self.dev.set_scene(value['scene_class'], value['args'])
 
 class ColorDev(White):
     def __init__(self, data, daemon):
@@ -72,12 +71,11 @@ class ColorDev(White):
         self.cmd['set_color'] = self.set_color
         self.dev = Color(self.ip)
     
-    async def set_rgb(self, rgb):
-        await self.dev.set_rgb(rgb.get('red'), rgb.get('green'), rgb.get('blue'))
-        # asyncio.run_coroutine_threadsafe(self.dev.set_rgb(rgb.get('red'), rgb.get('green'), rgb.get('blue')), self.daemon.loop)
+    def set_rgb(self, rgb):
+        self.dev.set_rgb(rgb.get('red'), rgb.get('green'), rgb.get('blue'))
         
     def set_color(self, irgb):
-        asyncio.run_coroutine_threadsafe(self.dev.set_color(irgb), self.daemon.loop)
+        self.dev.set_color(irgb)
         
 class Bslamp1Dev(ColorDev):
     pass
