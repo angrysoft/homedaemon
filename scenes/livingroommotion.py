@@ -5,12 +5,13 @@ from datetime import datetime
 class Scene(BaseScene):
     def __init__(self, daemon):
         super().__init__(daemon)
-        self.name = 'Livingroom sunset'
-        self.triggers = 'timer.time.sunset'
+        self.name = 'Livingroom motion'
+        self.triggers = '158d0002ec2fa6.status.motion'
     
     def on(self):
-        tv = self.get_device('tv01')
-        if tv.power:
+        sunrise = self.daemon.config['datetime']['sunrise']
+        sunset = self.daemon.config['datetime']['sunset']
+        if TimeCheck('<>', sunset, sunrise).status:
             lamp = self.get_device('0x0000000007e7bae0')
             lamp.on()
             

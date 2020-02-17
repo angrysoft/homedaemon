@@ -15,7 +15,8 @@ class Scene(BaseScene):
         tvrgb.set_rgb({'red':255 ,'green':38, 'blue': 0})
         color.on()
         color.bright(1)
-        color.set_rgb({'red':0 ,'green':0, 'blue': 255})
+        # color.set_rgb({'red':0 ,'green':0, 'blue': 255})
+        color.set_ct_abx(1700)
         self.sleep(1)
         for _sid in dev_to_off:
             dev = self.get_device(_sid)
@@ -32,3 +33,6 @@ class Scene(BaseScene):
         tvrgb.off()
         color.bright(70)
         color.set_ct_abx(3100)
+    
+    
+    # TODO : zapisać stan lamp i innych urządzeń a przy off wczytać
