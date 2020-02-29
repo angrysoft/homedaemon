@@ -95,7 +95,7 @@ class Register:
                                    'status': 'off'}})
         list_devs.append({'cmd': 'write', 'model': 'bravia',
                           'sid': 'tv01', 'family': 'tv',
-                          'ip': '192.168.1.129',
+                          'ip': '192.168.10.5',
                           'mac': 'FC:F1:52:2A:9B:1E',
                           'data': {'button': ''}})
         
