@@ -136,13 +136,18 @@ def dev_data_all():
 @app.route('/devices')
 @login_required
 def devices():
-    devs = sorted([d for d in db['devices']], key=operator.itemgetter('name'))
+    places = dict()
+    for d in sorted([d for d in db['devices']], key=operator.itemgetter('name')):
+        if not d['place'] in places:
+            places[d['place']] = list()
+        places[d['place']].append(d)
+    # devs = sorted([d for d in db['devices']], key=operator.itemgetter('name'))
     sc_list = list()
     for s in db['scenes']:
         if s.get('automatic') == False:
             sc_list.append(s)
     return render_template('devices.html',
-                           devices=devs,
+                           places=places,
                            websock=db['config']['websocket']['ip'],
                            wp=db['config']['websocket']['port'],
                            scenes=sc_list)

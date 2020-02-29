@@ -15,34 +15,36 @@ class Register:
         self.devices_data = None
         self.config = None
         self.scenes = None
-        self.names = {'0x000000000545b741': 'Bedroom Lamp',
-                      '0x0000000007e7bae0': 'Living room lamp',
-                      '0x0000000007200259': 'Desk lamp',
-                      '158d00027d0065': 'Kitchen Strip',
-                      '158d000283b219': 'Bedroom speakers',
-                      '158d00029b1929': 'Living room ',
-                      '158d0002a16338': 'Bedroom',
-                      '158d0002a18c2b': 'Hall',
-                      '158d0002abac97': 'Bathroom',
-                      '158d0002bffe5a': 'Kitchen',
-                      '158d00024e2e5b': 'Outside',
-                      '158d0002c9d230': 'Bathroom',
-                      '158d0002e966b9': 'Living Room',
-                      '158d00025d84a6': 'Outside',
-                      '158d000208d668': 'Bedroom',
-                      '158d0002ec2fa6': 'Living Room',
-                      '158d00029a49ba': 'Hall',
-                      '158d0002ec03fe': 'Bedroom',
-                      '158d000200a020': 'Kitchen Switch',
-                      '158d0002b74c28': 'Entrance',
-                      '158d0002a13819': 'Living room Door',
-                      '158d0002a67612': 'Bedroom window',
-                      'tv01': 'Bravia',
-                      'rgb01': 'Tv Rgb',
-                      '7c49eb17b2a0': 'Gateway',
-                      'timer': 'clock',
-                      'dallasDS0': 'Arduino',
-                      '158d00044638db': 'Kitchen Window'}
+        self.names = {
+            '158d0002a13819': {'name': 'Door', 'place': 'Living room'},
+            '158d00029b1929': {'name': 'Light', 'place': 'Living room'},
+            '158d0002e966b9': {'name': 'Sensor', 'place': 'Living room'},
+            '158d0002ec2fa6': {'name': 'Motion', 'place': 'Living room'},
+            'tv01': {'name': 'Tv', 'place': 'Living room'},
+            'rgb01': {'name': 'Tv strip', 'place': 'Living room'},
+            '7c49eb17b2a0': {'name': 'Gateway', 'place': 'Living room'},
+            'dallasDS0': {'name': 'Arduino', 'place': 'Living room'},
+            '0x0000000007e7bae0': {'name': 'Lamp', 'place': 'Living room'},
+            '0x0000000007200259': {'name': 'Desk lamp', 'place': 'Living room'},
+            '0x000000000545b741': {'name': 'Bed Lamp', 'place': 'Bedroom'},
+            '158d0002a67612': {'name': 'Window', 'place': 'Bedroom'},
+            '158d00027d0065': {'name': 'Strip', 'place': 'Kitchen'},
+            '158d0002bffe5a': {'name': 'Light', 'place': 'Kitchen'},
+            '158d000200a020': {'name': 'Switch', 'place': 'Kitchen'},
+            '158d00044638db': {'name': 'Window', 'place': 'Kitchen'},
+            '158d0002abac97': {'name': 'Light', 'place': 'Bathroom'},
+            '158d0002c9d230': {'name': 'Sensor', 'place': 'Bathroom'},
+            '158d00024e2e5b': {'name': 'Light', 'place': 'Outside'},
+            '158d00025d84a6': {'name': 'Sensor', 'place': 'Outside'},
+            '158d000283b219': {'name': 'Socket', 'place': 'Bedroom'},
+            '158d000208d668': {'name': 'Sensor', 'place': 'Bedroom'},
+            '158d0002ec03fe': {'name': 'Motion', 'place': 'Bedroom'},
+            '158d0002a16338': {'name': 'Light', 'place': 'Bedroom'},
+            '158d0002a18c2b': {'name': 'Light', 'place': 'Hall'},
+            '158d00029a49ba': {'name': 'Motion', 'place': 'Hall'},
+            '158d0002b74c28': {'name': 'Entrance', 'place': 'Hall'},
+            'timer': {'name': 'clock', 'place': ''}
+        }
 
     def clear_db(self):
         print('Remove all device and device data')
@@ -136,10 +138,12 @@ class Register:
                 del d['cmd']
             data = d.get('data')
             del d['data']
-
-            data['sid'] = d.get('sid')
-            d['name'] = self.names.get(d.get('sid'), '....')
-            print(f"\t {d.get('model')}  {d.get('sid')} {d.get('name')}")
+            sid = d.get('sid')
+            data['sid'] = sid
+            if sid in self.names:
+                d['name'] = self.names[sid]['name']
+                d['place'] = self.names[sid]['place']
+            print(f"\t {d.get('model')}  {d.get('sid')} {d.get('name')} in {d.get('place')}")
 
             self.devices[d.get('sid')] = d
             self.devices_data[d.get('sid')] = data

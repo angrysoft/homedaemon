@@ -40,7 +40,10 @@
         {{ scene(sc) }}
       {% endfor %}
     </div>
-    <div class="row around-xs tab lights">
+    {% for place in places %}
+    <div class="row center-xs"><div class="col-xs-12"><p>{{ place }}</p></div></div>
+    <div class="row around-xs tab {{ place }}">
+    
     {% for d in devices %}
       {% if d.get('model') == 'ctrl_neutral1' %}
       {{ ctrl_neutral1(d) }}
