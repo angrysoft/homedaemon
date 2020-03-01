@@ -160,6 +160,16 @@ class Register:
     # def add_index(self):
     #     print(f"Creating index on device: {db.devices.create_index([('sid', TEXT)], unique=True)}")
     #     print(f"Creating index on device data: {db.devices_data.create_index([('sid', TEXT)], unique=True)}")
+    
+    def add_place(self):
+        
+        for d in self.devices:
+            sid = d['sid']
+            if sid in self.names:
+                d['name'] = self.names[sid]['name']
+                d['place'] = self.names[sid]['place']
+                self.devices[sid] = d
+                print(self.devices[sid]['place'])
 
 
 if __name__ == '__main__':
@@ -169,4 +179,5 @@ if __name__ == '__main__':
     r.accessing_db()
     r.registering()
     r.add_config()
+    # r.add_place()
 

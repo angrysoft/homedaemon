@@ -83,6 +83,7 @@ class Tabs {
 
       if (window.localStorage.containsKey("currentTab")) {
         this.currentTab = int.parse(window.localStorage["currentTab"]);
+        if (this.currentTab > this.tabs.length) {this.currentTab = 0;}
       }
 
       this.changeTab(this.currentTab);

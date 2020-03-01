@@ -1,14 +1,14 @@
 import asyncio
-from threading import Thread
 
 
-class BaseInput(Thread):
+class BaseInput:
     def __init__(self, bus, loop):
-        super().__init__()
-        self.setDaemon(True)
         self.bus = bus
         self.loop = loop
  
     def stop(self):
         self.loop.stop()
         self.loop.close()
+    
+    def run(self):
+        pass

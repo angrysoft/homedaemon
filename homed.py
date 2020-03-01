@@ -37,6 +37,7 @@ from systemd.journal import JournalHandler
 from homedaemon.devices import Devices
 from homedaemon.bus import Bus
 from asyncio import tasks
+from concurrent.futures import ThreadPoolExecutor
 
 logger = logging.getLogger('homed')
 
@@ -46,7 +47,7 @@ class HomeDaemon:
         self.loop = asyncio.get_event_loop()
         self.inputs = dict()
         self.bus = Bus(self.loop)
-        self.bus.start()
+        # self.bus.start()
         self.db = Server()
         self.config = self.db['config']
         self.devicesdb = self.db['devices']
@@ -57,14 +58,17 @@ class HomeDaemon:
         self.devices = Devices()
         self.scenes = dict()
         self.bus.on('report', '*', self.logger.debug)
+        self.executors = None
 
     def _load_inputs(self):
+        # self.executors = ThreadPoolExecutor()
         for _input_name in self.config['inputs']['list']:
             _input = importlib.import_module(f'homedaemon.inputs.{_input_name}')
             inst = _input.Input(self.bus, self.config, self.loop)
             self.inputs[inst.name] = inst
             self.logger.info(f'load input: {inst.name}')
-            self.inputs[inst.name].start()
+            self.inputs[inst.name].run()
+            # self.executors.submit(self.inputs[inst.name].run)
 
     def _load_devices(self):
         for dev in self.devicesdb:
@@ -86,7 +90,8 @@ class HomeDaemon:
                         self.scenesdb[inst.name] = {'automatic': inst.automatic,
                                                     'name': inst.name,
                                                     'sid': inst.name,
-                                                    'reversible': inst.reversible}
+                                                    'reversible': inst.reversible,
+                                                    'place': inst.place}
                     else:
                         self.logger.warning(f'scene duplcate name skiping ... {inst.name}')
                         continue

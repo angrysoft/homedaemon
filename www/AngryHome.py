@@ -67,25 +67,20 @@ def login_required(func):
 # www
 @app.route('/')
 @login_required
-def index():
-    print(request.cookies)
-    devs = [d for d in db['devices']]
-    devs_data = dict()
-    for dd in db['devices-data']:
-        devs_data[dd.get('sid')] = dd
-    return render_template('index.html', devices=sorted(devs, key=operator.itemgetter('name')), devdata=devs_data, scenses=[])
-
-
-# @app.route('/dev/config')
-# @login_required
-# def dev_conf():
-#     ret = db['config']['websocket']
-#     config = {'urltoken': ret['urltoken'],
-#               'secret': jwt.encode({'api':'1.0', 'client': 'browser'}, ret['secret'], algorithm='HS256').decode(),
-#               'internet': ret['internet'],
-#               'localnetwork': ret['localnetwork']}
-#     config.update(ret['webserver'])
-#     return json.dumps(config)
+def devices():
+    places = dict()
+    items_list = sorted([d for d in db['devices']], key=operator.itemgetter('name'))
+    for s in db['scenes']:
+        if s.get('automatic') == False:
+            items_list.append(s)
+    
+    for item in items_list:
+        if not 'place' in item:
+            continue
+        if not item['place'] in places:
+            places[item['place']] = list()
+        places[item['place']].append(item)
+    return render_template('devices.html', places=places)
 
 
 @app.route('/scene/list')
@@ -131,34 +126,6 @@ def dev_data_all():
         d['model'] = db['devices'][d['sid']]['model']
         device_data.append(d)
     return json.dumps(device_data)
-
-
-@app.route('/devices')
-@login_required
-def devices():
-    places = dict()
-    for d in sorted([d for d in db['devices']], key=operator.itemgetter('name')):
-        if not d['place'] in places:
-            places[d['place']] = list()
-        places[d['place']].append(d)
-    # devs = sorted([d for d in db['devices']], key=operator.itemgetter('name'))
-    print(places)
-    sc_list = list()
-    for s in db['scenes']:
-        if s.get('automatic') == False:
-            sc_list.append(s)
-    return render_template('devices.html',
-                           places=places,
-                           websock=db['config']['websocket']['ip'],
-                           wp=db['config']['websocket']['port'],
-                           scenes=sc_list)
-
-
-@app.route('/tv')
-@login_required
-def tv():
-    tvinfo = db['devices-data']['tv01']
-    return render_template('tvpilot.html', tvinfo=tvinfo)
 
 
 @app.route('/login', methods=['GET', 'POST'])
