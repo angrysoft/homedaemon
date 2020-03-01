@@ -40,48 +40,43 @@
         {{ scene(sc) }}
       {% endfor %}
     </div>
-    {% for place in places %}
-    <div class="row center-xs"><div class="col-xs-12"><p>{{ place }}</p></div></div>
-    <div class="row around-xs tab {{ place }}">
-    
-    {% for d in devices %}
-      {% if d.get('model') == 'ctrl_neutral1' %}
-      {{ ctrl_neutral1(d) }}
-      {% elif d.get('model') == 'ctrl_neutral2' %}
-      {{ ctrl_neutral2(d) }}
-      {% elif d.get('model') == 'plug' %}
-      {{ plug(d) }}
-      {% elif d.get('model') == 'bslamp1' %}
-      {{ bslamp1(d) }}
-      {% elif d.get('model') == 'desklamp' %}
-      {{ desklamp(d) }}
-      {% elif d.get('model') == 'rgbstrip' %}
-      {{ rgbstrip(d) }}
-      {% elif d.get('model') == 'color' %}
-      {{ color(d) }}
-      {% elif d.get('model') == 'bravia' %}
-      {{ tv(d) }}
-      {% endif %}
-    {% endfor %}
-    </div>
-    <div class="row around-xs tab temps">
-    {% for d in devices %}
-      {% if d.get('model') == 'sensor_ht' %}
-      {{ sensor_ht(d) }}
-      {% elif d.get('model') == 'weather.v1' %}
-      {{ weather_v1(d) }}
-      {% endif %}
-    {% endfor %}
-    </div>
-    <div class="row around-xs tab sensors">
-      {% for d in devices %}
-        {% if d.get('model') == 'sensor_motion.aq2' %}
-        {{ sensor_motion_aq2(d) }}
-        {% elif d.get('model') == 'magnet' %}
-        {{ magnet(d) }}
-        {% endif %}
-      {% endfor %}
+
+      {% for place in places %}
+      <div class="row center-xs tab {{ place }}">
+        <div class="col-xs-12">
+          <div class="row center-xs"><div class="col-xs-12 txt-center"><p>{{ place }}</p></div></div>
+          <div class="row around-xs tab">
+          {% for d in places[place] %}
+            {% if d.get('model') == 'ctrl_neutral1' %}
+              {{ ctrl_neutral1(d) }}
+            {% elif d.get('model') == 'ctrl_neutral2' %}
+              {{ ctrl_neutral2(d) }}
+            {% elif d.get('model') == 'plug' %}
+              {{ plug(d) }}
+            {% elif d.get('model') == 'bslamp1' %}
+              {{ bslamp1(d) }}
+            {% elif d.get('model') == 'desklamp' %}
+              {{ desklamp(d) }}
+            {% elif d.get('model') == 'rgbstrip' %}
+              {{ rgbstrip(d) }}
+            {% elif d.get('model') == 'color' %}
+              {{ color(d) }}
+            {% elif d.get('model') == 'bravia' %}
+              {{ tv(d) }}
+            {% elif d.get('model') == 'sensor_ht' %}
+              {{ sensor_ht(d) }}
+            {% elif d.get('model') == 'weather.v1' %}
+              {{ weather_v1(d) }}
+            {% elif d.get('model') == 'sensor_motion.aq2' %}
+              {{ sensor_motion_aq2(d) }}
+            {% elif d.get('model') == 'magnet' %}
+              {{ magnet(d) }}
+            {% endif %}
+          {% endfor %}
+          </div>
+        </div>
       </div>
+      {% endfor %}
   </div>
 </body>
 </html>

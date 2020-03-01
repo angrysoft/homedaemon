@@ -142,6 +142,7 @@ def devices():
             places[d['place']] = list()
         places[d['place']].append(d)
     # devs = sorted([d for d in db['devices']], key=operator.itemgetter('name'))
+    print(places)
     sc_list = list()
     for s in db['scenes']:
         if s.get('automatic') == False:
