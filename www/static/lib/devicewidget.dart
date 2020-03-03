@@ -67,6 +67,11 @@ class Devices {
         this._devices[devData['sid']] = new Bravia(devData, evSend);
       }
       break;
+      case 'sensor_motion.aq2':
+      {
+        this._devices[devData['sid']] = new SensorMotion(devData);
+      }
+      break;
       case 'scene':
       {
         this._devices[devData['sid']] = new Scene(devData, evSend);
@@ -365,6 +370,26 @@ class SensorHt extends ReadOnlyDevice {
     }
     if (devData.containsKey('humidity')) {
       this.humidity.setStatus((int.parse(devData['humidity'])/100).floor().toString());
+    }
+    if (devData.containsKey('voltage')) {
+      this.vol.setStatus((devData['voltage']).toString());
+    }
+  }
+}
+
+class SensorMotion extends ReadOnlyDevice {
+  Label motion;
+  Label vol;
+  SensorMotion(Map<String,dynamic> devData) : super(devData) {
+    this.motion = new Label('motion', this.sid);
+    this.vol = new Label('voltage', this.sid);
+    this.refreshStatus(devData);
+  }
+
+  @override
+  void refreshStatus(Map<String,dynamic> devData) {
+    if (devData.containsKey('when')) {
+      this.motion.setStatus(devData['when']);
     }
     if (devData.containsKey('voltage')) {
       this.vol.setStatus((devData['voltage']).toString());

@@ -7,6 +7,7 @@ class Scene(BaseScene):
         super().__init__(daemon)
         self.name = 'Livingroom motion'
         self.triggers = '158d0002ec2fa6.status.motion'
+        self.place = 'Living room'
     
     def on(self):
         sunrise = self.daemon.config['datetime']['sunrise']
@@ -14,4 +15,7 @@ class Scene(BaseScene):
         if TimeCheck('<>', sunset, sunrise).status:
             lamp = self.get_device('0x0000000007e7bae0')
             lamp.on()
+        else:
+            lamp = self.get_device('0x0000000007e7bae0')
+            lamp.off()
             

@@ -21,6 +21,7 @@ class BaseScene(Thread):
         self.reversible = False
         self._triggers = list()
         self.running = False
+        self.place = ''
     
     @property
     def triggers(self):

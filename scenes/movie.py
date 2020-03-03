@@ -6,6 +6,7 @@ class Scene(BaseScene):
         self.name = 'Movie'
         self.automatic = False
         self.reversible = True
+        self.place = 'Living room'
     
     def on(self):
         dev_to_off = ['158d00027d0065', '158d00029b1929', '158d0002bffe5a']

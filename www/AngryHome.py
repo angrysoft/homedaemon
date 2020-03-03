@@ -64,7 +64,7 @@ def login_required(func):
         return func(*args, **kwargs)
     return decorated_function
 
-# www
+
 @app.route('/')
 @login_required
 def devices():
@@ -75,11 +75,12 @@ def devices():
             items_list.append(s)
     
     for item in items_list:
-        if not 'place' in item:
+        place = item.get('place')
+        if not place:
             continue
-        if not item['place'] in places:
-            places[item['place']] = list()
-        places[item['place']].append(item)
+        if place not in places:
+            places[place] = list()
+        places[place].append(item)
     return render_template('devices.html', places=places)
 
 

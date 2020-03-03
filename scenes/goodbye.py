@@ -5,6 +5,7 @@ class Scene(BaseScene):
         super().__init__(daemon)
         self.name = 'goodbye'
         self.automatic = False
+        self.place = 'All'
     
     def on(self):
         dev_to_off = ['158d00024e2e5b', '158d00027d0065', '158d000283b219',
