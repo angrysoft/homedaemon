@@ -65,6 +65,8 @@
               {{ sensor_motion_aq2(d) }}
             {% elif d.get('model') == 'magnet' %}
               {{ magnet(d) }}
+            {% elif d.get('model') == 'scene' %}
+              {{ scene(d) }}
             {% endif %}
           {% endfor %}
         </div>

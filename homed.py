@@ -92,10 +92,10 @@ class HomeDaemon:
                                                     'sid': inst.name,
                                                     'reversible': inst.reversible,
                                                     'place': inst.place}
+                        self.logger.info(f'loaded {inst.name}')
                     else:
                         self.logger.warning(f'scene duplcate name skiping ... {inst.name}')
                         continue
-                    self.logger.info(f'loaded {inst.name}')
         self.loop.call_later(5, self._announce_scene_list)
         
     def _announce_scene_list(self):
