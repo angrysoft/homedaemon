@@ -1,5 +1,6 @@
 import 'dart:html';
 import 'dart:convert';
+import 'dart:core';
 import 'dart:async';
 import 'modal.dart';
 
@@ -378,9 +379,11 @@ class SensorHt extends ReadOnlyDevice {
 }
 
 class SensorMotion extends ReadOnlyDevice {
+  Label lux;
   Label motion;
   Label vol;
   SensorMotion(Map<String,dynamic> devData) : super(devData) {
+    this.lux = new Label('lux', this.sid);
     this.motion = new Label('motion', this.sid);
     this.vol = new Label('voltage', this.sid);
     this.refreshStatus(devData);
@@ -389,10 +392,14 @@ class SensorMotion extends ReadOnlyDevice {
   @override
   void refreshStatus(Map<String,dynamic> devData) {
     if (devData.containsKey('when')) {
-      this.motion.setStatus(devData['when']);
+      DateTime d = DateTime.parse(devData['when']);
+      this.motion.setStatus("${d.hour}:${d.minute}:${d.second}");
     }
     if (devData.containsKey('voltage')) {
       this.vol.setStatus((devData['voltage']).toString());
+    }
+    if (devData.containsKey('lux')) {
+      this.lux.setStatus((devData['lux']).toString());
     }
   }
 }
