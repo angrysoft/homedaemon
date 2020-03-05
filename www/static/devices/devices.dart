@@ -8,7 +8,6 @@ void _log(Object o) => print('  MAIN: $o');
 
 class Page {
   Devices devices = new Devices();
-  // Scenes scenes = new Scenes();
   EventSource events;
 
   Page() {
@@ -70,10 +69,12 @@ class Tabs {
   List<DivElement> tabs;
   bool _enable = true;
   DivElement tabContainer;
+  SelectElement tabSelect;
 
   Tabs() {
     this.tabs = querySelectorAll('.tab');
     this.tabContainer = querySelector('#tabs');
+    this.tabSelect = querySelector('#tab-select');
     this.lastTab = tabs.length - 1;
 
     Point tstart;
@@ -105,6 +106,11 @@ class Tabs {
           }
         }
       }
+    });
+
+    this.tabSelect.onChange.listen((ev) {
+      SelectElement sel = ev.target;
+      this.changeTab(sel.selectedIndex);
     });
   }
 
@@ -141,6 +147,7 @@ class Tabs {
     });
     tabs[tab].classes.add('active');
     this.currentTab = tab;
+    this.tabSelect.selectedIndex = tab;
     window.localStorage['currentTab'] = this.currentTab.toString();
   }
 }

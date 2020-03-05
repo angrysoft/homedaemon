@@ -1,9 +1,0 @@
-name: RFPilot
-author: Sebastian Zwierzchowski <sebastian.zwierzchowski@gmail.com>
-description: rf pilot phone version
-
-environment:
-  sdk: '>=2.0.0 <3.0.0'
-
-dependencies:
-  service_worker:

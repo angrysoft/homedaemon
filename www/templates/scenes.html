@@ -1,8 +1,0 @@
-{% extends 'layout.html' %}
-{% block content %}
-    <div id="content">
-      {% for s in scenes %}
-      <button type="button" name="{{ s }}" onclick="sendScene('{{ s }}')">Scene {{ s }}</button>
-      {% endfor %}
-    </div>
-{% endblock %}

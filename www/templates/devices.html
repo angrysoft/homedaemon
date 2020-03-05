@@ -17,7 +17,7 @@
   <meta name="apple-mobile-web-app-title" content="SmartHouse">
   <meta name="application-name" content="SmartHouse">
   <meta name="theme-color" content="#000000">
-  <title>Smart Home</title>
+  <title>Angry Home</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="/static/angry.min.css">
   <link rel="stylesheet" type="text/css" href="/static/devices/devices.min.css">
@@ -35,10 +35,23 @@
 {{ whiteset() }}
 
   <div class="container-fluid" id="tabs">
+    <div class="row center-xs">
+      <div class="col-xs-12 txt-center">
+        <select id="tab-select" class="select">
+          {% for p in places %}
+          <option value="{{ loop.index0 }}">{{ p }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
     {% for place in places %}
-    <div class="row center-xs tab">
+    <div class="row center-xs tab" data-name="{{ place }}">
       <div class="col-xs-12">
-        <div class="row center-xs"><div class="col-xs-12 txt-center"><p>{{ place }}</p></div></div>
+        <div id="place-name" class="row center-xs">
+          <div class="col-xs-12 txt-center">
+            <p>{{ place }}</p>
+          </div>
+        </div>
         <div class="row around-xs">
           {% for d in places[place] %}
             {% if d.get('model') == 'ctrl_neutral1' %}

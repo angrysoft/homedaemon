@@ -82,8 +82,6 @@ def devices():
         if place not in places:
             places[place] = list()
         places[place].append(item)
-    import pprint
-    pprint.pprint(places)
     return render_template('devices.html', places=places)
 
 

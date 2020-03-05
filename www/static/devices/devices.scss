@@ -14,8 +14,25 @@ div#tabs {
     color: white;
 }
 
-.label {
+.select {
+  background: black;
+}
+
+.label,
+.select {
   color: rgb(135, 0, 135);
+}
+
+#place-name {
+  display: none;
+}
+@media screen and  (min-width: 1024px) {
+  #tab-select {
+      display:none;
+  }
+  #place-name {
+    display: block;
+  }
 }
 
 button.btn,
