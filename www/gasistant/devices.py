@@ -117,7 +117,7 @@ class GoogleDevice:
             'nicknames': []
         }
         self.willReportState = False
-        self.roomHint = ''
+        self.roomHint = data.get('place')
         self.deviceInfo = {
             'manufacturer': data.get('family', ''),
             'model': data.get('model', ''),
