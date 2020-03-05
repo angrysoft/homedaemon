@@ -31,8 +31,10 @@ div#tabs {
   height: 3rem;
 }
 
-select:focus {
+select:focus,
+option:focus {
   outline: none !important;
+  border: none !important;
 }
 
 @media screen and  (min-width: 1024px) {
