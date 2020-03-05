@@ -26,13 +26,17 @@ div#tabs {
 #place-name {
   display: none;
 }
+
+#tab-select {
+  height: 3rem;
+}
+
 @media screen and  (min-width: 1024px) {
   #tab-select {
       display:none;
   }
   #place-name {
     display: block;
-    height: 3rem;
   }
 }
 
