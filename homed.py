@@ -37,7 +37,7 @@ from systemd.journal import JournalHandler
 from homedaemon.devices import Devices
 from homedaemon.bus import Bus
 from asyncio import tasks
-from concurrent.futures import ThreadPoolExecutor
+# from concurrent.futures import ThreadPoolExecutor
 
 logger = logging.getLogger('homed')
 

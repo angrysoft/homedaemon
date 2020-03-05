@@ -1,4 +1,4 @@
-from aqara import GatewayWatcher
+from pyxiaomi import GatewayWatcher
 from homedaemon.inputs import BaseInput
 
 

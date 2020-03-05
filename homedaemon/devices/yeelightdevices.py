@@ -1,5 +1,5 @@
 from .base import BaseDevice, ButtonOnOff, Dummy
-from yeelight import DeskLamp, Bslamp1, Color, YeelightDev
+from pyxiaomi import DeskLamp, Bslamp1, Color, YeelightDev
 import asyncio
 
 class YeeligthDevice:

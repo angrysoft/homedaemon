@@ -14,6 +14,7 @@ class Scene(BaseScene):
         tvrgb = self.get_device('rgb01')
         color = self.get_device('0x0000000007e7bae0')
         tvrgb.set_rgb({'red':255 ,'green':38, 'blue': 0})
+        tvrgb.set_bright(100)
         color.on()
         color.bright(1)
         # color.set_rgb({'red':0 ,'green':0, 'blue': 255})

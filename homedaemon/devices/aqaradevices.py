@@ -1,5 +1,5 @@
 from .base import BaseDevice
-from aqara import Gateway
+from pyxiaomi import Gateway
 import json
 from datetime import datetime
     

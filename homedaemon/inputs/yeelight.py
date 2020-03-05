@@ -1,4 +1,4 @@
-from yeelight import YeelightWatcher
+from pyxiaomi import YeelightWatcher
 from homedaemon.inputs import BaseInput
 
 
