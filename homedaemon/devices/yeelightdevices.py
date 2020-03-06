@@ -14,7 +14,7 @@ class White(BaseDevice):
         super().__init__(data, daemon)
         self.support = data.get('support')
         self.ip = data.get('ip')
-        self.dev = YeelightDev(data.get('ip'))
+        self.dev = YeelightDev(ip='auto', sid=self.sid)
         self.power = ButtonOnOff('set_power', self.write)
         self.cmd = {'set_power': self.set_power,
                     'set_ct_abx': self.set_ct_abx,
@@ -69,7 +69,7 @@ class ColorDev(White):
         super().__init__(data, daemon)
         self.cmd['set_rgb'] = self.set_rgb
         self.cmd['set_color'] = self.set_color
-        self.dev = Color(self.ip)
+        self.dev = Color(ip='auto', sid=self.sid)
     
     def set_rgb(self, rgb):
         self.dev.set_rgb(rgb.get('red'), rgb.get('green'), rgb.get('blue'))
@@ -83,4 +83,4 @@ class Bslamp1Dev(ColorDev):
 class DeskLampDev(White):
     def __init__(self, data, daemon):
         super().__init__(data, daemon)
-        self.dev = DeskLamp(self.ip)
+        self.dev = DeskLamp(ip='auto', sid=self.sid)
