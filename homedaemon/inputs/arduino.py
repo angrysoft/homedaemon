@@ -69,6 +69,7 @@ class Input(BaseInput):
             self.daemon.logger.error(err)
 
     def run(self):
-        self.loop.create_task(self._connect())
+        # self.loop.create_task(self._connect())
+        self.run_in_executor(None, self._connect)
         
 
