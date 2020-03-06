@@ -148,7 +148,7 @@ def login():
             # ID token is valid. Get the user's Google Account ID from the decoded token.
             
             try:
-                if idinfo['sub'] in db['config']['users']['gusers']:
+                if idinfo['sub'] in db['residents']:
                     session['userid'] = idinfo['sub']
                     return 'ok'
                 else:

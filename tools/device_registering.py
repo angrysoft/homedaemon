@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
-from aqara import Gateway
+from pyxiaomi import Gateway
 from pycouchdb import Server
-from yeelight import Yeelight
+from pyxiaomi import Yeelight
 from urllib.parse import urlparse
 import json
 import os
@@ -15,6 +15,7 @@ class Register:
         self.devices_data = None
         self.config = None
         self.scenes = None
+        self.residents = None
         self.names = {
             '158d0002a13819': {'name': 'Door', 'place': 'Living room'},
             '158d00029b1929': {'name': 'Light', 'place': 'Living room'},
@@ -52,8 +53,6 @@ class Register:
             self.srv.delete('devices')
         if 'devices-data' in self.srv:
             self.srv.delete('devices-data')
-        if 'config' in self.srv:
-            self.srv.delete('config')
         if 'scenes' in self.srv:
             self.srv.delete('scenes')
 
@@ -61,15 +60,15 @@ class Register:
         print('Creating db')
         self.srv.create('devices')
         self.srv.create('devices-data')
-        self.srv.create('config')
         self.srv.create('scenes')
+        
         
     def accessing_db(self):
         print('accessing db')
         self.devices = self.srv['devices']
         self.devices_data = self.srv.db('devices-data')
-        self.config = self.srv.db('config')
         self.scenes = self.srv.db('scenes')
+        
 
     @staticmethod
     def dev_list():
@@ -105,15 +104,15 @@ class Register:
                           'sid': 'timer', 'family': 'virtual',
                           'data': {'dummy': 0}})
         print('Find custom devices')
-        ye.discover()
+        yedev = ye.discover()
         print('find yeelight devices')
-        for bulb in ye.devices:
-            d = ye.devices[bulb]
-            url = urlparse(d.get('location'))
+        for bulb in yedev:
+            d = yedev[bulb]
+            # url = urlparse(d.get('location'))
             del d['location']
             d['sid'] = d.pop('id')
-            d['ip'] = url.hostname
-            d['port'] = url.port
+            # d['ip'] = url.hostname
+            # d['port'] = url.port
             d['data'] = {'power': d.pop('power'),
                          'bright': d.pop('bright'),
                          'color_mode': d.pop('color_mode'),
@@ -130,6 +129,9 @@ class Register:
         return list_devs
 
     def registering(self):
+        self.clear_db()
+        self.create_db()
+        self.accessing_db()
         list_devs = self.dev_list()
 
         print('Registering device:')
@@ -149,12 +151,28 @@ class Register:
             self.devices_data[d.get('sid')] = data
 
     def add_config(self):
+        if 'config' in self.srv:
+            self.srv.delete('config')
+        self.srv.create('config')
+        self.config = self.srv.db('config')
+            
         with open('config.json') as jconf:
             config = json.load(jconf)
             for c in config.get('config'):
                 self.config.add(c)
             print('Config added')
     
+    def add_residents(self):
+        if 'residents' in self.srv:
+            self.srv.delete('residents')
+        self.srv.create('residents')
+        self.residents = self.srv.db('residents')
+        
+        with open('residents.json') as jfile:
+            residents = json.load(jfile)
+            for c in residents.get('residents'):
+                self.residents.add(c)
+            print('Resident added')
         
         
     # def add_index(self):
@@ -174,10 +192,8 @@ class Register:
 
 if __name__ == '__main__':
     r = Register()
-    r.clear_db()
-    r.create_db()
-    r.accessing_db()
     r.registering()
     r.add_config()
+    r.add_residents()
     # r.add_place()
 
