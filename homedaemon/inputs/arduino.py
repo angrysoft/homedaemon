@@ -5,6 +5,7 @@ import json
 import asyncio
 from sys import stderr
 from os.path import exists
+from time import sleep
 
 
 class Input(BaseInput):
@@ -19,7 +20,7 @@ class Input(BaseInput):
         self.timeout = 0
         self.stopping = False
 
-    async def _connect(self):
+    def _connect(self):
         while not self.arduino.is_open:
             if self.stopping:
                 break
@@ -34,7 +35,7 @@ class Input(BaseInput):
                 self.serial_reader()
                 self.loop.add_reader(self.arduino, self.serial_reader)
             else:
-                await asyncio.sleep(3)
+                sleep(3)
 
     @staticmethod
     def _detect_port():

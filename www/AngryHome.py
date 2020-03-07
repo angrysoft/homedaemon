@@ -150,6 +150,9 @@ def login():
             try:
                 if idinfo['sub'] in db['residents']:
                     session['userid'] = idinfo['sub']
+                    session['locale'] = idinfo['locale']
+                    session['picture'] = idinfo['picture']
+                    session['name'] = idinfo['']
                     return 'ok'
                 else:
                     return 'not_registred'

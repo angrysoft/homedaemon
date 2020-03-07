@@ -37,7 +37,6 @@ from systemd.journal import JournalHandler
 from homedaemon.devices import Devices
 from homedaemon.bus import Bus
 from asyncio import tasks
-# from concurrent.futures import ThreadPoolExecutor
 
 logger = logging.getLogger('homed')
 
@@ -47,7 +46,6 @@ class HomeDaemon:
         self.loop = asyncio.get_event_loop()
         self.inputs = dict()
         self.bus = Bus(self.loop)
-        # self.bus.start()
         self.db = Server()
         self.config = self.db['config']
         self.devicesdb = self.db['devices']
@@ -60,21 +58,19 @@ class HomeDaemon:
         self.bus.on('report', '*', self.logger.debug)
         self.executors = None
 
-    def _load_inputs(self):
-        # self.executors = ThreadPoolExecutor()
+    def load_inputs(self):
         for _input_name in self.config['inputs']['list']:
             _input = importlib.import_module(f'homedaemon.inputs.{_input_name}')
             inst = _input.Input(self.bus, self.config, self.loop)
             self.inputs[inst.name] = inst
             self.logger.info(f'load input: {inst.name}')
             self.inputs[inst.name].run()
-            # self.executors.submit(self.inputs[inst.name].run)
 
-    def _load_devices(self):
+    def load_devices(self):
         for dev in self.devicesdb:
             self.devices.load(dev, self)
 
-    def _load_scenes(self):
+    def load_scenes(self):
         if 'scenes' in self.db:
             self.db.delete('scenes')
         self.db.create('scenes')
@@ -108,9 +104,9 @@ class HomeDaemon:
 
     def run(self):
         self.logger.info(f'main thread {current_thread()} loop {id(self.loop)}')
-        self._load_devices()
-        self._load_scenes()
-        self._load_inputs()
+        self.load_devices()
+        self.load_scenes()
+        self.load_inputs()
         # self.loop.add_signal_handler(signal.SIGINT, self.stop)
         # self.loop.add_signal_handler(signal.SIGHUP, self.stop)
         # self.loop.add_signal_handler(signal.SIGQUIT, self.stop)
@@ -160,7 +156,9 @@ if __name__ == '__main__':
     if len(sys.argv) < 2:
         logger.addHandler(JournalHandler())    
     else:
-        logging.basicConfig(filename="home.log")
+        # logging.basicConfig(filename="home.log")
+        logger.addHandler(logging.StreamHandler(sys.stdout))
+        logger.addHandler(logging.FileHandler('home.log'))
     
     hd = HomeDaemon()
     hd.run()

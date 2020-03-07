@@ -8,18 +8,24 @@ class Input(BaseInput):
         super(Input, self).__init__(bus, loop)
         self.name = 'residents'
         srv = Server()
-        residentsdb = srv.db('residents')
-        self.residents = [r for r in residentsdb]
+        self.residentsdb = srv.db('residents')
         self.loop.create_task(self.watch_residents())
     
     async def watch_residents(self):
         while True:
-            for res in self.residents:
-                status = lookup_name(res['phone_bt'], timeout=5)
-                if status:
-                    print(f"{res['name']} is in home")
-                else:
-                    print(f"{res['name']} is not in home")
-            await asyncio.sleep(15)
-        
-        # self.yw = YeelightWatcher(self.bus.emit_cmd, loop=self.loop)
+            for res in self.residentsdb:
+                await self.check(res)
+            await asyncio.sleep(5)
+    
+    async def check(self, resident):
+        status = lookup_name(resident['phone_bt'], timeout=5)
+        if status:
+            if resident['in_home'] == False:
+                self.residentsdb[resident['_id']]['in_home'] = True
+                self.bus.emit_cmd({'cmd': 'residents', 'sid': resident['_id'],  'data': {'in_home': True}})
+            print(f"{resident['name']} is in home")
+        else:
+            if resident['in_home'] == True:
+                self.residentsdb[resident['_id']]['in_home'] = False
+                self.bus.emit_cmd({'cmd': 'residents', 'sid': resident['_id'],  'data': {'in_home': False}})
+            print(f"{resident['name']} is not in home")
