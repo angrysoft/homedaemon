@@ -15,7 +15,7 @@ class Input(BaseInput):
         while True:
             for res in self.residentsdb:
                 await self.check(res)
-            await asyncio.sleep(5)
+            await asyncio.sleep(25)
     
     async def check(self, resident):
         status = lookup_name(resident['phone_bt'], timeout=5)
