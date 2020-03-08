@@ -23,9 +23,7 @@ class Input(BaseInput):
             if resident['in_home'] == False:
                 self.residentsdb[resident['_id']]['in_home'] = True
                 self.bus.emit_cmd({'cmd': 'residents', 'sid': resident['_id'],  'data': {'in_home': True}})
-            print(f"{resident['name']} is in home")
         else:
             if resident['in_home'] == True:
                 self.residentsdb[resident['_id']]['in_home'] = False
                 self.bus.emit_cmd({'cmd': 'residents', 'sid': resident['_id'],  'data': {'in_home': False}})
-            print(f"{resident['name']} is not in home")

@@ -69,6 +69,7 @@ class HomeDaemon:
     def load_devices(self):
         for dev in self.devicesdb:
             self.devices.load(dev, self)
+        self.logger.info('Load devices')
 
     def load_scenes(self):
         if 'scenes' in self.db:

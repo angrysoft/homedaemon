@@ -2,7 +2,7 @@
 import asyncio
 import functools
 from datetime import datetime
-from threading import current_thread
+# from threading import current_thread
 
 
 class Bus:
@@ -34,7 +34,7 @@ class Bus:
         event_list.extend(self._events[event.get('cmd')].get('*', []))
         
         for ev in event_list:
-            print(ev, current_thread())
+            # print(ev, current_thread())
             if self.is_async(ev):
                 task = asyncio.run_coroutine_threadsafe(ev(event), self.loop)
                 # print(f'async {ev.__name__} {event}')
