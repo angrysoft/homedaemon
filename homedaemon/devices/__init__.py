@@ -1,5 +1,6 @@
 from .aqaradevices import AqaraDevice
 from .yeelightdevices import YeeligthDevice
+from .philipsdevices import PhilipsDevice
 from .tv import TvDevice
 from .custom import CustomDevice
 from .computer import ComputerDevice
@@ -18,6 +19,8 @@ class Devices:
             'custom': CustomDevice,
             'tv': TvDevice,
             'rgb': RgbDevice,
+            'philips_light': PhilipsDevice,
+            'sonoff': SonoffDevice,
             'virtual': VirtualDevice
             }.get(data.get('family'), self._unknown_device_family)(data, daemon)
         self._devices[data['sid']] = device
@@ -28,8 +31,9 @@ class Devices:
         except KeyError:
             return ret            
     
-    def _unknown_device_family(self, data):
-        raise ValueError(f"Unkonown deivce family : {data.get('family')} {data}")
+    def _unknown_device_family(self, data, *args):
+        pass
+        # raise ValueError(f"Unkonown deivce family : {data.get('family')} {data}")
     
     def __contains__(self, key):
         return key in self._devices

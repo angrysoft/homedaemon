@@ -57,6 +57,7 @@ class HomeDaemon:
         self.scenes = dict()
         self.bus.on('report', '*', self.logger.debug)
         self.executors = None
+        self.lock = RLock()
 
     def load_inputs(self):
         for _input_name in self.config['inputs']['list']:
@@ -102,6 +103,10 @@ class HomeDaemon:
                 del s['_rev']
                 sc_list.append(s)
         self.bus.emit_cmd({'cmd': 'scene', 'sid': 'all', 'data': {'scenes': sc_list}})
+    
+    def update_dev_data(self, data):
+        with self.lock:
+            self.daemon.device_data[self.sid] = data['data']
 
     def run(self):
         self.logger.info(f'main thread {current_thread()} loop {id(self.loop)}')

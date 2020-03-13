@@ -29,6 +29,8 @@ class Register:
             '0x0000000007200259': {'name': 'Desk lamp', 'place': 'Living room'},
             '0x000000000545b741': {'name': 'Bed Lamp', 'place': 'Bedroom'},
             '158d0002a67612': {'name': 'Window', 'place': 'Bedroom'},
+            '158d00033ef2d8': {'name': 'Lamp Switch', 'place': 'Bedroom'},
+            '235444403': {'name': 'Johnie lamp'},
             '158d00027d0065': {'name': 'Strip', 'place': 'Kitchen'},
             '158d0002bffe5a': {'name': 'Light', 'place': 'Kitchen'},
             '158d000200a020': {'name': 'Switch', 'place': 'Kitchen'},
@@ -85,6 +87,8 @@ class Register:
         gateway['family'] = 'aqara'
         list_devs.append(gateway)
         print('Find aquara devices')
+        list_devs.append({'model': 'philips.light.candle', 'family': 'philips_light',
+                          'token': '76b0a683c37406443a7056417926989a', 'sid': '235444403'})
         
         list_devs.append({'cmd': 'report', 'model': 'dallastemp',
                           'sid': 'dallasDS0', 'family': 'custom',

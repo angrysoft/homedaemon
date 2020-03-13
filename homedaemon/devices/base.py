@@ -33,7 +33,7 @@ class BaseDevice:
             return self.daemon.device_data[self.sid][value]
         else:
             return None
-
+        
 
 class ButtonOnOff:
     def __init__(self, name, write):
