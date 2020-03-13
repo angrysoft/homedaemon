@@ -15,7 +15,6 @@ class GatewayInstance:
 class AqaraDevice:
     def __new__(cls, data, daemon):
         gw = GatewayInstance(daemon)
-        print(gw._data)
         dev = {
             'ctrl_neutral1': CtrlNeutral,
             'ctrl_neutral2': CtrlNeutral2,

@@ -30,7 +30,7 @@ class Register:
             '0x000000000545b741': {'name': 'Bed Lamp', 'place': 'Bedroom'},
             '158d0002a67612': {'name': 'Window', 'place': 'Bedroom'},
             '158d00033ef2d8': {'name': 'Lamp Switch', 'place': 'Bedroom'},
-            '235444403': {'name': 'Johnie lamp'},
+            '235444403': {'name': 'Johnie lamp', 'place': 'Bedroom'},
             '158d00027d0065': {'name': 'Strip', 'place': 'Kitchen'},
             '158d0002bffe5a': {'name': 'Light', 'place': 'Kitchen'},
             '158d000200a020': {'name': 'Switch', 'place': 'Kitchen'},
@@ -142,8 +142,9 @@ class Register:
         for d in list_devs:
             if 'cmd' in d:
                 del d['cmd']
-            data = d.get('data')
-            del d['data']
+            data = d.get('data',{})
+            if 'data' in d:
+                del d['data']
             sid = d.get('sid')
             data['sid'] = sid
             if sid in self.names:
@@ -152,7 +153,7 @@ class Register:
             print(f"\t {d.get('model')}  {d.get('sid')} {d.get('name')} in {d.get('place')}")
 
             self.devices[d.get('sid')] = d
-            self.devices_data[d.get('sid')] = data
+            # self.devices_data[d.get('sid')] = data
 
     def add_config(self):
         if 'config' in self.srv:

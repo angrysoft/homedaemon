@@ -6,8 +6,8 @@ class YeeligthDevice:
         try:
             dev = {'color': Color,
                    'bslamp1': Bslamp1,
-                   'desklamp': DeskLamp}.get(data.get('model'), Dummy)(sid=data['sid'])
+                   'desklamp': DeskLamp}.get(data.get('model'), Dummy)(ip='auto', sid=data['sid'])
             daemon.bus.on('write', dev.sid, dev.write)
             return dev
         except YeelightError as err:
-            daemon.logger.error(err)
+            daemon.logger.error(f'Error {err}')

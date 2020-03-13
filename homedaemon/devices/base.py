@@ -6,7 +6,7 @@ class BaseDevice:
         self.model = data.get('model')
         self.name = data.get('name')
         self.sid = data.get('sid')
-        self.device_data = daemon.device_data[self.sid]
+        # self.device_data = daemon.device_data[self.sid]
         self.lock = RLock()
         self.daemon.bus.on('report', self.sid, self.report, self.update_dev_data)
         self.daemon.bus.on('write', self.sid, self.write)
@@ -55,5 +55,5 @@ class ButtonToggleOnOff(ButtonOnOff):
         
 
 class Dummy:
-    def __init__(self, data, daemon):
+    def __init__(self, *args, **kwargs):
         pass

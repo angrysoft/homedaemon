@@ -14,7 +14,7 @@ class Scene(BaseScene):
         if TimeCheck('<>', sunset, sunrise).status:
             entrance = self.get_device('158d0002b74c28')
             wallsw = self.get_device('158d0002a18c2b')
-            if entrance.get_value('status') == 'open':
+            if entrance.status == 'open':
                 wallsw.on()
                 lamp = self.get_device('0x0000000007e7bae0')
                 lamp.on()
