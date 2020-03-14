@@ -71,6 +71,6 @@ class Input(BaseInput):
 
     def run(self):
         # self.loop.create_task(self._connect())
-        self.run_in_executor(None, self._connect)
+        self.loop.run_in_executor(None, self._connect)
         
 
