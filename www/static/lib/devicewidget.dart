@@ -544,7 +544,7 @@ class WhiteSetterWindow {
     });
 
     this.eventCt = this.ct.onChange.listen((e) {
-      this.send('set_ct_abx', this.ct.value);
+      this.send('set_ct_pc', this.ct.value);
     });
 
   }

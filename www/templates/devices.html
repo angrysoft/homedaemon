@@ -24,8 +24,8 @@
   <script defer src="/static/devices/devices.dart.js" type="text/javascript"></script>
 </head>
 <body>
-{% from 'deviceswidgets.html' import ctrl_neutral1, ctrl_neutral2, plug, bslamp1, rgbstrip, color, desklamp, tv, loader %}
-{% from 'deviceswidgets.html' import sensor_ht, weather_v1, sensor_motion_aq2, magnet %}
+{% from 'deviceswidgets.html' import ctrl_neutral, plug, color_light, white_light, tv, loader %}
+{% from 'deviceswidgets.html' import temp, sensor_motion_aq2, magnet %}
 {% from 'deviceswidgets.html' import colorset, whiteset, tvset %}
 {% from 'deviceswidgets.html' import scene %}
 
@@ -54,26 +54,18 @@
         </div>
         <div class="row around-xs">
           {% for d in places[place] %}
-            {% if d.get('model') == 'ctrl_neutral1' %}
-              {{ ctrl_neutral1(d) }}
-            {% elif d.get('model') == 'ctrl_neutral2' %}
-              {{ ctrl_neutral2(d) }}
+            {% if d.get('model') in ['ctrl_neutral1','ctrl_neutral2']  %}
+              {{ ctrl_neutral(d) }}
+            {% elif d.get('model') in ['bslamp1', 'color', 'rgbstrip'] %}
+              {{ color_light(d) }}
+            {% elif d.get('model') == ['desklamp', 'philips.light.candle'] %}
+              {{ white_light(d) }}
             {% elif d.get('model') == 'plug' %}
               {{ plug(d) }}
-            {% elif d.get('model') == 'bslamp1' %}
-              {{ bslamp1(d) }}
-            {% elif d.get('model') == 'desklamp' %}
-              {{ desklamp(d) }}
-            {% elif d.get('model') == 'rgbstrip' %}
-              {{ rgbstrip(d) }}
-            {% elif d.get('model') == 'color' %}
-              {{ color(d) }}
             {% elif d.get('model') == 'bravia' %}
               {{ tv(d) }}
-            {% elif d.get('model') == 'sensor_ht' %}
-              {{ sensor_ht(d) }}
-            {% elif d.get('model') == 'weather.v1' %}
-              {{ weather_v1(d) }}
+            {% elif d.get('model') in ['sensor_ht', 'weather.v1'] %}
+              {{ temp(d) }}
             {% elif d.get('model') == 'sensor_motion.aq2' %}
               {{ sensor_motion_aq2(d) }}
             {% elif d.get('model') == 'magnet' %}

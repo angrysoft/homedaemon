@@ -8,16 +8,14 @@ class Scene(BaseScene):
         self.name = 'bathrom fan'
         self.triggers = '158d0002abac97.channel_1.on'
         self.triggers = '158d0002abac97.channel_1.off'
-        self.timer_fan_on = None
         
     def on(self):
         wallsw = self.get_device('158d0002abac97')
+        self.sleep(10)
         if wallsw.channel_1.is_on():
-            self.timer_fan_on(10, self.fan_on, wallsw)
+            self.fan_on(wallsw)
                 
         elif wallsw.channel_1.is_off():
-            if self.timer_fan_on:
-                self.timer_fan_on.cancel()
             self.sleep(5)
             if wallsw.channel_1.is_off():
                 wallsw.channel_0.off()
