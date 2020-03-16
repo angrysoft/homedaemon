@@ -8,7 +8,7 @@ class GatewayInstance:
     def __new__(cls, daemon):
         if GatewayInstance.gateway is None:
             GatewayInstance.gateway = Gateway(gwpasswd=daemon.config['gateway']['password'])
-            GatewayInstance.gateway.add_report_handler(daemon.bus.emit_cmd)
+            GatewayInstance.gateway.watcher.add_report_handler(daemon.bus.emit_cmd)
         return GatewayInstance.gateway
         
 

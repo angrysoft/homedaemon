@@ -25,6 +25,7 @@ class Input(BaseInput):
         try:
             self.reader, self.writer = await asyncio.open_connection(self.ip,
                                                                      self.port, ssl=self.ssl_context)
+            
         except ConnectionRefusedError as err:
             print(err)
             return
@@ -35,6 +36,8 @@ class Input(BaseInput):
         self.writer.write(encoded + '\n'.encode())
         await self.writer.drain()
         self.loop.create_task(self.msg_reader())
+        if self.is_connected():
+            self.bus.emit_cmd({'cmd': 'connected', 'sid': self.name, 'data':{}})
         
     async def conn_watcher(self, interval=5):
         while self.loop.is_running():
