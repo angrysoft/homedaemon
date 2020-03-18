@@ -3,6 +3,7 @@
 from pyxiaomi import Gateway
 from pycouchdb import Server
 from pyxiaomi import Yeelight
+from pytvremote import Bravia
 from urllib.parse import urlparse
 import json
 import os
@@ -21,7 +22,7 @@ class Register:
             '158d00029b1929': {'name': 'Light', 'place': 'Living room'},
             '158d0002e966b9': {'name': 'Sensor', 'place': 'Living room'},
             '158d0002ec2fa6': {'name': 'Motion', 'place': 'Living room'},
-            'tv01': {'name': 'Tv', 'place': 'Living room'},
+            '568A6295FB9FE3648F78F0146D20E557749B32B7': {'name': 'Tv', 'place': 'Living room'},
             'rgb01': {'name': 'Tv strip', 'place': 'Living room'},
             '7c49eb17b2a0': {'name': 'Gateway', 'place': 'Living room'},
             'dallasDS0': {'name': 'Arduino', 'place': 'Living room'},
@@ -98,8 +99,10 @@ class Register:
                           'data': {'red': 0, 'green': 0, 'blue': 0, 'bright': 0, 'ct': 1700,
                                    'default': {'red': 0, 'green': 0, 'blue': 0, 'bright': 0, 'ct': 1700},
                                    'status': 'off'}})
-        list_devs.append({'cmd': 'write', 'model': 'bravia',
-                          'sid': 'tv01', 'family': 'tv',
+        tv = Bravia('192.168.10.5', macaddres='FC:F1:52:2A:9B:1E')
+        
+        list_devs.append({'cmd': 'write', 'model': tv.model,
+                          'sid': tv.sid, 'family': 'tv',
                           'ip': '192.168.10.5',
                           'mac': 'FC:F1:52:2A:9B:1E',
                           'data': {'button': ''}})
