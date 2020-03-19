@@ -14,9 +14,9 @@ class Scene(BaseScene):
         bslamp = self.get_device('0x000000000545b741')
         color = self.get_device('0x0000000007e7bae0')
         bslamp.on()
-        bslamp.bright(40)
+        bslamp.set_bright(40)
         color.on()
-        color.bright(80)
+        color.set_bright(80)
         for _sid in dev_to_off:
             dev = self.get_device(_sid)
             if dev.model == 'plug':
