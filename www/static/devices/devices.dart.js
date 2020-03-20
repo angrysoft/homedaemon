@@ -5067,7 +5067,7 @@ u.E(0,"set_bright",u.e.value)},
 $S:3}
 T.hN.prototype={
 $1:function(a){var u=this.a
-u.E(0,"set_ct_abx",u.f.value)},
+u.E(0,"set_ct_pc",u.f.value)},
 $S:3}
 T.hO.prototype={
 $1:function(a){H.e(a,"$iV")
@@ -5076,7 +5076,7 @@ $S:7}
 T.hP.prototype={
 $1:function(a){var u=C.e.R(0,H.k(a),null),t=J.O(u)
 if(H.H(t.l(u,"bright")))this.a.e.value=J.a4(t.h(u,"bright"))
-if(H.H(t.l(u,"ct")))this.a.f.value=J.a4(t.h(u,"ct"))},
+if(H.H(t.l(u,"ct_pc")))this.a.f.value=J.a4(t.h(u,"ct_pc"))},
 $S:5}
 T.e9.prototype={
 bW:function(a){var u,t,s,r=this,q="change"

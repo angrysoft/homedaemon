@@ -124,9 +124,10 @@ def dev_data(sid):
 @login_required
 def dev_data_all():
     device_data = list() 
-    for d in db['devices-data']:
+    for d in db['devices']:
         d['model'] = db['devices'][d['sid']]['model']
-        device_data.append(d)
+        device_data.append({'model': d['model'], 'sid': d['sid']}.update(db['devices-data'].get(d['sid'])))
+
     return json.dumps(device_data)
 
 
