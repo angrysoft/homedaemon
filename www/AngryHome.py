@@ -105,7 +105,6 @@ def dev(sid):
 @login_required
 def dev_write():
     if request.method == 'POST':
-        print(f'write {request.data}')
         tcp = TcpWrite(tcp_config['ip'], tcp_config['port'], tcp_config['secret'])
         tcp.writer(request.data)
         return redirect('/dev/write?status=ok')
@@ -124,9 +123,8 @@ def dev_data(sid):
 @login_required
 def dev_data_all():
     device_data = list() 
-    for d in db['devices-data']:
-        d['model'] = db['devices'][d['sid']]['model']
-        device_data.append(d)
+    for d in db['devices']:
+        device_data.append({'model': d['model']}.update(db['devices-data'].get(d['sid'])))
     return json.dumps(device_data)
 
 

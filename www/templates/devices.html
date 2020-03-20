@@ -58,7 +58,7 @@
               {{ ctrl_neutral(d) }}
             {% elif d.get('model') in ['bslamp1', 'color', 'rgbstrip'] %}
               {{ color_light(d) }}
-            {% elif d.get('model') == ['desklamp', 'philips.light.candle'] %}
+            {% elif d.get('model') in ['desklamp', 'philips.light.candle'] %}
               {{ white_light(d) }}
             {% elif d.get('model') == 'plug' %}
               {{ plug(d) }}

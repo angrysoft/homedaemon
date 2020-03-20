@@ -43,6 +43,11 @@ class Devices {
         this._devices[devData['sid']] = new DeskLamp(devData, evSend);
       }
       break;
+      case 'philips.light.candle':
+      {
+        this._devices[devData['sid']] = new PhilipsBulb(devData, evSend);
+      }
+      break;
       case 'rgbstrip':
       {
         this._devices[devData['sid']] = new RgbStrip(devData, evSend);
@@ -187,6 +192,10 @@ class DeskLamp extends DeviceWidget {
     }
   }
 
+}
+
+class PhilipsBulb extends DeskLamp {
+  PhilipsBulb(Map<String,dynamic> devData, Function evSend) : super(devData, evSend);
 }
 
 
