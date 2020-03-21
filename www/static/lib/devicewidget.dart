@@ -33,6 +33,7 @@ class Devices {
         this._devices[devData['sid']] = new Bslamp1(devData, evSend);
       }
       break;
+      /*
       case 'color':
       {
         this._devices[devData['sid']] = new Color(devData, evSend);
@@ -82,7 +83,7 @@ class Devices {
       {
         this._devices[devData['sid']] = new Scene(devData, evSend);
       }
-      break;
+      break; */
     }
   }
 
@@ -105,7 +106,8 @@ class CtrlNeutral2 extends CtrlNeutral1 {
 
   CtrlNeutral2(Map<String,dynamic> devData, Function evSend) : super(devData, evSend) {
     this.channel_1 = new Button('channel_1', this.sid);
-    this.channel_1.setStatus(this.devData['channel_1']);
+    // this.channel_1.setStatus(this.devData['channel_1']);
+    this.refreshStatus(devData);
     this.channel_1.btn.onClick.listen((ev) {
       this.send(ev.target);
     });
@@ -126,7 +128,8 @@ class CtrlNeutral1 extends DeviceWidget {
 
   CtrlNeutral1(Map<String,dynamic> devData, Function evSend) : super (devData, evSend) {
     this.channel_0 = new Button('channel_0', this.sid);
-    this.channel_0.setStatus(this.devData, 'channel_0');
+    // this.channel_0.setStatus(this.devData['channel_0']);
+    this.refreshStatus(this.devData);
     this.channel_0.btn.onClick.listen((ev) {
       this.send(ev.target);
     });
@@ -146,7 +149,8 @@ class Plug extends DeviceWidget {
 
   Plug(Map<String,dynamic> devData, Function evSend) : super(devData, evSend) {
     this.power = new Button('status', this.sid);
-    this.power.setStatus(this.devData['status']);
+    // this.power.setStatus(this.devData['status']);
+    this.refreshStatus(devData);
     this.power.btn.onClick.listen((ev) {
       this.send(ev.target);
     });
@@ -177,7 +181,8 @@ class DeskLamp extends DeviceWidget {
 
   DeskLamp(Map<String,dynamic> devData, Function evSend) : super(devData, evSend) {
     this.power = new Button('power', this.sid);
-    this.power.setStatus(this.devData['power']);
+    // this.power.setStatus(this.devData['power']);
+    this.refreshStatus(devData);
     this.power.btn.onClick.listen((ev) {
       this.send(ev.target);
     });
@@ -205,7 +210,8 @@ class Bslamp1 extends DeviceWidget {
 
   Bslamp1(Map<String, dynamic> devData, Function evSend) : super(devData, evSend) {
     this.power = new Button('power', this.sid);
-    this.power.setStatus(this.devData['power']);
+    // this.power.setStatus(this.devData['power']);
+    // this.refreshStatus(devData);
     this.power.btn.onClick.listen((ev) {
       this.send(ev.target);
     });
@@ -259,7 +265,8 @@ class Bravia extends DeviceWidget {
 
   Bravia(Map<String,dynamic> devData, Function evSend) : super(devData, evSend) {
     this.power = new Button('power', this.sid);
-    this.power.setStatus(this.devData['power']);
+    // this.power.setStatus(this.devData['power']);
+    this.refreshStatus(devData);
     this.power.btn.onClick.listen((ev) {
       this.send(ev.target);
     });
@@ -459,12 +466,7 @@ class Button {
     return this._status;
   }
   
-  setStatus(Map<String,dynamic> data, String key) {
-    if (! data.containsKey(key)) {
-      return;
-    }
-
-    String st = data[key]; 
+  setStatus(String st) { 
     if (st == 'on') {
       this._status = true;
       this.btn
@@ -505,11 +507,7 @@ class Label {
     this.info = querySelector('span.${name}[data-sid="${sid}"]');
   }
 
-  setStatus(Map<String,dynamic> data, String key) {
-    if (! data.containsKey(key)) {
-      return;
-    }
-    String st = data[key]; 
+  setStatus(String st) { 
       this.info.text = st;
   }
 }
