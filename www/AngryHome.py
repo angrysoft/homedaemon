@@ -124,7 +124,10 @@ def dev_data(sid):
 def dev_data_all():
     device_data = list() 
     for d in db['devices']:
-        device_data.append({'model': d['model']}.update(db['devices-data'].get(d['sid'])))
+        dev = {'model': d['model'], 'sid': d['sid']}
+        dev.update(db['devices-data'].get(d['sid']))
+        device_data.append(dev)
+    print(device_data)
     return json.dumps(device_data)
 
 
@@ -173,10 +176,11 @@ def stream():
                                                                     'Connection': 'keep-alive'})
 @stream_with_context
 def event():
-    yield "data: hello\n\n"
+    yield "data: {\"hello\": \"hello\"}\n\n"
     r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
     channel = r.pubsub()
     channel.subscribe('msg')
+    sleep(0.001)
     channel.get_message()
     while True:
         try:
