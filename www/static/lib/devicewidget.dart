@@ -126,7 +126,7 @@ class CtrlNeutral1 extends DeviceWidget {
 
   CtrlNeutral1(Map<String,dynamic> devData, Function evSend) : super (devData, evSend) {
     this.channel_0 = new Button('channel_0', this.sid);
-    this.channel_0.setStatus(this.devData['channel_0']);
+    this.channel_0.setStatus(this.devData, 'channel_0');
     this.channel_0.btn.onClick.listen((ev) {
       this.send(ev.target);
     });
@@ -459,7 +459,12 @@ class Button {
     return this._status;
   }
   
-  setStatus(String st) {
+  setStatus(Map<String,dynamic> data, String key) {
+    if (! data.containsKey(key)) {
+      return;
+    }
+
+    String st = data[key]; 
     if (st == 'on') {
       this._status = true;
       this.btn
@@ -500,9 +505,13 @@ class Label {
     this.info = querySelector('span.${name}[data-sid="${sid}"]');
   }
 
-  setStatus(String st) {
+  setStatus(Map<String,dynamic> data, String key) {
+    if (! data.containsKey(key)) {
+      return;
+    }
+    String st = data[key]; 
       this.info.text = st;
-  } 
+  }
 }
 
 class WhiteSetButton {
