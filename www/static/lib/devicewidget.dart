@@ -33,7 +33,6 @@ class Devices {
         this._devices[devData['sid']] = new Bslamp1(devData, evSend);
       }
       break;
-      /*
       case 'color':
       {
         this._devices[devData['sid']] = new Color(devData, evSend);
@@ -78,8 +77,8 @@ class Devices {
       {
         this._devices[devData['sid']] = new SensorMotion(devData);
       }
-      break;
-      case 'scene':
+      break; 
+      /* case 'scene':
       {
         this._devices[devData['sid']] = new Scene(devData, evSend);
       }
@@ -211,7 +210,7 @@ class Bslamp1 extends DeviceWidget {
   Bslamp1(Map<String, dynamic> devData, Function evSend) : super(devData, evSend) {
     this.power = new Button('power', this.sid);
     // this.power.setStatus(this.devData['power']);
-    // this.refreshStatus(devData);
+    this.refreshStatus(devData);
     this.power.btn.onClick.listen((ev) {
       this.send(ev.target);
     });
@@ -236,9 +235,9 @@ class Scene extends DeviceWidget {
       this.send(ev.target);
     });
     this.runOff = new SceneButton('sceneoff', sid);
-    this.runOff.btn.onClick.listen((ev) {
-      this.send(ev.target);
-    });
+    // this.runOff.btn.onClick.listen((ev) {
+    //   this.send(ev.target);
+    // });
   }
 
   void refreshStatus(Map<String,dynamic> devData) {
@@ -612,8 +611,8 @@ class ColorSetterWindow {
   String sid;
   ButtonElement btnRgb;
   ButtonElement btnCt;
-  RangeInputElement bright = querySelector('#bright');
-  RangeInputElement ct = querySelector('#ct');
+  RangeInputElement bright = querySelector('#color-bright');
+  RangeInputElement ct = querySelector('#white-ct');
   DivElement rgbTab;
   DivElement ctTab;
   InputElement color = querySelector('#color-picker');
@@ -650,7 +649,7 @@ class ColorSetterWindow {
     });
 
     this.eventCt = this.ct.onChange.listen((e) {
-      this.send('set_ct_abx', this.ct.value);
+      this.send('set_ct_pc', this.ct.value);
     });
 
     this.eventColor = this.color.onChange.listen((e) {

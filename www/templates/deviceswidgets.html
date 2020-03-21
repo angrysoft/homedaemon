@@ -217,7 +217,7 @@
 </div>
 {%- endmacro %}
 
-{% macro brightness() -%}
+{% macro brightness(_id) -%}
 <div class="row center-xs padding-10">
   <div class="col-xs-12 txt-center">
       <label class="label">Bright: </label>
@@ -226,13 +226,13 @@
 
 <div class="row center-xs">
   <div class="col-xs-12 txt-center">
-    <input class="color-range" id="white-bright" type="range" step="1" min="1" max="100" value="100">
+    <input class="color-range" id="{{ _id }}" type="range" step="1" min="1" max="100" value="100">
   </div>
 </div>
 {%- endmacro %}
 
 
-{% macro ct() -%}
+{% macro ct(_id) -%}
 <div class="row center-xs">
   <div class="col-xs-12 txt-center">
     <label class="label">Color temperature: </label>
@@ -241,7 +241,7 @@
 
 <div class="row center-xs">
   <div class="col-xs-12 txt-center">
-    <input class="color-range" id="white-ct" type="range" step="1" min="0" max="100" value="50">
+    <input class="color-range" id="{{ _id }}" type="range" step="1" min="0" max="100" value="50">
   </div>
 </div>
 {%- endmacro %}
@@ -257,10 +257,10 @@
     </div>
 
     <div class="modal-body">
-      {{ brightness() }}
+      {{ brightness("white-bright") }}
       <div class="row center-xs">
         <div class="col-xs-12">
-          {{ ct() }}
+          {{ ct("white-ct") }}
         </div>
       </div>
     </div>
@@ -290,7 +290,7 @@
         </div>
       </div>
 
-      {{ brightness() }}
+      {{ brightness("color-bright") }}
 
       <div class="row center-xs padding-10" id="rgb-tab">
         <div class="col-xs-12">
@@ -311,7 +311,7 @@
 
       <div class="row center-xs padding-10" id="ct-tab">
         <div class="col-xs-12">
-          {{ ct() }}
+          {{ ct("color-ct") }}
         </div>
       </div>
 
