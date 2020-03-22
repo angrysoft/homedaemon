@@ -22,7 +22,6 @@ class Input(BaseInput):
         # self.ssl_context = ssl._create_unverified_context()
     
     async def send_devlist(self, dev_list):
-        print(dev_list)
         while True:
             if self.is_connected():
                 await self.send(dev_list)

@@ -73,7 +73,7 @@ class HomeDaemon:
             self.devices.load(dev, self)
             dev_list.append({'sid': dev['sid'], 'model': dev['model'],
                              'name': dev['name'], 'place': dev['place'],
-                             'status': self.devices[dev['sid']].status()})
+                             'status': self.devices[dev['sid']].device_status()})
         self.logger.info('Load devices')
         self.bus.emit_cmd({'cmd': 'devices_list', 'sid': 'all', 'data': dev_list})
 

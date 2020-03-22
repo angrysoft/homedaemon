@@ -22,3 +22,6 @@ class Computer(BaseDevice):
     
     def reload_devices(self):
         pass
+    
+    def device_status(self):
+        return {}

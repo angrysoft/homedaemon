@@ -6,5 +6,5 @@ class VirtualDevice:
 
 
 class TimerDev(BaseDevice):
-    def status(self):
+    def device_status(self):
         return {}
