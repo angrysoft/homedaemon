@@ -68,9 +68,14 @@ class HomeDaemon:
             self.inputs[inst.name].run()
 
     def load_devices(self):
+        dev_list = list()
         for dev in self.devicesdb:
             self.devices.load(dev, self)
+            dev_list.append({'sid': dev['sid'], 'model': dev['model'],
+                             'name': dev['name'], 'place': dev['place'],
+                             'status': self.devices[dev['sid']].status()})
         self.logger.info('Load devices')
+        self.bus.emit_cmd({'cmd': 'devices_list', 'sid': 'all', 'data': dev_list})
 
     def load_scenes(self):
         if 'scenes' in self.db:
@@ -92,7 +97,7 @@ class HomeDaemon:
                                                     'place': inst.place}
                         self.logger.info(f'loaded {inst.name}')
                     else:
-                        self.logger.warning(f'scene duplcate name skiping ... {inst.name}')
+                        self.logger.warning(f'scene duplicate name skiping ... {inst.name}')
                         continue
         self.loop.call_later(5, self._announce_scene_list)
         
@@ -110,9 +115,9 @@ class HomeDaemon:
 
     def run(self):
         self.logger.info(f'main thread {current_thread()} loop {id(self.loop)}')
+        self.load_inputs()
         self.load_devices()
         self.load_scenes()
-        self.load_inputs()
         # self.loop.add_signal_handler(signal.SIGINT, self.stop)
         # self.loop.add_signal_handler(signal.SIGHUP, self.stop)
         # self.loop.add_signal_handler(signal.SIGQUIT, self.stop)

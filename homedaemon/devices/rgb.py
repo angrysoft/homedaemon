@@ -124,3 +124,6 @@ class RgbStrip(BaseDevice):
             return True
         else:
             return False
+    
+    def status(self):
+        return {}

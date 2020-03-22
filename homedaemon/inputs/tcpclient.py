@@ -18,7 +18,16 @@ class Input(BaseInput):
         self.loop.create_task(self.conn_watcher())
         self.bus.on('report', '*', self.send)
         self.bus.on('scene', '*', self.send)
+        self.bus.on('devices_list', '*', self.send_devlist)
         # self.ssl_context = ssl._create_unverified_context()
+    
+    async def send_devlist(self, dev_list):
+        print(dev_list)
+        while True:
+            if self.is_connected():
+                await self.send(dev_list)
+                break
+            await asyncio.sleep(1)
 
     async def connect(self):
         print('Connect...')
@@ -52,7 +61,7 @@ class Input(BaseInput):
             try:
                 msg = json.loads(msg)
             except json.JSONDecodeError as err:
-                print(err)
+                print(f'tcpclient msg_reder {err}')
                 return
             self.bus.emit_cmd(msg)
              
@@ -65,7 +74,7 @@ class Input(BaseInput):
             try:
                 msg = json.dumps(msg)
             except json.JSONDecodeError as err:
-                print(err)
+                print(f'tcpclient {err}')
                 return
         try:    
             self.writer.write(f'{msg}\n'.encode())

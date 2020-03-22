@@ -12,11 +12,13 @@ class Page {
 
   Page() {
     HttpRequest.getString('/dev/data/all').then((String resp) {
+      print(resp);
       List<dynamic> jdata = jsonDecode(resp);
       jdata.forEach((dev) {
         this.devices.register(dev, print);
       });
     });
+    print('loaded devices');
 
     HttpRequest.getString('/scene/list').then((String resp) {
       List<dynamic> jdata = jsonDecode(resp);
@@ -25,6 +27,7 @@ class Page {
         this.devices.register(dev, print);
       });
     });
+    print('loaded scenes');
     
     this.events = new EventSource('/stream');
     this.events.onMessage.listen((ev) {
