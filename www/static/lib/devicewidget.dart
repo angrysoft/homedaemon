@@ -105,9 +105,9 @@ class CtrlNeutral2 extends CtrlNeutral1 {
 
   CtrlNeutral2(Map<String,dynamic> devData, Function evSend) : super(devData, evSend) {
     this.channel_1 = new Button('channel_1', this.sid);
-    // this.channel_1.setStatus(this.devData['channel_1']);
-    print("butt1 ${this.channel_1.getStatus()}");
-    this.refreshStatus(devData);
+    if (devData.containsKey('channel_0')) {
+      this.channel_0.setStatus(devData['channel_0']);
+    }
     this.channel_1.btn.onClick.listen((ev) {
       this.send(ev.target);
     });
@@ -115,12 +115,10 @@ class CtrlNeutral2 extends CtrlNeutral1 {
 
   @override
   void refreshStatus(Map<String, dynamic> devData) {
-    super.refreshStatus(devData);
     if (devData.containsKey('channel_1')) {
-      print("ch0 ${devData['channel_0']}");
-      print("ch1 ${devData['channel_1']}");
-      // this.channel_1.setStatus(devData['channel_1']);
+      this.channel_1.setStatus(devData['channel_1']);
     }
+    super.refreshStatus(devData);
   }
 }
 
@@ -130,9 +128,9 @@ class CtrlNeutral1 extends DeviceWidget {
 
   CtrlNeutral1(Map<String,dynamic> devData, Function evSend) : super (devData, evSend) {
     this.channel_0 = new Button('channel_0', this.sid);
-    // this.channel_0.setStatus(this.devData['channel_0']);
-    print("butt0 ${this.channel_0}");
-    this.refreshStatus(this.devData);
+    if (devData.containsKey('channel_0')) {
+      this.channel_0.setStatus(devData['channel_0']);
+    }
     this.channel_0.btn.onClick.listen((ev) {
       this.send(ev.target);
     });
@@ -152,7 +150,6 @@ class Plug extends DeviceWidget {
 
   Plug(Map<String,dynamic> devData, Function evSend) : super(devData, evSend) {
     this.power = new Button('status', this.sid);
-    // this.power.setStatus(this.devData['status']);
     this.refreshStatus(devData);
     this.power.btn.onClick.listen((ev) {
       this.send(ev.target);
@@ -184,7 +181,6 @@ class DeskLamp extends DeviceWidget {
 
   DeskLamp(Map<String,dynamic> devData, Function evSend) : super(devData, evSend) {
     this.power = new Button('power', this.sid);
-    // this.power.setStatus(this.devData['power']);
     this.refreshStatus(devData);
     this.power.btn.onClick.listen((ev) {
       this.send(ev.target);
@@ -213,7 +209,6 @@ class Bslamp1 extends DeviceWidget {
 
   Bslamp1(Map<String, dynamic> devData, Function evSend) : super(devData, evSend) {
     this.power = new Button('power', this.sid);
-    // this.power.setStatus(this.devData['power']);
     this.refreshStatus(devData);
     this.power.btn.onClick.listen((ev) {
       this.send(ev.target);
@@ -268,7 +263,6 @@ class Bravia extends DeviceWidget {
 
   Bravia(Map<String,dynamic> devData, Function evSend) : super(devData, evSend) {
     this.power = new Button('power', this.sid);
-    // this.power.setStatus(this.devData['power']);
     this.refreshStatus(devData);
     this.power.btn.onClick.listen((ev) {
       this.send(ev.target);
@@ -358,7 +352,6 @@ class WeatherV1 extends SensorHt {
   }
 
   void refreshStatus(Map<String,dynamic> devData) {
-    print(this.pressure.runtimeType);
     super.refreshStatus(devData);
     if (devData.containsKey('pressure')) {
       this.pressure.setStatus((int.parse(devData['pressure'])/100).floor().toString());
@@ -709,7 +702,6 @@ class ColorSetterWindow {
           int b =  rgbint & 255;
           int g = (rgbint >> 8) & 255;
           int r =   (rgbint >> 16) & 255;
-          print('${r}.${g}.${b}');
           this.color.value = this.rgbToHex(r, g, b);
         } else if (data.containsKey('red') && data.containsKey('green') && data.containsKey('blue')) {
           this.color.value = this.rgbToHex(data['red'], data['green'], data['blue']);
@@ -719,7 +711,6 @@ class ColorSetterWindow {
 
   String rgbToHex(int r, int g, int b) {
     String hex = '#${r.toRadixString(16).padLeft(2,'0')}${g.toRadixString(16).padLeft(2,'0')}${b.toRadixString(16).padLeft(2,'0')}';
-    print(hex);
     return hex;
   }
 
