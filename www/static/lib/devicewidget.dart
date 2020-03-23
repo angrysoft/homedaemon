@@ -633,14 +633,12 @@ class ColorSetterWindow {
     });
     this.btnCt.onClick.listen((event) {
       event.preventDefault();
-      this.ctTab.classes.add('show');
-      this.rgbTab.classes.remove('show');
+      this.activateCtTAb();
     });
 
     this.btnRgb.onClick.listen((event) {
       event.preventDefault();
-      this.rgbTab.classes.add('show');
-      this.ctTab.classes.remove('show');
+      this.activateRgbTab();
     });
 
     this.eventBright = this.bright.onChange.listen((e) {
@@ -655,7 +653,17 @@ class ColorSetterWindow {
       this.send('set_rgb', this.hexToRgb(this.color.value));
     });
   }
+
+  activateCtTAb() {
+    this.ctTab.classes.add('show');
+    this.rgbTab.classes.remove('show');
+  }
   
+  activateRgbTab() {
+    this.rgbTab.classes.add('show');
+    this.ctTab.classes.remove('show');
+  }
+
   showWindow() {
     this.setData();
     this.current = true;
@@ -686,6 +694,7 @@ class ColorSetterWindow {
   setData() {
     HttpRequest.getString('/dev/data/${this.sid}').then((String resp) {
         var data = jsonDecode(resp);
+        print(data);
         if (data.containsKey('bright')) {
           this.bright.value = data['bright'].toString();
         }
