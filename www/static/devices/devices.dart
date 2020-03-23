@@ -12,7 +12,6 @@ class Page {
 
   Page() {
     HttpRequest.getString('/dev/data/all').then((String resp) {
-      print(resp);
       List<dynamic> jdata = jsonDecode(resp);
       jdata.forEach((dev) {
         this.devices.register(dev, print);

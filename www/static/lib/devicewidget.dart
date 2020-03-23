@@ -106,6 +106,7 @@ class CtrlNeutral2 extends CtrlNeutral1 {
   CtrlNeutral2(Map<String,dynamic> devData, Function evSend) : super(devData, evSend) {
     this.channel_1 = new Button('channel_1', this.sid);
     // this.channel_1.setStatus(this.devData['channel_1']);
+    print("butt1 ${this.channel_1.getStatus()}");
     this.refreshStatus(devData);
     this.channel_1.btn.onClick.listen((ev) {
       this.send(ev.target);
@@ -116,7 +117,9 @@ class CtrlNeutral2 extends CtrlNeutral1 {
   void refreshStatus(Map<String, dynamic> devData) {
     super.refreshStatus(devData);
     if (devData.containsKey('channel_1')) {
-      this.channel_1.setStatus(devData['channel_1']);
+      print("ch0 ${devData['channel_0']}");
+      print("ch1 ${devData['channel_1']}");
+      // this.channel_1.setStatus(devData['channel_1']);
     }
   }
 }
@@ -128,6 +131,7 @@ class CtrlNeutral1 extends DeviceWidget {
   CtrlNeutral1(Map<String,dynamic> devData, Function evSend) : super (devData, evSend) {
     this.channel_0 = new Button('channel_0', this.sid);
     // this.channel_0.setStatus(this.devData['channel_0']);
+    print("butt0 ${this.channel_0}");
     this.refreshStatus(this.devData);
     this.channel_0.btn.onClick.listen((ev) {
       this.send(ev.target);
