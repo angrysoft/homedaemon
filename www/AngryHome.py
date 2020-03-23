@@ -127,7 +127,6 @@ def dev_data_all():
         dev = {'model': d['model'], 'sid': d['sid']}
         dev.update(db['devices-data'].get(d['sid']))
         device_data.append(dev)
-    print(device_data)
     return json.dumps(device_data)
 
 

@@ -520,23 +520,11 @@ class WhiteSetButton {
   }
 }
 
-class ColorSetButton {
-  ButtonElement btn;
-  ColorSetterWindow colorWnd;
-  ColorSetButton(String sid) {
-    this.colorWnd = new ColorSetterWindow(sid);
-    this.btn = querySelector('button.color-set-button[data-sid="${sid}"]');
-    this.btn.onClick.listen((ev) {
-      this.colorWnd.showWindow();
-    });
-  }
-}
 
 class WhiteSetterWindow {
   Modal whiteWnd;
   Element back;
   String sid;
-  ButtonElement btnRgb;
   RangeInputElement bright = querySelector('#white-bright');
   RangeInputElement ct = querySelector('#white-ct');
   StreamSubscription eventBright;
@@ -602,6 +590,20 @@ class WhiteSetterWindow {
   }
 }
 
+
+class ColorSetButton {
+  ButtonElement btn;
+  ColorSetterWindow colorWnd;
+  ColorSetButton(String sid) {
+    this.colorWnd = new ColorSetterWindow(sid);
+    this.btn = querySelector('button.color-set-button[data-sid="${sid}"]');
+    this.btn.onClick.listen((ev) {
+      this.colorWnd.showWindow();
+    });
+  }
+}
+
+
 class ColorSetterWindow {
   Modal colorWnd;
   Element back;
@@ -609,7 +611,7 @@ class ColorSetterWindow {
   ButtonElement btnRgb;
   ButtonElement btnCt;
   RangeInputElement bright = querySelector('#color-bright');
-  RangeInputElement ct = querySelector('#white-ct');
+  RangeInputElement ct = querySelector('#color-ct');
   DivElement rgbTab;
   DivElement ctTab;
   InputElement color = querySelector('#color-picker');
