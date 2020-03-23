@@ -717,6 +717,22 @@ class ColorSetterWindow {
         } else if (data.containsKey('red') && data.containsKey('green') && data.containsKey('blue')) {
           this.color.value = this.rgbToHex(data['red'], data['green'], data['blue']);
         }
+
+        if(data.containsKey('color_mode')) {
+          switch(data['color_mode']) {
+            case 'CT':
+            {
+              this.activateCtTAb();
+            }
+            break;
+            case 'RGB':
+            {
+              this.activateRgbTab();
+            }
+            break;
+          }
+
+        }
     });
   }
 
