@@ -68,7 +68,7 @@ class Devices {
         this._devices[devData['sid']] = new Magnet(devData);
       }
       break;
-      case 'bravia':
+      case 'KDL-48W585B':
       {
         this._devices[devData['sid']] = new Bravia(devData, evSend);
       }

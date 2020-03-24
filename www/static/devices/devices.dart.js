@@ -4703,7 +4703,7 @@ s.c=T.aF("voltage",H.k(J.I(s.a,q)))
 s.u(b)
 t.j(0,u,s)
 break
-case"bravia":r.a.j(0,H.k(u.h(b,q)),T.ll(b,c))
+case"KDL-48W585B":r.a.j(0,H.k(u.h(b,q)),T.ll(b,c))
 break
 case"sensor_motion.aq2":t=r.a
 u=H.k(u.h(b,q))
