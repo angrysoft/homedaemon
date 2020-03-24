@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:html';
 import 'dart:convert';
-import 'package:service_worker/window.dart' as sw;
+// import 'package:service_worker/window.dart' as sw;
 import '../lib/devicewidget.dart';
 
 void _log(Object o) => print('  MAIN: $o');
@@ -157,33 +157,39 @@ class Tabs {
 Future main() async {
   new Page();
   new Tabs();
-
-  if (sw.isNotSupported) {
-    _log('ServiceWorkers are not supported.');
-    return;
-  }
-
-  await sw.register('/sw.dart.js');
-  _log('registered');
-
-  sw.ServiceWorkerRegistration registration = await sw.ready;
-  _log('ready');
-
-  sw.onMessage.listen((MessageEvent event) {
-    _log('reply received: ${event.data}');
+  window.navigator.serviceWorker.register('/srvw.js').then((ev){
+    print("Register ${ev.toString()}");
+  }).catchError((err){
+    print('Register Error ${err.toString()}');
   });
+  
 
-  var message = 'Sample message: ${new DateTime.now()}';
-  _log('Sending message: `$message`');
-  registration.active.postMessage(message);
-  _log('Message sent: `$message`');
+  // if (sw.isNotSupported) {
+  //   _log('ServiceWorkers are not supported.');
+  //   return;
+  // }
 
-  try {
-    var subs = await registration.pushManager
-        .subscribe(new sw.PushSubscriptionOptions(userVisibleOnly: true));
-    _log('endpoint: ${subs.endpoint}');
-  } on DomException catch (e) {
-    _log('Error: Adding push subscription failed. ${e}');
-    _log('       See github.com/isoos/service_worker/issues/10');
-  }
+  // await sw.register('/sw.dart.js');
+  // _log('registered');
+
+  // sw.ServiceWorkerRegistration registration = await sw.ready;
+  // _log('ready');
+
+  // sw.onMessage.listen((MessageEvent event) {
+  //   _log('reply received: ${event.data}');
+  // });
+
+  // var message = 'Sample message: ${new DateTime.now()}';
+  // _log('Sending message: `$message`');
+  // registration.active.postMessage(message);
+  // _log('Message sent: `$message`');
+
+  // try {
+  //   var subs = await registration.pushManager
+  //       .subscribe(new sw.PushSubscriptionOptions(userVisibleOnly: true));
+  //   _log('endpoint: ${subs.endpoint}');
+  // } on DomException catch (e) {
+  //   _log('Error: Adding push subscription failed. ${e}');
+  //   _log('       See github.com/isoos/service_worker/issues/10');
+  // }
 }
