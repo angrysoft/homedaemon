@@ -23,7 +23,7 @@ div#tabs {
   color: rgb(135, 0, 135);
 }
 
-#place-name {
+.place-name {
   display: none;
 }
 
@@ -42,7 +42,7 @@ option:focus {
       display:none;
   }
   
-  #place-name {
+  .place-name {
     display: block;
   }
 }
