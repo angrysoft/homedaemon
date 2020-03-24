@@ -25,7 +25,7 @@ const FILES_TO_CACHE = [
   '/',
     '/static/main.dart.js',
     '/static/devices/devices.dart.js',
-    '/static//srvw.js',
+    '/sw.js',
     '/static/devices/devices.min.css',
     '/static/angry.min.css'
 ];
