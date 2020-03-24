@@ -1,6 +1,7 @@
 {
     "name": "Devices",
     "short_name": "Devs",
+    "descriptions": "Angryhome Device panel",
     "icons": [
         {
             "src": "/static/devices/android-chrome-192x192.png",
@@ -16,5 +17,6 @@
     "theme_color": "#000000",
     "background_color": "#000000",
     "start_url": "/",
+    "scope": "/",
     "display": "standalone"
 }
