@@ -20,11 +20,7 @@ login: $(path)/login.dart
 
 devices: $(path)/devices/devices.dart
 	$(dart) $(path)/devices/devices.dart.js $(path)/devices/devices.dart
-	$(dart) $(path)/devices/sw.dart.js $(path)/devices/sw.dart
-
-tvpilot: $(path)/tvpilot/tvpilot.dart
-	$(dart) $(path)/tvpilot/tvpilot.dart.js $(path)/tvpilot/tvpilot.dart
-	$(dart) $(path)/tvpilot/sw.dart.js $(path)/tvpilot/sw.dart
+	$(dart) www/sw.dart.js $(path)/devices/sw.dart
 
 admindevices: $(path)/admin/devices.dart
 	$(dart) $(path)/admin/devices.dart.js $(path)/admin/devices.dart

@@ -1772,7 +1772,7 @@ l=$.kZ()
 if(l==null){P.J("  MAIN: ServiceWorkers are not supported.")
 u=1
 break}u=3
-return P.aU(l.al(0,"/static/devices/sw.dart.js",null),$async$bs)
+return P.aU(l.al(0,"/sw.dart.js",null),$async$bs)
 case 3:P.J("  MAIN: registered")
 u=4
 return P.aU(l.gcT(l),$async$bs)

@@ -163,7 +163,7 @@ Future main() async {
     return;
   }
 
-  await sw.register('/static/devices/sw.dart.js');
+  await sw.register('/sw.dart.js');
   _log('registered');
 
   sw.ServiceWorkerRegistration registration = await sw.ready;
