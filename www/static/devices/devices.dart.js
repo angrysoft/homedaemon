@@ -1513,7 +1513,7 @@ var $async$fD=P.aU(function(a,b){if(a===1)return P.aO(b,t)
 while(true)switch(u){case 0:M.iK()
 M.iW()
 s=window.navigator.serviceWorker
-s=P.hS(s.register("/srvw.js",null),W.at).D(new M.fE(),P.l)
+s=P.hS(s.register("/static/devices/srvw.js",null),W.at).D(new M.fE(),P.l)
 r=new M.fF()
 q=H.f(s,0)
 p=$.u
