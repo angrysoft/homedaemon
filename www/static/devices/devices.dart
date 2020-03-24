@@ -157,11 +157,11 @@ class Tabs {
 Future main() async {
   new Page();
   new Tabs();
-  window.navigator.serviceWorker.register('/static/devices/srvw.js').then((ev){
-    print("Register ${ev.toString()}");
+ /*  window.navigator.serviceWorker.register('/static/devices/srvw.js').then((ev){
+    print("Register");
   }).catchError((err){
-    print('Register Error ${err.toString()}');
-  });
+    print('Register Error');
+  }); */
   
 
   // if (sw.isNotSupported) {
