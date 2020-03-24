@@ -52,7 +52,7 @@
             <p>{{ place }}</p>
           </div>
         </div>
-        <div class="row around-xs">
+        <div class="row between-xs top-xs">
           {% for d in places[place] %}
             {% if d.get('model') in ['ctrl_neutral1','ctrl_neutral2']  %}
               {{ ctrl_neutral(d) }}

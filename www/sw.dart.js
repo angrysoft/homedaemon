@@ -1433,7 +1433,7 @@ while(true)switch(u){case 0:P.S("WORKER: Init cache...")
 s=$.ai()
 r=["/","/static/main.dart.js","/static/devices/devices.dart.js","/static/devices/sw.dart.js","/static/devices/devices.min.css","/static/angry.min.css"]
 u=2
-return P.fd(s.gao(s).bd(0,"offline-v1"),$async$cx)
+return P.fd(s.gao(s).bd(0,"offline-v2"),$async$cx)
 case 2:s=b.a
 q=H.l(r,0)
 u=3

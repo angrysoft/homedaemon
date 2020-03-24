@@ -53,7 +53,7 @@ Future<Response> _getCachedOrFetch(int id, Request request) async {
 
 Future _initCache() async {
   _log('Init cache...');
-  Cache cache = await caches.open('offline-v1');
+  Cache cache = await caches.open('offline-v2');
   await cache.addAll([
     '/',
     '/static/main.dart.js',
