@@ -152,12 +152,12 @@ def login():
                     session['userid'] = idinfo['sub']
                     session['locale'] = idinfo['locale']
                     session['picture'] = idinfo['picture']
-                    session['name'] = idinfo['']
+                    session['name'] = idinfo['name']
                     return 'ok'
                 else:
                     return 'not_registred'
-            except KeyError:
-                return 'db error'
+            except KeyError as err:
+                return f'db error {err}'
         except ValueError:
             return 'Invalid token'
 

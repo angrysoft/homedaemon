@@ -18,14 +18,14 @@
 'use strict';
 
 // CODELAB: Update cache names any time any of the cached files change.
-const CACHE_NAME = 'static-cache-v2';
+const CACHE_NAME = 'static-cache-v1';
 
 // CODELAB: Add list of files to cache here.
 const FILES_TO_CACHE = [
   '/',
     '/static/main.dart.js',
     '/static/devices/devices.dart.js',
-    '/static/devices/sw.dart.js',
+    '/static//srvw.js',
     '/static/devices/devices.min.css',
     '/static/angry.min.css'
 ];

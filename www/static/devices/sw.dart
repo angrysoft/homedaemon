@@ -8,7 +8,6 @@ void _log(Object o) => print('WORKER: $o');
 // Reminder: ServiceWorker mustn't use async in the [main] method.
 void main(List<String> args) {
   var id = 0;
-
   _log('SW started.');
 
   onInstall.listen((InstallEvent event) {

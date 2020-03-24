@@ -27,6 +27,7 @@
             xhr.open('POST', '/login');
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             xhr.onload = function() {
+                console.log(xhr.responseText);
               if (xhr.responseText == 'ok') {
                 var url = new URL(window.location.href);
                 var target = url.searchParams.get("next");

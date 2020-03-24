@@ -157,12 +157,11 @@ class Tabs {
 Future main() async {
   new Page();
   new Tabs();
-  window.navigator.serviceWorker.register('/srvw.js').then((ev){
+  window.navigator.serviceWorker.register('/static/srvw.js').then((ev){
     print("Register");
   }).catchError((err){
     print('Register Error');
   });
-  
 
   // if (sw.isNotSupported) {
   //   _log('ServiceWorkers are not supported.');
