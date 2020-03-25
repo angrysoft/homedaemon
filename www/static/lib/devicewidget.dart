@@ -797,7 +797,7 @@ class TvSetterWindow {
     ButtonElement btn = e.target;
     Map<String, dynamic> msg = new Map();
     msg['cmd'] = 'write';
-    msg['sid'] = 'tv01';
+    msg['sid'] = this.sid;
     msg['data'] = {'button': btn.dataset['btn']};
     String data = json.encode(msg);
     await HttpRequest.request('/dev/write', method: 'POST', sendData: data); 

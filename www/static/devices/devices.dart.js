@@ -1647,7 +1647,7 @@ cN:function cN(a){this.a=a},
 cO:function cO(a){this.a=a},
 eb:function eb(){this.b=this.a=null},
 ec:function ec(a){this.a=a},
-ed:function ed(){this.b=this.a=null},
+ed:function ed(){this.c=this.b=this.a=null},
 ee:function ee(a){this.a=a},
 ef:function ef(a){this.a=a}},D={
 fR:function(a){var u=document,t=new D.ds(u.createElement("div"),u.createElement("div"),u.createElement("div"),u.createElement("div"),u.createElement("div"))
@@ -4085,6 +4085,7 @@ this.a.b.a.a.classList.add("modal-show")},
 $S:0}
 T.ed.prototype={
 bN:function(a){var u,t,s,r=this
+r.c=a
 r.a=D.fR("tv-set")
 u=document
 t=u.querySelector("#back-tv")
@@ -4095,17 +4096,17 @@ W.v(t.a,t.b,H.c(new T.ee(r),{func:1,ret:-1,args:[s]}),!1,s)
 s=W.Y
 H.fY(s,s,"The type argument '","' is not a subtype of the type variable bound '","' of type variable 'T' in 'querySelectorAll'.")
 new W.eO(H.n(new W.bh(u.querySelectorAll("#tv-set .btn"),[s]),"$ihe",[s],"$ahe"),!1,"click",[W.r]).cC(new T.ef(r))},
-w:function(a,b){var u=0,t=P.bu(-1),s,r,q
+w:function(a,b){var u=0,t=P.bu(-1),s=this,r,q,p
 var $async$w=P.bw(function(c,d){if(c===1)return P.bp(d,t)
-while(true)switch(u){case 0:s=H.d(J.h9(b),"$iG")
-r=P.a
-q=new H.U([r,null])
-q.j(0,"cmd","write")
-q.j(0,"sid","tv01")
-s.toString
-q.j(0,"data",P.b6(["button",s.getAttribute("data-"+new W.aI(new W.aK(s)).K("btn"))],r,r))
+while(true)switch(u){case 0:r=H.d(J.h9(b),"$iG")
+q=P.a
+p=new H.U([q,null])
+p.j(0,"cmd","write")
+p.j(0,"sid",s.c)
+r.toString
+p.j(0,"data",P.b6(["button",r.getAttribute("data-"+new W.aI(new W.aK(r)).K("btn"))],q,q))
 u=2
-return P.cq(W.bO("/dev/write","POST",null,C.d.ae(q),null),$async$w)
+return P.cq(W.bO("/dev/write","POST",null,C.d.ae(p),null),$async$w)
 case 2:return P.bq(null,t)}})
 return P.br($async$w,t)}}
 T.ee.prototype={
