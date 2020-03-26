@@ -958,7 +958,7 @@ return P.bG(r.ga0(r),$async$P)
 case 2:r=window.navigator.serviceWorker
 s=W.a8
 u=3
-return P.bG(P.ch(r.register("sw.dart.js",null),s),$async$P)
+return P.bG(P.ch(r.register("sw.js",null),s),$async$P)
 case 3:u=4
 return P.bG(P.ch(window.navigator.serviceWorker.getRegistration(null),s),$async$P)
 case 4:return P.cM(null,t)}})

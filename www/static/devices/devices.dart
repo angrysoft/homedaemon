@@ -148,7 +148,7 @@ void main() async {
   // new Tabs();
   // await window.navigator.serviceWorker.register('/sw.js');
   await window.onLoad.first;
-  final result = await window.navigator.serviceWorker.register('sw.dart.js');
+  final result = await window.navigator.serviceWorker.register('sw.js');
   // result is dynamic
 
   // Workaround:
