@@ -146,5 +146,5 @@ class Tabs {
 void main() {
   // new Page();
   // new Tabs();
-  // window.navigator.serviceWorker.register('/sw.js');
+  window.navigator.serviceWorker.register('/sw.js');
 }
