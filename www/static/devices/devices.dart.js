@@ -918,15 +918,14 @@ Z:function(){var u=0,t=P.cD(null),s,r,q,p
 var $async$Z=P.cL(function(a,b){if(a===1)return P.cx(b,t)
 while(true)switch(u){case 0:s=window.navigator.serviceWorker
 r=W.a6
-q=P
 u=2
 return P.bR(P.c4(s.register("sw.js",null),r),$async$Z)
-case 2:q.c3(b.ga1())
+case 2:P.c3("Registred sw.js")
 q=P
 p=H
 u=3
 return P.bR(P.c4(window.navigator.serviceWorker.getRegistration(null),r),$async$Z)
-case 3:q.c3("registerd "+p.a(b))
+case 3:q.c3("registration "+p.a(b))
 return P.cy(null,t)}})
 return P.cz($async$Z,t)}}
 var w=[C,H,J,P,W,M]
