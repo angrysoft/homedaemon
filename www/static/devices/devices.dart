@@ -143,10 +143,10 @@ class Tabs {
   }
 }
 
-void main() {
+void main() async {
   // new Page();
   // new Tabs();
-  window.navigator.serviceWorker.register('/sw.js').then((ev){
+  await window.navigator.serviceWorker.register('/sw.js').then((ev){
     print('Registred');
   });
 }
