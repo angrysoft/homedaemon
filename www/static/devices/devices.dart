@@ -143,7 +143,15 @@ class Tabs {
   }
 }
 
-void main() async {
-  new Page();
-  new Tabs();
+Future main() async {
+  // new Page();
+  // new Tabs();
+  // await window.navigator.serviceWorker.register('/sw.js');
+  await window.navigator.serviceWorker.register('sw.js');
+  // result is dynamic
+  print('Registred sw.js');
+
+  // Workaround:
+  var registration = await window.navigator.serviceWorker.getRegistration();
+  print('registration ${registration}');
 }
