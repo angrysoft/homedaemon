@@ -15,7 +15,7 @@ class Page {
       });
     });
     print('loaded devices');
-/* 
+
     this.events = new EventSource('/stream');
     this.events.onMessage.listen((ev) {
       this.devices.refresh(ev.data);
@@ -33,7 +33,7 @@ class Page {
       if (! document.hidden) {
         this.refreshStatus();
       }
-    }); */
+    });
 
   }
 
