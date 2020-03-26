@@ -23,5 +23,4 @@ class Scene(BaseScene):
     def fan_on(self, wallsw):
         if self.running and wallsw.channel_1.is_on():
                 wallsw.channel_0.on()
-                self.timer_fan_on = None
                 

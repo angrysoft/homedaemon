@@ -12,6 +12,7 @@ class Bus:
         self.running = []
         
     def on(self, event, _id, *handlers):
+        # who what arg
         """ Register event"""
         if event not in self._events:
             self._events[event] = dict()

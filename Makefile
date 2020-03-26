@@ -20,7 +20,7 @@ login: $(path)/login.dart
 
 devices: $(path)/devices/devices.dart
 	$(dart) $(path)/devices/devices.dart.js $(path)/devices/devices.dart
-	$(dart) www/sw.dart.js $(path)/devices/sw.dart
+	# $(dart) www/sw.dart.js $(path)/devices/sw.dart
 
 admindevices: $(path)/admin/devices.dart
 	$(dart) $(path)/admin/devices.dart.js $(path)/admin/devices.dart

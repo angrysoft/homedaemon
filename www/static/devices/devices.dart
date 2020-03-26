@@ -147,7 +147,6 @@ void main() async {
   // new Page();
   // new Tabs();
   // await window.navigator.serviceWorker.register('/sw.js');
-  await window.onLoad.first;
   final result = await window.navigator.serviceWorker.register('sw.js');
   // result is dynamic
 
