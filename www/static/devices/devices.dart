@@ -153,4 +153,5 @@ void main() async {
 
   // Workaround:
   final registration = await window.navigator.serviceWorker.getRegistration();
+  print('registerd ${registration}');
 }
