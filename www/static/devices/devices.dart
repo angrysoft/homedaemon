@@ -149,6 +149,7 @@ void main() async {
   // await window.navigator.serviceWorker.register('/sw.js');
   final result = await window.navigator.serviceWorker.register('sw.js');
   // result is dynamic
+  print(result.active);
 
   // Workaround:
   final registration = await window.navigator.serviceWorker.getRegistration();
