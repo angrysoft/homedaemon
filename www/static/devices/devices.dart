@@ -16,23 +16,15 @@ class Page {
     });
     print('loaded devices');
 
-    HttpRequest.getString('/scene/list').then((String resp) {
-      List<dynamic> jdata = jsonDecode(resp);
-      jdata.forEach((dev) {
-        dev['model'] = 'scene';
-        this.devices.register(dev, print);
-      });
-    });
-    print('loaded scenes');
-    
     this.events = new EventSource('/stream');
     this.events.onMessage.listen((ev) {
       this.devices.refresh(ev.data);
     });
+
     this.events.onOpen.listen((e){
-      print('conn');
       print('${this.events.url} ${this.events.readyState}');
     });
+    
     this.events.onError.listen((er){
       print('err ${er}');
     });
