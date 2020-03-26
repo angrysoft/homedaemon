@@ -70,10 +70,6 @@ def login_required(func):
 def devices():
     places = dict()
     items_list = sorted([d for d in db['devices']], key=operator.itemgetter('name'))
-    for s in db['scenes']:
-        if s.get('automatic') == False:
-            s['model'] = 'scene'
-            items_list.append(s)
     
     for item in items_list:
         place = item.get('place')
