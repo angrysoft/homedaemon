@@ -147,11 +147,11 @@ void main() async {
   // new Page();
   // new Tabs();
   // await window.navigator.serviceWorker.register('/sw.js');
-  final result = await window.navigator.serviceWorker.register('sw.js');
+  await window.navigator.serviceWorker.register('sw.js');
   // result is dynamic
   print('Registred sw.js');
 
   // Workaround:
-  final registration = await window.navigator.serviceWorker.getRegistration();
+  var registration = await window.navigator.serviceWorker.getRegistration();
   print('registration ${registration}');
 }
