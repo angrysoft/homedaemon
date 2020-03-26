@@ -146,5 +146,11 @@ class Tabs {
 void main() async {
   // new Page();
   // new Tabs();
-  await window.navigator.serviceWorker.register('/sw.js');
+  // await window.navigator.serviceWorker.register('/sw.js');
+  await window.onLoad.first;
+  final result = await window.navigator.serviceWorker.register('sw.dart.js');
+  // result is dynamic
+
+  // Workaround:
+  final registration = await window.navigator.serviceWorker.getRegistration();
 }
