@@ -68,16 +68,32 @@ self.addEventListener('fetch', (evt) => {
 });
 
 
-self.addEventListener('push', function(event) {
-  console.log('[Service Worker] Push Received.');
-  console.log(`[Service Worker] Push had this data: "${event.data.text()}"`);
+self.addEventListener('push', function(e) {
+  var body;
 
-  const title = 'Push Codelab';
-  const options = {
-    body: `"${event.data.text()}"`,
-    icon: 'images/icon.png',
-    badge: 'images/badge.png'
+  if (e.data) {
+    body = e.data.text();
+  } else {
+    body = 'Push message no payload';
+  }
+
+  var options = {
+    body: body,
+    icon: 'images/notification-flat.png',
+    vibrate: [100, 50, 100],
+    data: {
+      dateOfArrival: Date.now(),
+      primaryKey: 1
+    },
+    actions: [
+      {action: 'explore', title: 'Explore this new world',
+        icon: 'images/checkmark.png'},
+      {action: 'close', title: 'I don\'t want any of this',
+        icon: 'images/xmark.png'},
+    ]
   };
-
-  event.waitUntil(self.registration.showNotification(title, options));
+  console.log(e.data.text());
+  e.waitUntil(
+    self.registration.showNotification('Push Notification', options)
+  );
 });

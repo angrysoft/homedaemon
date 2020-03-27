@@ -81,18 +81,27 @@
   </div>
   <script>
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function() {
-      navigator.serviceWorker.register('/static/sw.js').then(function(registration) {
-        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-        }, function(err) {
-          console.log('ServiceWorker registration failed: ', err);
-        });
+      navigator.serviceWorker.register('/static/sw.js').then(function(reg) {
+      console.log('Service Worker Registered!', reg);
+
+      reg.pushManager.getSubscription().then(function(sub) {
+        if (sub === null) {
+          // Update UI to ask user to register for Push
+          console.log('Not subscribed to push service!');
+        } else {
+          // We have a subscription, update the database
+          console.log('Subscription object: ', sub);
+        }
+      });
+      }).catch(function(err) {
+        console.log('Service Worker registration failed: ', err);
       });
     }
     
     Notification.requestPermission(function(status) {
       console.log('Notification permission status:', status);
     });
+    
   </script>
 </body>
 </html>

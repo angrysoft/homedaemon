@@ -43,10 +43,8 @@ class Page {
     HttpRequest.getString('/dev/data/all').then((String resp) {
       try {
         List<dynamic> jdata = jsonDecode(resp);
-        print(jdata.runtimeType);
         jdata.forEach((dev) {
-          print(dev['model']);
-          // this.devices.refresh(dev);
+          this.devices.refreshDev(dev);
         });
       }
       on FormatException {

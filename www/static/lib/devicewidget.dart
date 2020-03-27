@@ -90,15 +90,20 @@ class Devices {
     try {
       print('DEBUG ${data} END');
       Map<String, dynamic> info = json.decode(data);
-      if (this._devices.containsKey(info['sid']) && info.containsKey('data')) {
-        await this._devices[info['sid']].refreshStatus(info['data']);
-      }
+      await this.refreshDev(info);
     } catch (e) {
       print('error:$e ${data}');
     }
   }
 
-  Future refreshAll() async {}
+  Future refreshDev(Map<String,dynamic> info) async {
+    if (this._devices.containsKey(info['sid'])) {
+      if (info.containsKey('data')) {
+        info = info['data'];
+      }
+      await this._devices[info['sid']].refreshStatus(info);
+    }
+  }
 }
 
 
