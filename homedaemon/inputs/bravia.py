@@ -17,9 +17,8 @@ class Input(BaseInput):
             tvstatus = dict()
             if self.tv.power:
                 tvstatus['power'] = 'on'
-                tvstatus.update(self.tv.content_info())
             else:
                 tvstatus['power'] = 'off'
                 
-            self.bus.emit_cmd({'cmd': 'report', 'sid': 'tv01',  'data': tvstatus})
+            self.bus.emit_cmd({'cmd': 'report', 'sid': '568A6295FB9FE3648F78F0146D20E557749B32B7',  'data': tvstatus})
             

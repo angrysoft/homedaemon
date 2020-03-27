@@ -11,7 +11,7 @@ class Devices {
     this._devices = new Map();
   }
 
-  void register( Map<String,dynamic> devData, Function evSend) {
+  Future<void> register( Map<String,dynamic> devData, Function evSend) async {
     switch(devData['model']) {
       case 'ctrl_neutral1':
       {
@@ -97,6 +97,8 @@ class Devices {
       print('error:$e ${data}');
     }
   }
+
+  Future refreshAll() async {}
 }
 
 

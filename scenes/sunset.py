@@ -20,6 +20,7 @@ class Scene(BaseScene):
                     sunset_utc = datetime.fromisoformat(ret.get('sunset', '')) + utcoffset
                     self.daemon.config['datetime'] = {'sunrise': f'{sunrise_utc.hour:02}:{sunrise_utc.minute:02}'}
                     self.daemon.config['datetime'] = {'sunset': f'{sunset_utc.hour:02}:{sunset_utc.minute:02}'}
+                    self.daemon.config['datetime'] = {'update': f'{datetime.now()}'}
             except json.JSONDecodeError:
                 pass
        

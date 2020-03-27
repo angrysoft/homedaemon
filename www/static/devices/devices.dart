@@ -8,10 +8,11 @@ class Page {
   EventSource events;
 
   Page() {
+    
     HttpRequest.getString('/dev/data/all').then((String resp) {
       List<dynamic> jdata = jsonDecode(resp);
-      jdata.forEach((dev) {
-        this.devices.register(dev, print);
+      jdata.forEach((dev) async {
+        await this.devices.register(dev, print);
       });
     });
     print('loaded devices');
@@ -42,8 +43,9 @@ class Page {
     HttpRequest.getString('/dev/data/all').then((String resp) {
       try {
         List<dynamic> jdata = jsonDecode(resp);
+        print(jdata.runtimeType);
         jdata.forEach((dev) {
-          print(dev);
+          print(dev['model']);
           // this.devices.refresh(dev);
         });
       }
@@ -52,6 +54,7 @@ class Page {
       }
     });
   }
+
 }
 
 class Tabs {

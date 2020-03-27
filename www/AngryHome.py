@@ -50,7 +50,7 @@ config = db.db('config')
 tcp_config = config['tcp']['client']
 tcp_config['secret'] = config['tcp']['secret']
 
-app = Flask(__name__, static_url_path='')
+app = Flask(__name__)
 
 logging.basicConfig(filename='gast.log', filemode='w', format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %H:%M:%S')
 logging.warning('app starts')
@@ -79,12 +79,6 @@ def devices():
             places[place] = list()
         places[place].append(item)
     return render_template('devices.html', places=places)
-
-@app.route('/sw.js')
-def sw():
-    s = app.send_static_file('sw.js')
-    print('sw', s)
-    return s
 
 
 @app.route('/scene/list')

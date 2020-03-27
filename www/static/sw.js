@@ -25,7 +25,7 @@ const FILES_TO_CACHE = [
   '/',
     '/static/main.dart.js',
     '/static/devices/devices.dart.js',
-    '/sw.js',
+    '/static/sw.js',
     '/static/devices/devices.min.css',
     '/static/angry.min.css'
 ];
@@ -65,4 +65,19 @@ self.addEventListener('fetch', (evt) => {
           })
   );
 
+});
+
+
+self.addEventListener('push', function(event) {
+  console.log('[Service Worker] Push Received.');
+  console.log(`[Service Worker] Push had this data: "${event.data.text()}"`);
+
+  const title = 'Push Codelab';
+  const options = {
+    body: `"${event.data.text()}"`,
+    icon: 'images/icon.png',
+    badge: 'images/badge.png'
+  };
+
+  event.waitUntil(self.registration.showNotification(title, options));
 });
