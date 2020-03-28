@@ -71,13 +71,18 @@ class Trigger:
     def __init__(self, trigger, *actions):
         if type(trigger) is str:
             _values = trigger.split('.')
-            if len(_values) == 3:
-                self.sid, self.event, self.value = _values
-        self._scene = action
+            if len(_values) == 4:
+                self.cmd,self.sid, self.event, self.value = _values
+        self._actions = actions
     
     def pull(self, event):
         if event.get('data', dict()).get(self.event) == self.value:
             self._scene.do({'data':{'status': 'on'}})
     
     def __repr__(self):
-        return f'Trigger: {self.sid}.{self.event}.{self.value}'    
+        return f'Trigger: {self.sid}.{self.event}.{self.value}'
+    
+    
+
+if __name__ == "__main__":
+    pass
