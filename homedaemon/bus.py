@@ -10,6 +10,19 @@ class Bus:
         self._events = dict()
         self.loop = loop
         self.running = []
+        self._triggers = dict()
+    
+    def add_trigger(self, trigger:str, action) -> None:
+        """report.12331313133.status.off
+           report.342343243242.status.motion
+        """
+        pass
+    
+    def del_trigger(self):
+        pass
+    
+    def emit(self):
+        pass
         
     def on(self, event, _id, *handlers):
         # who what arg
@@ -49,3 +62,22 @@ class Bus:
             return True
         else:
             return False
+
+class Trigger:
+    cmd = ''
+    sid = ''
+    event = ''
+    value = ''
+    def __init__(self, trigger, *actions):
+        if type(trigger) is str:
+            _values = trigger.split('.')
+            if len(_values) == 3:
+                self.sid, self.event, self.value = _values
+        self._scene = action
+    
+    def pull(self, event):
+        if event.get('data', dict()).get(self.event) == self.value:
+            self._scene.do({'data':{'status': 'on'}})
+    
+    def __repr__(self):
+        return f'Trigger: {self.sid}.{self.event}.{self.value}'    
