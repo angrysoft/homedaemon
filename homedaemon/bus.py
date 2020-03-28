@@ -81,12 +81,28 @@ class TriggerDict:
     def setdefault(self, key, value):
         return self._data.setdefault(key, value)
     
-    def getkeys(self, keyname) -> list:
+    def getkeys(self, keyname:str) -> list:
         ret = list()
         if keyname in self._data:
             ret.append(self._data[keyname])
         if '*' in self._data:
             ret.append(self._data['*'])
+        return ret
+    
+    def get_path_key(self, *keys):
+        # print('keys', keys)
+        try:
+            ret = list()
+            _keys = list(keys)
+            k = _keys.pop(0)
+            for i in self.getkeys(k):
+                # print('i', i)
+                if isinstance(i, TriggerDict):
+                    ret.extend(i.get_path_key(*_keys))
+                else:
+                    ret.extend(i)
+        except IndexError:
+            pass
         return ret
     
     def __getitem__(self, key):
@@ -108,12 +124,7 @@ class Triggers:
     
     def get_handlers(self, trigger:Trigger) -> list:
         try:
-            cmd = self._triggers[trigger.cmd]
-            sids = cmd.getkeys(trigger.sid)
-            print(sids)
-            # event = sids[trigger.event]
-            # value = event[trigger.value]
-            # return value
+            return self._triggers.get_path_key(trigger.cmd, trigger.sid, trigger.event, trigger.value)
         except KeyError:
             return []
         
@@ -130,11 +141,14 @@ if __name__ == "__main__":
     t0 = Trigger('report.*.status.off')
     t1 = Trigger('report.342343243242.status.motion')
     t2 = Trigger('connect.*.tcpclient.connected')
-    print(t, t1, t2)
+    t3 = Trigger('report.*.*.*')
+    # print(t, t1, t2)
     tr.add_trigger(t, print, 'dupa')
     tr.add_trigger(t0, print, 'dupa blada')
     tr.add_trigger(t1, dir)
     tr.add_trigger(t2, print,  'tu cie ', 'mam ', ':}')
-    print(tr)
-    print(tr.get_handlers(Trigger('report.12331313133.status.off')))
+    tr.add_trigger(t3, print)
+    # print(tr)
+    for h, a in tr.get_handlers(Trigger('report.12331313133.status.off')):
+        h(*a)
     print(tr.get_handlers(Trigger('report.3244242.status.off')))
