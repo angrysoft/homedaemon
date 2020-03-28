@@ -97,11 +97,12 @@ class Devices {
   }
 
   Future refreshDev(Map<String,dynamic> info) async {
+    Map<String,dynamic> _info = info; 
     if (this._devices.containsKey(info['sid'])) {
       if (info.containsKey('data')) {
-        info = info['data'];
+        _info = info['data'];
       }
-      await this._devices[info['sid']].refreshStatus(info);
+      await this._devices[info['sid']].refreshStatus(_info);
     }
   }
 }

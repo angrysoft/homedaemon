@@ -56,6 +56,7 @@ class HomeDaemon:
         self.devices = Devices()
         self.scenes = dict()
         self.bus.on('report', '*', self.logger.debug)
+        self.bus.on('write', '*', self.logger.debug)
         self.executors = None
         self.lock = RLock()
 
