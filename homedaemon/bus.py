@@ -64,25 +64,77 @@ class Bus:
             return False
 
 class Trigger:
-    cmd = ''
-    sid = ''
-    event = ''
-    value = ''
-    def __init__(self, trigger, *actions):
+    def __init__(self, trigger):
         if type(trigger) is str:
             _values = trigger.split('.')
             if len(_values) == 4:
                 self.cmd,self.sid, self.event, self.value = _values
-        self._actions = actions
-    
-    def pull(self, event):
-        if event.get('data', dict()).get(self.event) == self.value:
-            self._scene.do({'data':{'status': 'on'}})
     
     def __repr__(self):
-        return f'Trigger: {self.sid}.{self.event}.{self.value}'
-    
+        return f'Trigger: {self.cmd}.{self.sid}.{self.event}.{self.value}'
     
 
+class TriggerDict:
+    def __init__(self):
+        self._data = dict()
+    
+    def setdefault(self, key, value):
+        return self._data.setdefault(key, value)
+    
+    def getkeys(self, keyname) -> list:
+        ret = list()
+        if keyname in self._data:
+            ret.append(self._data[keyname])
+        if '*' in self._data:
+            ret.append(self._data['*'])
+        return ret
+    
+    def __getitem__(self, key):
+        return self._data[key]
+    
+    def __repr__(self):
+        return self._data.__repr__()
+
+class Triggers:
+    def __init__(self):
+        self._triggers = TriggerDict()
+    
+    def add_trigger(self, trigger:Trigger, handler, *args) -> None:
+        cmd = self._triggers.setdefault(trigger.cmd, TriggerDict())
+        sid = cmd.setdefault(trigger.sid, TriggerDict())
+        event = sid.setdefault(trigger.event, TriggerDict())
+        value = event.setdefault(trigger.value, [])
+        value.append((handler, args))
+    
+    def get_handlers(self, trigger:Trigger) -> list:
+        try:
+            cmd = self._triggers[trigger.cmd]
+            sids = cmd.getkeys(trigger.sid)
+            print(sids)
+            # event = sids[trigger.event]
+            # value = event[trigger.value]
+            # return value
+        except KeyError:
+            return []
+        
+    def __repr__(self):
+        return str(self._triggers)
+        
+            
+        
+
+
 if __name__ == "__main__":
-    pass
+    tr = Triggers()
+    t = Trigger('report.12331313133.status.off')
+    t0 = Trigger('report.*.status.off')
+    t1 = Trigger('report.342343243242.status.motion')
+    t2 = Trigger('connect.*.tcpclient.connected')
+    print(t, t1, t2)
+    tr.add_trigger(t, print, 'dupa')
+    tr.add_trigger(t0, print, 'dupa blada')
+    tr.add_trigger(t1, dir)
+    tr.add_trigger(t2, print,  'tu cie ', 'mam ', ':}')
+    print(tr)
+    print(tr.get_handlers(Trigger('report.12331313133.status.off')))
+    print(tr.get_handlers(Trigger('report.3244242.status.off')))

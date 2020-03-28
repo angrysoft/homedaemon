@@ -97,11 +97,12 @@ class Devices {
   }
 
   Future refreshDev(Map<String,dynamic> info) async {
+    Map<String,dynamic> _info = info; 
     if (this._devices.containsKey(info['sid'])) {
       if (info.containsKey('data')) {
-        info = info['data'];
+        _info = info['data'];
       }
-      await this._devices[info['sid']].refreshStatus(info);
+      await this._devices[info['sid']].refreshStatus(_info);
     }
   }
 }
@@ -701,13 +702,13 @@ class ColorSetterWindow {
   setData() {
     HttpRequest.getString('/dev/data/${this.sid}').then((String resp) {
         var data = jsonDecode(resp);
-        print(data);
+        print("color wnd $data");
         if (data.containsKey('bright')) {
           this.bright.value = data['bright'].toString();
         }
 
-        if (data.containsKey('ct')) {
-          this.ct.value = data['ct'].toString();
+        if (data.containsKey('ct_pc')) {
+          this.ct.value = data['ct_pc'].toString();
         }
 
         if (data.containsKey('rgb')) {
