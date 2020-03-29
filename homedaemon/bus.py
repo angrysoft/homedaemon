@@ -11,7 +11,6 @@ class Trigger:
             if len(_values) == 4:
                 self.cmd,self.sid, self.event, self.value = _values
         elif type(trigger) is dict:
-            print('trig',trigger)
             self.cmd = trigger['cmd']
             self.sid = trigger['sid']
             _data = trigger['data'].copy()
@@ -81,9 +80,8 @@ class Bus:
         pass
     
     def emit(self, event:str, payload=None):
-        print(event)
-        print(payload)
         trigger = Trigger(event)
+        print(trigger, payload)
         for handler in self.get_handlers(trigger):
             if self.is_async(handler):
                 if payload is None:
@@ -92,14 +90,14 @@ class Bus:
                     task = asyncio.run_coroutine_threadsafe(handler(payload), self.loop)
             else:
                 if payload is None:
+                    # handler()
                     self.loop.run_in_executor(None, handler)
                 else:
+                    # handler(payload)
                     self.loop.run_in_executor(None, handler, payload)
     
     def emit_cmd(self, event):
-        data = event['data'].copy()
-        key, value = data.popitem()
-        self.emit(f"{event['cmd']}.{event['sid']}.{key}.{value}", event)
+        self.emit(event, event)
             
     def is_async(self, ev):
         if asyncio.iscoroutine(ev) or asyncio.iscoroutinefunction(ev):

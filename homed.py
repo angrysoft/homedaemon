@@ -70,12 +70,12 @@ class HomeDaemon:
     def load_devices(self):
         dev_list = list()
         for dev in self.devicesdb:
-            self.devices.load(dev, self)
-            dev_list.append({'sid': dev['sid'], 'model': dev['model'],
-                             'name': dev['name'], 'place': dev['place'],
-                             'status': self.devices[dev['sid']].device_status()})
+            if self.devices.load(dev, self):
+                dev_list.append({'sid': dev['sid'], 'model': dev['model'],
+                                'name': dev['name'], 'place': dev['place'],
+                                'status': self.devices[dev['sid']].device_status()})
         self.logger.info('Load devices')
-        self.loop.call_later(5, self.bus.emit('devices_list.daemon.populate.list', {'cmd':'devices_list', 'data': dev_list}))
+        self.loop.call_later(5, self.bus.emit, 'devices_list.daemon.populate.list', {'cmd':'devices_list', 'data': dev_list})
 
     def load_scenes(self):
         if 'scenes' in self.db:

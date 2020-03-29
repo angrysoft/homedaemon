@@ -24,7 +24,11 @@ class Devices:
             # 'scenes': SeceneDevice,
             'virtual': VirtualDevice
             }.get(data.get('family'), self._unknown_device_family)(data, daemon)
-        self._devices[data['sid']] = device
+        if device:
+            self._devices[data['sid']] = device
+            return True
+        else:
+            return False
     
     def get(self, key, ret=None):
         try:
@@ -33,7 +37,7 @@ class Devices:
             return ret            
     
     def _unknown_device_family(self, data, *args):
-        pass
+        return None
         # raise ValueError(f"Unkonown deivce family : {data.get('family')} {data}")
     
     def __contains__(self, key):
