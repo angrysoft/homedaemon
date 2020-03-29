@@ -4,76 +4,23 @@ import functools
 from datetime import datetime
 # from threading import current_thread
 
-
-class Bus:
-    def __init__(self, loop):
-        self._events = dict()
-        self.loop = loop
-        self.running = []
-        self._triggers = dict()
-    
-    def add_trigger(self, trigger:str, action) -> None:
-        """report.12331313133.status.off
-           report.342343243242.status.motion
-        """
-        pass
-    
-    def del_trigger(self):
-        pass
-    
-    def emit(self):
-        pass
-        
-    def on(self, event, _id, *handlers):
-        # who what arg
-        """ Register event"""
-        if event not in self._events:
-            self._events[event] = dict()
-        if _id not in self._events[event]:
-            self._events[event][_id] = list()
-        for handler in handlers:
-            self._events[event][_id].append(handler)
-    
-    def off(self, event, _id, handler):
-        """ Unregister event"""
-        _event = f'{event}.{_id}'
-        if _event in self._events:
-            self._events[_event] = list()
-    
-    def emit_cmd(self, event):
-        if event.get('cmd') not in self._events:
-            return
-        
-        event_list = self._events[event.get('cmd')].get(event.get('sid'), []).copy()
-        event_list.extend(self._events[event.get('cmd')].get('*', []))
-        
-        for ev in event_list:
-            # print(ev, current_thread())
-            if self.is_async(ev):
-                task = asyncio.run_coroutine_threadsafe(ev(event), self.loop)
-                # print(f'async {ev.__name__} {event}')
-            else:
-                # print(f'sync {ev.__name__} {event}')
-                # self.loop.call_soon(ev, event)
-                ev(event)
-            
-    def is_async(self, ev):
-        if asyncio.iscoroutine(ev) or asyncio.iscoroutinefunction(ev):
-            return True
-        else:
-            return False
-
 class Trigger:
     def __init__(self, trigger):
         if type(trigger) is str:
-            _values = trigger.split('.')
+            _values = trigger.split('.', 4)
             if len(_values) == 4:
                 self.cmd,self.sid, self.event, self.value = _values
+        elif type(trigger) is dict:
+            print('trig',trigger)
+            self.cmd = trigger['cmd']
+            self.sid = trigger['sid']
+            _data = trigger['data'].copy()
+            self.event, self.value = _data.popitem()
     
     def __repr__(self):
         return f'Trigger: {self.cmd}.{self.sid}.{self.event}.{self.value}'
     
-
+    
 class TriggerDict:
     def __init__(self):
         self._data = dict()
@@ -90,13 +37,11 @@ class TriggerDict:
         return ret
     
     def get_path_key(self, *keys):
-        # print('keys', keys)
         try:
             ret = list()
             _keys = list(keys)
             k = _keys.pop(0)
             for i in self.getkeys(k):
-                # print('i', i)
                 if isinstance(i, TriggerDict):
                     ret.extend(i.get_path_key(*_keys))
                 else:
@@ -111,16 +56,70 @@ class TriggerDict:
     def __repr__(self):
         return self._data.__repr__()
 
+class Bus:
+    def __init__(self, loop):
+        self._events = dict()
+        self.loop = loop
+        self.running = []
+        self._triggers = TriggerDict()
+    
+    def add_trigger(self, trigger:str, handler) -> None:
+        _trigger = Trigger(trigger)
+        cmd = self._triggers.setdefault(_trigger.cmd, TriggerDict())
+        sid = cmd.setdefault(_trigger.sid, TriggerDict())
+        event = sid.setdefault(_trigger.event, TriggerDict())
+        value = event.setdefault(_trigger.value, [])
+        value.append(handler)
+    
+    def get_handlers(self, trigger:Trigger) -> list:
+        try:
+            return self._triggers.get_path_key(trigger.cmd, trigger.sid, trigger.event, trigger.value)
+        except KeyError:
+            return []
+    
+    def del_trigger(self, trigger:Trigger):
+        pass
+    
+    def emit(self, event:str, payload=None):
+        print(event)
+        print(payload)
+        trigger = Trigger(event)
+        for handler in self.get_handlers(trigger):
+            if self.is_async(handler):
+                if payload is None:
+                    task = asyncio.run_coroutine_threadsafe(handler(), self.loop)
+                else:
+                    task = asyncio.run_coroutine_threadsafe(handler(payload), self.loop)
+            else:
+                if payload is None:
+                    self.loop.run_in_executor(None, handler)
+                else:
+                    self.loop.run_in_executor(None, handler, payload)
+    
+    def emit_cmd(self, event):
+        data = event['data'].copy()
+        key, value = data.popitem()
+        self.emit(f"{event['cmd']}.{event['sid']}.{key}.{value}", event)
+            
+    def is_async(self, ev):
+        if asyncio.iscoroutine(ev) or asyncio.iscoroutinefunction(ev):
+            return True
+        else:
+            return False
+
+
+    
+
 class Triggers:
     def __init__(self):
         self._triggers = TriggerDict()
     
-    def add_trigger(self, trigger:Trigger, handler, *args) -> None:
+    def add_trigger(self, trigger:Trigger, *handler) -> None:
         cmd = self._triggers.setdefault(trigger.cmd, TriggerDict())
         sid = cmd.setdefault(trigger.sid, TriggerDict())
         event = sid.setdefault(trigger.event, TriggerDict())
         value = event.setdefault(trigger.value, [])
-        value.append((handler, args))
+        value.extend(handler)
     
     def get_handlers(self, trigger:Trigger) -> list:
         try:
@@ -143,12 +142,11 @@ if __name__ == "__main__":
     t2 = Trigger('connect.*.tcpclient.connected')
     t3 = Trigger('report.*.*.*')
     # print(t, t1, t2)
-    tr.add_trigger(t, print, 'dupa')
-    tr.add_trigger(t0, print, 'dupa blada')
+    tr.add_trigger(t, 't1 fucn 1', 't1 fucn 2', 't1 fucn 3')
+    tr.add_trigger(t0, 't0 all sid')
     tr.add_trigger(t1, dir)
-    tr.add_trigger(t2, print,  'tu cie ', 'mam ', ':}')
-    tr.add_trigger(t3, print)
+    tr.add_trigger(t2, print)
+    tr.add_trigger(t3, 't3 all reports')
     # print(tr)
-    for h, a in tr.get_handlers(Trigger('report.12331313133.status.off')):
-        h(*a)
+    print(tr.get_handlers(Trigger('report.12331313133.status.off')))
     print(tr.get_handlers(Trigger('report.3244242.status.off')))

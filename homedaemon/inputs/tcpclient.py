@@ -16,9 +16,9 @@ class Input(BaseInput):
         self.reader = None
         self.writer = None
         self.loop.create_task(self.conn_watcher())
-        self.bus.on('report', '*', self.send)
-        self.bus.on('scene', '*', self.send)
-        self.bus.on('devices_list', '*', self.send_devlist)
+        self.bus.add_trigger('report.*.*.*', self.send)
+        # self.bus.on('scene', '*', self.send)
+        self.bus.add_trigger('devices_list.daemon.populate.list', self.send_devlist)
         # self.ssl_context = ssl._create_unverified_context()
     
     async def send_devlist(self, dev_list):
@@ -45,7 +45,7 @@ class Input(BaseInput):
         await self.writer.drain()
         self.loop.create_task(self.msg_reader())
         if self.is_connected():
-            self.bus.emit_cmd({'cmd': 'connected', 'sid': self.name, 'data':{}})
+            self.bus.emit('info.tcpclient.status.online')
         
     async def conn_watcher(self, interval=5):
         while self.loop.is_running():

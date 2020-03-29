@@ -55,7 +55,7 @@ class HomeDaemon:
         self.logger.info('Starting Daemon')
         self.devices = Devices()
         self.scenes = dict()
-        self.bus.on('report', '*', self.logger.debug)
+        self.bus.add_trigger('report.*.*.*', self.logger.debug)
         self.executors = None
         self.lock = RLock()
 
@@ -75,8 +75,7 @@ class HomeDaemon:
                              'name': dev['name'], 'place': dev['place'],
                              'status': self.devices[dev['sid']].device_status()})
         self.logger.info('Load devices')
-        self.loop.call_later(5, self.bus.emit_cmd, {'cmd': 'devices_list', 'sid': 'all', 'data': dev_list})
-        # self.bus.emit_cmd({'cmd': 'devices_list', 'sid': 'all', 'data': dev_list})
+        self.loop.call_later(5, self.bus.emit('devices_list.daemon.populate.list', {'cmd':'devices_list', 'data': dev_list}))
 
     def load_scenes(self):
         if 'scenes' in self.db:
@@ -108,7 +107,7 @@ class HomeDaemon:
             if s.get('automatic') == False:
                 del s['_rev']
                 sc_list.append(s)
-        self.bus.emit_cmd({'cmd': 'scene', 'sid': 'all', 'data': {'scenes': sc_list}})
+        # self.bus.emit_cmd({'cmd': 'scene', 'sid': 'all', 'data': {'scenes': sc_list}})
     
     def update_dev_data(self, data):
         with self.lock:
@@ -118,7 +117,8 @@ class HomeDaemon:
         self.logger.info(f'main thread {current_thread()} loop {id(self.loop)}')
         self.loop.run_in_executor(None, self.load_inputs)
         self.loop.run_in_executor(None, self.load_devices)
-        self.loop.run_in_executor(None, self.load_scenes)
+        # self.loop.run_in_executor(None, self.load_scenes)
+        
         # self.loop.add_signal_handler(signal.SIGINT, self.stop)
         # self.loop.add_signal_handler(signal.SIGHUP, self.stop)
         # self.loop.add_signal_handler(signal.SIGQUIT, self.stop)

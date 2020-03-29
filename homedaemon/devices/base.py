@@ -8,9 +8,9 @@ class BaseDevice:
         self.sid = data.get('sid')
         # self.device_data = daemon.device_data[self.sid]
         self.lock = RLock()
-        self.daemon.bus.on('report', self.sid, self.report, self.update_dev_data)
-        self.daemon.bus.on('write', self.sid, self.write)
-        self.daemon.bus.on('heartbeat', self.sid, self.heartbeat)
+        self.daemon.bus.add_trigger(f'report.{self.sid}.*.*', self.report)
+        self.daemon.bus.add_trigger(f'write.{self.sid}.*.*', self.write)
+        self.daemon.bus.add_trigger(f'heartbeat.{self.sid}.*.*', self.heartbeat)
 
     def write(self, data):
         pass
@@ -22,13 +22,15 @@ class BaseDevice:
         pass
 
     def update_dev_data(self, data):
+        import warnings
+        warnings.warn(f"deprecated {self.sid} update_dev_data", DeprecationWarning)
+        
         with self.lock:
             self.daemon.device_data[self.sid] = data['data']
     
-    def log_change(self,data):
-        pass
-    
     def get_value(self, value):
+        import warnings
+        warnings.warn(f"deprecated {self.sid} get_value", DeprecationWarning)
         if value in self.daemon.device_data[self.sid]:    
             return self.daemon.device_data[self.sid][value]
         else:
