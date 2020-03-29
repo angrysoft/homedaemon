@@ -62,13 +62,13 @@ class Bus:
         self.running = []
         self._triggers = TriggerDict()
     
-    def add_trigger(self, trigger:str, handler) -> None:
+    def add_trigger(self, trigger:str, handler, *args) -> None:
         _trigger = Trigger(trigger)
         cmd = self._triggers.setdefault(_trigger.cmd, TriggerDict())
         sid = cmd.setdefault(_trigger.sid, TriggerDict())
         event = sid.setdefault(_trigger.event, TriggerDict())
         value = event.setdefault(_trigger.value, [])
-        value.append(handler)
+        value.append((handler, args))
     
     def get_handlers(self, trigger:Trigger) -> list:
         try:
@@ -79,22 +79,23 @@ class Bus:
     def del_trigger(self, trigger:Trigger):
         pass
     
-    def emit(self, event:str, payload=None):
+    def emit(self, event:str, *payload):
         trigger = Trigger(event)
         print(trigger, payload)
-        for handler in self.get_handlers(trigger):
+        for handler, args in self.get_handlers(trigger):
             if self.is_async(handler):
-                if payload is None:
+                if payload:
+                    task = asyncio.run_coroutine_threadsafe(handler(*payload), self.loop)
+                else:
                     task = asyncio.run_coroutine_threadsafe(handler(), self.loop)
-                else:
-                    task = asyncio.run_coroutine_threadsafe(handler(payload), self.loop)
             else:
-                if payload is None:
-                    # handler()
-                    self.loop.run_in_executor(None, handler)
-                else:
-                    # handler(payload)
-                    self.loop.run_in_executor(None, handler, payload)
+                handler_with_args = list()
+                handler_with_args.append(handler)
+                handler_with_args.extend(args)
+                handler_with_args.extend(payload)
+                print('hand', handler_with_args)
+                # handler()
+                self.loop.run_in_executor(None, *handler_with_args)
     
     def emit_cmd(self, event):
         self.emit(event, event)
@@ -112,12 +113,12 @@ class Triggers:
     def __init__(self):
         self._triggers = TriggerDict()
     
-    def add_trigger(self, trigger:Trigger, *handler) -> None:
+    def add_trigger(self, trigger:Trigger, handler, *args) -> None:
         cmd = self._triggers.setdefault(trigger.cmd, TriggerDict())
         sid = cmd.setdefault(trigger.sid, TriggerDict())
         event = sid.setdefault(trigger.event, TriggerDict())
         value = event.setdefault(trigger.value, [])
-        value.extend(handler)
+        value.append((handler, args))
     
     def get_handlers(self, trigger:Trigger) -> list:
         try:
@@ -133,6 +134,8 @@ class Triggers:
 
 
 if __name__ == "__main__":
+    def print_hand(a,b):
+        print(a,b)
     tr = Triggers()
     t = Trigger('report.12331313133.status.off')
     t0 = Trigger('report.*.status.off')
@@ -140,11 +143,12 @@ if __name__ == "__main__":
     t2 = Trigger('connect.*.tcpclient.connected')
     t3 = Trigger('report.*.*.*')
     # print(t, t1, t2)
-    tr.add_trigger(t, 't1 fucn 1', 't1 fucn 2', 't1 fucn 3')
+    tr.add_trigger(t, 't1 fucn 1', 't1 arg 1', 't1 arg 2')
     tr.add_trigger(t0, 't0 all sid')
     tr.add_trigger(t1, dir)
     tr.add_trigger(t2, print)
     tr.add_trigger(t3, 't3 all reports')
     # print(tr)
-    print(tr.get_handlers(Trigger('report.12331313133.status.off')))
+    for h , arg in tr.get_handlers(Trigger('report.12331313133.status.off')):
+        print_hand(*arg)
     print(tr.get_handlers(Trigger('report.3244242.status.off')))

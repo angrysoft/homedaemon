@@ -117,7 +117,7 @@ class HomeDaemon:
         self.logger.info(f'main thread {current_thread()} loop {id(self.loop)}')
         self.loop.run_in_executor(None, self.load_inputs)
         self.loop.run_in_executor(None, self.load_devices)
-        # self.loop.run_in_executor(None, self.load_scenes)
+        self.loop.run_in_executor(None, self.load_scenes)
         
         # self.loop.add_signal_handler(signal.SIGINT, self.stop)
         # self.loop.add_signal_handler(signal.SIGHUP, self.stop)

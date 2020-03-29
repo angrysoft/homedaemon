@@ -19,20 +19,11 @@ class BaseScene(Thread):
         self.name = ''
         self._automatic = True
         self.reversible = False
-        self._triggers = list()
         self.running = False
         self.place = ''
     
-    @property
-    def triggers(self):
-        return self._triggers
-    
-    @triggers.setter
-    def triggers(self, value):
-        if self._automatic:
-            trig = Trigger(value, self)
-            self._triggers.append(trig)
-            self.daemon.bus.on('report', trig.sid, trig.pull)
+    def add_trigger(self, trigger, handler):
+        daemon.bus.add_trigger(trigger, handler)
     
     @property
     def automatic(self):
@@ -92,25 +83,6 @@ class BaseScene(Thread):
     
     def restore_devices_state(self, *sids):
         pass
-
-
-class Trigger:
-    sid = ''
-    event = ''
-    value = ''
-    def __init__(self, trigger, scene):
-        if type(trigger) is str:
-            _values = trigger.split('.')
-            if len(_values) == 3:
-                self.sid, self.event, self.value = _values
-        self._scene = scene
-    
-    def pull(self, event):
-        if event.get('data', dict()).get(self.event) == self.value:
-            self._scene.do({'data':{'status': 'on'}})
-    
-    def __repr__(self):
-        return f'Trigger: {self.sid}.{self.event}.{self.value}'
 
 
 class TimeCheck:
