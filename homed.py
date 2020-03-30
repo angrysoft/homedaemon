@@ -48,13 +48,11 @@ class HomeDaemon:
         self.bus = Bus(self.loop)
         self.db = Server()
         self.config = self.db['config']
+        sys.path.append(self.config['scenes']['path'])
         self.devicesdb = self.db['devices']
-        self.device_data = self.db['devices-data']
-        self.scenesdb = None
         self.logger = logger
         self.logger.info('Starting Daemon')
         self.devices = Devices()
-        self.scenes = dict()
         self.bus.add_trigger('report.*.*.*', self.logger.debug)
         self.executors = None
         self.lock = RLock()
@@ -70,7 +68,7 @@ class HomeDaemon:
     def load_devices(self):
         dev_list = list()
         for dev in self.devicesdb:
-            if self.devices.load(dev, self):
+            if self.devices.register(dev, self):
                 dev_list.append({'sid': dev['sid'], 'model': dev['model'],
                                 'name': dev['name'], 'place': dev['place'],
                                 'status': self.devices[dev['sid']].device_status()})
@@ -82,7 +80,6 @@ class HomeDaemon:
             self.db.delete('scenes')
         self.db.create('scenes')
         self.scenesdb = self.db['scenes'] 
-        sys.path.append(self.config['scenes']['path'])
         with os.scandir(self.config['scenes']['path']) as it:
             for entry in it:
                 if entry.name.endswith('.py') and entry.is_file():
@@ -99,15 +96,6 @@ class HomeDaemon:
                     else:
                         self.logger.warning(f'scene duplicate name skiping ... {inst.name}')
                         continue
-        self.loop.call_later(5, self._announce_scene_list)
-        
-    def _announce_scene_list(self):
-        sc_list = list()
-        for s in self.scenesdb:
-            if s.get('automatic') == False:
-                del s['_rev']
-                sc_list.append(s)
-        # self.bus.emit_cmd({'cmd': 'scene', 'sid': 'all', 'data': {'scenes': sc_list}})
     
     def update_dev_data(self, data):
         with self.lock:
@@ -117,7 +105,6 @@ class HomeDaemon:
         self.logger.info(f'main thread {current_thread()} loop {id(self.loop)}')
         self.loop.run_in_executor(None, self.load_inputs)
         self.loop.run_in_executor(None, self.load_devices)
-        self.loop.run_in_executor(None, self.load_scenes)
         
         # self.loop.add_signal_handler(signal.SIGINT, self.stop)
         # self.loop.add_signal_handler(signal.SIGHUP, self.stop)
@@ -138,7 +125,12 @@ class HomeDaemon:
 
     def stop(self, *args, **kwargs):
         self.logger.info('Stop homed')
-        self.loop.stop()
+        try:
+            self.loop.stop()
+            self._cancel_all_tasks()
+            self.loop.run_until_complete(self.loop.shutdown_asyncgens())
+        finally:
+            self.loop.close()
     
     def _cancel_all_tasks(self):
         to_cancel = tasks.all_tasks(self.loop)

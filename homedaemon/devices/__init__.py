@@ -6,13 +6,15 @@ from .custom import CustomDevice
 from .computer import ComputerDevice
 from .rgb import RgbDevice
 from .virtual import VirtualDevice
+from .scenes import SceneDevice
 
 
 class Devices:
     def __init__(self):
         self._devices = dict()
     
-    def load(self, data, daemon):
+    def register(self, data, daemon):
+        daemon.logger.debug(f"Loading....{data['sid']}")
         device = {
             'aqara': AqaraDevice,
             'yeelight': YeeligthDevice,
@@ -21,7 +23,7 @@ class Devices:
             'rgb': RgbDevice,
             'philips_light': PhilipsDevice,
             # 'sonoff': SonoffDevice,
-            # 'scenes': SeceneDevice,
+            'scenes': SceneDevice,
             'virtual': VirtualDevice
             }.get(data.get('family'), self._unknown_device_family)(data, daemon)
         if device:
