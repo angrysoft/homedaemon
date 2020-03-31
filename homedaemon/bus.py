@@ -2,7 +2,7 @@
 import asyncio
 import functools
 from datetime import datetime
-# from threading import current_thread
+from threading import current_thread
 
 class Trigger:
     def __init__(self, trigger):
@@ -81,7 +81,7 @@ class Bus:
     
     def emit(self, event:str, *payload):
         trigger = Trigger(event)
-        print(trigger, payload)
+        print(current_thread(), trigger, payload)
         for handler, args in self.get_handlers(trigger):
             if self.is_async(handler):
                 if payload:
@@ -93,7 +93,6 @@ class Bus:
                 handler_with_args.append(handler)
                 handler_with_args.extend(args)
                 handler_with_args.extend(payload)
-                print('hand', handler_with_args)
                 # handler()
                 self.loop.run_in_executor(None, *handler_with_args)
     
