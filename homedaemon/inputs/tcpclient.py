@@ -64,7 +64,7 @@ class Input(BaseInput):
                 return
             self.bus.emit_cmd(msg)
              
-    async def send(self, msg):
+    async def send(self, msg=None):
         if not self.is_connected():
             print('closed')
             return
@@ -75,6 +75,9 @@ class Input(BaseInput):
             except json.JSONDecodeError as err:
                 print(f'tcpclient {err}')
                 return
+        elif msg is None:
+            return
+        
         try:    
             self.writer.write(f'{msg}\n'.encode())
             await self.writer.drain()

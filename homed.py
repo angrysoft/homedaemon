@@ -53,9 +53,13 @@ class HomeDaemon:
         self.logger = logger
         self.logger.info('Starting Daemon')
         self.devices = Devices()
-        self.bus.add_trigger('report.*.*.*', self.logger.debug)
+        self.bus.add_trigger('report.*.*.*', self.debug)
         self.executors = None
         self.lock = RLock()
+
+    def debug(self, msg=None):
+        if msg is not None:
+            self.logger.debug(f'>>> {msg}')
 
     def load_inputs(self):
         for _input_name in self.config['inputs']['list']:
@@ -76,26 +80,27 @@ class HomeDaemon:
         self.loop.call_later(5, self.bus.emit, 'devices_list.daemon.populate.list', {'cmd':'devices_list', 'data': dev_list})
 
     def load_scenes(self):
-        if 'scenes' in self.db:
-            self.db.delete('scenes')
-        self.db.create('scenes')
-        self.scenesdb = self.db['scenes'] 
+        # if 'scenes' in self.db:
+        #     self.db.delete('scenes')
+        # self.db.create('scenes')
+        # self.scenesdb = self.db['scenes'] 
         with os.scandir(self.config['scenes']['path']) as it:
             for entry in it:
                 if entry.name.endswith('.py') and entry.is_file():
-                    _scene = importlib.import_module(entry.name[:-3])
-                    inst = _scene.Scene(self)
-                    if inst.name not in self.scenes:
-                        self.scenes[inst.name] = inst
-                        self.scenesdb[inst.name] = {'automatic': inst.automatic,
-                                                    'name': inst.name,
-                                                    'sid': inst.name,
-                                                    'reversible': inst.reversible,
-                                                    'place': inst.place}
-                        self.logger.info(f'loaded {inst.name}')
-                    else:
-                        self.logger.warning(f'scene duplicate name skiping ... {inst.name}')
-                        continue
+                    print(entry.name)
+                    # _scene = importlib.import_module(entry.name[:-3])
+                    # inst = _scene.Scene(self)
+                    # if inst.name not in self.scenes:
+                    #     self.scenes[inst.name] = inst
+                    #     self.scenesdb[inst.name] = {'automatic': inst.automatic,
+                    #                                 'name': inst.name,
+                    #                                 'sid': inst.name,
+                    #                                 'reversible': inst.reversible,
+                    #                                 'place': inst.place}
+                    #     self.logger.info(f'loaded {inst.name}')
+                    # else:
+                    #     self.logger.warning(f'scene duplicate name skiping ... {inst.name}')
+                    #     continue
     
     def update_dev_data(self, data):
         with self.lock:

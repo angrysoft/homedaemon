@@ -80,6 +80,7 @@ class BaseAutomation(SceneInterface):
         super().__init__(sid, daemon)    
         
     def add_trigger(self, trigger, handler):
+        print(f'add trigger {trigger}')
         self.daemon.bus.add_trigger(trigger, self._runner, handler)
     
 

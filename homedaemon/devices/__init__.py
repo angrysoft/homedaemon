@@ -27,6 +27,7 @@ class Devices:
             'virtual': VirtualDevice
             }.get(data.get('family'), self._unknown_device_family)(data, daemon)
         if device:
+            print(device)
             self._devices[data['sid']] = device
             return True
         else:

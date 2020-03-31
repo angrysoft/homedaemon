@@ -11,7 +11,7 @@ class VirtualDevice:
 class TimerDev(BaseDevice):
     def __init__(self, data, daemon):
         super().__init__(data, daemon)
-        self.config = config
+        self.config = daemon.config
         self.daemon.loop.create_task(self.timer())
 
     async def timer(self):
@@ -22,7 +22,7 @@ class TimerDev(BaseDevice):
             if _time == self.config['datetime']['sunrise']:
                 self.daemon.bus.emit(f'report.clock.time.sunrise')
             elif _time == self.config['datetime']['sunset']:
-                self.daemon.bus.emit({f'report.clock.time.sunset')
+                self.daemon.bus.emit(f'report.clock.time.sunset')
             await asyncio.sleep(60)
     
     def device_status(self):
