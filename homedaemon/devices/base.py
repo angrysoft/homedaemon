@@ -8,9 +8,9 @@ class BaseDevice:
         self.sid = data.get('sid')
         # self.device_data = daemon.device_data[self.sid]
         self.lock = RLock()
-        self.daemon.bus.add_trigger(f'report.{self.sid}.*.*', self.report)
+        # self.daemon.bus.add_trigger(f'report.{self.sid}.*.*', self.report)
         self.daemon.bus.add_trigger(f'write.{self.sid}.*.*', self.write)
-        self.daemon.bus.add_trigger(f'heartbeat.{self.sid}.*.*', self.heartbeat)
+        # self.daemon.bus.add_trigger(f'heartbeat.{self.sid}.*.*', self.heartbeat)
 
     def write(self, data):
         pass
