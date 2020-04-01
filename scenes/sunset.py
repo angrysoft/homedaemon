@@ -1,15 +1,15 @@
-from homedaemon.scenes import BaseScene
+from homedaemon.scenes import BaseAutomation
 from datetime import datetime
 from urllib import request
 import json
 
-class Scene(BaseScene):
-    def __init__(self, daemon):
-        super().__init__(daemon)
+class Scene(BaseAutomation):
+    def __init__(self,sid, daemon):
+        super().__init__(sid, daemon)
         self.name = 'sunset'
-        self.triggers = 'timer.time.01:00'
+        self.add_trigger('report.clock.time.01:00', self.pull)
     
-    def on(self):
+    def pull(self, *args):
         utcoffset = datetime.now() - datetime.utcnow()
         with request.urlopen('https://api.sunrise-sunset.org/json?lat=52.2319581&lng=21.0067249&formatted=0') as r:
             try:    

@@ -76,38 +76,12 @@ class HomeDaemon:
                 dev_list.append({'sid': dev['sid'], 'model': dev['model'],
                                 'name': dev['name'], 'place': dev['place'],
                                 'status': self.devices[dev['sid']].device_status()})
-        self.logger.info('Load devices')
+        
+        self.bus.emit('report.homed.devices.loaded', "Devices Loaded")
         self.loop.call_later(5, self.bus.emit, 'devices_list.daemon.populate.list', {'cmd':'devices_list', 'data': dev_list})
 
-    def load_scenes(self):
-        # if 'scenes' in self.db:
-        #     self.db.delete('scenes')
-        # self.db.create('scenes')
-        # self.scenesdb = self.db['scenes'] 
-        with os.scandir(self.config['scenes']['path']) as it:
-            for entry in it:
-                if entry.name.endswith('.py') and entry.is_file():
-                    print(entry.name)
-                    # _scene = importlib.import_module(entry.name[:-3])
-                    # inst = _scene.Scene(self)
-                    # if inst.name not in self.scenes:
-                    #     self.scenes[inst.name] = inst
-                    #     self.scenesdb[inst.name] = {'automatic': inst.automatic,
-                    #                                 'name': inst.name,
-                    #                                 'sid': inst.name,
-                    #                                 'reversible': inst.reversible,
-                    #                                 'place': inst.place}
-                    #     self.logger.info(f'loaded {inst.name}')
-                    # else:
-                    #     self.logger.warning(f'scene duplicate name skiping ... {inst.name}')
-                    #     continue
-    
-    def update_dev_data(self, data):
-        with self.lock:
-            self.daemon.device_data[self.sid] = data['data']
-
     def run(self):
-        self.logger.info(f'main thread {current_thread()} loop {id(self.loop)}')
+        self.debug(f'main thread {current_thread()} loop {id(self.loop)}')
         self.loop.run_in_executor(None, self.load_inputs)
         self.loop.run_in_executor(None, self.load_devices)
         
@@ -117,7 +91,7 @@ class HomeDaemon:
         # self.loop.add_signal_handler(signal.SIGTERM, self.stop)
 
         try:
-            self.logger.debug('Daemon is listening')
+            self.bus.emit('report.homed.status.started')
             self.loop.run_forever()
         except KeyboardInterrupt:
             pass

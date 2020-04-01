@@ -8,6 +8,7 @@ class SceneInterface:
         self.sid = sid
         self.daemon = daemon
         self.name = ''
+        self.model = ''
         self.running = False
     
     def _runner(self, handler, *args):
@@ -37,13 +38,17 @@ class SceneInterface:
     
     def restore_devices_state(self, *sids):
         pass
+    
+    def device_status(self):
+        return {'status': {True: 'on', False: 'off'}.get(self.running)}
 
 class BaseScene(SceneInterface):
     def __init__(self, sid, daemon):
         super().__init__(sid, daemon)
         self.reversible = False
-        self.daemon.bus.add_trigger(f'write.{self.sid}.status.on', self._runner, self.on)
-        self.daemon.bus.add_trigger(f'write.{self.sid}.status.off',self._runner, self.off)
+        self.model = 'scene'
+        self.daemon.bus.add_trigger(f'write.{self.sid}.status.on', self._on, self.on)
+        self.daemon.bus.add_trigger(f'write.{self.sid}.status.off',self._off, self.off)
                     
     def _on(self):
         self.daemon.bus.emit(f'report{self.sid}.status.on')
@@ -78,9 +83,9 @@ class BaseScene(SceneInterface):
 class BaseAutomation(SceneInterface):
     def __init__(self, sid, daemon):
         super().__init__(sid, daemon)    
+        self.model = 'automation'
         
     def add_trigger(self, trigger, handler):
-        print(f'add trigger {trigger}')
         self.daemon.bus.add_trigger(trigger, self._runner, handler)
     
 

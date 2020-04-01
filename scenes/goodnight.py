@@ -1,10 +1,9 @@
 from homedaemon.scenes import BaseScene
 
 class Scene(BaseScene):
-    def __init__(self, daemon):
-        super().__init__(daemon)
+    def __init__(self,sid, daemon):
+        super().__init__(sid, daemon)
         self.name = 'good night'
-        self.automatic = False
         self.place = 'All'
     
     def on(self):

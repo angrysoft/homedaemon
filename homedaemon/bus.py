@@ -97,6 +97,7 @@ class Bus:
                 self.loop.run_in_executor(None, *handler_with_args)
     
     def emit_cmd(self, event):
+        #TODO problem jak jest wieceje elementów w data
         self.emit(event, event)
             
     def is_async(self, ev):
