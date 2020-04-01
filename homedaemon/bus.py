@@ -3,13 +3,16 @@ import asyncio
 import functools
 from datetime import datetime
 from threading import current_thread
+import pprint
 
 class Trigger:
     def __init__(self, trigger):
         if type(trigger) is str:
-            _values = trigger.split('.', 4)
+            _values = trigger.split('.', 3)
             if len(_values) == 4:
                 self.cmd,self.sid, self.event, self.value = _values
+            else:
+                raise ValueError(f'incorret trigger format:  {trigger}')
         
     
     def __repr__(self):
@@ -77,7 +80,9 @@ class Bus:
     
     def emit(self, event:str, *payload):
         trigger = Trigger(event)
-        print(current_thread(), trigger, payload)
+        print(current_thread(), trigger)
+        pprint.pprint(payload)
+        
         for handler, args in self.get_handlers(trigger):
             if self.is_async(handler):
                 if payload:
@@ -94,12 +99,12 @@ class Bus:
     
     def emit_cmd(self, event):
         try:
-            trigger = f"{event['cmd']}.{event['sid']}."
             _data = event['data'].copy()
             for key in _data:
-                self.emit(trigger, {'cmd': event['cmd'],
-                                    'sid': event['sid'],
-                                    'data': {key: _data['key']}})
+                self.emit(f"{event['cmd']}.{event['sid']}.{key}.{_data[key]}",
+                          {'cmd': event['cmd'],
+                           'sid': event['sid'],
+                           'data': {key: _data[key]}})
         except KeyError:
             pass
         
@@ -109,8 +114,6 @@ class Bus:
         else:
             return False
 
-
-    
 
 class Triggers:
     def __init__(self):
@@ -133,9 +136,6 @@ class Triggers:
         return str(self._triggers)
         
             
-        
-
-
 if __name__ == "__main__":
     def print_hand(a,b):
         print(a,b)

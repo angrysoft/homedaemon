@@ -10,6 +10,7 @@ class SceneInterface:
         self.name = ''
         self.model = ''
         self.running = False
+        self.run_after = RunAfter
     
     def _runner(self, handler, *args):
         self.daemon.bus.emit(f'report.{self.sid}.status.on')
@@ -87,7 +88,11 @@ class BaseAutomation(SceneInterface):
         
     def add_trigger(self, trigger, handler):
         self.daemon.bus.add_trigger(trigger, self._runner, handler)
-    
+
+class RunAfter:
+    def __init__(self):
+        pass
+         
 
 class TimeCheck:
     def __init__(self, operator, value1, value2=None):

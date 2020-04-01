@@ -8,6 +8,7 @@ class Scene(BaseAutomation):
         super().__init__(sid, daemon)
         self.name = 'sunset'
         self.add_trigger('report.clock.time.01:00', self.pull)
+        self.pull()
     
     def pull(self, *args):
         utcoffset = datetime.now() - datetime.utcnow()

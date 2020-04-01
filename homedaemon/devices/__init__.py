@@ -24,7 +24,7 @@ class Devices:
             'philips_light': PhilipsDevice,
             # 'sonoff': SonoffDevice,
             'scenes': SceneDevice,
-            # 'virtual': VirtualDevice
+            'virtual': VirtualDevice
             }.get(data.get('family'), self._unknown_device_family)(data, daemon)
         if device:
             self._devices[data['sid']] = device

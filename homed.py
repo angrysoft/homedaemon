@@ -30,7 +30,7 @@ import json
 import os
 import sys
 import logging
-from threading import Thread, current_thread, RLock
+from threading import current_thread
 from time import sleep
 from pycouchdb import Server
 from systemd.journal import JournalHandler
@@ -54,8 +54,6 @@ class HomeDaemon:
         self.logger.info('Starting Daemon')
         self.devices = Devices()
         self.bus.add_trigger('report.*.*.*', self.debug)
-        self.executors = None
-        self.lock = RLock()
 
     def debug(self, msg=None):
         if msg is not None:
@@ -139,7 +137,6 @@ if __name__ == '__main__':
     if len(sys.argv) < 2:
         logger.addHandler(JournalHandler())    
     else:
-        # logging.basicConfig(filename="home.log")
         logger.addHandler(logging.StreamHandler(sys.stdout))
         logger.addHandler(logging.FileHandler('home.log'))
     
