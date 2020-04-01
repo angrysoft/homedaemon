@@ -10,11 +10,7 @@ class Trigger:
             _values = trigger.split('.', 4)
             if len(_values) == 4:
                 self.cmd,self.sid, self.event, self.value = _values
-        elif type(trigger) is dict:
-            self.cmd = trigger['cmd']
-            self.sid = trigger['sid']
-            _data = trigger['data'].copy()
-            self.event, self.value = _data.popitem()
+        
     
     def __repr__(self):
         return f'Trigger: {self.cmd}.{self.sid}.{self.event}.{self.value}'
@@ -97,9 +93,16 @@ class Bus:
                 self.loop.run_in_executor(None, *handler_with_args)
     
     def emit_cmd(self, event):
-        #TODO problem jak jest wieceje elementów w data
-        self.emit(event, event)
-            
+        try:
+            trigger = f"{event['cmd']}.{event['sid']}."
+            _data = event['data'].copy()
+            for key in _data:
+                self.emit(trigger, {'cmd': event['cmd'],
+                                    'sid': event['sid'],
+                                    'data': {key: _data['key']}})
+        except KeyError:
+            pass
+        
     def is_async(self, ev):
         if asyncio.iscoroutine(ev) or asyncio.iscoroutinefunction(ev):
             return True

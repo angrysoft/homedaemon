@@ -14,7 +14,7 @@ class Devices:
         self._devices = dict()
     
     def register(self, data, daemon):
-        daemon.debug(f"Loading....{data['sid']}")
+        daemon.debug(f"Loading....{data['sid']} : {data.get('name')}")
         device = {
             'aqara': AqaraDevice,
             'yeelight': YeeligthDevice,
@@ -24,7 +24,7 @@ class Devices:
             'philips_light': PhilipsDevice,
             # 'sonoff': SonoffDevice,
             'scenes': SceneDevice,
-            'virtual': VirtualDevice
+            # 'virtual': VirtualDevice
             }.get(data.get('family'), self._unknown_device_family)(data, daemon)
         if device:
             self._devices[data['sid']] = device
