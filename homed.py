@@ -44,6 +44,7 @@ logger = logging.getLogger('homed')
 class HomeDaemon:
     def __init__(self):
         self.loop = asyncio.get_event_loop()
+        print(self.loop.get_debug())
         self.inputs = dict()
         self.bus = Bus(self.loop)
         self.db = Server()
@@ -75,7 +76,7 @@ class HomeDaemon:
                                 'name': dev['name'], 'place': dev['place'],
                                 'status': self.devices[dev['sid']].device_status()})
         
-        self.bus.emit('report.homed.devices.loaded', "Devices Loaded")
+        self.bus.emit('report.homed.devices.loaded')
         self.loop.call_later(5, self.bus.emit, 'devices_list.daemon.populate.list', {'cmd':'devices_list', 'data': dev_list})
 
     def run(self):
