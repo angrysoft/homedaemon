@@ -1,5 +1,4 @@
 from homedaemon.scenes import BaseAutomation
-from homedaemon.scenes import TimeCheck
 from datetime import datetime
 
 class Scene(BaseAutomation):
@@ -13,9 +12,15 @@ class Scene(BaseAutomation):
     
     def on_time(self):
         _sunset = datetime.now()
-        while True:
+        _target_time = datetime(_sunset.year, _sunset.month, _sunset.day, 23, 0, 0)
+        _delta - _target_time - _sunset
+        _delta = _delta.seconds
+        while _delta >= 0:
             if lamp.is_on():
                 lamp.ct_pc(50)
-            self.sleep()
+            _delta -= 600
+            print(_delta)
+            self.sleep(600)
+        self.lamp.ct_pc(0)
         
             
