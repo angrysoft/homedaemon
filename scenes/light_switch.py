@@ -21,8 +21,8 @@ class Scene(BaseAutomation):
                       '158d0002bffe5a',
                     #   'rgb01',
                       '0x0000000007e7bae0']
-        self.lamp.on()
-        self.lamp.set_bricct(100,1)
+        # self.lamp.on()
+        # self.lamp.set_bricct(100,1)
         for _sid in dev_to_off:
             dev = self.get_device(_sid)
             print(dev.model)
@@ -35,16 +35,14 @@ class Scene(BaseAutomation):
                 dev.channel_0.off()
             elif dev.model in ('bslamp1', 'color', 'rgbstrip', 'bravia'):
                 dev.off()
-        self.sleep(10)
-        self.lamp.set_bricct(1,1)
-        
+        # self.sleep(10)
+        # self.lamp.set_bricct(1,1)
     
     def lamp_toggle(self):
         if self.lamp:
             self.lamp.toggle()
             if self.lamp.is_on:
                 self.lamp.set_bricct(1,1)
-    
     
     def toggle_bright(self):
         if self.lamp:
