@@ -5,7 +5,7 @@ from datetime import datetime
 class Scene(BaseAutomation):
     def __init__(self,sid, daemon):
         super().__init__(sid, daemon)
-        self.name = 'Lamap color temp'
+        self.name = 'Lamp color temp'
         self.add_trigger('report.clock.time.sunset', self.on_time)
         self.place = 'Living room'
         self.lamp = self.get_device('0x0000000007e7bae0')

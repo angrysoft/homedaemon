@@ -12,7 +12,7 @@ class Trigger:
             if len(_values) == 4:
                 self.cmd,self.sid, self.event, self.value = _values
             else:
-                raise ValueError(f'incorret trigger format:  {trigger}')
+                raise ValueError(f'incorrect trigger format:  {trigger}')
         
     
     def __repr__(self):
