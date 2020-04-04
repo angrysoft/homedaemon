@@ -26,8 +26,7 @@ class AqaraDevice:
             'plug': Plug,
             'switch': Switch,
             'gateway': cls.get_gateway}.get(data['model'], Dummy)(sid=data['sid'], gateway=gw)
-        daemon.bus.on('write', dev.sid, dev.write)
-        # TODO emit init raport with actual device status
+        daemon.bus.add_trigger(f'write.{dev.sid}.*.*', dev.write)
         return dev
     
     @classmethod

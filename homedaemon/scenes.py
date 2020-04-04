@@ -3,78 +3,28 @@ from threading import Thread, Event
 from datetime import datetime, time
 from time import sleep
 
-class Scenes:
-    def __init__(self):
-        self._scenes = dict()
-    
-    def load(self, scene):
-        pass
-    
-    
-
-class BaseScene(Thread):
-    def __init__(self, daemon):
-        super().__init__()
+class SceneInterface:
+    def __init__(self, sid, daemon):
+        self.sid = sid
         self.daemon = daemon
         self.name = ''
-        self._automatic = True
-        self.reversible = False
-        self._triggers = list()
+        self.model = ''
         self.running = False
-        self.place = ''
+        self.run_after = RunAfter
     
-    @property
-    def triggers(self):
-        return self._triggers
-    
-    @triggers.setter
-    def triggers(self, value):
-        if self._automatic:
-            trig = Trigger(value, self)
-            self._triggers.append(trig)
-            self.daemon.bus.on('report', trig.sid, trig.pull)
-    
-    @property
-    def automatic(self):
-        return self._automatic
-    
-    @automatic.setter
-    def automatic(self, value):
-        self._automatic = value
-        if value is False:
-            self.daemon.bus.on('write', self.name, self.do)
-
-    def do(self, cmd):
-        data = cmd.get('data', {})
-        sc = Thread(name=self.name, target=self._runner, args=(data.get('status'),))
-        sc.start()
-    
-    def _runner(self, status):
-        if self.running:
-            self.daemon.logger.warning(f'scene {self.name} is already running')
-            return
-        cmd = {'cmd': 'scene', 'sid': self.name, 'data':{'status': status, 'running': True}}
+    def _runner(self, handler, *args):
+        self.daemon.bus.emit(f'report.{self.sid}.status.on')
         self.running = True
-        self.daemon.bus.emit_cmd(cmd)
         try:
-            {'on': self.on, 'off': self.off}.get(status, self._unknown_cmd)()
+            handler()
         except Exception as err:
             self.daemon.logger.error(f'scene running error {self.name} {err}')
         finally:
+            self.daemon.bus.emit(f'report.{self.sid}.status.off')
             self.running = False
-            cmd['data']['running'] = False
-            self.daemon.bus.emit_cmd(cmd)
-        self.daemon.logger.debug(f'debug : scene {self.name} {status}')
-                    
-    def on(self):
-        pass
-
-    def off(self):
-        pass
-
-    def _unknown_cmd(self):
-        self.daemon.logger.error(f'unknown status')
-
+        # sc = Thread(name=self.name, target=handler, args=args)
+        # sc.start()
+    
     def sleep(self, s):
         sleep(s)
         
@@ -83,35 +33,66 @@ class BaseScene(Thread):
 
     def get_device(self, sid):
         return self.daemon.devices.get(sid)
-    
+
     def store_device_state(self, *sids):
         pass
-        # self.daemon.scenesdb[self.name]['state'] = {}
-        # for sid in sids:
-        #     self.daemon.scenesdb[self.name]['state'][sid] = self.daemon.device_data[sid]
     
     def restore_devices_state(self, *sids):
         pass
-
-
-class Trigger:
-    sid = ''
-    event = ''
-    value = ''
-    def __init__(self, trigger, scene):
-        if type(trigger) is str:
-            _values = trigger.split('.')
-            if len(_values) == 3:
-                self.sid, self.event, self.value = _values
-        self._scene = scene
     
-    def pull(self, event):
-        if event.get('data', dict()).get(self.event) == self.value:
-            self._scene.do({'data':{'status': 'on'}})
-    
-    def __repr__(self):
-        return f'Trigger: {self.sid}.{self.event}.{self.value}'
+    def device_status(self):
+        return {'status': {True: 'on', False: 'off'}.get(self.running)}
 
+class BaseScene(SceneInterface):
+    def __init__(self, sid, daemon):
+        super().__init__(sid, daemon)
+        self.reversible = False
+        self.model = 'scene'
+        self.daemon.bus.add_trigger(f'write.{self.sid}.status.on', self._on, self.on)
+        self.daemon.bus.add_trigger(f'write.{self.sid}.status.off',self._off, self.off)
+                    
+    def _on(self):
+        self.daemon.bus.emit(f'report{self.sid}.status.on')
+        self.running = True
+        try:
+            self.on()
+        except Exception as err:
+            self.daemon.logger.error(f'scene running error {self.name} {err}')
+        finally:
+            if not self.reversible:
+                self.daemon.bus.emit(f'report{self.sid}.status.off')
+                
+    def on(self):
+        pass
+    
+    def _off(self):
+        if not self.reversible or not self.running:
+            return
+        try:
+            self.off()
+        except Exception as err:
+            self.daemon.logger.error(f'scene running error {self.name} {err}')
+        finally:
+            self.daemon.bus.emit(f'report{self.sid}.status.off')
+            self.running = False
+            
+        
+    def off(self):
+        pass
+
+    
+class BaseAutomation(SceneInterface):
+    def __init__(self, sid, daemon):
+        super().__init__(sid, daemon)    
+        self.model = 'automation'
+        
+    def add_trigger(self, trigger, handler):
+        self.daemon.bus.add_trigger(trigger, self._runner, handler)
+
+class RunAfter:
+    def __init__(self):
+        pass
+         
 
 class TimeCheck:
     def __init__(self, operator, value1, value2=None):

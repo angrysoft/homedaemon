@@ -1,11 +1,11 @@
-from homedaemon.scenes import BaseScene
+from homedaemon.scenes import BaseAutomation
 
-class Scene(BaseScene):
-    def __init__(self, daemon):
-        super().__init__(daemon)
+class Scene(BaseAutomation):
+    def __init__(self,sid, daemon):
+        super().__init__(sid, daemon)
         self.name = 'alarm'
-        self.triggers = '158d00029a49ba.status.motion'
-        self.triggers = '158d0002ec03fe.status.motion'
+        self.add_trigger('report.158d00029a49ba.status.motion', self.log)
+        self.add_trigger('report.158d0002ec03fe.status.motion', self.log)
     
-    def on(self):
-        pass
+    def log(self):
+        self.daemon.logger.debug('Alarm triggerd')

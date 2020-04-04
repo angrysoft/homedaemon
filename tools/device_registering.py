@@ -5,6 +5,10 @@ from pycouchdb import Server
 from pyxiaomi import Yeelight
 from pytvremote import Bravia
 from urllib.parse import urlparse
+import importlib
+importlib.sys.path.append('../')
+importlib.sys.path.append('../scenes')
+from homedaemon.scenes import BaseAutomation, BaseScene
 import json
 import os
 
@@ -15,7 +19,6 @@ class Register:
         self.devices = None
         self.devices_data = None
         self.config = None
-        self.scenes = None
         self.residents = None
         self.names = {
             '158d0002a13819': {'name': 'Door', 'place': 'Living room'},
@@ -47,38 +50,29 @@ class Register:
             '158d0002a18c2b': {'name': 'Light', 'place': 'Hall'},
             '158d00029a49ba': {'name': 'Motion', 'place': 'Hall'},
             '158d0002b74c28': {'name': 'Entrance', 'place': 'Hall'},
-            'timer': {'name': 'clock', 'place': ''}
+            'clock': {'name': 'clock', 'place': ''}
         }
 
     def clear_db(self):
         print('Remove all device and device data')
         if 'devices' in self.srv:
             self.srv.delete('devices')
-        if 'devices-data' in self.srv:
-            self.srv.delete('devices-data')
-        if 'scenes' in self.srv:
-            self.srv.delete('scenes')
-
+            
     def create_db(self):
         print('Creating db')
         self.srv.create('devices')
-        self.srv.create('devices-data')
-        self.srv.create('scenes')
         
         
     def accessing_db(self):
         print('accessing db')
         self.devices = self.srv['devices']
-        self.devices_data = self.srv.db('devices-data')
-        self.scenes = self.srv.db('scenes')
         
 
-    @staticmethod
-    def dev_list():
+    def dev_list(self):
         gw = Gateway()
         ye = Yeelight()
         gt = gw.whois()
-        
+        sc = self.get_scenes()
         list_devs = list()
         
         for dev in gw.read_all_devices():
@@ -91,26 +85,6 @@ class Register:
         list_devs.append({'model': 'philips.light.candle', 'family': 'philips_light',
                           'token': '76b0a683c37406443a7056417926989a', 'sid': '235444403'})
         
-        list_devs.append({'cmd': 'report', 'model': 'dallastemp',
-                          'sid': 'dallasDS0', 'family': 'custom',
-                          'data': {'temp': 0}})
-        list_devs.append({'cmd': 'report', 'model': 'rgbstrip',
-                          'sid': 'rgb01', 'family': 'rgb',
-                          'data': {'red': 0, 'green': 0, 'blue': 0, 'bright': 0, 'ct': 1700,
-                                   'default': {'red': 0, 'green': 0, 'blue': 0, 'bright': 0, 'ct': 1700},
-                                   'status': 'off'}})
-        tv = Bravia('192.168.10.5', macaddres='FC:F1:52:2A:9B:1E')
-        
-        list_devs.append({'cmd': 'write', 'model': tv.model,
-                          'sid': tv.sid, 'family': 'tv',
-                          'ip': '192.168.10.5',
-                          'mac': 'FC:F1:52:2A:9B:1E',
-                          'data': {'button': ''}})
-        
-        list_devs.append({'cmd': 'report', 'model': 'timer',
-                          'sid': 'timer', 'family': 'virtual',
-                          'data': {'dummy': 0}})
-        print('Find custom devices')
         yedev = ye.discover()
         print('find yeelight devices')
         for bulb in yedev:
@@ -118,22 +92,49 @@ class Register:
             # url = urlparse(d.get('location'))
             del d['location']
             d['sid'] = d.pop('id')
-            # d['ip'] = url.hostname
-            # d['port'] = url.port
-            d['data'] = {'power': d.pop('power'),
-                         'bright': d.pop('bright'),
-                         'color_mode': d.pop('color_mode'),
-                         'ct': d.pop('ct'),
-                         'rgb': d.pop('rgb'),
-                         'hue': d.pop('hue'),
-                         'sat': d.pop('sat')
-                         }
             d['support'].append('on')
             d['support'].append('off')
             d['family'] = 'yeelight'
             list_devs.append(d)
-
+        
+        print('Find custom devices')
+        list_devs.append({'cmd': 'report', 'model': 'clock',
+                          'sid': 'clock', 'family': 'virtual'})
+        
+        list_devs.extend(sc)
+        list_devs.append({'cmd': 'report', 'model': 'dallastemp',
+                          'sid': 'dallasDS0', 'family': 'arduino'})
+        
+        list_devs.append({'cmd': 'report', 'model': 'rgbstrip',
+                          'sid': 'rgb01', 'family': 'arduino'})
+        
+        tv = Bravia('192.168.10.5', macaddres='FC:F1:52:2A:9B:1E')
+        
+        list_devs.append({'cmd': 'write', 'model': tv.model,
+                          'sid': tv.sid, 'family': 'tv',
+                          'ip': '192.168.10.5',
+                          'mac': 'FC:F1:52:2A:9B:1E'})
         return list_devs
+    
+    def get_scenes(self):
+        scenes = list()
+        with os.scandir('../scenes') as it:
+            for entry in it:
+                if entry.name.endswith('.py') and entry.is_file():
+                    name = entry.name[:-3]
+                    name = name.replace('_', ' ')
+                    _scene = importlib.import_module(entry.name[:-3])
+                    if isinstance(_scene, BaseAutomation):
+                        model = 'automation'
+                    else:
+                        model = 'scene'
+                    
+                    scenes.append({'sid': entry.name[:-3],
+                                   'name':name.title(),
+                                   'place': '',
+                                   'family': 'scenes',
+                                   'model': model})
+        return scenes
 
     def registering(self):
         self.clear_db()
@@ -143,20 +144,18 @@ class Register:
 
         print('Registering device:')
         for d in list_devs:
+            if not d or not d.get('sid'):
+                continue
             if 'cmd' in d:
                 del d['cmd']
-            data = d.get('data',{})
             if 'data' in d:
                 del d['data']
             sid = d.get('sid')
-            data['sid'] = sid
             if sid in self.names:
                 d['name'] = self.names[sid]['name']
                 d['place'] = self.names[sid]['place']
             print(f"\t {d.get('model')}  {d.get('sid')} {d.get('name')} in {d.get('place')}")
-
             self.devices[d.get('sid')] = d
-            # self.devices_data[d.get('sid')] = data
 
     def add_config(self):
         if 'config' in self.srv:

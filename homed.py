@@ -30,7 +30,7 @@ import json
 import os
 import sys
 import logging
-from threading import Thread, current_thread, RLock
+from threading import current_thread
 from time import sleep
 from pycouchdb import Server
 from systemd.journal import JournalHandler
@@ -44,21 +44,21 @@ logger = logging.getLogger('homed')
 class HomeDaemon:
     def __init__(self):
         self.loop = asyncio.get_event_loop()
+        print(self.loop.get_debug())
         self.inputs = dict()
         self.bus = Bus(self.loop)
         self.db = Server()
         self.config = self.db['config']
+        sys.path.append(self.config['scenes']['path'])
         self.devicesdb = self.db['devices']
-        self.device_data = self.db['devices-data']
-        self.scenesdb = None
         self.logger = logger
         self.logger.info('Starting Daemon')
         self.devices = Devices()
-        self.scenes = dict()
-        self.bus.on('report', '*', self.logger.debug)
-        self.bus.on('write', '*', self.logger.debug)
-        self.executors = None
-        self.lock = RLock()
+        self.bus.add_trigger('report.*.*.*', self.debug)
+
+    def debug(self, msg=None):
+        if msg is not None:
+            self.logger.debug(f'>>> {msg}')
 
     def load_inputs(self):
         for _input_name in self.config['inputs']['list']:
@@ -71,62 +71,26 @@ class HomeDaemon:
     def load_devices(self):
         dev_list = list()
         for dev in self.devicesdb:
-            self.devices.load(dev, self)
-            dev_list.append({'sid': dev['sid'], 'model': dev['model'],
-                             'name': dev['name'], 'place': dev['place'],
-                             'status': self.devices[dev['sid']].device_status()})
-        self.logger.info('Load devices')
-        self.loop.call_later(5, self.bus.emit_cmd, {'cmd': 'devices_list', 'sid': 'all', 'data': dev_list})
-        # self.bus.emit_cmd({'cmd': 'devices_list', 'sid': 'all', 'data': dev_list})
-
-    def load_scenes(self):
-        if 'scenes' in self.db:
-            self.db.delete('scenes')
-        self.db.create('scenes')
-        self.scenesdb = self.db['scenes'] 
-        sys.path.append(self.config['scenes']['path'])
-        with os.scandir(self.config['scenes']['path']) as it:
-            for entry in it:
-                if entry.name.endswith('.py') and entry.is_file():
-                    _scene = importlib.import_module(entry.name[:-3])
-                    inst = _scene.Scene(self)
-                    if inst.name not in self.scenes:
-                        self.scenes[inst.name] = inst
-                        self.scenesdb[inst.name] = {'automatic': inst.automatic,
-                                                    'name': inst.name,
-                                                    'sid': inst.name,
-                                                    'reversible': inst.reversible,
-                                                    'place': inst.place}
-                        self.logger.info(f'loaded {inst.name}')
-                    else:
-                        self.logger.warning(f'scene duplicate name skiping ... {inst.name}')
-                        continue
-        self.loop.call_later(5, self._announce_scene_list)
+            if self.devices.register(dev, self):
+                dev_list.append({'sid': dev['sid'], 'model': dev['model'],
+                                'name': dev['name'], 'place': dev['place'],
+                                'status': self.devices[dev['sid']].device_status()})
         
-    def _announce_scene_list(self):
-        sc_list = list()
-        for s in self.scenesdb:
-            if s.get('automatic') == False:
-                del s['_rev']
-                sc_list.append(s)
-        self.bus.emit_cmd({'cmd': 'scene', 'sid': 'all', 'data': {'scenes': sc_list}})
-    
-    def update_dev_data(self, data):
-        with self.lock:
-            self.daemon.device_data[self.sid] = data['data']
+        self.bus.emit('report.homed.devices.loaded')
+        self.loop.call_later(5, self.bus.emit, 'devices_list.daemon.populate.list', {'cmd':'devices_list', 'data': dev_list})
 
     def run(self):
-        self.logger.info(f'main thread {current_thread()} loop {id(self.loop)}')
+        self.debug(f'main thread {current_thread()} loop {id(self.loop)}')
         self.loop.run_in_executor(None, self.load_inputs)
         self.loop.run_in_executor(None, self.load_devices)
-        self.loop.run_in_executor(None, self.load_scenes)
+        
         # self.loop.add_signal_handler(signal.SIGINT, self.stop)
         # self.loop.add_signal_handler(signal.SIGHUP, self.stop)
         # self.loop.add_signal_handler(signal.SIGQUIT, self.stop)
         # self.loop.add_signal_handler(signal.SIGTERM, self.stop)
 
         try:
-            self.logger.debug('Daemon is listening')
+            self.bus.emit('report.homed.status.started')
             self.loop.run_forever()
         except KeyboardInterrupt:
             pass
@@ -139,7 +103,12 @@ class HomeDaemon:
 
     def stop(self, *args, **kwargs):
         self.logger.info('Stop homed')
-        self.loop.stop()
+        try:
+            self.loop.stop()
+            self._cancel_all_tasks()
+            self.loop.run_until_complete(self.loop.shutdown_asyncgens())
+        finally:
+            self.loop.close()
     
     def _cancel_all_tasks(self):
         to_cancel = tasks.all_tasks(self.loop)
@@ -169,7 +138,6 @@ if __name__ == '__main__':
     if len(sys.argv) < 2:
         logger.addHandler(JournalHandler())    
     else:
-        # logging.basicConfig(filename="home.log")
         logger.addHandler(logging.StreamHandler(sys.stdout))
         logger.addHandler(logging.FileHandler('home.log'))
     

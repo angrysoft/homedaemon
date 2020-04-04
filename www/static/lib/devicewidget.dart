@@ -702,6 +702,7 @@ class ColorSetterWindow {
   setData() {
     HttpRequest.getString('/dev/data/${this.sid}').then((String resp) {
         var data = jsonDecode(resp);
+        print("color wnd $data");
         if (data.containsKey('bright')) {
           this.bright.value = data['bright'].toString();
         }

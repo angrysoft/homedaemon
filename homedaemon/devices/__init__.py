@@ -6,13 +6,15 @@ from .custom import CustomDevice
 from .computer import ComputerDevice
 from .rgb import RgbDevice
 from .virtual import VirtualDevice
+from .scenes import SceneDevice
 
 
 class Devices:
     def __init__(self):
         self._devices = dict()
     
-    def load(self, data, daemon):
+    def register(self, data, daemon):
+        daemon.debug(f"Loading....{data['sid']} : {data.get('name')}")
         device = {
             'aqara': AqaraDevice,
             'yeelight': YeeligthDevice,
@@ -21,10 +23,14 @@ class Devices:
             'rgb': RgbDevice,
             'philips_light': PhilipsDevice,
             # 'sonoff': SonoffDevice,
-            # 'scenes': SeceneDevice,
+            'scenes': SceneDevice,
             'virtual': VirtualDevice
             }.get(data.get('family'), self._unknown_device_family)(data, daemon)
-        self._devices[data['sid']] = device
+        if device:
+            self._devices[data['sid']] = device
+            return True
+        else:
+            return False
     
     def get(self, key, ret=None):
         try:
@@ -33,7 +39,7 @@ class Devices:
             return ret            
     
     def _unknown_device_family(self, data, *args):
-        pass
+        return None
         # raise ValueError(f"Unkonown deivce family : {data.get('family')} {data}")
     
     def __contains__(self, key):
