@@ -1,6 +1,7 @@
 from setuptools import setup, find_packages
 from glob import glob
 import os
+from homed import __version__
 
 
 def get_files(name):
@@ -15,7 +16,7 @@ scenes = glob('scenes/*.py')
 
 setup(
     name='AngryHome',
-    version='0.9',
+    version=__version__,
     packages=find_packages(),
     url='https://bitbucket.org/angrysoft/angryhome',
     license='Apache 2.0',

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # homed.py
-# Copyright (C) 2014-2019  Sebastian Zwierzchowski <sebastian.zwierzchowski@gmail.com>
+# Copyright (C) 2014-2020  Sebastian Zwierzchowski <sebastian.zwierzchowski@gmail.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -17,10 +17,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-__author__ = 'Sebastian Zwierzchowski'
-__copyright__ = 'Copyright 2014-2019 Sebastian Zwierzchowski'
+__author__ = 'Angrysoft - Sebastian Zwierzchowski'
+__copyright__ = 'Copyright 2014-2020 Sebastian Zwierzchowski'
 __license__ = 'GPL2'
-__version__ = '0.9'
+__version__ = '0.9.1'
 
 
 import asyncio
@@ -36,7 +36,6 @@ from pycouchdb import Server
 from systemd.journal import JournalHandler
 from homedaemon.devices import Devices
 from homedaemon.bus import Bus
-from asyncio import tasks
 
 logger = logging.getLogger('homed')
 
@@ -111,7 +110,7 @@ class HomeDaemon:
             self.loop.close()
     
     def _cancel_all_tasks(self):
-        to_cancel = tasks.all_tasks(self.loop)
+        to_cancel = asyncio.tasks.all_tasks(self.loop)
         if not to_cancel:
             return
 
@@ -119,7 +118,7 @@ class HomeDaemon:
             task.cancel()
 
         self.loop.run_until_complete(
-            tasks.gather(*to_cancel, loop=self.loop, return_exceptions=True))
+            asyncio.tasks.gather(*to_cancel, loop=self.loop, return_exceptions=True))
 
         for task in to_cancel:
             if task.cancelled():
