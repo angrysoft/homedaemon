@@ -80,8 +80,8 @@ class Bus:
     
     def emit(self, event:str, *payload):
         trigger = Trigger(event)
-        print(current_thread(), trigger)
-        pprint.pprint(payload)
+        # print(current_thread(), trigger)
+        # pprint.pprint(payload)
         
         for handler, args in self.get_handlers(trigger):
             if self.is_async(handler):

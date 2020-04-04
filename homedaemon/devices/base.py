@@ -58,3 +58,6 @@ class ButtonToggleOnOff(ButtonOnOff):
 class Dummy:
     def __init__(self, *args, **kwargs):
         pass
+    
+    def device_status(self):
+        return {}
