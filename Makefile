@@ -36,12 +36,6 @@ stylescss: $(path)/styles.scss
 devicesscss: $(path)/devices/devices.scss
 	sassc -t compressed $(path)/devices/devices.scss $(path)/devices/devices.min.css
 
-tvpilotcss: $(path)/tvpilot/tvpilot.scss
-	sassc -t compressed $(path)/tvpilot/tvpilot.scss $(path)/tvpilot/tvpilot.min.css
-
-ledpilotcss: $(path)/ledpilot/ledpilot.scss
-	sassc -t compressed $(path)/ledpilot/ledpilot.scss $(path)/ledpilot/ledpilot.min.css
-
 install:
 	python3 setup.py -v install --prefix=$(DESTDIR)$(PREFIX) --record files.txt
 
