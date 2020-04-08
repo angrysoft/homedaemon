@@ -10,7 +10,6 @@ class SceneInterface:
         self.name = ''
         self.model = ''
         self.running = False
-        self.run_after = RunAfter
     
     def _runner(self, handler, *args):
         self.daemon.bus.emit(f'report.{self.sid}.status.on')
@@ -27,9 +26,6 @@ class SceneInterface:
     
     def sleep(self, s):
         sleep(s)
-        
-    def run_after(self, delay, callback, cancelable=False):
-        pass
 
     def get_device(self, sid):
         return self.daemon.devices.get(sid)
@@ -90,9 +86,34 @@ class BaseAutomation(SceneInterface):
         self.daemon.bus.add_trigger(trigger, self._runner, handler)
 
 class RunAfter:
-    def __init__(self):
-        pass
-         
+    def __init__(self, delay, callback, *args):
+        self.delay = delay
+        self.callback = callback
+        self.args = args
+        self.ev = Event()
+        self._is_waiting = False
+                
+    def wait(self):
+        Thread(target=self._wait, daemon=True).start()
+    
+    def _wait(self):
+        self.ev.clear()
+        self._is_waiting = True
+        if not self.ev.wait(timeout=self.delay):
+            if self.args:
+                self.callback(*self.args)
+            else:
+                self.callback()
+        else:
+            print('canceled')
+            
+    @property
+    def is_waiting(self):
+        return self._is_waiting
+    
+    def cancel(self):
+        self.ev.set()
+        self._is_waiting = False
 
 class TimeCheck:
     def __init__(self, operator, value1, value2=None):
@@ -132,12 +153,6 @@ class TimeRange:
 
 
 class Time(time):
-    # def __new__(cls, hour=0, minute=0, second=0, microsecond=0, tzinfo=None, time_str=None):
-    #     if time_str:
-    #         return cls.__new__(*[int(i) for i in time_str.split(':')])
-    #     else:
-    #        return cls.__new__(hour, minute, second, microsecond)
-    
     def __add__(self, in_time):
         return self.to_sec() + in_time.to_sec()
     
