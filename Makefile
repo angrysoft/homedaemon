@@ -56,7 +56,7 @@ install_panel:
 	chmod -R g+w $(DESTDIR)/var/www/adminpanel
 
 uninstall:
-	rm -rvf $(DESTDIR)/etc/angryhome
+	# rm -rvf $(DESTDIR)/etc/angryhome
 	rm -vf $(DESTDIR)/usr/lib/systemd/system/homed.service
 	./uninstall.py
 
