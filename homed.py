@@ -36,6 +36,7 @@ from pycouchdb import Server
 from systemd.journal import JournalHandler
 from homedaemon.devices import Devices
 from homedaemon.bus import Bus
+import argparse
 
 logger = logging.getLogger('homed')
 
@@ -43,7 +44,6 @@ logger = logging.getLogger('homed')
 class HomeDaemon:
     def __init__(self):
         self.loop = asyncio.get_event_loop()
-        print(self.loop.get_debug())
         self.inputs = dict()
         self.bus = Bus(self.loop)
         self.db = Server()
@@ -53,7 +53,7 @@ class HomeDaemon:
         self.logger = logger
         self.logger.info('Starting Daemon')
         self.devices = Devices()
-        self.bus.add_trigger('report.*.*.*', self.debug)
+        self.bus.add_trigger('*.*.*.*', self.debug)
 
     def debug(self, msg=None):
         if msg is not None:
@@ -140,5 +140,25 @@ if __name__ == '__main__':
         logger.addHandler(logging.StreamHandler(sys.stdout))
         logger.addHandler(logging.FileHandler('home.log'))
     
-    hd = HomeDaemon()
+    parser = argparse.ArgumentParser(usage='%(prog)s [options]')
+    parser.add_argument('-d', '--debug', action="store_true", help="Debug msg")
+    parser.add_argument('-c', '--reboot', action='store_const', const='reboot', dest='power', help='Restartuj System')
+    parser.add_argument('--poweroff', action='store_const', const='poweroff', dest='power', help='Wyłącz System')
+
+    #subparsers = parser.add_subparsers()
+
+    # query_opts = optparse.OptionGroup(
+    #    parser, 'Query Options',
+    #    'These options control the query mode.',
+    # )
+    # query_opts.add_argument('-l', action='store_const', const='list', dest='query_mode',
+    #                      help='List contents')
+    # query_opts.add_argument('-f', action='store_const', const='file', dest='query_mode',
+    #                      help='Show owner of file')
+    # query_opts.add_argument('-a', action='store_const', const='all', dest='query_mode',
+    #                      help='Show all packages')
+    # parser.add_argument_group(query_opts)
+    args = parser.parse_args()
+    hd = HomeDaemon(args)
     hd.run()
+   
