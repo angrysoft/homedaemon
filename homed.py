@@ -23,26 +23,24 @@ __license__ = 'GPL2'
 __version__ = '0.9.1'
 
 
-import asyncio
-import signal
-import importlib
-import json
-import os
 import sys
+import signal
+import asyncio
 import logging
+import importlib
 from threading import current_thread
-from time import sleep
 from pycouchdb import Server
 from systemd.journal import JournalHandler
 from homedaemon.devices import Devices
 from homedaemon.bus import Bus
 import argparse
 
-logger = logging.getLogger('homed')
-
 
 class HomeDaemon:
-    def __init__(self):
+    def __init__(self, args):
+        self._config_path = args.config_dir
+        #load congi
+        self._debug = args.debug
         self.loop = asyncio.get_event_loop()
         self.inputs = dict()
         self.bus = Bus(self.loop)
@@ -50,10 +48,17 @@ class HomeDaemon:
         self.config = self.db['config']
         sys.path.append(self.config['scenes']['path'])
         self.devicesdb = self.db['devices']
-        self.logger = logger
+        self.setup_logger()
         self.logger.info('Starting Daemon')
         self.devices = Devices()
-        self.bus.add_trigger('*.*.*.*', self.debug)
+    
+    def setup_logger(self):
+        self.logger = logging.getLogger('homed')
+        self.logger.addHandler(JournalHandler())
+        self.logger.addHandler(logging.StreamHandler(sys.stdout))
+        if self._debug:
+            self.bus.add_trigger('*.*.*.*', self.debug)
+            self.logger.setLevel(logging.DEBUG)
 
     def debug(self, msg=None):
         if msg is not None:
@@ -100,14 +105,14 @@ class HomeDaemon:
             finally:
                 self.loop.close()
 
-    def stop(self, *args, **kwargs):
-        self.logger.info('Stop homed')
-        try:
-            self.loop.stop()
-            self._cancel_all_tasks()
-            self.loop.run_until_complete(self.loop.shutdown_asyncgens())
-        finally:
-            self.loop.close()
+    # def stop(self, *args, **kwargs):
+    #     self.logger.info('Stop homed')
+    #     try:
+    #         self.loop.stop()
+    #         self._cancel_all_tasks()
+    #         self.loop.run_until_complete(self.loop.shutdown_asyncgens())
+    #     finally:
+    #         self.loop.close()
     
     def _cancel_all_tasks(self):
         to_cancel = asyncio.tasks.all_tasks(self.loop)
@@ -132,33 +137,13 @@ class HomeDaemon:
 
 
 if __name__ == '__main__':
-    logger.setLevel(logging.DEBUG)
-    
-    if len(sys.argv) < 2:
-        logger.addHandler(JournalHandler())    
-    else:
-        logger.addHandler(logging.StreamHandler(sys.stdout))
-        logger.addHandler(logging.FileHandler('home.log'))
-    
     parser = argparse.ArgumentParser(usage='%(prog)s [options]')
     parser.add_argument('-d', '--debug', action="store_true", help="Debug msg")
-    parser.add_argument('-c', '--reboot', action='store_const', const='reboot', dest='power', help='Restartuj System')
-    parser.add_argument('--poweroff', action='store_const', const='poweroff', dest='power', help='Wyłącz System')
-
-    #subparsers = parser.add_subparsers()
-
-    # query_opts = optparse.OptionGroup(
-    #    parser, 'Query Options',
-    #    'These options control the query mode.',
-    # )
-    # query_opts.add_argument('-l', action='store_const', const='list', dest='query_mode',
-    #                      help='List contents')
-    # query_opts.add_argument('-f', action='store_const', const='file', dest='query_mode',
-    #                      help='Show owner of file')
-    # query_opts.add_argument('-a', action='store_const', const='all', dest='query_mode',
-    #                      help='Show all packages')
-    # parser.add_argument_group(query_opts)
+    parser.add_argument('-s', '--log-to-stdout', action="store_true", help="Print log info to stdout")
+    parser.add_argument('-c', '--config-dir', nargs='?', default='/etc/angryhome/conf.d', help='Path to config dir')
+    parser.add_argument('--version', action='version', version=f'%(prog)s {__version__}')
     args = parser.parse_args()
+    print(args)
     hd = HomeDaemon(args)
     hd.run()
    
