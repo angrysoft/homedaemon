@@ -59,7 +59,7 @@
               {{ color_light(d) }}
             {% elif d.get('model') in ['desklamp', 'philips.light.candle'] %}
               {{ white_light(d) }}
-            {% elif d.get('model') == 'plug' %}
+            {% elif d.get('model') in ['plug', 'diy_plug'] %}
               {{ plug(d) }}
             {% elif d.get('model') == 'KDL-48W585B' %}
               {{ tv(d) }}

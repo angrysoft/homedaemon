@@ -4,7 +4,7 @@ from pyxiaomi import Gateway
 from pycouchdb import Server
 from pyxiaomi import Yeelight
 from pytvremote import Bravia
-from pysonoff import Discover
+from pysonoff.protocol import Discover
 from urllib.parse import urlparse
 import importlib
 importlib.sys.path.append('../')
@@ -103,7 +103,11 @@ class Register:
         print('find sonff devices')
         sdevs = sof.search()
         for sdev in sdevs:
-            list_devs.append(sdevs[sdev])
+            d = sdevs[sdev]
+            d['family'] = 'sonoff'
+            d['sid'] = d.pop('id')
+            print(d)
+            list_devs.append(d)
         
         print('Find custom devices')
         list_devs.append({'cmd': 'report', 'model': 'clock',
@@ -162,7 +166,7 @@ class Register:
             if sid in self.names:
                 d['name'] = self.names[sid]['name']
                 d['place'] = self.names[sid]['place']
-            print(f"\t {d.get('model')}  {d.get('sid')} {d.get('name')} in {d.get('place')}")
+            print(f"\t {d.get('model'): <22}{d.get('sid'):<20} {d.get('name')} in {d.get('place')}")
             self.devices[d.get('sid')] = d
 
     def add_config(self):
