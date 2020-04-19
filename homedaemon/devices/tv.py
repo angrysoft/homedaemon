@@ -1,4 +1,4 @@
-from .base import BaseDevice, Dummy
+from .base import Dummy
 from pytvremote import Bravia
 
 class TvDevice:

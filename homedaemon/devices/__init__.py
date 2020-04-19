@@ -1,6 +1,7 @@
 from .aqaradevices import AqaraDevice
 from .yeelightdevices import YeeligthDevice
 from .philipsdevices import PhilipsDevice
+from .sonoffdevices import SonoffDevice
 from .tv import TvDevice
 from .custom import CustomDevice
 from .computer import ComputerDevice
@@ -22,7 +23,7 @@ class Devices:
             'tv': TvDevice,
             'rgb': RgbDevice,
             'philips_light': PhilipsDevice,
-            # 'sonoff': SonoffDevice,
+            'sonoff': SonoffDevice,
             'scenes': SceneDevice,
             'virtual': VirtualDevice
             }.get(data.get('family'), self._unknown_device_family)(data, daemon)

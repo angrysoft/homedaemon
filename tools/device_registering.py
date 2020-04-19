@@ -4,6 +4,7 @@ from pyxiaomi import Gateway
 from pycouchdb import Server
 from pyxiaomi import Yeelight
 from pytvremote import Bravia
+from pysonoff import Discover
 from urllib.parse import urlparse
 import importlib
 importlib.sys.path.append('../')
@@ -40,6 +41,7 @@ class Register:
             '158d000200a020': {'name': 'Switch', 'place': 'Kitchen'},
             '158d00044638db': {'name': 'Window', 'place': 'Kitchen'},
             '158d0002abac97': {'name': 'Light', 'place': 'Bathroom'},
+            '1000b6063e': {'name': 'Mirror Lamp', 'place': 'Bathroom'},
             '158d0002c9d230': {'name': 'Sensor', 'place': 'Bathroom'},
             '158d00024e2e5b': {'name': 'Light', 'place': 'Outside'},
             '158d00025d84a6': {'name': 'Sensor', 'place': 'Outside'},
@@ -73,6 +75,7 @@ class Register:
         ye = Yeelight()
         gt = gw.whois()
         sc = self.get_scenes()
+        sof = Discover()
         list_devs = list()
         
         for dev in gw.read_all_devices():
@@ -96,6 +99,11 @@ class Register:
             d['support'].append('off')
             d['family'] = 'yeelight'
             list_devs.append(d)
+        
+        print('find sonff devices')
+        sdevs = sof.search()
+        for sdev in sdevs:
+            list_devs.append(sdevs[sdev])
         
         print('Find custom devices')
         list_devs.append({'cmd': 'report', 'model': 'clock',
