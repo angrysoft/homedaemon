@@ -3,42 +3,6 @@ import json
 import sys
 from time import sleep
 from datetime import datetime, time
-from threading import Thread
-
-
-class Commands(Thread):
-    def __init__(self, cmds, queue_put=print):
-        super().__init__()
-        self.cmds = cmds
-        self.queue_put = queue_put
-
-    def run(self):
-        self._run_cmds(self.cmds)
-
-    def _run_cmds(self, cmds):
-        for c in cmds:
-            print(f'cmd : {c}')
-            self.cmd(c.get('cmd'), c.get('args'))
-
-    def cmd(self, cmd, args=None):
-        if cmd == 'device':
-            self.queue_put(args)
-        if cmd == 'sleep':
-            sleep(int(args))
-        if cmd == 'check':
-            self.chekc(args)
-
-    def chekc(self, args):
-        if len(args.get('if', 0)) < 3:
-            raise ValueError('if list  3 elemnts')
-        values  = args.get('if')
-        status = {'time': TimeCheck,
-                  'device': DevCheck}.get(values[0])(values[1:]).status
-        print(args.get('if'), status)
-        if status:
-            self._run_cmds(args.get('then', []))
-        else:
-            self._run_cmds(args.get('else', []))
 
 
 class TimeCheck:
@@ -80,18 +44,12 @@ class TimeRange:
             return self._from >= value <= self._to
 
 
-
-class DevCheck:
-    def __init__(self, op, value):
-        self.status = False
-        # TODO: ee and what ?
-
 class Time(time):
-    # def __new__(cls, hour=0, minute=0, second=0, microsecond=0, tzinfo=None, time_str=None):
-    #     if time_str:
-    #         return cls.__new__(*[int(i) for i in time_str.split(':')])
-    #     else:
-    #        return cls.__new__(hour, minute, second, microsecond)
+    def __new__(cls, hour=0, minute=0, second=0, microsecond=0, tzinfo=None, time_str=None):
+        if time_str:
+            return time.__new__(cls, *[int(i) for i in time_str.split(':')])
+        else:
+           return time.__new__(cls, hour, minute, second, microsecond)
     
     def __add__(self, in_time):
         return self.to_sec() + in_time.to_sec()
@@ -111,9 +69,13 @@ if __name__ == '__main__':
     #     cmds = json.load(jfile)
     #     cmd = Commands(cmds.get('on'))
     #     cmd.run()
-    t = Time(22)
+    #t = Time(22)
+    t = datetime.now().time()
     t1 = Time(23)
     print(t > t1)
+    print(t == t1)
     print(t.to_sec(), t1.to_sec())
     print(t1 - t)
     print(t1+t)
+    t2 = Time(time_str='23:33')
+    print(t2)

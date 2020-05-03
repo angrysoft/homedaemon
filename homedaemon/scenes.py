@@ -3,6 +3,7 @@ from threading import Thread, Event
 from datetime import datetime, time
 from time import sleep
 
+
 class SceneInterface:
     def __init__(self, sid, daemon):
         self.sid = sid
@@ -14,6 +15,7 @@ class SceneInterface:
     def _runner(self, handler, *args):
         self.daemon.bus.emit(f'report.{self.sid}.status.on')
         self.running = True
+        # handler()
         try:
             handler()
         except Exception as err:
@@ -38,6 +40,11 @@ class SceneInterface:
     
     def device_status(self):
         return {'status': {True: 'on', False: 'off'}.get(self.running)}
+    
+    def now(self):
+        """Retrun time now"""
+        return datetime.now().time()
+    
 
 class BaseScene(SceneInterface):
     def __init__(self, sid, daemon):
@@ -153,6 +160,12 @@ class TimeRange:
 
 
 class Time(time):
+    def __new__(cls, hour=0, minute=0, second=0, microsecond=0, tzinfo=None, time_str=None):
+        if time_str:
+            return time.__new__(cls, *[int(i) for i in time_str.split(':')])
+        else:
+           return time.__new__(cls, hour, minute, second, microsecond)
+    
     def __add__(self, in_time):
         return self.to_sec() + in_time.to_sec()
     
