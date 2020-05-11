@@ -26,13 +26,14 @@ __version__ = '0.9.1'
 import sys
 import signal
 import asyncio
-import logging
+
 import importlib
 from threading import current_thread
 from pycouchdb import Server
-from systemd.journal import JournalHandler
+
 from homedaemon.devices import Devices
 from homedaemon.bus import Bus
+from homedaemon.logger import Logger
 import argparse
 
 
@@ -40,7 +41,7 @@ class HomeDaemon:
     def __init__(self, args):
         self._config_path = args.config_dir
         #load congi
-        self._debug = args.debug
+        self.logger = Logger(debug=args.debug, std=args.log_to_stdout)
         self.loop = asyncio.get_event_loop()
         self.inputs = dict()
         self.bus = Bus(self.loop)
@@ -48,21 +49,11 @@ class HomeDaemon:
         self.config = self.db['config']
         sys.path.append(self.config['scenes']['path'])
         self.devicesdb = self.db['devices']
-        self.setup_logger()
         self.logger.info('Starting Daemon')
         self.devices = Devices()
-    
-    def setup_logger(self):
-        self.logger = logging.getLogger('homed')
-        self.logger.addHandler(JournalHandler())
-        self.logger.addHandler(logging.StreamHandler(sys.stdout))
-        if self._debug:
-            self.bus.add_trigger('*.*.*.*', self.debug)
-            self.logger.setLevel(logging.DEBUG)
+        # self.bus.add_trigger('*.*.*.*', self.debug)
 
-    def debug(self, msg=None):
-        if msg is not None:
-            self.logger.debug(f'>>> {msg}')
+    
 
     def load_inputs(self):
         for _input_name in self.config['inputs']['list']:
@@ -73,18 +64,18 @@ class HomeDaemon:
             self.inputs[inst.name].run()
 
     def load_devices(self):
-        dev_list = list()
-        for dev in self.devicesdb:
-            if self.devices.register(dev, self):
-                dev_list.append({'sid': dev['sid'], 'model': dev['model'],
-                                'name': dev['name'], 'place': dev['place'],
-                                'status': self.devices[dev['sid']].device_status()})
-        
+        # dev_list = list()
+        # for dev in self.devicesdb:
+        #     if self.devices.register(dev, self):
+        #         dev_list.append({'sid': dev['sid'], 'model': dev['model'],
+        #                         'name': dev['name'], 'place': dev['place'],
+        #                         'status': self.devices[dev['sid']].device_status()})
+        loaded_devices = self.devices.register_devices(self.devicesdb, self)
         self.bus.emit('report.homed.devices.loaded')
-        self.loop.call_later(5, self.bus.emit, 'devices_list.daemon.populate.list', {'cmd':'devices_list', 'data': dev_list})
-
+        # self.loop.call_later(5, self.bus.emit, 'devices_list.daemon.populate.list', {'cmd':'devices_list', 'data': dev_list})
+        
     def run(self):
-        self.debug(f'main thread {current_thread()} loop {id(self.loop)}')
+        self.logger.debug(f'main thread {current_thread()} loop {id(self.loop)}')
         self.loop.run_in_executor(None, self.load_inputs)
         self.loop.run_in_executor(None, self.load_devices)
         

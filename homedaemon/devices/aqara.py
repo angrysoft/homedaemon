@@ -1,4 +1,5 @@
 from .base import Dummy
+from . import Drivers
 from pyxiaomi.aqara import *
 import json
 from datetime import datetime
@@ -12,7 +13,8 @@ class GatewayInstance:
         return GatewayInstance.gateway
         
 
-class AqaraDevice:
+class Driver:
+    
     def __new__(cls, data, daemon):
         gw = GatewayInstance(daemon)
         dev = {
