@@ -34,13 +34,13 @@ from pycouchdb import Server
 from homedaemon.devices import Devices
 from homedaemon.bus import Bus
 from homedaemon.logger import Logger
+from homedaemon.config import *
 import argparse
 
 
 class HomeDaemon:
-    def __init__(self, args):
-        self._config_path = args.config_dir
-        #load congi
+    def __init__(self, config):
+        self._config = config
         self.logger = Logger(debug=args.debug, std=args.log_to_stdout)
         self.loop = asyncio.get_event_loop()
         self.inputs = dict()
@@ -134,7 +134,13 @@ if __name__ == '__main__':
     parser.add_argument('-c', '--config-dir', nargs='?', default='/etc/angryhome/conf.d', help='Path to config dir')
     parser.add_argument('--version', action='version', version=f'%(prog)s {__version__}')
     args = parser.parse_args()
-    print(args)
-    hd = HomeDaemon(args)
+    config = Config()
+    dbconf = DbConfig()
+    argconfg = ArgConfig(args)
+    config.load_config(JsonConfig(args.config_dir))
+    config.load_config(dbconf)
+    config.load_config(argconfg)
+    
+    hd = HomeDaemon(config)
     hd.run()
    
