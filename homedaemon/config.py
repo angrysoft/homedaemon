@@ -1,4 +1,4 @@
-from os import scandir
+import os
 import json 
 
 class BaseConfig:
@@ -32,17 +32,18 @@ class JsonConfig(BaseConfig):
     
     def get_config(self):
         ret = dict()
-        for entry in scandir(self._path()):
-            if entry.name.endswitch('.conf'):
+        for entry in os.scandir(self._path):
+            if entry.name.endswith('.json'):
                 _conf = json.load(open(entry.path))
-        return ret
-        
+                name , value = _conf.popitem()
+                ret[name] = value
+        return ret        
 
 
 class ArgConfig(BaseConfig):
     def __init__(self, args):
         print(args)
-        self.args = args
+        self.args = vars(args)
     
     def get_config(self):
         return self.args
@@ -67,12 +68,12 @@ class Config:
         if key in self._configs:
             return self._configs[key]
         else:
-            return None
+            return dict()
     
     def __getitem__(self, key):
-        return self._configs[key]
+        return self.get(key)
     
     def __str__(self):
-        return self._configs
+        return str(self._configs)
 
     

@@ -1,7 +1,7 @@
 from .base import Dummy
 from pyxiaomi.yeelight import DeskLamp, Bslamp1, Color, YeelightError
 
-class YeeligthDevice:
+class Driver:
     def __new__(cls, data, daemon):
         try:
             dev = {'color': Color,

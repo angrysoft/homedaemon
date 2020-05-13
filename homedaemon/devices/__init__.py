@@ -13,7 +13,7 @@ import importlib
 
 class Devices:
     def __init__(self):
-        self.drv = dict()
+        self.drivers = Drivers()
         self._devices = dict()
     
     # def register(self, data, daemon):
@@ -36,28 +36,27 @@ class Devices:
     #         return False
     
     def register_devices(self, devices_list, daemon):
-        _loaded = list()
         for dev in devices_list:
-            drv_name = dev.get("family")
-            try:
-                daemon.logger.debug(f"Loading....{dev['sid']} : {dev.get('name')}")
-                self.load_driver(drv_name)
-            except ImportError as err:
-                daemon.logger.error(f"Driver not found {err}")
-            self.register_dev(dev)
-        return _loaded
-    
-    
-    
-    def register_dev(self, dev):
-        pass
-    
+            daemon.logger.debug(f"Loading....{dev['sid']} : {dev.get('name')}")
+            self.register_dev(dev, daemon)
+      
+    def register_dev(self, dev, daemon):
+        drv = self.drivers.get_driver(dev["family"])
+        if drv:
+            dev_instace = drv(dev, daemon)
+            if dev_instace:
+                self._devices[dev['sid']] = dev_instace
+                print(dev_instace.device_status())
+            
     def get(self, key, ret=None):
         try:
             return self._devices[key]
         except KeyError:
-            return ret            
+            return ret
     
+    def get_devices_info_list(self):
+        pass
+      
     def _unknown_device_family(self, data, *args):
         return None
         # raise ValueError(f"Unkonown deivce family : {data.get('family')} {data}")
@@ -72,11 +71,18 @@ class Devices:
 class Drivers:
     devices_drivers = dict()
     
-    def get_driver(self, device_family, device_model):
+    def get_driver(self, device_family):
         self._register_driver(device_family)
+        if device_family in self.devices_drivers:
+            return self.devices_drivers[device_family]
+        else:
+            return None
         
     
     def _register_driver(self, dev_family):
         if not dev_family in self.devices_drivers:
-            drv_mod = importlib.import_module(f'homedaemon.devices.{dev_family}')
-            self.devices_drivers[dev_family] = drv_mod.Driver
+            try:
+                drv_mod = importlib.import_module(f'homedaemon.devices.{dev_family}')
+                self.devices_drivers[dev_family] = drv_mod.Driver
+            except ModuleNotFoundError as err:
+                pass

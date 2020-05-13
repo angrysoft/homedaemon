@@ -1,7 +1,7 @@
 from .base import BaseDevice, Dummy
 import json
 
-class RgbDevice:
+class Driver:
     def __new__(cls, data, daemon):
         return {'rgbstrip': RgbStrip}.get(data['model'], Dummy)(data, daemon)
 

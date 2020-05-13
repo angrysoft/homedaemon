@@ -40,23 +40,19 @@ import argparse
 
 class HomeDaemon:
     def __init__(self, config):
-        self._config = config
+        self.config = config
         self.logger = Logger(debug=args.debug, std=args.log_to_stdout)
         self.loop = asyncio.get_event_loop()
         self.inputs = dict()
         self.bus = Bus(self.loop)
         self.db = Server()
-        self.config = self.db['config']
-        sys.path.append(self.config['scenes']['path'])
         self.devicesdb = self.db['devices']
         self.logger.info('Starting Daemon')
         self.devices = Devices()
         # self.bus.add_trigger('*.*.*.*', self.debug)
 
-    
-
     def load_inputs(self):
-        for _input_name in self.config['inputs']['list']:
+        for _input_name in self.config['inputs']:
             _input = importlib.import_module(f'homedaemon.inputs.{_input_name}')
             inst = _input.Input(self.bus, self.config, self.loop)
             self.inputs[inst.name] = inst
@@ -70,7 +66,7 @@ class HomeDaemon:
         #         dev_list.append({'sid': dev['sid'], 'model': dev['model'],
         #                         'name': dev['name'], 'place': dev['place'],
         #                         'status': self.devices[dev['sid']].device_status()})
-        loaded_devices = self.devices.register_devices(self.devicesdb, self)
+        loaded_devices = self.devices.register_devices(self.devicesdb.get_all_docs(), self)
         self.bus.emit('report.homed.devices.loaded')
         # self.loop.call_later(5, self.bus.emit, 'devices_list.daemon.populate.list', {'cmd':'devices_list', 'data': dev_list})
         
@@ -134,13 +130,12 @@ if __name__ == '__main__':
     parser.add_argument('-c', '--config-dir', nargs='?', default='/etc/angryhome/conf.d', help='Path to config dir')
     parser.add_argument('--version', action='version', version=f'%(prog)s {__version__}')
     args = parser.parse_args()
-    config = Config()
-    dbconf = DbConfig()
-    argconfg = ArgConfig(args)
-    config.load_config(JsonConfig(args.config_dir))
-    config.load_config(dbconf)
-    config.load_config(argconfg)
     
+    config = Config()
+    config.load_config(JsonConfig(args.config_dir))
+    # config.load_config(DbConfig())
+    config.load_config(ArgConfig(args))
+    print(config)
     hd = HomeDaemon(config)
     hd.run()
    

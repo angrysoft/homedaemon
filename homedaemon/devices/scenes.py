@@ -1,7 +1,13 @@
 from .base import Dummy
 import importlib
+import sys
+from homedaemon.config import Config
 
-class SceneDevice:
+config = Config()
+if config['scenes']:
+    importlib.sys.path.append(config['scenes']['path'])
+
+class Driver:
     def __new__(cls, data, daemon):
         try:
             _scene = importlib.import_module(data.get('sid'))
