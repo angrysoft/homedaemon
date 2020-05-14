@@ -6,8 +6,7 @@ from homedaemon.config import Config
 config = Config()
 if config['scenes']:
     importlib.sys.path.append(config['scenes']['path'])
-
-print(importlib.sys.path)
+    
 
 class Driver:
     def __new__(cls, data, daemon):

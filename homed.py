@@ -68,13 +68,14 @@ class HomeDaemon:
         #                         'status': self.devices[dev['sid']].device_status()})
         loaded_devices = self.devices.register_devices(self.devicesdb.get_all_docs(), self)
         self.bus.emit('report.homed.devices.loaded')
+        print(self.devices.get_devices_info_list())
         # self.loop.call_later(5, self.bus.emit, 'devices_list.daemon.populate.list', {'cmd':'devices_list', 'data': dev_list})
         
     def run(self):
         self.logger.debug(f'main thread {current_thread()} loop {id(self.loop)}')
         self.loop.run_in_executor(None, self.load_inputs)
         self.loop.run_in_executor(None, self.load_devices)
-        
+        # self.load_devices()
         # self.loop.add_signal_handler(signal.SIGINT, self.stop)
         # self.loop.add_signal_handler(signal.SIGHUP, self.stop)
         # self.loop.add_signal_handler(signal.SIGQUIT, self.stop)

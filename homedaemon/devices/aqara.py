@@ -4,7 +4,9 @@ from pyxiaomi.aqara import *
 import json
 from datetime import datetime
 
+
 class GatewayInstance:
+    # not thread sefe 
     gateway = None
     def __new__(cls, daemon):
         if GatewayInstance.gateway is None:

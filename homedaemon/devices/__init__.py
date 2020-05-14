@@ -38,7 +38,11 @@ class Devices:
     def register_devices(self, devices_list, daemon):
         for dev in devices_list:
             daemon.logger.debug(f"Loading....{dev['sid']} : {dev.get('name')}")
-            self.register_dev(dev, daemon)
+            try:
+                self.register_dev(dev, daemon)
+            except Exception as err:
+                daemon.logger.error(str(err))
+            # daemon.loop.run_in_executor(None, self.register_dev, dev, daemon)
       
     def register_dev(self, dev, daemon):
         drv = self.drivers.get_driver(dev["family"])
@@ -46,7 +50,6 @@ class Devices:
             dev_instace = drv(dev, daemon)
             if dev_instace:
                 self._devices[dev['sid']] = dev_instace
-                print(dev_instace.device_status())
             
     def get(self, key, ret=None):
         try:
@@ -55,7 +58,13 @@ class Devices:
             return ret
     
     def get_devices_info_list(self):
-        pass
+        ret = list()
+        for devitem in self._devices:
+            dev = self.get(devitem)
+            ret.append({'sid': dev.sid, 'model': dev.model,
+                        'name': dev.name, 'place': dev.place,
+                        'status': dev.device_status()})
+        return ret
       
     def _unknown_device_family(self, data, *args):
         return None
