@@ -9,9 +9,9 @@ class Input(BaseInput):
     def __init__(self, bus, config, loop):
         super(Input, self).__init__(bus, loop)
         self.name = 'tcpclient'
-        self.ip = config['tcp']['client']['ip']
-        self.port = config['tcp']['client']['port']
-        self.secret = config['tcp']['secret']
+        self.ip = config['tcpclient']['addr']
+        self.port = config['tcpclient']['port']
+        self.secret = config['tcpclient']['secret']
         self.ssl_context = ssl.create_default_context()
         self.reader = None
         self.writer = None

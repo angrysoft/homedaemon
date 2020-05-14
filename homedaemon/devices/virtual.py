@@ -73,4 +73,4 @@ class ClockDev:
     
     def device_status(self):
         date = datetime.now()
-        return {'time': f'{date.hour:02}:{date.minute:02}'}
+        return {'time': f'{date.hour:02}:{date.minute:02}', 'sunset': self.sunset, "sunrise": self.sunrise}

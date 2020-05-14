@@ -49,7 +49,7 @@ class HomeDaemon:
         self.devicesdb = self.db['devices']
         self.logger.info('Starting Daemon')
         self.devices = Devices()
-        # self.bus.add_trigger('*.*.*.*', self.debug)
+        self.bus.add_trigger('*.*.*.*', self.logger.debug)
 
     def load_inputs(self):
         for _input_name in self.config['inputs']:
