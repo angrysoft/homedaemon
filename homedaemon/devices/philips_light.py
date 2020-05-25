@@ -1,5 +1,5 @@
 from .base import Dummy
-from pyxiaomi.philips_bulb import PhilipsBulb, PhilipsBulbException
+from pyiot.xiaomi.philips_bulb import PhilipsBulb, PhilipsBulbException
 
 class Driver:
     def __new__(cls, data, daemon):

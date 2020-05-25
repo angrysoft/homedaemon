@@ -10,6 +10,7 @@ class SceneInterface:
         self.daemon = daemon
         self.name = ''
         self.model = ''
+        self.place = ''
         self.running = False
     
     def _runner(self, handler, *args):
@@ -91,6 +92,7 @@ class BaseAutomation(SceneInterface):
         
     def add_trigger(self, trigger, handler):
         self.daemon.bus.add_trigger(trigger, self._runner, handler)
+
 
 class RunAfter:
     def __init__(self, delay, callback, *args):

@@ -1,4 +1,4 @@
-from pysonoff import DiyPlug
+from pyiot.sonoff import DiyPlug
 from .base import Dummy
 
 

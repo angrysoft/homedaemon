@@ -60,15 +60,10 @@ class HomeDaemon:
             self.inputs[inst.name].run()
 
     def load_devices(self):
-        # dev_list = list()
-        # for dev in self.devicesdb:
-        #     if self.devices.register(dev, self):
-        #         dev_list.append({'sid': dev['sid'], 'model': dev['model'],
-        #                         'name': dev['name'], 'place': dev['place'],
-        #                         'status': self.devices[dev['sid']].device_status()})
-        loaded_devices = self.devices.register_devices(self.devicesdb.get_all_docs(), self)
+        loaded_devices = self.devices.register_devices(self)
         self.bus.emit('report.homed.devices.loaded')
-        print(self.devices.get_devices_info_list())
+        import pprint
+        pprint.pprint(self.devices.get_devices_info_list())
         # self.loop.call_later(5, self.bus.emit, 'devices_list.daemon.populate.list', {'cmd':'devices_list', 'data': dev_list})
         
     def run(self):
@@ -126,7 +121,8 @@ class HomeDaemon:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(usage='%(prog)s [options]')
-    parser.add_argument('-d', '--debug', action="store_true", help="Debug msg")
+    parser.add_argument('-D', '--debug', action="store_true", help="Debug msg")
+    parser.add_argument('-d', '--devices-dir', nargs='?', default='/etc/angryhome/dev.d', help='Path to devices dir')
     parser.add_argument('-s', '--log-to-stdout', action="store_true", help="Print log info to stdout")
     parser.add_argument('-c', '--config-dir', nargs='?', default='/etc/angryhome/conf.d', help='Path to config dir')
     parser.add_argument('--version', action='version', version=f'%(prog)s {__version__}')

@@ -1,6 +1,6 @@
 from .base import Dummy
 from . import Drivers
-from pyxiaomi.aqara import *
+from pyiot.xiaomi.aqara import *
 import json
 from datetime import datetime
 

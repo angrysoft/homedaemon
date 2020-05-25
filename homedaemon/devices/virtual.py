@@ -16,6 +16,7 @@ class ClockDev:
         self.model = data.get('model')
         self.name = data.get('name')
         self.sid = data.get('sid')
+        self.place = 'all'
         self.daemon.loop.create_task(self.timer())
         self.daemon.bus.add_trigger('report.clock.time.01:00', self.sun_info)
         self._time = dict()

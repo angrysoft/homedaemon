@@ -1,5 +1,5 @@
 from .base import Dummy
-from pytvremote import Bravia
+from pyiot.sony import Bravia
 
 class Driver:
     def __new__(cls, data, daemon):
