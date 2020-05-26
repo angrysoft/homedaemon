@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 from pyiot.xiaomi.aqara import Gateway
-from pycouchdb import Server
 from pyiot.xiaomi.yeelight import Yeelight
 from pyiot.sony import Bravia
 from pyiot.sonoff import Discover
@@ -14,13 +13,13 @@ import json
 import os
 
 
-class Register:
-    def __init__(self):
-        self.srv = Server()
+class Devs:
+    def __init__(self, devs_path):
         self.devices = None
         self.devices_data = None
         self.config = None
         self.residents = None
+        self.dev_path = devs_path
         self.names = {
             '158d0002a13819': {'name': 'Door', 'place': 'Living room'},
             '158d00029b1929': {'name': 'Light', 'place': 'Living room'},
@@ -54,23 +53,8 @@ class Register:
             '158d0002b74c28': {'name': 'Entrance', 'place': 'Hall'},
             'clock': {'name': 'clock', 'place': ''}
         }
-
-    def clear_db(self):
-        print('Remove all device and device data')
-        if 'devices' in self.srv:
-            self.srv.delete('devices')
-            
-    def create_db(self):
-        print('Creating db')
-        self.srv.create('devices')
-        
-        
-    def accessing_db(self):
-        print('accessing db')
-        self.devices = self.srv['devices']
-        
-
-    def dev_list(self):
+    
+    def discover(self):
         gw = Gateway()
         ye = Yeelight()
         gt = gw.whois()
@@ -106,7 +90,6 @@ class Register:
             d = sdevs[sdev]
             d['family'] = 'sonoff'
             d['sid'] = d.pop('id')
-            print(d)
             list_devs.append(d)
         
         print('Find custom devices')
@@ -126,7 +109,7 @@ class Register:
                           'sid': tv.sid, 'family': 'tv',
                           'ip': '192.168.10.5',
                           'mac': 'FC:F1:52:2A:9B:1E'})
-        return list_devs
+        self.devices = list_devs
     
     def get_scenes(self):
         scenes = list()
@@ -148,71 +131,8 @@ class Register:
                                    'model': model})
         return scenes
 
-    def registering(self):
-        self.clear_db()
-        self.create_db()
-        self.accessing_db()
-        list_devs = self.dev_list()
-
-        print('Registering device:')
-        for d in list_devs:
-            if not d or not d.get('sid'):
-                continue
-            if 'cmd' in d:
-                del d['cmd']
-            if 'data' in d:
-                del d['data']
-            sid = d.get('sid')
-            if sid in self.names:
-                d['name'] = self.names[sid]['name']
-                d['place'] = self.names[sid]['place']
-            print(f"\t {d.get('model'): <22}{d.get('sid'):<20} {d.get('name')} in {d.get('place')}")
-            self.devices[d.get('sid')] = d
-
-    def add_config(self):
-        if 'config' in self.srv:
-            self.srv.delete('config')
-        self.srv.create('config')
-        self.config = self.srv.db('config')
-            
-        with open('config.json') as jconf:
-            config = json.load(jconf)
-            for c in config.get('config'):
-                self.config.add(c)
-            print('Config added')
-    
-    def add_residents(self):
-        if 'residents' in self.srv:
-            self.srv.delete('residents')
-        self.srv.create('residents')
-        self.residents = self.srv.db('residents')
-        
-        with open('residents.json') as jfile:
-            residents = json.load(jfile)
-            for c in residents.get('residents'):
-                self.residents.add(c)
-            print('Resident added')
-        
-        
-    # def add_index(self):
-    #     print(f"Creating index on device: {db.devices.create_index([('sid', TEXT)], unique=True)}")
-    #     print(f"Creating index on device data: {db.devices_data.create_index([('sid', TEXT)], unique=True)}")
-    
-    def add_place(self):
-        
-        for d in self.devices:
-            sid = d['sid']
-            if sid in self.names:
-                d['name'] = self.names[sid]['name']
-                d['place'] = self.names[sid]['place']
-                self.devices[sid] = d
-                print(self.devices[sid]['place'])
-
-
-if __name__ == '__main__':
-    r = Register()
-    r.registering()
-    r.add_config()
-    r.add_residents()
-    # r.add_place()
-
+if __name__ == "__main__":
+    dev = Devs('devs')
+    dev.discover()
+    import pprint
+    pprint.pprint(dev.devices)
