@@ -3,7 +3,6 @@ import asyncio
 import functools
 from datetime import datetime
 from threading import current_thread
-import pprint
 
 class Trigger:
     def __init__(self, trigger):
@@ -93,8 +92,11 @@ class Bus:
                 handler_with_args.extend(args)
                 handler_with_args.extend(payload)
                 # handler()
+                # try:
                 self.loop.run_in_executor(None, *handler_with_args)
-    
+                # except Exception:
+                # log error
+                
     def emit_cmd(self, event):
         try:
             _data = event['data'].copy()
