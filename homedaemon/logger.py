@@ -19,6 +19,7 @@ class Logger:
             if  debug:    
                  Logger._logger.setLevel(logging.DEBUG)
         return super(Logger, cls).__new__(cls)
+    
     def debug(self, msg=None):
         if msg is not None and self._debug:
             self._logger.debug(f">>DEBUG<< {msg}")
