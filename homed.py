@@ -61,10 +61,11 @@ class HomeDaemon:
 
     def load_devices(self):
         loaded_devices = self.devices.register_devices(self)
-        self.bus.emit('report.homed.devices.loaded')
-        import pprint
-        pprint.pprint(self.devices.get_devices_info_list())
-        # self.loop.call_later(5, self.bus.emit, 'devices_list.daemon.populate.list', {'cmd':'devices_list', 'data': dev_list})
+        self.bus.emit('report.homed.devices.loaded', {"msg": "Devices loaded"})
+        # import pprint
+        # pprint.pprint(self.devices.get_devices_info_list())
+        self.loop.call_later(5, self.bus.emit, 'devices_list.daemon.populate.list',
+                             {'cmd':'devices_list', 'data': self.devices.get_devices_info_list()})
         
     def run(self):
         self.logger.debug(f'main thread {current_thread()} loop {id(self.loop)}')
@@ -77,7 +78,7 @@ class HomeDaemon:
         # self.loop.add_signal_handler(signal.SIGTERM, self.stop)
 
         try:
-            self.bus.emit('report.homed.status.started')
+            self.bus.emit('report.homed.status.started', {"msg": "HomeDaemon started"})
             self.loop.run_forever()
         except KeyboardInterrupt:
             pass

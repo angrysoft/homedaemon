@@ -23,6 +23,8 @@ class Logger:
     def debug(self, msg=None):
         if msg is not None and self._debug:
             self._logger.debug(f">>DEBUG<< {msg}")
+        else:
+            self._logger.debug(f">>DEBUG<< no msg :(")
     
     def info(self, msg=None):
         if msg is not None:
