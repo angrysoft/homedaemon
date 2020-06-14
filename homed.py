@@ -62,8 +62,8 @@ class HomeDaemon:
     def load_devices(self):
         loaded_devices = self.devices.register_devices(self)
         self.bus.emit('report.homed.devices.loaded', {"msg": "Devices loaded"})
-        # import pprint
-        # pprint.pprint(self.devices.get_devices_info_list())
+        import pprint
+        pprint.pprint(self.devices.get_devices_info_list())
         self.loop.call_later(5, self.bus.emit, 'devices_list.daemon.populate.list',
                              {'cmd':'devices_list', 'data': self.devices.get_devices_info_list()})
         
