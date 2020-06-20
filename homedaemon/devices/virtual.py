@@ -17,18 +17,18 @@ class ClockDev:
         self.name = data.get('name')
         self.sid = data.get('sid')
         self.place = 'all'
-        self.daemon.loop.create_task(self.timer())
         self.daemon.bus.add_trigger('report.clock.time.01:00', self.sun_info)
         self._time = dict()
         self.sun_info()
+        self.daemon.loop.create_task(self.timer())
 
     async def timer(self):
         await self._to_change_min()
         while True:
             date = datetime.now()
-            self._time = {'hour': date.hour, 'minute': date.minute}
+            self._time.update({'hour': date.hour, 'minute': date.minute})
             self.daemon.bus.emit(f'report.clock.time.{self.time}')
-            if self.time ==self.sunrise:
+            if self.time == self.sunrise:
                 self.daemon.bus.emit(f'report.clock.time.sunrise')
             elif self.time == self.sunset:
                 self.daemon.bus.emit(f'report.clock.time.sunset')
