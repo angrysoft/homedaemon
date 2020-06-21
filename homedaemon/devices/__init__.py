@@ -1,30 +1,50 @@
 import importlib
-from pycouchdb import Server
+from os.path import isdir
+from os import scandir
+from homedaemon.config import Config
+from homedaemon.logger import Logger
+import json
 
 class Devices:
     def __init__(self):
         self.drivers = Drivers()
         self._devices = dict()
         self._devices_fail_list =list()
+        self.config = Config()
+        self.logger = Logger()
     
     def register_devices(self, daemon):
         for dev in self.get_devices_list():
-            daemon.logger.debug(f"Loading....{dev['sid']} : {dev.get('name')}")
-            try:
-                self.register_dev(dev, daemon)
-            except Exception as err:
-                daemon.logger.error(str(err))
+            self.logger.debug(f"Loading....{dev['sid']} : {dev.get('name')}")
+            # try:
+            self.register_dev(dev, daemon)
+            # except Exception as err:
+                # self.logger.error(str(err))
             # daemon.loop.run_in_executor(None, self.register_dev, dev, daemon)
     
     def get_devices_list(self):
-        self.db = Server()
-        self.devicesdb = self.db['devices']
-        return self.devicesdb.get_all_docs()
+        ret = []
+        try:
+            _dir = scandir(path=self.config.get('devices_dir'))
+            for _file in _dir:
+                if _file.is_file and _file.name.endswith('.json'):
+                    with open(_file.path) as dev_file:
+                        ret.append(json.load(dev_file))
+                        
+        except FileNotFoundError as fnf:
+            self.logger.error(f'Get devices list {fnf}')
+        except NotADirectoryError as nd:
+            self.logger.error(f'Get devices list {nd}')
+        
+        return ret
         
     def register_dev(self, dev, daemon):
         drv = self.drivers.get_driver(dev["family"])
         if drv:
-            dev_instace = drv(dev, daemon)
+            dev_instace = drv(dev['model'],
+                              dev['sid'],
+                              self.config.get(dev['sid']),
+                              daemon)
             if dev_instace:
                 dev_instace.name = dev.get('name', '')
                 dev_instace.place = dev.get('place', '')

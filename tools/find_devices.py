@@ -11,11 +11,12 @@ importlib.sys.path.append('../scenes')
 from homedaemon.scenes import BaseAutomation, BaseScene
 import json
 import os
+import sys
 
 
 class Devs:
     def __init__(self, devs_path):
-        self.devices = None
+        self.devices = []
         self.devices_data = None
         self.config = None
         self.residents = None
@@ -93,14 +94,14 @@ class Devs:
             list_devs.append(d)
         
         print('Find custom devices')
-        list_devs.append({'cmd': 'report', 'model': 'clock',
+        list_devs.append({'model': 'clock',
                           'sid': 'clock', 'family': 'virtual'})
         
         list_devs.extend(sc)
-        list_devs.append({'cmd': 'report', 'model': 'dallastemp',
+        list_devs.append({'model': 'dallastemp',
                           'sid': 'dallasDS0', 'family': 'arduino'})
         
-        list_devs.append({'cmd': 'report', 'model': 'rgbstrip',
+        list_devs.append({'model': 'rgbstrip',
                           'sid': 'rgb01', 'family': 'arduino'})
         
         tv = Bravia('192.168.10.5', macaddres='FC:F1:52:2A:9B:1E')
@@ -109,7 +110,18 @@ class Devs:
                           'sid': tv.sid, 'family': 'tv',
                           'ip': '192.168.10.5',
                           'mac': 'FC:F1:52:2A:9B:1E'})
-        self.devices = list_devs
+        for _dev in list_devs:
+            sid = _dev.get('sid')
+            if sid:
+                if sid in self.names:
+                    _dev['name'] = self.names[sid]['name']
+                    _dev['place'] = self.names[sid]['place']
+                
+                self.devices.append({'family': _dev.get('family'),
+                                  'name':   _dev.get('name'),
+                                  'sid':    _dev.get('sid'),
+                                  'model':  _dev.get('model'),
+                                  'place':  _dev.get('place')})
     
     def get_scenes(self):
         scenes = list()
@@ -132,7 +144,9 @@ class Devs:
         return scenes
 
 if __name__ == "__main__":
-    dev = Devs('devs')
-    dev.discover()
-    import pprint
-    pprint.pprint(dev.devices)
+    if len(sys.argv) > 1 and os.path.isdir(sys.argv[1]):
+        dev = Devs('devs')
+        dev.discover()
+        for _dev in dev.devices:
+            with open(f"{sys.argv[1]}/{_dev.get('sid')}.json", "w") as jfile:
+                json.dump(_dev, jfile, indent=4, sort_keys=True)

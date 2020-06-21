@@ -8,17 +8,18 @@ from datetime import datetime
 class GatewayInstance:
     # not thread sefe 
     gateway = None
-    def __new__(cls, daemon):
+    def __new__(cls, config, daemon):
         if GatewayInstance.gateway is None:
-            GatewayInstance.gateway = Gateway(gwpasswd=daemon.config['gateway']['password'])
+            # TODO need gateway sid to get pass word from config
+            GatewayInstance.gateway = Gateway(gwpasswd=config['password'])
             GatewayInstance.gateway.watcher.add_report_handler(daemon.bus.emit_cmd)
         return GatewayInstance.gateway
         
 
 class Driver:
     
-    def __new__(cls, data, daemon):
-        gw = GatewayInstance(daemon)
+    def __new__(cls, model, sid, config, daemon):
+        gw = GatewayInstance(config, daemon)
         dev = {
             'ctrl_neutral1': CtrlNeutral,
             'ctrl_neutral2': CtrlNeutral2,
@@ -29,7 +30,7 @@ class Driver:
             'sensor_switch.aq2': SensorSwitchAq2,
             'plug': Plug,
             'switch': Switch,
-            'gateway': cls.get_gateway}.get(data['model'], Dummy)(sid=data['sid'], gateway=gw)
+            'gateway': cls.get_gateway}.get(model, Dummy)(sid=sid, gateway=gw)
         daemon.bus.add_trigger(f'write.{dev.sid}.*.*', dev.write)
         return dev
     

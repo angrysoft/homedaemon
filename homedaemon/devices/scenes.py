@@ -9,9 +9,9 @@ if config['scenes']:
     
 
 class Driver:
-    def __new__(cls, data, daemon):
+    def __new__(cls, model, sid, config, daemon):
         try:
-            _scene = importlib.import_module(data.get('sid'))
-            return _scene.Scene(data['sid'], daemon)
+            _scene = importlib.import_module(sid)
+            return _scene.Scene(sid, daemon)
         except ModuleNotFoundError as err:
             daemon.logger.error(str(err))

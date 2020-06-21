@@ -6,16 +6,16 @@ import json
 
 
 class Driver:
-    def __new__(cls, data, daemon):
-        return {'clock': ClockDev}.get(data.get('model'), Dummy)(data, daemon)
+    def __new__(cls, model, sid, config, daemon):
+        return {'clock': ClockDev}.get(model, Dummy)(model, daemon)
 
 
 class ClockDev:
-    def __init__(self, data, daemon):
+    def __init__(self, daemon):
         self.daemon = daemon
-        self.model = data.get('model')
-        self.name = data.get('name')
-        self.sid = data.get('sid')
+        self.model = 'clock'
+        self.name = 'Clock'
+        self.sid = 'clock'
         self.place = 'all'
         self.daemon.bus.add_trigger('report.clock.time.01:00', self.sun_info)
         self._time = dict()

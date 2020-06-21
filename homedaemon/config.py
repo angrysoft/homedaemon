@@ -33,10 +33,9 @@ class JsonConfig(BaseConfig):
     def get_config(self):
         ret = dict()
         for entry in os.scandir(self._path):
-            if entry.name.endswith('.json'):
-                _conf = json.load(open(entry.path))
-                name , value = _conf.popitem()
-                ret[name] = value
+            if entry.is_file and entry.name.endswith('.json'):
+                with open(entry.path) as conf_file:
+                    ret[os.path.splitext(entry.name)[0]] = json.load(conf_file)
         return ret        
 
 
