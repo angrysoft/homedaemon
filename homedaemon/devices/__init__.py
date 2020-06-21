@@ -5,8 +5,6 @@ class Devices:
     def __init__(self):
         self.drivers = Drivers()
         self._devices = dict()
-        self.db = Server()
-        self.devicesdb = self.db['devices']
         self._devices_fail_list =list()
     
     def register_devices(self, daemon):
@@ -19,6 +17,8 @@ class Devices:
             # daemon.loop.run_in_executor(None, self.register_dev, dev, daemon)
     
     def get_devices_list(self):
+        self.db = Server()
+        self.devicesdb = self.db['devices']
         return self.devicesdb.get_all_docs()
         
     def register_dev(self, dev, daemon):
@@ -70,5 +70,5 @@ class Drivers:
             try:
                 drv_mod = importlib.import_module(f'homedaemon.devices.{dev_family}')
                 self.devices_drivers[dev_family] = drv_mod.Driver
-            except ModuleNotFoundError as err:
+            except ModuleNotFoundError:
                 pass
