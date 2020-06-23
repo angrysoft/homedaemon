@@ -7,7 +7,7 @@ import json
 
 class Driver:
     def __new__(cls, model, sid, config, daemon):
-        return {'clock': ClockDev}.get(model, Dummy)(model, daemon)
+        return {'clock': ClockDev}.get(model, Dummy)(daemon)
 
 
 class ClockDev:

@@ -3,15 +3,18 @@ from . import Drivers
 from pyiot.xiaomi.aqara import *
 import json
 from datetime import datetime
+from homedaemon.config import Config
 
 
 class GatewayInstance:
     # not thread sefe 
     gateway = None
-    def __new__(cls, config, daemon):
+    
+    def __new__(cls, daemon):
         if GatewayInstance.gateway is None:
-            # TODO need gateway sid to get pass word from config
-            GatewayInstance.gateway = Gateway(gwpasswd=config['password'])
+            conf = Config()
+            GatewayInstance.gateway = Gateway()
+            GatewayInstance.gateway.gwpasswd = conf.get(GatewayInstance.gateway.sid).get('password') 
             GatewayInstance.gateway.watcher.add_report_handler(daemon.bus.emit_cmd)
         return GatewayInstance.gateway
         
@@ -19,7 +22,7 @@ class GatewayInstance:
 class Driver:
     
     def __new__(cls, model, sid, config, daemon):
-        gw = GatewayInstance(config, daemon)
+        gw = GatewayInstance(daemon)
         dev = {
             'ctrl_neutral1': CtrlNeutral,
             'ctrl_neutral2': CtrlNeutral2,
