@@ -9,7 +9,7 @@ class Devices:
     def __init__(self):
         self.drivers = Drivers()
         self._devices = dict()
-        self._devices_fail_list =list()
+        self._devices_fail_list = list()
         self.config = Config()
         self.logger = Logger()
     
@@ -19,8 +19,13 @@ class Devices:
             # try:
             self.register_dev(dev, daemon)
             # except Exception as err:
+                # self._devices_fail_list.append(dev)
                 # self.logger.error(str(err))
             # daemon.loop.run_in_executor(None, self.register_dev, dev, daemon)
+            daemon.loop.create_task(self._watch_device_fail_list())
+    
+    def _watch_devices_fail_list(self):
+        pass
     
     def get_devices_list(self):
         ret = []
@@ -49,6 +54,8 @@ class Devices:
                 dev_instace.name = dev.get('name', '')
                 dev_instace.place = dev.get('place', '')
                 self._devices[dev['sid']] = dev_instace
+            else:
+                self._devices_fail_list.append(dev)
             
     def get(self, key, ret=None):
         try:
