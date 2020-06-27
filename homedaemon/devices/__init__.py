@@ -4,6 +4,7 @@ from os import scandir
 from homedaemon.config import Config
 from homedaemon.logger import Logger
 import json
+import asyncio
 
 class Devices:
     def __init__(self):
@@ -22,10 +23,11 @@ class Devices:
                 # self._devices_fail_list.append(dev)
                 # self.logger.error(str(err))
             # daemon.loop.run_in_executor(None, self.register_dev, dev, daemon)
-            daemon.loop.create_task(self._watch_device_fail_list())
+        daemon.loop.create_task(self._watch_devices_fail_list())
     
-    def _watch_devices_fail_list(self):
-        pass
+    async def _watch_devices_fail_list(self):
+        while True:
+            await asyncio.sleep(10)
     
     def get_devices_list(self):
         ret = []
