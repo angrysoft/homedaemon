@@ -17,11 +17,11 @@ class Devices:
     def register_devices(self, daemon):
         for dev in self.get_devices_list():
             self.logger.debug(f"Loading....{dev['sid']} : {dev.get('name')}")
-            # try:
-            self.register_dev(dev, daemon)
-            # except Exception as err:
-                # self._devices_fail_list.append(dev)
-                # self.logger.error(str(err))
+            try:
+                self.register_dev(dev, daemon)
+            except Exception as err:
+                self._devices_fail_list.append(dev)
+                self.logger.error(str(err))
             # daemon.loop.run_in_executor(None, self.register_dev, dev, daemon)
         daemon.loop.create_task(self._watch_devices_fail_list())
     
