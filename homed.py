@@ -29,7 +29,7 @@ import asyncio
 
 import importlib
 from threading import current_thread
-from pycouchdb import Server
+# from pycouchdb import Server
 
 from homedaemon.devices import Devices
 from homedaemon.bus import Bus
@@ -45,8 +45,6 @@ class HomeDaemon:
         self.loop = asyncio.get_event_loop()
         self.inputs = dict()
         self.bus = Bus(self.loop)
-        self.db = Server()
-        self.devicesdb = self.db['devices']
         self.logger.info('Starting Daemon')
         self.devices = Devices()
         self.bus.add_trigger('*.*.*.*', self.logger.debug)
