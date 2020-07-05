@@ -16,14 +16,14 @@ class SceneInterface:
     def _runner(self, handler, *args):
         self.daemon.bus.emit(f'report.{self.sid}.status.on')
         self.running = True
-        handler()
-        # try:
-        #     handler()
-        # except Exception as err:
-        #     self.daemon.logger.error(f'scene running error {self.name} {err}')
-        # finally:
-        #     self.daemon.bus.emit(f'report.{self.sid}.status.off')
-        #     self.running = False
+        # handler()
+        try:
+            handler()
+        except Exception as err:
+            self.daemon.logger.error(f'scene running error {self.name} {err}')
+        finally:
+            self.daemon.bus.emit(f'report.{self.sid}.status.off')
+            self.running = False
         # sc = Thread(name=self.name, target=handler, args=args)
         # sc.start()
     
