@@ -29,8 +29,6 @@ import asyncio
 
 import importlib
 from threading import current_thread
-# from pycouchdb import Server
-
 from homedaemon.devices import Devices
 from homedaemon.bus import Bus
 from homedaemon.logger import Logger
@@ -39,7 +37,7 @@ import argparse
 
 
 class HomeDaemon:
-    def __init__(self, config):
+    def __init__(self, config: Config) -> None:
         self.config = config
         self.logger = Logger(debug=args.debug, std=args.log_to_stdout)
         self.loop = asyncio.get_event_loop()
@@ -49,21 +47,23 @@ class HomeDaemon:
         self.devices = Devices()
         self.bus.add_trigger('*.*.*.*', self.logger.debug)
 
-    def load_inputs(self):
+    def load_inputs(self) -> None:
+        _input_name : str
         for _input_name in self.config['inputs']:
+            
             _input = importlib.import_module(f'homedaemon.inputs.{_input_name}')
             inst = _input.Input(self.bus, self.config, self.loop)
             self.inputs[inst.name] = inst
             self.logger.info(f'load input: {inst.name}')
             self.inputs[inst.name].run()
 
-    def load_devices(self):
+    def load_devices(self) -> None:
         loaded_devices = self.devices.register_devices(self)
         self.bus.emit('report.homed.devices.loaded', {"msg": "Devices loaded"})
         self.loop.call_later(5, self.bus.emit, 'devices_list.daemon.populate.list',
                              {'cmd':'devices_list', 'data': self.devices.get_devices_info_list()})
         
-    def run(self):
+    def run(self) -> None:
         self.logger.debug(f'main thread {current_thread()} loop {id(self.loop)}')
         self.loop.run_in_executor(None, self.load_inputs)
         self.loop.run_in_executor(None, self.load_devices)
@@ -94,7 +94,7 @@ class HomeDaemon:
     #     finally:
     #         self.loop.close()
     
-    def _cancel_all_tasks(self):
+    def _cancel_all_tasks(self) -> None:
         to_cancel = asyncio.tasks.all_tasks(self.loop)
         if not to_cancel:
             return

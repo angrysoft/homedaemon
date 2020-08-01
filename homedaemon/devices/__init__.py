@@ -1,18 +1,18 @@
 import importlib
-from os.path import isdir
-from os import scandir
+from os import DirEntry, scandir
 from homedaemon.config import Config
 from homedaemon.logger import Logger
 import json
 import asyncio
+from typing import Iterator, List, Dict
 
 class Devices:
     def __init__(self):
         self.drivers = Drivers()
-        self._devices = dict()
-        self._devices_fail_list = list()
+        self._devices: Dict[str, Drivers] = dict()
+        self._devices_fail_list: List[Drivers] = list()
         self.config = Config()
-        self.logger = Logger()
+        self.logger: Logger = Logger()
     
     def register_devices(self, daemon):
         for dev in self.get_devices_list():
@@ -27,12 +27,13 @@ class Devices:
     
     async def _watch_devices_fail_list(self):
         while True:
+            self.logger.debug(str(self._devices_fail_list))
             await asyncio.sleep(10)
     
     def get_devices_list(self):
         ret = []
         try:
-            _dir = scandir(path=self.config.get('devices_dir'))
+            _dir: Iterator[DirEntry[str]] = scandir(path=self.config.get('devices_dir'))
             for _file in _dir:
                 if _file.is_file and _file.name.endswith('.json'):
                     with open(_file.path) as dev_file:

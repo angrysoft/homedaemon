@@ -63,7 +63,7 @@ class Config:
             raise TypeError(f"{type(configObj)} if not a {type(BaseConfig)}")
         self._configs.update(configObj.get_config())
         
-    def get(self, key):
+    def get(self, key:str) -> str:
         if key in self._configs:
             return self._configs[key]
         else:

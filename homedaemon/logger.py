@@ -1,14 +1,14 @@
 from systemd.journal import JournalHandler
 from sys import stdout
 import logging
-
+from typing import Optional
 
 class Logger:
-    _logger = None
-    _debug = False
-    _std = False
+    _logger: Optional[logging.Logger] = None
+    _debug : bool = False
+    _std : bool = False
     
-    def __new__(cls, debug=False, std=False):
+    def __new__(cls, debug: bool =False, std: bool =False):
         if Logger._logger is None:
             Logger._logger = logging.getLogger('homed')
             Logger._logger.addHandler(JournalHandler())
@@ -20,21 +20,21 @@ class Logger:
                  Logger._logger.setLevel(logging.DEBUG)
         return super(Logger, cls).__new__(cls)
     
-    def debug(self, msg=None):
+    def debug(self, msg: Optional[str] = None):
         if msg is not None and self._debug:
-            self._logger.debug(f">>DEBUG<< {msg}")
+            self._logger.debug(f">>DEBUG<< {msg}", exc_info=True)
         else:
             self._logger.debug(f">>DEBUG<< no msg :(")
     
-    def info(self, msg=None):
+    def info(self, msg: Optional[str] = None):
         if msg is not None:
             self._logger.info(f">INFO< {msg}")
     
-    def error(self, msg=None):
+    def error(self, msg: Optional[str] = None):
         if msg is not None:
             self._logger.error(f"!!ERROR!! {msg}")
     
-    def warning(self, msg=None):
+    def warning(self, msg: Optional[str] = None):
         if msg is not None:
             self._logger.warning(f"!WARNING! {msg}")
     

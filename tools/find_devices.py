@@ -12,10 +12,10 @@ from homedaemon.scenes import BaseAutomation, BaseScene
 import json
 import os
 import sys
-
+import socket
 
 class Devs:
-    def __init__(self, devs_path):
+    def __init__(self, devs_path:str):
         self.devices = []
         self.devices_data = None
         self.config = None
