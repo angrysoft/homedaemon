@@ -1,15 +1,5 @@
 from setuptools import setup, find_packages
-from glob import glob
-import os
 from homed import __version__
-
-
-def get_files(name):
-    for dirname, dirnames, filenames in os.walk(name):
-        if dirname == name:
-            return [os.path.join(dirname, f) for f in filenames]
-        else:
-            continue
 
 
 setup(

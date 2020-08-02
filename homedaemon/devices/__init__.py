@@ -14,7 +14,7 @@ class Devices:
         self.config = Config()
         self.logger: Logger = Logger()
     
-    def register_devices(self, daemon):
+    def register_devices(self, daemon) -> None:
         for dev in self.get_devices_list():
             self.logger.debug(f"Loading....{dev['sid']} : {dev.get('name')}")
             try:
@@ -27,7 +27,7 @@ class Devices:
     
     async def _watch_devices_fail_list(self):
         while True:
-            self.logger.debug(str(self._devices_fail_list))
+            self.logger.debug(f"Device fail list : {self._devices_fail_list}")
             await asyncio.sleep(10)
     
     def get_devices_list(self):
@@ -66,8 +66,8 @@ class Devices:
         except KeyError:
             return ret
     
-    def get_devices_info_list(self):
-        ret = list()
+    def get_devices_info_list(self) -> List[Dict[str,str]]:
+        ret: List[Dict[str,str]] = list()
         for devitem in self._devices:
             dev = self.get(devitem)
             ret.append({'sid': dev.sid, 'model': dev.model,
@@ -78,10 +78,10 @@ class Devices:
     def _unknown_device_family(self, data, *args):
         return None
     
-    def __contains__(self, key):
+    def __contains__(self, key: str):
         return key in self._devices
     
-    def __getitem__(self, key):
+    def __getitem__(self, key: str):
         return self._devices[key]
 
 
