@@ -6,11 +6,30 @@ import json
 import asyncio
 from typing import Iterator, List, Dict
 
+class Drivers:
+    devices_drivers = dict()
+    
+    def get_driver(self, device_family):
+        self._register_driver(device_family)
+        if device_family in self.devices_drivers:
+            return self.devices_drivers[device_family]
+        else:
+            return None
+    
+    def _register_driver(self, dev_family):
+        if not dev_family in self.devices_drivers:
+            try:
+                drv_mod = importlib.import_module(f'homedaemon.devices.{dev_family}')
+                self.devices_drivers[dev_family] = drv_mod.Driver
+            except ModuleNotFoundError:
+                pass
+            
+            
 class Devices:
     def __init__(self):
-        self.drivers = Drivers()
+        self.drivers: Drivers = Drivers()
         self._devices: Dict[str, Drivers] = dict()
-        self._devices_fail_list: List[Drivers] = list()
+        self._devices_fail_list: List[Dict[str,str]] = list()
         self.config = Config()
         self.logger: Logger = Logger()
     
@@ -23,13 +42,21 @@ class Devices:
                 self._devices_fail_list.append(dev)
                 self.logger.error(str(err))
             # daemon.loop.run_in_executor(None, self.register_dev, dev, daemon)
-        daemon.loop.create_task(self._watch_devices_fail_list())
+        daemon.loop.create_task(self._watch_devices_fail_list(daemon))
     
-    async def _watch_devices_fail_list(self):
+    async def _watch_devices_fail_list(self, daemon):
         while True:
             self.logger.debug(f"Device fail list : {self._devices_fail_list}")
+            for dev in self._devices_fail_list:
+                self.logger.debug(f"Loading....{dev['sid']} : {dev.get('name')}")
+                try:
+                    self.register_dev(dev, daemon)
+                except Exception as err:
+                    self._devices_fail_list.append(dev)
+                    self.logger.error(str(err))
+            
             await asyncio.sleep(10)
-    
+        
     def get_devices_list(self):
         ret = []
         try:
@@ -85,20 +112,3 @@ class Devices:
         return self._devices[key]
 
 
-class Drivers:
-    devices_drivers = dict()
-    
-    def get_driver(self, device_family):
-        self._register_driver(device_family)
-        if device_family in self.devices_drivers:
-            return self.devices_drivers[device_family]
-        else:
-            return None
-    
-    def _register_driver(self, dev_family):
-        if not dev_family in self.devices_drivers:
-            try:
-                drv_mod = importlib.import_module(f'homedaemon.devices.{dev_family}')
-                self.devices_drivers[dev_family] = drv_mod.Driver
-            except ModuleNotFoundError:
-                pass
