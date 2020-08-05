@@ -14,7 +14,7 @@ class SceneInterface:
         self.running = False
     
     def _runner(self, handler, *args):
-        self.daemon.bus.emit(f'report.{self.sid}.status.on')
+        self.daemon.bus.emit(f'report.{self.sid}.status.on', f'Scene {self.name}: on')
         self.running = True
         # handler()
         try:
@@ -22,7 +22,7 @@ class SceneInterface:
         except Exception as err:
             self.daemon.logger.error(f'scene running error {self.name} {err}')
         finally:
-            self.daemon.bus.emit(f'report.{self.sid}.status.off')
+            self.daemon.bus.emit(f'report.{self.sid}.status.off', f'Scene {self.name}: off')
             self.running = False
         # sc = Thread(name=self.name, target=handler, args=args)
         # sc.start()
