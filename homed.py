@@ -23,10 +23,7 @@ __license__ = 'GPL2'
 __version__ = '0.9.1'
 
 
-import sys
-import signal
 import asyncio
-
 import importlib
 from threading import current_thread
 from homedaemon.devices import Devices
@@ -45,7 +42,8 @@ class HomeDaemon:
         self.bus = Bus(self.loop)
         self.logger.info('Starting Daemon')
         self.devices = Devices()
-        self.bus.add_trigger('*.*.*.*', self.logger.debug)
+        self.bus.add_trigger('report.*.*.*', self.logger.debug)
+        self.bus.add_trigger('write.*.*.*', self.logger.debug)
 
     def load_inputs(self) -> None:
         _input_name : str

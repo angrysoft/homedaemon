@@ -27,11 +27,11 @@ class ClockDev:
         while True:
             date = datetime.now()
             self._time.update({'hour': date.hour, 'minute': date.minute})
-            self.daemon.bus.emit(f'report.clock.time.{self.time}')
+            self.daemon.bus.emit(f'report.clock.time.{self.time}', {'time': self.time})
             if self.time == self.sunrise:
-                self.daemon.bus.emit(f'report.clock.time.sunrise')
+                self.daemon.bus.emit(f'report.clock.time.sunrise', {'time': self.time})
             elif self.time == self.sunset:
-                self.daemon.bus.emit(f'report.clock.time.sunset')
+                self.daemon.bus.emit(f'report.clock.time.sunset', {'time': self.time})
             await asyncio.sleep(60)
             
     async def _to_change_min(self):

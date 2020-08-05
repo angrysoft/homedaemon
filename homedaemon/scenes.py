@@ -56,7 +56,7 @@ class BaseScene(SceneInterface):
         self.daemon.bus.add_trigger(f'write.{self.sid}.status.off',self._off, self.off)
                     
     def _on(self):
-        self.daemon.bus.emit(f'report{self.sid}.status.on')
+        self.daemon.bus.emit(f'report{self.sid}.status.on', f'Scene {self.name}: on')
         self.running = True
         try:
             self.on()
@@ -64,7 +64,7 @@ class BaseScene(SceneInterface):
             self.daemon.logger.error(f'scene running error {self.name} {err}')
         finally:
             if not self.reversible:
-                self.daemon.bus.emit(f'report{self.sid}.status.off')
+                self.daemon.bus.emit(f'report{self.sid}.status.off', f'Scene {self.name}: off')
                 
     def on(self):
         pass
@@ -77,7 +77,7 @@ class BaseScene(SceneInterface):
         except Exception as err:
             self.daemon.logger.error(f'scene running error {self.name} {err}')
         finally:
-            self.daemon.bus.emit(f'report{self.sid}.status.off')
+            self.daemon.bus.emit(f'report{self.sid}.status.off', f'Scene {self.name}: off')
             self.running = False
             
         

@@ -55,7 +55,7 @@ class Devices:
                     self._devices_fail_list.append(dev)
                     self.logger.error(str(err))
             
-            await asyncio.sleep(10)
+            await asyncio.sleep(60)
         
     def get_devices_list(self):
         ret = []
