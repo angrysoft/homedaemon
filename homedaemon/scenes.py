@@ -1,4 +1,3 @@
-import json
 from threading import Thread, Event
 from datetime import datetime, time
 from time import sleep
@@ -14,18 +13,22 @@ class SceneInterface:
         self.running = False
     
     def _runner(self, handler, *args):
-        self.daemon.bus.emit(f'report.{self.sid}.status.on', f'Scene {self.name}: on')
+        self.daemon.bus.emit(f'report.{self.sid}.status.on', f'Scene {self.name}: {handler.__name__} start')
         self.running = True
+        
         # handler()
+        # self.daemon.bus.emit(f'report.{self.sid}.status.off', f'Scene {self.name}: off')
+        # self.running = False
+        
         try:
             handler()
+            # sc = Thread(name=self.name, target=handler, args=args)
+            # sc.start()
         except Exception as err:
             self.daemon.logger.error(f'scene running error {self.name} {err}')
         finally:
-            self.daemon.bus.emit(f'report.{self.sid}.status.off', f'Scene {self.name}: off')
+            self.daemon.bus.emit(f'report.{self.sid}.status.off', f'Scene {self.name}: {handler.__name__} end')
             self.running = False
-        # sc = Thread(name=self.name, target=handler, args=args)
-        # sc.start()
     
     def sleep(self, s):
         sleep(s)
@@ -60,6 +63,8 @@ class BaseScene(SceneInterface):
         self.running = True
         try:
             self.on()
+            # sc = Thread(name=self.name, target=self.on)
+            # sc.start()
         except Exception as err:
             self.daemon.logger.error(f'scene running error {self.name} {err}')
         finally:
@@ -73,7 +78,9 @@ class BaseScene(SceneInterface):
         if not self.reversible or not self.running:
             return
         try:
-            self.off()
+            # self.off()
+            sc = Thread(name=self.name, target=self.off)
+            sc.start()
         except Exception as err:
             self.daemon.logger.error(f'scene running error {self.name} {err}')
         finally:

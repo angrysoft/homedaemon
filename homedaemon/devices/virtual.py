@@ -38,7 +38,7 @@ class ClockDev:
         while datetime.now().second:
             await asyncio.sleep(1)
     
-    def sun_info(self):
+    def sun_info(self, *args):
         utcoffset = datetime.now() - datetime.utcnow()
         with request.urlopen('https://api.sunrise-sunset.org/json?lat=52.2319581&lng=21.0067249&formatted=0') as r:
             try:    

@@ -5,6 +5,7 @@ import socket
 import jwt
 import json
 
+
 class Input(BaseInput):
     def __init__(self, bus, config, loop):
         super(Input, self).__init__(bus, loop)

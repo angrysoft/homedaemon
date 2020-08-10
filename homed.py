@@ -42,8 +42,7 @@ class HomeDaemon:
         self.bus = Bus(self.loop)
         self.logger.info('Starting Daemon')
         self.devices = Devices()
-        self.bus.add_trigger('report.*.*.*', self.logger.debug)
-        self.bus.add_trigger('write.*.*.*', self.logger.debug)
+        self.bus.add_trigger('*.*.*.*', self.logger.debug)
 
     def load_inputs(self) -> None:
         _input_name : str
