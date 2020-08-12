@@ -10,25 +10,22 @@ class SceneInterface:
         self.name = ''
         self.model = ''
         self.place = ''
-        self.running = False
+        self.running = set()
     
     def _runner(self, handler, *args):
+        if handler in self.running:
+            self.daemon.logger.waring(f'Scene {self.name}: {handler.__name__} allready started')
+        else:
+            self.running.add(handler)
         self.daemon.bus.emit(f'report.{self.sid}.status.on', f'Scene {self.name}: {handler.__name__} start')
-        self.running = True
-        
-        # handler()
-        # self.daemon.bus.emit(f'report.{self.sid}.status.off', f'Scene {self.name}: off')
-        # self.running = False
         
         try:
             handler()
-            # sc = Thread(name=self.name, target=handler, args=args)
-            # sc.start()
         except Exception as err:
             self.daemon.logger.error(f'scene running error {self.name} {err}')
         finally:
             self.daemon.bus.emit(f'report.{self.sid}.status.off', f'Scene {self.name}: {handler.__name__} end')
-            self.running = False
+            self.running.remove(handler)
     
     def sleep(self, s):
         sleep(s)
@@ -59,8 +56,11 @@ class BaseScene(SceneInterface):
         self.daemon.bus.add_trigger(f'write.{self.sid}.status.off',self._off, self.off)
                     
     def _on(self):
+        if self.on in self.running:
+            self.daemon.logger.waring(f'Scene {self.name} allready started')
+        else:
+            self.running.add(self.on)
         self.daemon.bus.emit(f'report{self.sid}.status.on', f'Scene {self.name}: on')
-        self.running = True
         try:
             self.on()
             # sc = Thread(name=self.name, target=self.on)
@@ -75,19 +75,18 @@ class BaseScene(SceneInterface):
         pass
     
     def _off(self):
-        if not self.reversible or not self.running:
+        if not self.reversible or not self.on in self.running:
             return
         try:
-            # self.off()
-            sc = Thread(name=self.name, target=self.off)
-            sc.start()
+            self.off()
+            # sc = Thread(name=self.name, target=self.off)
+            # sc.start()
         except Exception as err:
             self.daemon.logger.error(f'scene running error {self.name} {err}')
         finally:
             self.daemon.bus.emit(f'report{self.sid}.status.off', f'Scene {self.name}: off')
             self.running = False
             
-        
     def off(self):
         pass
 
