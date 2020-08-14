@@ -11,9 +11,9 @@ class SceneInterface:
         self.name = ''
         self.model = ''
         self.place = ''
-        self.running: Set = set()
+        self.running: Set[Callable[[], None]] = set()
     
-    def _runner(self, handler: Callable, *args) -> None:
+    def _runner(self, handler: Callable[[], None], *args) -> None:
         if handler in self.running:
             self.daemon.logger.warning(f'Scene {self.name}: {handler.__name__} allready started')
             return
@@ -32,7 +32,7 @@ class SceneInterface:
     def sleep(self, s):
         sleep(s)
 
-    def get_device(self, sid):
+    def get_device(self, sid:str):
         return self.daemon.devices.get(sid)
 
     def store_device_state(self, *sids):
