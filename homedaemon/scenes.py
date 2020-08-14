@@ -25,9 +25,9 @@ class SceneInterface:
             handler()
         except Exception as err:
             self.daemon.logger.error(f'scene running error {self.name} {err}')
-        finally:
-            self.daemon.bus.emit(f'report.{self.sid}.status.off', f'Scene {self.name}: {handler.__name__} end')
-            self.running.remove(handler)
+            
+        self.daemon.bus.emit(f'report.{self.sid}.status.off', f'Scene {self.name}: {handler.__name__} end')
+        self.running.remove(handler)
     
     def sleep(self, s):
         sleep(s)
