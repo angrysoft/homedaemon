@@ -1,6 +1,7 @@
 from threading import Thread, Event
 from datetime import datetime, time
 from time import sleep
+from typing import Dict, Any, Set, Callable
 
 
 class SceneInterface:
@@ -10,11 +11,11 @@ class SceneInterface:
         self.name = ''
         self.model = ''
         self.place = ''
-        self.running = set()
+        self.running: Set = set()
     
-    def _runner(self, handler, *args):
+    def _runner(self, handler: Callable, *args):
         if handler in self.running:
-            self.daemon.logger.waring(f'Scene {self.name}: {handler.__name__} allready started')
+            self.daemon.logger.warning(f'Scene {self.name}: {handler.__name__} allready started')
         else:
             self.running.add(handler)
         self.daemon.bus.emit(f'report.{self.sid}.status.on', f'Scene {self.name}: {handler.__name__} start')
@@ -39,8 +40,10 @@ class SceneInterface:
     def restore_devices_state(self, *sids):
         pass
     
-    def device_status(self):
-        return {'status': {True: 'on', False: 'off'}.get(self.running)}
+    def device_status(self) -> Dict[str,Any]:
+        if self.running:
+            events :list = [x.__name__ for x in self.running]
+            return {'status': 'on', 'events': events}
     
     def now(self):
         """Retrun time now"""
@@ -57,7 +60,7 @@ class BaseScene(SceneInterface):
                     
     def _on(self):
         if self.on in self.running:
-            self.daemon.logger.waring(f'Scene {self.name} allready started')
+            self.daemon.logger.warning(f'Scene {self.name} allready started')
         else:
             self.running.add(self.on)
         self.daemon.bus.emit(f'report{self.sid}.status.on', f'Scene {self.name}: on')
