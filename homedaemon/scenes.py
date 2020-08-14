@@ -13,9 +13,10 @@ class SceneInterface:
         self.place = ''
         self.running: Set = set()
     
-    def _runner(self, handler: Callable, *args):
+    def _runner(self, handler: Callable, *args) -> None:
         if handler in self.running:
             self.daemon.logger.warning(f'Scene {self.name}: {handler.__name__} allready started')
+            return
         else:
             self.running.add(handler)
         self.daemon.bus.emit(f'report.{self.sid}.status.on', f'Scene {self.name}: {handler.__name__} start')
