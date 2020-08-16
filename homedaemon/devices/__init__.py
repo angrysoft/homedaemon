@@ -35,7 +35,7 @@ class Devices:
     
     def register_devices(self, daemon) -> None:
         for dev in self.get_devices_list():
-            self.logger.debug(f"Loading....{dev['sid']} : {dev.get('name')}")
+            self.logger.debug(f"Loading....{dev['sid']} : {dev.get('name')} from {dev.get('place')}")
             try:
                 self.register_dev(dev, daemon)
             except Exception as err:

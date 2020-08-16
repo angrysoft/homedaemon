@@ -14,6 +14,7 @@ class SceneInterface:
         self.running: Set[Callable[[], None]] = set()
     
     def _runner(self, handler: Callable[[], None], *args) -> None:
+        self.daemon.logger.debug(f'Scene {self.name} running list {self.running}')
         if handler in self.running:
             self.daemon.logger.warning(f'Scene {self.name}: {handler.__name__} allready started')
             return
