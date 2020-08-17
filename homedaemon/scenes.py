@@ -14,7 +14,7 @@ class SceneInterface:
         self.running: Set[Callable[[], None]] = set()
     
     def _runner(self, handler: Callable[[], None], *args) -> None:
-        self.daemon.logger.debug(f'Scene {self.name} running list {self.running}')
+        self.daemon.logger.debug(f'Scene {self.name} running list {self.running} {handler}')
         if handler in self.running:
             self.daemon.logger.warning(f'Scene {self.name}: {handler.__name__} allready started')
             return
@@ -26,9 +26,9 @@ class SceneInterface:
             handler()
         except Exception as err:
             self.daemon.logger.error(f'scene running error {self.name} {err}')
-            
-        self.daemon.bus.emit(f'report.{self.sid}.status.off', f'Scene {self.name}: {handler.__name__} end')
-        self.running.remove(handler)
+        finally:    
+            self.daemon.bus.emit(f'report.{self.sid}.status.off', f'Scene {self.name}: {handler.__name__} end')
+            self.running.remove(handler)
     
     def sleep(self, s):
         sleep(s)
