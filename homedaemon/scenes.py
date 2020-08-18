@@ -1,11 +1,11 @@
 from threading import Thread, Event
 from datetime import datetime, time
 from time import sleep
-from typing import Dict, Any, Set, Callable
+from typing import Dict, Any, List, Set, Callable
 
 
 class SceneInterface:
-    def __init__(self, sid, daemon):
+    def __init__(self, sid:str, daemon):
         self.sid = sid
         self.daemon = daemon
         self.name = ''
@@ -30,7 +30,7 @@ class SceneInterface:
             self.daemon.bus.emit(f'report.{self.sid}.status.off', f'Scene {self.name}: {handler.__name__} end')
             self.running.remove(handler)
     
-    def sleep(self, s):
+    def sleep(self, s:int):
         sleep(s)
 
     def get_device(self, sid:str):
@@ -44,8 +44,9 @@ class SceneInterface:
     
     def device_status(self) -> Dict[str,Any]:
         if self.running:
-            events :list = [x.__name__ for x in self.running]
+            events :List[Callable[[], None]] = [x.__name__ for x in self.running]
             return {'status': 'on', 'events': events}
+        return {'status': 'off'}
     
     def now(self):
         """Retrun time now"""
@@ -53,7 +54,7 @@ class SceneInterface:
     
 
 class BaseScene(SceneInterface):
-    def __init__(self, sid, daemon):
+    def __init__(self, sid:str, daemon):
         super().__init__(sid, daemon)
         self.reversible = False
         self.model = 'scene'
@@ -97,11 +98,11 @@ class BaseScene(SceneInterface):
 
     
 class BaseAutomation(SceneInterface):
-    def __init__(self, sid, daemon):
+    def __init__(self, sid:str, daemon):
         super().__init__(sid, daemon)    
         self.model = 'automation'
         
-    def add_trigger(self, trigger, handler):
+    def add_trigger(self, trigger:str, handler:Callable[[], None]) -> None:
         self.daemon.bus.add_trigger(trigger, self._runner, handler)
 
 

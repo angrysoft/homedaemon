@@ -1,11 +1,8 @@
-
 import asyncio
-import functools
-from datetime import datetime
-from threading import current_thread
+from typing import Any, Optional, List
 
 class Trigger:
-    def __init__(self, trigger):
+    def __init__(self, trigger: str):
         if type(trigger) is str:
             _values = trigger.split('.', 3)
             if len(_values) == 4:
@@ -13,7 +10,6 @@ class Trigger:
             else:
                 raise ValueError(f'incorrect trigger format:  {trigger}')
         
-    
     def __repr__(self):
         return f'Trigger: {self.cmd}.{self.sid}.{self.event}.{self.value}'
     
@@ -54,15 +50,22 @@ class TriggerDict:
         return self._data.__repr__()
 
 class Bus:
-    def __init__(self, loop):
-        self._events = dict()
-        self.loop = loop
-        self.running = []
-        self._triggers = TriggerDict()
+    _instance: object = None
+    
+    def __new__(cls, loop:Optional[asyncio.AbstractEventLoop] = None) -> Any:
+        if Bus._instance is None:
+            if loop is not None:
+                cls.loop = loop
+            else:
+                cls.loop = asyncio.get_event_loop()
+            cls.running = []
+            cls._triggers:TriggerDict = TriggerDict()
+            Bus._instance = object.__new__(cls)
+        return cls._instance
     
     def add_trigger(self, trigger:str, handler, *args) -> None:
         _trigger = Trigger(trigger)
-        cmd = self._triggers.setdefault(_trigger.cmd, TriggerDict())
+        cmd:TriggerDict = self._triggers.setdefault(_trigger.cmd, TriggerDict())
         sid = cmd.setdefault(_trigger.sid, TriggerDict())
         event = sid.setdefault(_trigger.event, TriggerDict())
         value = event.setdefault(_trigger.value, [])
@@ -87,7 +90,7 @@ class Bus:
                 else:
                     task = asyncio.run_coroutine_threadsafe(handler(), self.loop)
             else:
-                handler_with_args = list()
+                handler_with_args: List[Any] = list()
                 handler_with_args.append(handler)
                 handler_with_args.extend(args)
                 handler_with_args.extend(payload)
