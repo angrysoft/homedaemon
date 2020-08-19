@@ -1,45 +1,53 @@
-from threading import Thread, Event
+from threading import Thread, Event, RLock
 from datetime import datetime, time
 from time import sleep
+from homedaemon.bus import Bus
+from homedaemon.logger import Logger
+from homedaemon.devices import Devices
 from typing import Dict, Any, List, Set, Callable
 
 
+
 class SceneInterface:
-    def __init__(self, sid:str, daemon):
+    def __init__(self, sid:str):
         self.sid = sid
-        self.daemon = daemon
+        self.bus = Bus()
+        self.devices = Devices()
+        self.logger = Logger()
         self.name = ''
         self.model = ''
         self.place = ''
         self.running: Set[Callable[[], None]] = set()
+        self.lock = RLock()
     
-    def _runner(self, handler: Callable[[], None], *args) -> None:
-        self.daemon.logger.debug(f'Scene {self.name} running list {self.running} {handler}')
-        if handler in self.running:
-            self.daemon.logger.warning(f'Scene {self.name}: {handler.__name__} allready started')
-            return
-        else:
-            self.running.add(handler)
-        self.daemon.bus.emit(f'report.{self.sid}.status.on', f'Scene {self.name}: {handler.__name__} start')
-        
-        try:
-            handler()
-        except Exception as err:
-            self.daemon.logger.error(f'scene running error {self.name} {err}')
-        finally:    
-            self.daemon.bus.emit(f'report.{self.sid}.status.off', f'Scene {self.name}: {handler.__name__} end')
-            self.running.remove(handler)
+    def _runner(self, handler: Callable[[], None], *args:Any) -> None:
+        with self.lock:
+            self.logger.debug(f'Scene {self.name} running list {self.running} {handler}')
+            if handler in self.running:
+                self.logger.warning(f'Scene {self.name}: {handler.__name__} allready started')
+                return
+            else:
+                self.running.add(handler)
+            self.bus.emit(f'report.{self.sid}.status.on', f'Scene {self.name}: {handler.__name__} start')
+            
+            try:
+                handler()
+            except Exception as err:
+                self.logger.error(f'scene running error {self.name} {err}')
+            finally:    
+                self.bus.emit(f'report.{self.sid}.status.off', f'Scene {self.name}: {handler.__name__} end')
+                self.running.remove(handler)
     
     def sleep(self, s:int):
         sleep(s)
 
     def get_device(self, sid:str):
-        return self.daemon.devices.get(sid)
+        return self.devices.get(sid)
 
-    def store_device_state(self, *sids):
+    def store_device_state(self, *sids:str):
         pass
     
-    def restore_devices_state(self, *sids):
+    def restore_devices_state(self, *sids:str):
         pass
     
     def device_status(self) -> Dict[str,Any]:
@@ -54,28 +62,28 @@ class SceneInterface:
     
 
 class BaseScene(SceneInterface):
-    def __init__(self, sid:str, daemon):
-        super().__init__(sid, daemon)
+    def __init__(self, sid:str):
+        super().__init__(sid)
         self.reversible = False
         self.model = 'scene'
-        self.daemon.bus.add_trigger(f'write.{self.sid}.status.on', self._on, self.on)
-        self.daemon.bus.add_trigger(f'write.{self.sid}.status.off',self._off, self.off)
+        self.bus.add_trigger(f'write.{self.sid}.status.on', self._on, self.on)
+        self.bus.add_trigger(f'write.{self.sid}.status.off',self._off, self.off)
                     
     def _on(self):
         if self.on in self.running:
-            self.daemon.logger.warning(f'Scene {self.name} allready started')
+            self.logger.warning(f'Scene {self.name} allready started')
         else:
             self.running.add(self.on)
-        self.daemon.bus.emit(f'report{self.sid}.status.on', f'Scene {self.name}: on')
+        self.bus.emit(f'report{self.sid}.status.on', f'Scene {self.name}: on')
         try:
             self.on()
             # sc = Thread(name=self.name, target=self.on)
             # sc.start()
         except Exception as err:
-            self.daemon.logger.error(f'scene running error {self.name} {err}')
+            self.logger.error(f'scene running error {self.name} {err}')
         finally:
             if not self.reversible:
-                self.daemon.bus.emit(f'report{self.sid}.status.off', f'Scene {self.name}: off')
+                self.bus.emit(f'report{self.sid}.status.off', f'Scene {self.name}: off')
                 
     def on(self):
         pass
@@ -88,26 +96,26 @@ class BaseScene(SceneInterface):
             # sc = Thread(name=self.name, target=self.off)
             # sc.start()
         except Exception as err:
-            self.daemon.logger.error(f'scene running error {self.name} {err}')
+            self.logger.error(f'scene running error {self.name} {err}')
         finally:
-            self.daemon.bus.emit(f'report{self.sid}.status.off', f'Scene {self.name}: off')
-            self.running = False
+            self.bus.emit(f'report{self.sid}.status.off', f'Scene {self.name}: off')
+            # self.running = False
             
     def off(self):
         pass
 
     
 class BaseAutomation(SceneInterface):
-    def __init__(self, sid:str, daemon):
-        super().__init__(sid, daemon)    
+    def __init__(self, sid:str):
+        super().__init__(sid)    
         self.model = 'automation'
         
     def add_trigger(self, trigger:str, handler:Callable[[], None]) -> None:
-        self.daemon.bus.add_trigger(trigger, self._runner, handler)
+        self.bus.add_trigger(trigger, self._runner, handler)
 
 
 class RunAfter:
-    def __init__(self, delay, callback, *args):
+    def __init__(self, delay:int, callback: Callable[[], None], *args: Any):
         self.delay = delay
         self.callback = callback
         self.args = args

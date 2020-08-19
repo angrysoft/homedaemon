@@ -1,5 +1,5 @@
 import asyncio
-from typing import Any, Optional, List
+from typing import Any, Optional, List, Dict, Callable
 
 class Trigger:
     def __init__(self, trigger: str):
@@ -63,7 +63,7 @@ class Bus:
             Bus._instance = object.__new__(cls)
         return cls._instance
     
-    def add_trigger(self, trigger:str, handler, *args) -> None:
+    def add_trigger(self, trigger:str, handler:Callable[[], None], *args:Any) -> None:
         _trigger = Trigger(trigger)
         cmd:TriggerDict = self._triggers.setdefault(_trigger.cmd, TriggerDict())
         sid = cmd.setdefault(_trigger.sid, TriggerDict())
@@ -80,7 +80,10 @@ class Bus:
     def del_trigger(self, trigger:Trigger):
         pass
     
-    def emit(self, event:str, *payload):
+    def emit(self, event:str, *payload:Any) -> None:
+        self.loop.run_in_executor(None, self._run_handler, event, *payload)
+        
+    def _run_handler(self, event:str, *payload:Any) -> None:
         trigger = Trigger(event)
         
         for handler, args in self.get_handlers(trigger):
@@ -91,16 +94,19 @@ class Bus:
                     task = asyncio.run_coroutine_threadsafe(handler(), self.loop)
             else:
                 handler_with_args: List[Any] = list()
-                handler_with_args.append(handler)
+                # handler_with_args.append(handler)
                 handler_with_args.extend(args)
                 handler_with_args.extend(payload)
-                # handler()
+                if handler_with_args:
+                    handler(*handler_with_args)
+                else:
+                    handler()
                 # try:
-                self.loop.run_in_executor(None, *handler_with_args)
+                # self.loop.run_in_executor(None, *handler_with_args)
                 # except Exception:
                 # log error
                 
-    def emit_cmd(self, event):
+    def emit_cmd(self, event:Dict[str, Any]):
         try:
             _data = event['data'].copy()
             for key in _data:

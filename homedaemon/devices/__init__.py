@@ -26,21 +26,26 @@ class Drivers:
             
             
 class Devices:
-    def __init__(self):
-        self.drivers: Drivers = Drivers()
-        self._devices: Dict[str, Drivers] = dict()
-        self._devices_fail_list: List[Dict[str,str]] = list()
-        self.config = Config()
-        self.logger: Logger = Logger()
+    _instance = object = None
+    
+    def __new__(cls):
+        if Devices._instance is None:
+            cls.drivers: Drivers = Drivers()
+            cls._devices: Dict[str, Drivers] = dict()
+            cls._devices_fail_list: List[Dict[str,str]] = list()
+            cls.config = Config()
+            cls.logger: Logger = Logger()
+            Devices._instance = object.__new__(cls)
+        return cls._instance
     
     def register_devices(self, daemon) -> None:
         for dev in self.get_devices_list():
             self.logger.debug(f"Loading....{dev['sid']} : {dev.get('name')} from {dev.get('place')}")
-            try:
-                self.register_dev(dev, daemon)
-            except Exception as err:
-                self._devices_fail_list.append(dev)
-                self.logger.error(str(err))
+            # try:
+            self.register_dev(dev, daemon)
+            # except Exception as err:
+                # self._devices_fail_list.append(dev)
+                # self.logger.error(str(err))
             # daemon.loop.run_in_executor(None, self.register_dev, dev, daemon)
         daemon.loop.create_task(self._watch_devices_fail_list(daemon))
     

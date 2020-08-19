@@ -18,6 +18,7 @@ class Logger:
             Logger._debug = debug
             if  debug:    
                  Logger._logger.setLevel(logging.DEBUG)
+                 logging.getLogger("asncio").setLevel(logging.DEBUG)
         return super(Logger, cls).__new__(cls)
     
     def debug(self, msg: Optional[str] = None):

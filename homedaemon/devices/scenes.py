@@ -12,6 +12,6 @@ class Driver:
     def __new__(cls, model, sid, config, daemon):
         try:
             _scene = importlib.import_module(sid)
-            return _scene.Scene(sid, daemon)
+            return _scene.Scene(sid)
         except ModuleNotFoundError as err:
             daemon.logger.error(str(err))
