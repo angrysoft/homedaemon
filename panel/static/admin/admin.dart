@@ -1,6 +1,15 @@
 import 'dart:html';
 
+void sendCmd(String cmd) {
+  print(cmd);
+}
+
 void main() {
   List<ButtonElement> buttonList = querySelectorAll('button');
-  // addbtn.onClick.listen((e)=> devadd.show()); 
+  buttonList.forEach((element) {
+    ButtonElement btn = element;
+    btn.onClick.listen((event) {
+      sendCmd(btn.dataset['cmd']);
+    });
+  });
 }
