@@ -7,7 +7,7 @@ import asyncio
 from typing import Iterator, List, Dict
 
 class Drivers:
-    devices_drivers = dict()
+    devices_drivers: Dict[str, Driver] = dict()
     
     def get_driver(self, device_family):
         self._register_driver(device_family)

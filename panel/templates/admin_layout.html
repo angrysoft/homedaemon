@@ -6,8 +6,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link rel="stylesheet" href="/static/angry.min.css">
-  <link rel="stylesheet" href="/static/styles.css">
+  <link rel="stylesheet" href="{{ url_for('static', path='/angry.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', path='/styles.css') }}">
 {% endblock %}
   
   {% block dart %}
@@ -38,7 +38,7 @@
 <div class="container">
   {% block footer %}
   <footer class="txt-center">
-		<p>Copyright © 2015-2019 Angrysoft . All Rights Reserved.</p>
+		<p>Copyright © 2015-2020 Angrysoft . All Rights Reserved.</p>
 		<p>Design by <a target="_blank" href="http://www.angrysoft.ovh">Angrysoft</p>
 	</footer>
   {% endblock %}

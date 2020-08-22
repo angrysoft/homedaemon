@@ -21,110 +21,103 @@ __copyright__ = 'Copyright 2014-2019 Sebastian Zwierzchowski'
 __license__ = 'GPL2'
 __version__ = '0.1'
 
-
-from flask import Flask
-from flask import request
-from flask import render_template
-from flask import redirect
-from flask import url_for
-from flask import session
 from functools import wraps
-import json
 import asyncio
-from pycouchdb import Server
 import operator
 from os import urandom
 from hashlib import sha256
-from time import sleep
 import subprocess
-app = Flask(__name__)
+from fastapi import FastAPI, Request
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from starlette.responses import HTMLResponse
 
 
-async def send_event(msg):
-    reader, writer = await asyncio.open_connection(db['config']['tcp']['ip'],
-                                                   db['config']['tcp']['port'])
-    writer.write(msg.encode())
-    await writer.drain()
-    data = await reader.read(100)
-    writer.close()
-    return 'ok'
+
+app = FastAPI()
+app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
 
 
-def login_required(func):
-    @wraps(func)
-    def decorated_function(*args, **kwargs):
-        if 'admin' not in session:
-            return redirect(url_for('login', next=request.url))
-        return func(*args, **kwargs)
-    return decorated_function
+# async def send_event(msg):
+#     reader, writer = await asyncio.open_connection(db['config']['tcp']['ip'],
+#                                                    db['config']['tcp']['port'])
+#     writer.write(msg.encode())
+#     await writer.drain()
+#     data = await reader.read(100)
+#     writer.close()
+#     return 'ok'
+
+
+# def login_required(func):
+#     @wraps(func)
+#     def decorated_function(*args, **kwargs):
+#         # if 'admin' not in session:
+#             # return redirect(url_for('login', next=request.url))
+#         return func(*args, **kwargs)
+#     return decorated_function
 
 # www
-@app.route('/')
-def index():
-    return render_template('admin.html')
+@app.get('/', response_class=HTMLResponse)
+async def index(request: Request):
+    return templates.TemplateResponse('admin.html', context={'request':request, 'test': 'dupa'})
 
 
-# ______Admin______ #
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        user = request.form['user']
-        password = request.form['passwd']
-        pwd = sha256(password.encode()).hexdigest()
-        if user == db['config']['panel'].get('user') and pwd == db['config']['panel'].get('password'):
-            session['admin'] = 'admin'
-            return request.args.get('next', '/admin')
-        else:
-            return 'ko'
-    elif request.method == 'GET':
-        return render_template('/login.html')
+# # ______Admin______ #
+# @app.route('/login', methods=['GET', 'POST'])
+# def login():
+#     if request.method == 'POST':
+#         user = request.form['user']
+#         password = request.form['passwd']
+#         pwd = sha256(password.encode()).hexdigest()
+#         if user == db['config']['panel'].get('user') and pwd == db['config']['panel'].get('password'):
+#             session['admin'] = 'admin'
+#             return request.args.get('next', '/admin')
+#         else:
+#             return 'ko'
+#     elif request.method == 'GET':
+#         return render_template('/login.html')
 
 
-@app.route('/logout')
-def logout():
-    session.clear()
-    return redirect(url_for('login'))
+# @app.route('/logout')
+# def logout():
+#     session.clear()
+#     return redirect(url_for('login'))
 
 
-@app.route('/config', methods=['GET', 'POST'])
-@login_required
-def admin_config():
-    if request.method == 'POST':
-        pass
-    elif request.method == 'GET':  
-        config = [d for d in db['config']]  
-        return render_template('config.html', config=config)
+# @app.route('/config', methods=['GET', 'POST'])
+# @login_required
+# def admin_config():
+#     if request.method == 'POST':
+#         pass
+#     elif request.method == 'GET':  
+#         config = [d for d in db['config']]  
+#         return render_template('config.html', config=config)
 
 
-@app.route('/devices')
-@login_required
-def admin_devices():
-    devs = [d for d in db['devices']]
-    return render_template('devices.html', devices=sorted(devs, key=operator.itemgetter('name')))
+# @app.route('/devices')
+# @login_required
+# def admin_devices():
+#     devs = [d for d in db['devices']]
+#     return render_template('devices.html', devices=sorted(devs, key=operator.itemgetter('name')))
 
-@app.route('/system/restart', methods=['GET', 'POST'])
-def system_restart():
-    if request.method == 'GET':
-        return request.args.get('status', 'ooops something is wrong')
-    elif request.method == 'POST':
-        subprocess.call(['systemctl', 'restart', 'homed.service'])
-        subprocess.call(['systemctl', 'restart', 'emperor.uwsgi.service'])
-        status = 'ok'
-        return redirect(f'/system/restart?status={status}')
+# @app.route('/system/restart', methods=['GET', 'POST'])
+# def system_restart():
+#     if request.method == 'GET':
+#         return request.args.get('status', 'ooops something is wrong')
+#     elif request.method == 'POST':
+#         subprocess.call(['systemctl', 'restart', 'homed.service'])
+#         # subprocess.call(['systemctl', 'restart', 'emperor.uwsgi.service'])
+#         status = 'ok'
+#         return redirect(f'/system/restart?status={status}')
     
     
-@app.route('/system/reboot', methods=['GET', 'POST'])
-def system_reboot():
-    if request.method == 'GET':
-        return request.args.get('status', 'ooops something is wrong')
-    elif request.method == 'POST':
-        subprocess.call(['systemctl', 'reboot', '-i'])
-        status = 'ok'
-        return redirect(f'/system/restart?status={status}')
-    
+# @app.route('/system/reboot', methods=['GET', 'POST'])
+# def system_reboot():
+#     if request.method == 'GET':
+#         return request.args.get('status', 'ooops something is wrong')
+#     elif request.method == 'POST':
+#         subprocess.call(['systemctl', 'reboot', '-i'])
+#         status = 'ok'
+#         return redirect(f'/system/restart?status={status}')
 
-db = Server()
-app.secret_key = urandom(24)
-
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', use_reloader=False) #, port=80)
