@@ -1,4 +1,5 @@
 path = www/static
+admin_path = panel/static
 dart = dart2js -m -o
 sasss = sassc -t compressed
 INSTALL=install -C
@@ -11,6 +12,8 @@ PREFIX = /usr
 all: alldart allcss
 
 alldart: main tvpilot ledpilot login admindevices
+
+admin: admincss admindart
 
 main: $(path)/main.dart
 	$(dart) $(path)/main.dart.js $(path)/main.dart
@@ -25,10 +28,14 @@ devices: $(path)/devices/devices.dart
 admindevices: $(path)/admin/devices.dart
 	$(dart) $(path)/admin/devices.dart.js $(path)/admin/devices.dart
 
+admindart: $(admin_path)/admin/admin.dart
+	$(dart) $(admin_path)/admin/admin.dart.js $(admin_path)/admin/admin.dart
+
+admincss: $(admin_path)/styles.scss
+	sassc -t compressed $(admin_path)/styles.scss $(admin_path)/styles.css
+
 allcss: stylescss devicesscss tvpilotcss ledpilotcss admincss
 
-admincss: $(path)/admin.scss
-	sassc -t compressed $(path)/admin.scss $(path)/admin.css
 
 stylescss: $(path)/styles.scss
 	sassc -t compressed $(path)/styles.scss $(path)/styles.css

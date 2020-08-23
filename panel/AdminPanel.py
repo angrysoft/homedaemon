@@ -31,6 +31,8 @@ from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.responses import HTMLResponse
+from pydantic import BaseModel
+from typing import Optional
 
 
 
@@ -58,9 +60,23 @@ templates = Jinja2Templates(directory="templates")
 #     return decorated_function
 
 # www
+class Cmd(BaseModel):
+    cmd:str
+    result: Optional[int]
+
 @app.get('/', response_class=HTMLResponse)
 async def index(request: Request):
-    return templates.TemplateResponse('admin.html', context={'request':request, 'test': 'dupa'})
+    return templates.TemplateResponse('admin.html', context={'request': request})
+
+
+@app.post('/system')
+async def system(cmd:Cmd):
+    commands = {'restart': ['systemctl', 'restart', 'homed.service'],
+                'reboot': ['systemctl', 'reboot', '-i'],
+                'poweroff': ['systemctl', 'poweroff', '-i']}
+    ret:subprocess.CompletedProcess = subprocess.run(commands.get(cmd.cmd, ['echo', '1']))
+    cmd.result = ret.returncode
+    return cmd
 
 
 # # ______Admin______ #

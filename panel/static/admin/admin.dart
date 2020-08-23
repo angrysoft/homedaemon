@@ -1,7 +1,14 @@
 import 'dart:html';
 
-void sendCmd(String cmd) {
-  print(cmd);
+Future<void> sendCmd(String cmd) async {
+  DivElement spinner = querySelector('.loader-wraper');
+  spinner.classes.add('show-loader');
+  await HttpRequest.request('/system',
+          method: 'POST', sendData: '{"cmd": "$cmd"}')
+      .then((HttpRequest resp) {
+    print('$cmd : ${resp.responseText}');
+    spinner.classes.remove('show-loader');
+  });
 }
 
 void main() {

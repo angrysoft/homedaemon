@@ -4,6 +4,9 @@
 {% endblock %}
 {% block content %}
 <div class="container">
+<div class="loader-wraper">
+    <div id="loader"></div>
+</div>
     <div class="row center-xs">
         <div class="col-xs-12 panel dark">
             <header>
@@ -11,11 +14,15 @@
             </header>
             <section class="row around-xs">
                 <div class="col-xs-12 col-md-3">
-                    <button class="btn purple" data-cmd="restart-homed">Restart AngryHome</button>
+                    <button class="btn purple" data-cmd="restart-homed">Restart HomeDaemon</button>
                 </div>
 
                 <div class="col-xs-12 col-md-3">
                     <button class="btn purple" data-cmd="reboot">Reboot</button>
+                </div>
+
+                <div class="col-xs-12 col-md-3">
+                    <button class="btn purple" data-cmd="poweroff">PowerOff</button>
                 </div>
             </section>
         </div>
