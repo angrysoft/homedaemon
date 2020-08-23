@@ -1,5 +1,8 @@
 from threading import RLock, Thread
 
+class DriverInterface:
+    pass
+
 class BaseDevice:
     def __init__(self, data, daemon):
         self.daemon = daemon

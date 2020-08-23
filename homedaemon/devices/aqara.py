@@ -1,29 +1,20 @@
-from .base import Dummy
-from . import Drivers
+from .base import DriverInterface
 from pyiot.xiaomi.aqara import *
-import json
-from datetime import datetime
+from pyiot.base import BaseDevice
 from homedaemon.config import Config
+from homedaemon.bus import Bus
 
+conf = Config()
+bus = Bus()
+gateway:GatewayInterface = GatewayInterface()
+gateway_conf = conf.get(gateway.sid)
+gateway.password = gateway_conf.get('gwpasswd')
 
-class GatewayInstance:
-    # not thread sefe 
-    gateway = None
+class Driver(DriverInterface):
     
-    def __new__(cls, daemon):
-        if GatewayInstance.gateway is None:
-            conf = Config()
-            GatewayInstance.gateway = Gateway()
-            GatewayInstance.gateway.gwpasswd = conf.get(GatewayInstance.gateway.sid).get('password') 
-            GatewayInstance.gateway.watcher.add_report_handler(daemon.bus.emit_cmd)
-        return GatewayInstance.gateway
-        
-
-class Driver:
-    
-    def __new__(cls, model, sid, config, daemon):
+    def __new__(cls, model, sid, config) -> BaseDevice:
         gw = GatewayInstance(daemon)
-        dev = {
+        dev:BaseDevice = {
             'ctrl_neutral1': CtrlNeutral,
             'ctrl_neutral2': CtrlNeutral2,
             'sensor_ht': SensorHt,
@@ -33,10 +24,6 @@ class Driver:
             'sensor_switch.aq2': SensorSwitchAq2,
             'plug': Plug,
             'switch': Switch,
-            'gateway': cls.get_gateway}.get(model, Dummy)(sid=sid, gateway=gw)
-        daemon.bus.add_trigger(f'write.{dev.sid}.*.*', dev.write)
+            'gateway': Gateway}.get(model, BaseDevice)(sid=sid, gateway=gateway)
+        bus.add_trigger(f'write.{dev.sid}.*.*', dev.write)
         return dev
-    
-    @classmethod
-    def get_gateway(cls, **kwargs):
-        return kwargs['gateway']
