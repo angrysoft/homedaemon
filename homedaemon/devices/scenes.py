@@ -1,6 +1,4 @@
-from .base import Dummy
 import importlib
-import sys
 from homedaemon.config import Config
 from homedaemon.logger import Logger
 

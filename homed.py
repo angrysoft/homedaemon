@@ -20,7 +20,7 @@
 __author__ = 'Angrysoft - Sebastian Zwierzchowski'
 __copyright__ = 'Copyright 2014-2020 Sebastian Zwierzchowski'
 __license__ = 'GPL2'
-__version__ = '0.9.2'
+__version__ = '0.9.3'
 
 
 import asyncio
