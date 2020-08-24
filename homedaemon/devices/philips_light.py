@@ -12,4 +12,4 @@ class Driver:
             dev.add_report_handler(bus.emit_cmd)
             return dev
         except PhilipsBulbException as err:
-            daemon.logger.error(err)
+            logger.error(err)

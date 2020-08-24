@@ -44,7 +44,7 @@ class Devices:
         for dev in self.get_devices_list():
             self.logger.debug(f"Loading....{dev['sid']} : {dev.get('name')} from {dev.get('place')}")
             # try:
-            self.register_dev(dev, daemon)
+            self.register_dev(dev)
             # except Exception as err:
                 # self._devices_fail_list.append(dev)
                 # self.logger.error(str(err))
@@ -80,7 +80,7 @@ class Devices:
         
         return ret
         
-    def register_dev(self, dev, daemon):
+    def register_dev(self, dev):
         drv = self.drivers.get_driver(dev["family"])
         if drv:
             dev_instace = drv(dev['model'],
