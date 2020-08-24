@@ -85,8 +85,7 @@ class Devices:
         if drv:
             dev_instace = drv(dev['model'],
                               dev['sid'],
-                              self.config.get(dev['sid']),
-                              daemon)
+                              self.config.get(dev['sid']))
             if dev_instace:
                 dev_instace.name = dev.get('name', '')
                 dev_instace.place = dev.get('place', '')

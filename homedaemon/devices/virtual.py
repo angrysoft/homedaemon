@@ -3,35 +3,44 @@ from urllib import request
 from datetime import datetime
 import asyncio
 import json
+from homedaemon.bus import Bus
+
+
+bus = Bus()
+
 
 
 class Driver:
-    def __new__(cls, model, sid, config, daemon):
-        return {'clock': ClockDev}.get(model, Dummy)(daemon)
+    def __new__(cls, model, sid, config):
+        return {'clock': ClockDev}.get(model, Dummy)()
 
 
 class ClockDev:
-    def __init__(self, daemon):
-        self.daemon = daemon
+    def __init__(self):
         self.model = 'clock'
         self.name = 'Clock'
         self.sid = 'clock'
         self.place = 'all'
-        self.daemon.bus.add_trigger('report.clock.time.01:00', self.sun_info)
+        try:
+            self.loop = asyncio.get_event_loop()
+        except RuntimeError:
+            self.loop = asyncio.new_event_loop()
+        bus.add_trigger('report.clock.time.01:00', self.sun_info)
         self._time = dict()
         self.sun_info()
-        self.daemon.loop.create_task(self.timer())
+        # self.loop.create_task(self.timer())
+        self.loop.run_until_complete(self.timer())
 
     async def timer(self):
         await self._to_change_min()
         while True:
             date = datetime.now()
             self._time.update({'hour': date.hour, 'minute': date.minute})
-            self.daemon.bus.emit(f'report.clock.time.{self.time}', {'time': self.time})
+            bus.emit(f'report.clock.time.{self.time}', {'time': self.time})
             if self.time == self.sunrise:
-                self.daemon.bus.emit(f'report.clock.time.sunrise', {'time': self.time})
+                bus.emit(f'report.clock.time.sunrise', {'time': self.time})
             elif self.time == self.sunset:
-                self.daemon.bus.emit(f'report.clock.time.sunset', {'time': self.time})
+                bus.emit(f'report.clock.time.sunset', {'time': self.time})
             await asyncio.sleep(60)
             
     async def _to_change_min(self):
