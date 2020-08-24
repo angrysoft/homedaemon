@@ -6,7 +6,7 @@ INSTALL=install -C
 USR=http
 GRP=http
 USRPAN=http
-GRPPAN=uwsgi
+GRPPAN=http
 PREFIX = /usr
 
 all: alldart allcss
@@ -56,11 +56,12 @@ install_www:
 	chmod -R g+w $(DESTDIR)/var/www/angryhome
 
 install_panel:
-	install -v -m 755  -g $(GRPPAN) -o $(USRPAN) -d $(DESTDIR)/var/www/adminpanel
-	cp -rv panel/* $(DESTDIR)/var/www/adminpanel
-	chown -R $(USRPAN).$(GRPPAN) $(DESTDIR)/var/www/adminpanel
-	chmod -R a+r $(DESTDIR)/var/www/adminpanel
-	chmod -R g+w $(DESTDIR)/var/www/adminpanel
+	install -v -m 755  -g $(GRPPAN) -o $(USRPAN) -d $(DESTDIR)/var/www/homepanel
+	cp -rv panel/* $(DESTDIR)/var/www/homepanel
+	chown -R $(USRPAN).$(GRPPAN) $(DESTDIR)/var/www/homepanel
+	install -v -m 655 homepanel.service -D $(DESTDIR)/usr/lib/systemd/system/homepanel.service
+	chmod -R a+r $(DESTDIR)/var/www/homepanel
+	chmod -R g+w $(DESTDIR)/var/www/homepanel
 
 uninstall:
 	# rm -rvf $(DESTDIR)/etc/angryhome
@@ -72,4 +73,4 @@ uninstall_www:
 	rm -vf $(DESTDIR)/usr/lib/systemd/system/angryhome.service
 
 uninstall_panel:
-	rm -rvf $(DESTDIR)/var/www/adminpanel
+	rm -rvf $(DESTDIR)/var/www/homepanel
