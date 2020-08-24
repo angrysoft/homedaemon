@@ -71,7 +71,7 @@ async def index(request: Request):
 
 @app.post('/system')
 async def system(cmd:Cmd):
-    commands = {'restart': ['systemctl', 'restart', 'homed.service'],
+    commands = {'restart-homed': ['systemctl', 'restart', 'homed.service'],
                 'reboot': ['systemctl', 'reboot', '-i'],
                 'poweroff': ['systemctl', 'poweroff', '-i']}
     ret:subprocess.CompletedProcess = subprocess.run(commands.get(cmd.cmd, ['echo', '1']))
