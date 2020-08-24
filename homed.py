@@ -55,7 +55,7 @@ class HomeDaemon:
             self.inputs[inst.name].run()
 
     def load_devices(self) -> None:
-        self.devices.register_devices(self)
+        self.devices.register_devices()
         self.bus.emit('report.homed.devices.loaded', {"msg": "Devices loaded"})
         self.loop.call_later(5, self.bus.emit, 'devices_list.daemon.populate.list',
                              {'cmd':'devices_list', 'data': self.devices.get_devices_info_list()})
