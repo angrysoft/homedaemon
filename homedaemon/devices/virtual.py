@@ -21,15 +21,11 @@ class ClockDev:
         self.name = 'Clock'
         self.sid = 'clock'
         self.place = 'all'
-        try:
-            self.loop = asyncio.get_event_loop()
-        except RuntimeError:
-            self.loop = asyncio.new_event_loop()
         bus.add_trigger('report.clock.time.01:00', self.sun_info)
         self._time = dict()
         self.sun_info()
-        # self.loop.create_task(self.timer())
-        self.loop.run_until_complete(self.timer())
+        bus.loop.create_task(self.timer())
+        
 
     async def timer(self):
         await self._to_change_min()
