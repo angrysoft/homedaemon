@@ -40,7 +40,7 @@ class Devices:
             Devices._instance = object.__new__(cls)
         return cls._instance
     
-    def register_devices(self, daemon) -> None:
+    def register_devices(self) -> None:
         for dev in self.get_devices_list():
             self.logger.debug(f"Loading....{dev['sid']} : {dev.get('name')} from {dev.get('place')}")
             # try:
