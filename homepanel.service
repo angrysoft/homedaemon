@@ -4,8 +4,8 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
-User=http
-Group=http
+# User=http
+# Group=http
 RuntimeDirectory=uvicorn
 WorkingDirectory=/var/www/homepanel
 ExecStart=/usr/bin/uvicorn --host 0.0.0.0 --port 80 HomePanel:app
