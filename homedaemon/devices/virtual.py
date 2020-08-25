@@ -1,4 +1,4 @@
-from .base import BaseDevice, Dummy
+from .base import Dummy
 from urllib import request
 from datetime import datetime
 import asyncio
@@ -23,11 +23,11 @@ class ClockDev:
         self.place = 'all'
         bus.add_trigger('report.clock.time.01:00', self.sun_info)
         self._time = dict()
-        self.sun_info()
         bus.loop.create_task(self.timer())
         
 
     async def timer(self):
+        self.sun_info()
         await self._to_change_min()
         while True:
             date = datetime.now()

@@ -78,6 +78,7 @@ class Devices:
         except NotADirectoryError as nd:
             self.logger.error(f'Get devices list {nd}')
         
+        print(ret)
         return ret
         
     def register_dev(self, dev):
