@@ -88,8 +88,8 @@ class Devices:
                               dev['sid'],
                               self.config.get(dev['sid']))
             if dev_instace:
-                dev_instace.name = dev.get('name', '')
-                dev_instace.place = dev.get('place', '')
+                dev_instace.status.name = dev.get('name', '')
+                dev_instace.status.place = dev.get('place', '')
                 self._devices[dev['sid']] = dev_instace
             else:
                 self._devices_fail_list.append(dev)
@@ -104,9 +104,7 @@ class Devices:
         ret: List[Dict[str,str]] = list()
         for devitem in self._devices:
             dev = self.get(devitem)
-            ret.append({'sid': dev.sid, 'model': dev.model,
-                        'name': dev.name, 'place': dev.place,
-                        'status': dev.device_status()})
+            ret.append(dev.device_status())
         return ret
       
     def _unknown_device_family(self, data, *args):

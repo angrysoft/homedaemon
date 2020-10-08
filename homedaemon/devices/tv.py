@@ -1,5 +1,4 @@
-from .base import Dummy
-from pyiot.sony import Bravia
+from pyiot.sony.bravia import KDL48W585B
 from homedaemon.bus import Bus
 
 
@@ -9,10 +8,8 @@ bus = Bus()
 
 class Driver:
     def __new__(cls, model, sid, config):
-        dev = {'KDL-48W585B': Bravia}.get(model, Dummy)(config.get('ip'),
-                                                        sid=sid,
-                                                        model=model)
-        bus.add_trigger(f'write.{dev.sid}.*.*', dev.write)
+        dev = {'KDL-48W585B': KDL48W585B}.get(model)(config.get('ip'))
+        bus.add_trigger(f'execute.{dev.status.sid}.*.*', dev.execute)
         return dev
 
 
