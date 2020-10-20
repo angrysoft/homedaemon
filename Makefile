@@ -47,13 +47,13 @@ install:
 	python3 setup.py -v install --prefix=$(DESTDIR)$(PREFIX) --record files.txt
 
 install_www:
-	install -v -m 755  -g $(GRP) -o $(USR) -d $(DESTDIR)/var/www/angryhome
-	install -v -m 775  -g $(GRP) -o $(USR) -d $(DESTDIR)/var/run/angryhome
-	install -v -m 655 angryhome.service -D $(DESTDIR)/usr/lib/systemd/system/angryhome.service
-	cp -rv www/* $(DESTDIR)/var/www/angryhome
-	chown -R $(USR).$(GRP) $(DESTDIR)/var/www/angryhome
-	chmod -R a+r $(DESTDIR)/var/www/angryhome
-	chmod -R g+w $(DESTDIR)/var/www/angryhome
+	install -v -m 755  -g $(GRP) -o $(USR) -d $(DESTDIR)/var/www/homedaemon
+	install -v -m 775  -g $(GRP) -o $(USR) -d $(DESTDIR)/var/run/homedaemon
+	install -v -m 655 homedaemon.service -D $(DESTDIR)/usr/lib/systemd/system/homedaemon.service
+	cp -rv www/* $(DESTDIR)/var/www/homedaemon
+	chown -R $(USR).$(GRP) $(DESTDIR)/var/www/homedaemon
+	chmod -R a+r $(DESTDIR)/var/www/homedaemon
+	chmod -R g+w $(DESTDIR)/var/www/homedaemon
 
 install_panel:
 	install -v -m 755  -g $(GRPPAN) -o $(USRPAN) -d $(DESTDIR)/var/www/homepanel
@@ -69,8 +69,8 @@ uninstall:
 	./uninstall.py
 
 uninstall_www:
-	rm -rvf $(DESTDIR)/var/www/angryhome
-	rm -vf $(DESTDIR)/usr/lib/systemd/system/angryhome.service
+	rm -rvf $(DESTDIR)/var/www/homedaemon
+	rm -vf $(DESTDIR)/usr/lib/systemd/system/homedaemon.service
 
 uninstall_panel:
 	rm -rvf $(DESTDIR)/var/www/homepanel

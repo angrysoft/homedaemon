@@ -35,7 +35,6 @@ from functools import wraps
 import json
 from pycouchdb import Server
 import operator
-import jwt
 from os import urandom
 from google.oauth2 import id_token
 from google.auth.transport import requests as g_requests
@@ -43,9 +42,15 @@ from utils import TcpWrite
 import redis
 from time import sleep
 import logging
+import os
 from gasistant import OAuth, Actions, WebHook
 
-db = Server()
+password = ''
+with open('.pass') as pass_file:
+    password = pass_file.readline().strip()
+    print('password:', password)
+
+db = Server(user='admin', password=password)
 config = db.db('config')
 tcp_config = config['tcp']['client']
 tcp_config['secret'] = config['tcp']['secret']
