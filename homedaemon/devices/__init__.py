@@ -1,12 +1,13 @@
 from __future__ import annotations
-from homedaemon.devices.base import DriverInterface
 import importlib
 from os import DirEntry, scandir
 from homedaemon.config import Config
 from homedaemon.logger import Logger
 import json
-import asyncio
 from typing import Iterator, List, Dict
+
+class DriverInterface:
+    pass
 
 class Drivers:
     devices_drivers: Dict[str, DriverInterface] = dict()

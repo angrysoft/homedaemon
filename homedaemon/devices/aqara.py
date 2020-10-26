@@ -1,5 +1,5 @@
 from __future__ import annotations
-from .base import DriverInterface
+from . import DriverInterface
 from pyiot.zigbee import ZigbeeDevice, ZigbeeGateway
 from pyiot.zigbee.aqaragateway import AqaraGateway
 from pyiot.xiaomi.aqara import Gateway, CtrlNeutral, CtrlNeutral2, SensorHt, WeatherV1, Magnet, \
