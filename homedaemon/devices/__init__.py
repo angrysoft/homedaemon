@@ -4,28 +4,27 @@ from os import DirEntry, scandir
 from homedaemon.config import Config
 from homedaemon.logger import Logger
 import json
-from typing import Generator, Iterator, List, Dict
+from typing import Generator, Iterator, List, Dict, Any
 
 class DriverInterface:
     pass
 
 class Drivers:
-    devices_drivers: Dict[str, DriverInterface] = dict()
+    drivers_modules: Dict[str, object] = dict()
     
-    def get_driver(self, device_family:str):
-        self._register_driver(device_family)
-        if device_family in self.devices_drivers:
-            return self.devices_drivers[device_family]
-        else:
-            return None
-    
-    def _register_driver(self, dev_family:str) -> None:
-        if not dev_family in self.devices_drivers:
-            try:
-                drv_mod = importlib.import_module(f'homedaemon.devices.{dev_family}')
-                self.devices_drivers[dev_family] = drv_mod.Driver
-            except ModuleNotFoundError:
-                pass
+    def is_module_loaded(self, driver_module:str) -> bool:
+        return driver_module in self.drivers_modules
+
+    def get_driver(self, driver_class:str):
+        return getattr(self.drivers_modules, driver_class)
+
+    def load_driver_module(self, driver_module:str) -> None:
+        try:
+            drv_mod = importlib.import_module(driver_module)
+            self.drivers_modules[driver_module] = drv_mod
+        except ModuleNotFoundError:
+            pass
+        
 
               
 class Devices:
@@ -47,7 +46,7 @@ class Devices:
             self.register_dev(dev)
 
         
-    def get_devices_info_list(self) -> Generator[Dict[str,str], None, None]:
+    def get_devices_info_list(self) -> Generator[Dict[str,Any], None, None]:
         try:
             _dir: Iterator[DirEntry[str]] = scandir(path=self.config.get('devices_dir'))
             for _file in _dir:
@@ -62,13 +61,13 @@ class Devices:
         except NotADirectoryError as nd:
             self.logger.error(f'Get devices list {nd}')
         
-    def register_dev(self, device_info: Dict[str,str]):
+    def register_dev(self, device_info: Dict[str, Any]):
         self._check_device_info(device_info)
         try:
-            driver_info = device_info['driver']
-            if not self.drivers.is_module_loaded(driver_info['']):
-                self.drivers.load_driver_module(dev['driver'])
-            driver = self.drivers.get_driver()
+            driver_info: Dict[str,str] = device_info['driver']
+            if not self.drivers.is_module_loaded(driver_info['module']):
+                self.drivers.load_driver_module(driver_info['module'])
+            driver = self.drivers.get_driver(driver_info['class'])
         except KeyError as err:
             print(err)
         # drv = self.drivers.get_driver(dev["family"])
