@@ -124,9 +124,7 @@ if __name__ == '__main__':
     
     config = Config()
     config.load_config(JsonConfig(args.config_dir))
-    # config.load_config(DbConfig())
     config.load_config(ArgConfig(args))
-    print(config)
     hd = HomeDaemon(config)
     hd.run()
    

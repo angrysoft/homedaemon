@@ -68,6 +68,7 @@ class Devices:
             if not self.drivers.is_module_loaded(driver_info['module']):
                 self.drivers.load_driver_module(driver_info['module'])
             driver = self.drivers.get_driver(driver_info['class'])
+            print(driver)
         except KeyError as err:
             print(err)
         # drv = self.drivers.get_driver(dev["family"])
