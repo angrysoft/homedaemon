@@ -39,6 +39,7 @@ class Logger:
         if msg is not None:
             self._logger.warning(f"!WARNING! {msg}")
     
+    
     # def __del__(self):
     #     self._logger.removeHandler(JournalHandler())
     #     if self._logger.hasHandlers():

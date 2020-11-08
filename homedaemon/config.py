@@ -4,6 +4,7 @@ import json
 from typing import Dict, Any
 from abc import ABC, abstractmethod
 
+
 class BaseConfig(ABC):
     @abstractmethod
     def get_config(self) -> Dict[str,Any]:

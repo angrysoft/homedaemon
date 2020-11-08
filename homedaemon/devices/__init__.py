@@ -10,23 +10,26 @@ class DriverInterface:
     pass
 
 class Drivers:
-    drivers_modules: Dict[str, object] = dict()
+    def __init__(self) -> None:
+        self.drivers_modules: Dict[str, object] = {}
     
     def is_module_loaded(self, driver_module:str) -> bool:
         return driver_module in self.drivers_modules
 
-    def get_driver(self, driver_class:str):
-        return getattr(self.drivers_modules, driver_class)
+    def get_driver(self, driver_module:str, driver_class:str):
+        if not hasattr(self.drivers_modules[driver_module], driver_class):
+            print(f'class not found {driver_class}')
+        return getattr(self.drivers_modules[driver_module], driver_class)
 
     def load_driver_module(self, driver_module:str) -> None:
-        try:
-            drv_mod = importlib.import_module(driver_module)
-            self.drivers_modules[driver_module] = drv_mod
-        except ModuleNotFoundError:
-            pass
+        print(f'load {driver_module}')
+        # try:
+        drv_mod = importlib.import_module(driver_module)
+        self.drivers_modules[driver_module] = drv_mod
+        # except ModuleNotFoundError as err:
+        #     print(f'module not fond {err}')
         
-
-              
+        
 class Devices:
     _instance = object = None
     
@@ -36,7 +39,7 @@ class Devices:
             cls._devices: Dict[str, Drivers] = dict()
             cls._devices_fail_list: List[Dict[str,str]] = list()
             cls.config = Config()
-            cls.logger: Logger = Logger()
+            cls.logger = Logger()
             Devices._instance = object.__new__(cls)
         return cls._instance
     
@@ -44,6 +47,8 @@ class Devices:
         for dev in self.get_devices_info_list():
             self.logger.debug(f"Loading....{dev['sid']} : {dev.get('name')} from {dev.get('place')}")
             self.register_dev(dev)
+        
+        print(self.drivers.drivers_modules)
 
         
     def get_devices_info_list(self) -> Generator[Dict[str,Any], None, None]:
@@ -62,30 +67,25 @@ class Devices:
             self.logger.error(f'Get devices list {nd}')
         
     def register_dev(self, device_info: Dict[str, Any]):
-        self._check_device_info(device_info)
-        try:
+        if self._check_device_info(device_info):    
             driver_info: Dict[str,str] = device_info['driver']
             if not self.drivers.is_module_loaded(driver_info['module']):
                 self.drivers.load_driver_module(driver_info['module'])
-            driver = self.drivers.get_driver(driver_info['class'])
-            print(driver)
-        except KeyError as err:
-            print(err)
-        # drv = self.drivers.get_driver(dev["family"])
-        # if drv:
-        #     dev_instace = drv(dev['model'],
-        #                       dev['sid'],
-        #                       self.config.get(dev['sid']))
-        #     if dev_instace:
-        #         dev_instace.status.name = dev.get('name', '')
-        #         dev_instace.status.place = dev.get('place', '')
-        #         self._devices[dev['sid']] = dev_instace
-        #     else:
-        #         self._devices_fail_list.append(dev)
+            driver = self.drivers.get_driver(driver_info['module'], driver_info['class'])
+            if 'gateway' in driver_info:
+                gateway  = self._get_gateway(driver_info['gateway'])
+                # add to args 
+            
+            # init dev with args
+            # set dev name , place 
     
     def _check_device_info(self, device_info: Dict[str,str]) -> bool:
-        return {'sid', 'driver', 'name', }.issubset(device_info)
-            
+        # TODO: check value is not empty
+        return {'sid', 'driver', 'name', 'place'}.issubset(device_info)
+    
+    def _get_gateway(self, sid:str):
+        pass
+    
     def get(self, key, ret=None):
         try:
             return self._devices[key]
