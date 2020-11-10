@@ -9,8 +9,8 @@ if config['scenes']:
     importlib.sys.path.append(config['scenes']['path'])
     
 
-class Driver:
-    def __new__(cls, model, sid, config):
+class SceneDriver:
+    def __new__(cls, sid:str) -> object:
         try:
             _scene = importlib.import_module(sid)
             return _scene.Scene(sid)

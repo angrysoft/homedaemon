@@ -4,7 +4,7 @@ from os import DirEntry, scandir
 from homedaemon.config import Config
 from homedaemon.logger import Logger
 import json
-from typing import Generator, Iterator, List, Dict, Any
+from typing import Iterator, List, Dict, Any, Optional
 
 class DriverInterface:
     pass
@@ -61,9 +61,7 @@ class Devices:
                     with open(_file.path) as dev_file:
                         device_info = json.load(dev_file)
                         if self._check_device_info(device_info):
-                            self._devices_info_list[device_info['sid']] = device_info
-                        
-                        
+                            self._devices_info_list[device_info['sid']] = device_info             
         except FileNotFoundError as fnf:
             self.logger.error(f'Get devices list {fnf}')
         except NotADirectoryError as nd:
@@ -79,7 +77,7 @@ class Devices:
                 if driver_info['gateway'] not in self._devices:
                     _gateway_info = self._devices_info_list.pop(driver_info['gateway'])
                     self.register_dev(driver_info['gateway'], _gateway_info)
-                device_info['args'] = self._devices[driver_info['gateway']]
+                device_info['args']['gateway'] = self._devices[driver_info['gateway']]
             
             device_info['args']['sid'] = sid
             self._devices[sid] = driver(**device_info['args'])
@@ -90,13 +88,9 @@ class Devices:
     
     def _check_device_info(self, device_info: Dict[str,str]) -> bool:
         # TODO: check value is not empty
-        return {'sid', 'driver', 'name', 'place'}.issubset(device_info)
+        return {'sid', 'driver', 'name', 'place', 'args'}.issubset(device_info)      
     
-    def _get_gateway(self, sid:str):
-        gateway_config = self.config.get(sid)
-        
-    
-    def get(self, key, ret=None):
+    def get(self, key:str, ret: Optional[Any]=None):
         try:
             return self._devices[key]
         except KeyError:
@@ -109,9 +103,6 @@ class Devices:
     #         dev = self.get(devitem)
     #         ret.append(dev.device_status())
     #     return ret
-      
-    def _unknown_device_family(self, data, *args):
-        return None
     
     def __contains__(self, key: str):
         return key in self._devices
