@@ -3,6 +3,7 @@ import importlib
 from os import DirEntry, scandir
 from homedaemon.config import Config
 from homedaemon.logger import Logger
+from homedaemon.bus import Bus
 import json
 from typing import Iterator, List, Dict, Any, Optional
 
@@ -40,6 +41,7 @@ class Devices:
             cls._devices_info_list: Dict[str,Dict[str,Any]] = {}
             cls.config = Config()
             cls.logger = Logger()
+            cls.bus = Bus()
             Devices._instance = object.__new__(cls)
         return cls._instance
     
@@ -47,11 +49,8 @@ class Devices:
         self.load_devices_info()
         while self._devices_info_list:
             sid, device_info = self._devices_info_list.popitem()
-            self.logger.debug(f"Loading....{sid} : {device_info.get('name')} from {device_info.get('place')}")
+            self.logger.debug(f"Loading..{len(self._devices_info_list)}..{sid} : {device_info.get('name')} from {device_info.get('place')}")
             self.register_dev(sid, device_info)
-        
-            print(len(self._devices_info_list))
-
         
     def load_devices_info(self) -> None:
         try:
@@ -68,11 +67,13 @@ class Devices:
             self.logger.error(f'Get devices list {nd}')
         
     def register_dev(self, sid:str, device_info: Dict[str, Any]):
+            if device_info['model'] == 'scene':return
             
             driver_info: Dict[str,str] = device_info['driver']
             if not self.drivers.is_module_loaded(driver_info['module']):
                 self.drivers.load_driver_module(driver_info['module'])
             driver = self.drivers.get_driver(driver_info['module'], driver_info['class'])
+            
             if 'gateway' in driver_info:
                 if driver_info['gateway'] not in self._devices:
                     _gateway_info = self._devices_info_list.pop(driver_info['gateway'])
@@ -80,10 +81,13 @@ class Devices:
                 device_info['args']['gateway'] = self._devices[driver_info['gateway']]
             
             device_info['args']['sid'] = sid
-            self._devices[sid] = driver(**device_info['args'])
-            
-            # init dev with args
-            # set dev name , place 
+            dev = driver(**device_info['args'])
+            dev.status.name = device_info['name']
+            dev.status.place = device_info['place']
+            dev.watcher.add_report_handler(self.bus.emit_cmd)
+            self.bus.add_trigger(f'execute.{sid}.*.*', dev.execute)
+            self._devices[sid] = dev
+          
             print(device_info)
     
     def _check_device_info(self, device_info: Dict[str,str]) -> bool:
