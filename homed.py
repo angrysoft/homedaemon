@@ -26,7 +26,7 @@ __version__ = '0.9.4'
 import asyncio
 import importlib
 from threading import current_thread
-from homedaemon.devices import Devices
+from homedaemon.devices import DevicesManager
 from homedaemon.bus import Bus
 from homedaemon.logger import Logger
 from homedaemon.config import JsonConfig, ArgConfig, Config
@@ -41,7 +41,7 @@ class HomeDaemon:
         self.inputs = dict()
         self.bus = Bus(self.loop)
         self.logger.info('Starting Daemon')
-        self.devices = Devices()
+        self.devices_manager = DevicesManager()
         self.bus.add_trigger('*.*.*.*', self.logger.debug)
 
     def load_inputs(self) -> None:
@@ -54,18 +54,13 @@ class HomeDaemon:
             self.logger.info(f'load input: {inst.name}')
             self.inputs[inst.name].run()
 
-    def load_devices(self) -> None:
-        self.devices.register_devices()
-        self.bus.emit('report.homed.devices.loaded', {"msg": "Devices loaded"})
-        self.loop.call_later(5, self.bus.emit, 'devices_list.daemon.populate.list',
-                             {'cmd':'devices_list', 'data': self.devices.get_devices_info_list()})
         
     def run(self) -> None:
         self.logger.debug(f'main thread {current_thread()} loop {id(self.loop)}')
         # self.loop.run_in_executor(None, self.load_inputs)
         # self.loop.run_in_executor(None, self.load_devices)
         self.load_inputs()
-        self.load_devices()
+        self.devices_manager.register_devices()
         # self.loop.add_signal_handler(signal.SIGINT, self.stop)
         # self.loop.add_signal_handler(signal.SIGHUP, self.stop)
         # self.loop.add_signal_handler(signal.SIGQUIT, self.stop)

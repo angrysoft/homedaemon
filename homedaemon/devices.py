@@ -6,6 +6,7 @@ from homedaemon.logger import Logger
 from homedaemon.bus import Bus
 import json
 from typing import Iterator, List, Dict, Any, Optional
+from pyiot import BaseDevice
 
 class DriverInterface:
     pass
@@ -28,27 +29,49 @@ class Drivers:
         self.drivers_modules[driver_module] = drv_mod
         # except ModuleNotFoundError as err:
         #     print(f'module not fond {err}')
-        
-        
+
 class Devices:
     _instance = object = None
     
     def __new__(cls):
         if Devices._instance is None:
-            cls.drivers: Drivers = Drivers()
             cls._devices: Dict[str, Drivers] = {}
-            cls._gateways: Dict[str, Drivers] = {}
-            cls._devices_info_list: Dict[str,Dict[str,Any]] = {}
-            cls._scenes_info_list: Dict[str,Dict[str,Any]] = {}
-            cls.config = Config()
-            cls.logger = Logger()
-            cls.bus = Bus()
-            
-            if cls.config['scenes']:
-                importlib.sys.path.append(cls.config['scenes']['path'])
-            
             Devices._instance = object.__new__(cls)
         return cls._instance
+    
+    def add(self, sid:str, device_instance: Any) -> None:
+        self._devices[sid] = device_instance
+    
+    def remove(self, sid:str):
+        if sid in self._devices:
+            del self._devices[sid]
+    
+    def get(self, key:str, ret: Optional[Any]=None):
+        try:
+            return self._devices[key]
+        except KeyError:
+            return ret
+    
+    def __contains__(self, key: str):
+        return key in self._devices
+    
+    def __getitem__(self, key: str):
+        return self._devices[key]
+    
+        
+class DevicesManager:
+    def __init__(self):
+        self.drivers: Drivers = Drivers()
+        self._devices: Devices = Devices()
+        self._gateways: Dict[str, Drivers] = {}
+        self._devices_info_list: Dict[str,Dict[str,Any]] = {}
+        self._scenes_info_list: Dict[str,Dict[str,Any]] = {}
+        self.config = Config()
+        self.logger = Logger()
+        self.bus = Bus()
+        
+        if self.config['scenes']:
+            importlib.sys.path.append(self.config['scenes']['path'])
     
     def register_devices(self) -> None:
         self.load_devices_info()
@@ -104,37 +127,18 @@ class Devices:
             dev.status.place = device_info['place']
             dev.watcher.add_report_handler(self.bus.emit_cmd)
             self.bus.add_trigger(f'execute.{sid}.*.*', dev.execute)
-            self._devices[sid] = dev
+            self._devices.add(sid, dev)
+            self.bus.emit(f'homed.devices.added.{sid}', dev.device_status())
     
     def register_scene(self, sid:str, device_info: Dict[str, Any]):
         try:
             _scene_module = importlib.import_module(sid)
             _scene = _scene_module.Scene(sid)
-            self._devices[sid] = _scene
+            self._devices.add(sid, _scene)
+            self.bus.emit(f'homed.devices.added.{sid}', _scene.device_status())
         except ModuleNotFoundError as err:
             self.logger.error(str(err))
     
     def _check_device_info(self, device_info: Dict[str,str]) -> bool:
         # TODO: check value is not empty
         return {'sid', 'driver', 'name', 'place', 'args'}.issubset(device_info)      
-    
-    def get(self, key:str, ret: Optional[Any]=None):
-        try:
-            return self._devices[key]
-        except KeyError:
-            return ret
-    
-    def get_devices_info_list(self) -> List[Dict[str,str]]:
-        ret: List[Dict[str,str]] = list()
-        for devitem in self._devices:
-            dev = self.get(devitem)
-            ret.append(dev.device_status())
-        return ret
-    
-    def __contains__(self, key: str):
-        return key in self._devices
-    
-    def __getitem__(self, key: str):
-        return self._devices[key]
-
-
