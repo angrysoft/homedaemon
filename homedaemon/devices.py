@@ -5,8 +5,7 @@ from homedaemon.config import Config
 from homedaemon.logger import Logger
 from homedaemon.bus import Bus
 import json
-from typing import Iterator, List, Dict, Any, Optional
-from pyiot import BaseDevice
+from typing import Iterator, Dict, Any, Optional
 
 class DriverInterface:
     pass
@@ -87,7 +86,7 @@ class DevicesManager:
         
     def load_devices_info(self) -> None:
         try:
-            _dir: Iterator[DirEntry[str]] = scandir(path=self.config.get('devices_dir'))
+            _dir: Iterator[DirEntry] = scandir(path=self.config.get('devices_dir'))
             for _file in _dir:
                 if _file.is_file and _file.name.endswith('.json'):
                     with open(_file.path) as dev_file:
