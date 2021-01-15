@@ -47,11 +47,11 @@ class Config:
     def load_config(self, configObj: BaseConfig) -> None:
         self._configs.update(configObj.get_config())
         
-    def get(self, key:str) -> str:
+    def get(self, key:str, default:Any='') -> Any:
         if key in self._configs:
             return self._configs[key]
         else:
-            return ''
+            return default
     
     def __getitem__(self, key:str):
         return self.get(key)
@@ -59,4 +59,6 @@ class Config:
     def __str__(self):
         return str(self._configs)
 
-    
+
+class ConfigError(Exception):
+    pass

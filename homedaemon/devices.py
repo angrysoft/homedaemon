@@ -127,14 +127,16 @@ class DevicesManager:
             dev.watcher.add_report_handler(self.bus.emit_cmd)
             self.bus.add_trigger(f'execute.{sid}.*.*', dev.execute)
             self._devices.add(sid, dev)
-            self.bus.emit(f'homed.devices.added.{sid}', dev.device_status())
+            device_status = dev.device_status()
+            device_status['cmd'] = 'add_device'
+            self.bus.emit(f'homed.device.init.{sid}', device_status)
     
     def register_scene(self, sid:str, device_info: Dict[str, Any]):
         try:
             _scene_module = importlib.import_module(sid)
             _scene = _scene_module.Scene(sid)
             self._devices.add(sid, _scene)
-            self.bus.emit(f'homed.devices.added.{sid}', _scene.device_status())
+            self.bus.emit(f'homed.device.init.{sid}', _scene.device_status())
         except ModuleNotFoundError as err:
             self.logger.error(str(err))
     

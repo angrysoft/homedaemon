@@ -7,3 +7,5 @@ configs/*
 tools/devs
 icons
 www/.pass
+tmp/
+

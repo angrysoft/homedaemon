@@ -5,9 +5,8 @@ import asyncio
 class Input(BaseInput):
     def __init__(self, bus, config, loop):
         super(Input, self).__init__(bus, loop)
-        self.name = 'Tcp'
-        self.host = config['tcp']['ip']
-        self.port = config['tcp']['port']
+        self.host = config[self.name]['ip']
+        self.port = config[self.name]['port']
         self.coro = asyncio.start_server(self._handler, self.host, self.port, loop=self.loop)
         self.server = self.loop.run_until_complete(self.coro)
         addr = self.server.sockets[0].getsockname()

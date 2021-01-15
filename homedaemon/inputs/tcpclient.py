@@ -9,10 +9,9 @@ import json
 class Input(BaseInput):
     def __init__(self, bus, config, loop):
         super(Input, self).__init__(bus, loop)
-        self.name = 'tcpclient'
-        self.ip = config['tcpclient']['addr']
-        self.port = config['tcpclient']['port']
-        self.secret = config['tcpclient']['secret']
+        self.ip = config[self.name]['addr']
+        self.port = config[self.name]['port']
+        self.secret = config[self.name]['secret']
         self.ssl_context = ssl.create_default_context()
         self.reader = None
         self.writer = None

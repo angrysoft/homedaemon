@@ -9,7 +9,6 @@ from homedaemon.inputs import BaseInput
 class Input(BaseInput):
     def __init__(self, bus, config, loop):
         super(Input, self).__init__(bus, loop)
-        self.name = 'websocket_client'
         url = config['websocket']['webserver']['ip']
         port = config['websocket']['webserver']['port']
         self.secret = config['websocket']['secret']

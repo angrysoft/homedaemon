@@ -5,6 +5,7 @@ import importlib
 
 class BaseInput:
     def __init__(self, bus, loop):
+        self.name = ''
         self.bus = bus
         self.loop = loop
  

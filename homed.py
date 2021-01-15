@@ -18,7 +18,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 __author__ = 'Angrysoft - Sebastian Zwierzchowski'
-__copyright__ = 'Copyright 2014-2020 Sebastian Zwierzchowski'
+__copyright__ = 'Copyright 2014-2021 Sebastian Zwierzchowski'
 __license__ = 'GPL2'
 __version__ = '0.9.4'
 
@@ -29,13 +29,16 @@ from threading import current_thread
 from homedaemon.devices import DevicesManager
 from homedaemon.bus import Bus
 from homedaemon.logger import Logger
-from homedaemon.config import JsonConfig, ArgConfig, Config
+from homedaemon.config import JsonConfig, ArgConfig, Config, ConfigError
 import argparse
 
 
 class HomeDaemon:
     def __init__(self, config: Config) -> None:
         self.config = config
+        if not self.config.get("homed", {}).get('homeid'):
+            raise ConfigError('Missing config value homed -> homeid')
+        
         self.logger = Logger(debug=args.debug, std=args.log_to_stdout)
         self.loop = asyncio.get_event_loop()
         self.inputs = dict()
@@ -47,12 +50,15 @@ class HomeDaemon:
     def load_inputs(self) -> None:
         _input_name : str
         for _input_name in self.config['inputs']:
+            self.loop.run_in_executor(None, self._input, _input_name)
             
-            _input = importlib.import_module(f'homedaemon.inputs.{_input_name}')
-            inst = _input.Input(self.bus, self.config, self.loop)
-            self.inputs[inst.name] = inst
-            self.logger.info(f'load input: {inst.name}')
-            self.inputs[inst.name].run()
+    def _input(self, _input_name):
+        _input = importlib.import_module(f'homedaemon.inputs.{_input_name}')
+        inst = _input.Input(self.bus, self.config, self.loop)
+        inst.name = _input_name
+        self.inputs[inst.name] = inst
+        self.logger.info(f'load input: {inst.name}')
+        self.inputs[inst.name].run()
 
         
     def run(self) -> None:
@@ -67,7 +73,7 @@ class HomeDaemon:
         # self.loop.add_signal_handler(signal.SIGTERM, self.stop)
         # return
         try:
-            self.bus.emit('report.homed.status.started', {"msg": "HomeDaemon started"})
+            self.bus.emit('info.homed.status.started', {"msg": "HomeDaemon started"})
             self.loop.run_forever()
         except KeyboardInterrupt:
             pass

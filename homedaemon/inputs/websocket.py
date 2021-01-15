@@ -11,7 +11,6 @@ from urllib.parse import urlparse, parse_qs
 class Input(BaseInput):
     def __init__(self, bus, config, loop):
         super(Input, self).__init__(bus, loop)
-        self.name = 'websocket'
         self.url = config['websocket']['ip']
         self.port = config['websocket']['port']
         self.ssl = config['websocket']['ssl']
