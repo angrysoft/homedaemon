@@ -4,7 +4,7 @@ import sys
 import ssl
 import jwt
 import json
-from homedaemon.inputs import BaseInput
+from homedaemon.io import BaseInput
 from urllib.parse import urlparse, parse_qs
 
 

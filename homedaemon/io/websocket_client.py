@@ -3,7 +3,7 @@ import websockets
 import sys
 import jwt
 import json
-from homedaemon.inputs import BaseInput
+from homedaemon.io import BaseInput
 
 
 class Input(BaseInput):

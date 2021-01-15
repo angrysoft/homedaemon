@@ -1,4 +1,4 @@
-from homedaemon.inputs import BaseInput
+from homedaemon.io import BaseInput
 import asyncio
 import ssl
 import socket

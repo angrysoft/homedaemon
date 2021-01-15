@@ -1,6 +1,6 @@
 from __future__ import annotations
 import typing
-from homedaemon.inputs import BaseInput
+from homedaemon.io import BaseInput
 from homedaemon.bus import Bus
 import asyncio
 import amqp
@@ -51,6 +51,7 @@ class Input(BaseInput):
                 print(f'json {err} : {msg}')
     
     def publish_msg(self, msg:Any, routing_key:str ='') -> None:
+        print(msg)
         if not routing_key:
             routing_key = f"homedaemon.{self.config['homed']['homeid']}.reports"
             

@@ -1,4 +1,4 @@
-from homedaemon.inputs import BaseInput
+from homedaemon.io import BaseInput
 from bluetooth import lookup_name
 from pycouchdb import Server
 import asyncio

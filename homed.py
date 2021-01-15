@@ -52,8 +52,8 @@ class HomeDaemon:
         for _input_name in self.config['inputs']:
             self.loop.run_in_executor(None, self._input, _input_name)
             
-    def _input(self, _input_name):
-        _input = importlib.import_module(f'homedaemon.inputs.{_input_name}')
+    def _input(self, _input_name:str) -> None:
+        _input = importlib.import_module(f'homedaemon.io.{_input_name}')
         inst = _input.Input(self.bus, self.config, self.loop)
         inst.name = _input_name
         self.inputs[inst.name] = inst

@@ -1,4 +1,4 @@
-from homedaemon.inputs import BaseInput
+from homedaemon.io import BaseInput
 from serial import Serial, SerialException
 from serial.tools.list_ports import comports
 import json

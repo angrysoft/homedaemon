@@ -128,7 +128,7 @@ class DevicesManager:
             self.bus.add_trigger(f'execute.{sid}.*.*', dev.execute)
             self._devices.add(sid, dev)
             device_status = dev.device_status()
-            device_status['cmd'] = 'add_device'
+            device_status['cmd'] = 'init_device'
             self.bus.emit(f'homed.device.init.{sid}', device_status)
     
     def register_scene(self, sid:str, device_info: Dict[str, Any]):
