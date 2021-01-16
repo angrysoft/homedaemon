@@ -76,9 +76,10 @@ class HomeDaemon:
             self.bus.emit('info.homed.status.started', {"msg": "HomeDaemon started"})
             self.loop.run_forever()
         except KeyboardInterrupt:
-            pass
+            self.loop.stop()
         finally:
             try:
+                
                 self._cancel_all_tasks()
                 self.loop.run_until_complete(self.loop.shutdown_asyncgens())
             finally:
