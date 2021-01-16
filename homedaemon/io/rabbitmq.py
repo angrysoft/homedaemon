@@ -1,8 +1,6 @@
 from __future__ import annotations
-import typing
 from homedaemon.io import BaseInput
 from homedaemon.bus import Bus
-import asyncio
 import amqp
 import json
 from typing import Dict, Any

@@ -5,6 +5,7 @@ from typing import Optional
 from homedaemon.bus import Bus
 
 class Logger:
+    _instance = None
     _logger: Optional[logging.Logger] = None
     _debug : bool = False
     _std : bool = False

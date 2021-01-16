@@ -127,7 +127,7 @@ class DevicesManager:
             dev.watcher.add_report_handler(self.bus.emit_cmd)
             self.bus.add_trigger(f'execute.{sid}.*.*', dev.execute)
             self._devices.add(sid, dev)
-            device_status = dev.device_status()
+            device_status = dev.get_device_status()
             device_status['cmd'] = 'init_device'
             self.bus.emit(f'homed.device.init.{sid}', device_status)
     

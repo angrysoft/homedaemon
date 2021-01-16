@@ -2,7 +2,6 @@ from homedaemon.io import BaseInput
 from serial import Serial, SerialException
 from serial.tools.list_ports import comports
 import json
-import asyncio
 from sys import stderr
 from os.path import exists
 from time import sleep
@@ -70,7 +69,6 @@ class Input(BaseInput):
             self.daemon.logger.error(err)
 
     def run(self):
-        # self.loop.create_task(self._connect())
         self.loop.run_in_executor(None, self._connect)
         
 

@@ -21,7 +21,7 @@ class TriggerDict:
     def setdefault(self, key, value):
         return self._data.setdefault(key, value)
     
-    def getkeys(self, keyname:str) -> list:
+    def getkeys(self, keyname:str) -> List[Any]:
         ret = list()
         if keyname in self._data:
             ret.append(self._data[keyname])
@@ -29,7 +29,7 @@ class TriggerDict:
             ret.append(self._data['*'])
         return ret
     
-    def get_path_key(self, *keys):
+    def get_path_key(self, *keys:str):
         try:
             ret = list()
             _keys = list(keys)
