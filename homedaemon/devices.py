@@ -23,11 +23,11 @@ class Drivers:
         return getattr(self.drivers_modules[driver_module], driver_class)
 
     def load_driver_module(self, driver_module:str) -> None:
-        # try:
-        drv_mod = importlib.import_module(driver_module)
-        self.drivers_modules[driver_module] = drv_mod
-        # except ModuleNotFoundError as err:
-        #     print(f'module not fond {err}')
+        try:
+            drv_mod = importlib.import_module(driver_module)
+            self.drivers_modules[driver_module] = drv_mod
+        except ModuleNotFoundError as err:
+            print(f'module not fond {err}')
 
 class Devices:
     _instance = object = None
@@ -136,7 +136,9 @@ class DevicesManager:
             _scene_module = importlib.import_module(sid)
             _scene = _scene_module.Scene(sid)
             self._devices.add(sid, _scene)
-            self.bus.emit(f'homed.device.init.{sid}', _scene.device_status())
+            scene_status = _scene.device_status()
+            scene_status['cmd'] = 'init_device'
+            self.bus.emit(f'homed.device.init.{sid}', scene_status)
         except ModuleNotFoundError as err:
             self.logger.error(str(err))
     

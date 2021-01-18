@@ -51,10 +51,15 @@ class SceneInterface:
         pass
     
     def device_status(self) -> Dict[str,Any]:
+        ret = {'status': 'off',
+               'sid': self.sid,
+               'name': self.name,
+               'place': self.place}
         if self.running:
             events :List[Callable[[], None]] = [x.__name__ for x in self.running]
-            return {'status': 'on', 'events': events}
-        return {'status': 'off'}
+            ret['status'] = 'on'
+            ret['events'] = events
+        return ret
     
     def now(self):
         """Retrun time now"""
