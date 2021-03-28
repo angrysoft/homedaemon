@@ -27,6 +27,7 @@ class Input(BaseInput):
                 self.connection = amqp.Connection(f"{self.config['rabbitmq']['host']}:{self.config['rabbitmq']['port']}",
                                                   userid=self.config['rabbitmq']['user'], password=self.config['rabbitmq']['user_password'],
                                                   ssl=self.config['rabbitmq']['ssl'], ssl_options=self.sslopts, login_method='AMQPLAIN')
+                self.connection.connect()
                 self.channel = self.connection.channel()
                 self.channel.exchange_declare('homedaemon', 'topic', auto_delete=False)
                 self.channel.queue_declare('homed_queue')
