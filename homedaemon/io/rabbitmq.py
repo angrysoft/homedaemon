@@ -43,11 +43,8 @@ class Input(BaseInput):
                 sleep(10)
     
     def on_message(self, msg:Any) -> None:
-        print('on_msg', msg)
-        try:
-            self.bus.emit_cmd(json.loads(msg.body)) 
-        except json.JSONDecodeError as err:
-                print(f'json {err} : {msg}')
+        print('on_msg', msg.body)
+        # self.bus.emit(msg.body) 
     
     def publish_msg(self, msg:Any, routing_key:str ='') -> None:
         print(msg)

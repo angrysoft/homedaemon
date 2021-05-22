@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # homed.py
-# Copyright (C) 2014-2020  Sebastian Zwierzchowski <sebastian.zwierzchowski@gmail.com>
+# Copyright (C) 2014-2021  Sebastian Zwierzchowski <sebastian.zwierzchowski@gmail.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,7 +20,7 @@
 __author__ = 'Angrysoft - Sebastian Zwierzchowski'
 __copyright__ = 'Copyright 2014-2021 Sebastian Zwierzchowski'
 __license__ = 'GPL2'
-__version__ = '0.9.4'
+__version__ = '0.9.5'
 
 
 import asyncio
@@ -119,9 +119,9 @@ class HomeDaemon:
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(usage='%(prog)s [options]')
     parser.add_argument('-D', '--debug', action="store_true", help="Debug msg")
-    parser.add_argument('-d', '--devices-dir', nargs='?', default='/etc/angryhome/dev.d', help='Path to devices dir')
+    parser.add_argument('-d', '--devices-dir', nargs='?', default='/etc/homedaemon/dev.d', help='Path to devices dir')
     parser.add_argument('-s', '--log-to-stdout', action="store_true", help="Print log info to stdout")
-    parser.add_argument('-c', '--config-dir', nargs='?', default='/etc/angryhome/conf.d', help='Path to config dir')
+    parser.add_argument('-c', '--config-dir', nargs='?', default='/etc/homedaemon/conf.d', help='Path to config dir')
     parser.add_argument('--version', action='version', version=f'%(prog)s {__version__}')
     args = parser.parse_args()
     
