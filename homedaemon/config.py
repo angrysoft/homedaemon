@@ -18,7 +18,7 @@ class JsonConfig(BaseConfig):
         self._path = path
     
     def get_config(self) -> Dict[str,Any]:
-        ret = dict()
+        ret: Dict[str,Any] = dict()
         for entry in os.scandir(self._path):
             if entry.is_file and entry.name.endswith('.json'):
                 with open(entry.path) as conf_file:
@@ -36,7 +36,7 @@ class ArgConfig(BaseConfig):
 
 class Config:
     _instace = None
-    _configs = dict()
+    _configs: Dict[str, Any] = dict()
     
     def __new__(cls):
         if Config._instace is None:

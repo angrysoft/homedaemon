@@ -2,7 +2,7 @@ from systemd.journal import JournalHandler
 from sys import stdout
 import logging
 from typing import Optional
-from homedaemon.bus import Bus
+
 
 class Logger:
     _instance = None

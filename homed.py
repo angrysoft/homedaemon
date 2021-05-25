@@ -24,8 +24,10 @@ __version__ = '0.9.5'
 
 
 import asyncio
+from homedaemon.io import BaseInput
 import importlib
 from threading import current_thread
+from typing import Dict
 from homedaemon.devices import DevicesManager
 from homedaemon.bus import Bus
 from homedaemon.logger import Logger
@@ -41,7 +43,7 @@ class HomeDaemon:
         
         self.logger = Logger(debug=args.debug, std=args.log_to_stdout)
         self.loop = asyncio.get_event_loop()
-        self.inputs = dict()
+        self.inputs: Dict[str, BaseInput] = dict()
         self.bus = Bus(self.loop)
         self.logger.info('Starting Daemon')
         self.devices_manager = DevicesManager()
@@ -54,7 +56,7 @@ class HomeDaemon:
             
     def _input(self, _input_name:str) -> None:
         _input = importlib.import_module(f'homedaemon.io.{_input_name}')
-        inst = _input.Input(self.bus, self.config, self.loop)
+        inst: BaseInput = _input.Input(self.bus, self.config, self.loop)
         inst.name = _input_name
         self.inputs[inst.name] = inst
         self.logger.info(f'load input: {inst.name}')
@@ -125,7 +127,7 @@ if __name__ == '__main__':
     parser.add_argument('--version', action='version', version=f'%(prog)s {__version__}')
     args = parser.parse_args()
     
-    config = Config()
+    config: Config = Config()
     config.load_config(JsonConfig(args.config_dir))
     config.load_config(ArgConfig(args))
     hd = HomeDaemon(config)
