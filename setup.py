@@ -3,7 +3,7 @@ from homed import __version__
 
 
 setup(
-    name='AngryHome',
+    name='HomeDaemon',
     version=__version__,
     packages=find_packages(),
     url='https://bitbucket.org/angrysoft/homedaemon',

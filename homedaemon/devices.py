@@ -109,19 +109,11 @@ class DevicesManager:
             device_info['args']['sid'] = sid
             
             if 'gateway' in driver_info:
-                if driver_info['gateway'] not in self._gateways:
-                    _gateway_info = self._devices_info_list.pop(driver_info['gateway'])
-                    self.register_dev(driver_info['gateway'], _gateway_info)
-                device_info['args']['gateway'] = self._gateways[driver_info['gateway']]
+                device_info['args']['gateway'] = self.get_gateway(driver_info['gateway'])
             
             driver = self.drivers.get_driver(driver_info['module'], driver_info['class'])
             
             dev = driver(**device_info['args'])
-            
-            if device_info.get('type') == 'gateway':
-                self._gateways[sid] = dev
-                return
-            
             dev.status.name = device_info['name']
             dev.status.place = device_info['place']
             dev.watcher.add_report_handler(self.bus.emit_cmd)
@@ -130,6 +122,14 @@ class DevicesManager:
             device_status = dev.get_device_status()
             device_status['cmd'] = 'init_device'
             self.bus.emit(f'homed.device.init.{sid}', device_status)
+    
+    def get_gateway(self, gateway:str):
+        if gateway not in self._gateways:
+            _gateway_info = self._devices_info_list.pop(gateway)
+            driver = self.drivers.get_driver(_gateway_info['module'], _gateway_info['class'])
+            dev = driver(**_gateway_info['args'])
+            self._gateways[_gateway_info['sid']] = dev
+        return self._gateways[gateway]
     
     def register_scene(self, sid:str, device_info: Dict[str, Any]):
         try:
