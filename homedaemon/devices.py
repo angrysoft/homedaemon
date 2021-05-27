@@ -126,8 +126,11 @@ class DevicesManager:
     def get_gateway(self, gateway:str):
         if gateway not in self._gateways:
             _gateway_info = self._devices_info_list.pop(gateway)
+            driver_info: Dict[str,str] = _gateway_info['driver']
+            if not self.drivers.is_module_loaded(driver_info['module']):
+                self.drivers.load_driver_module(driver_info['module'])
             print(_gateway_info)
-            driver = self.drivers.get_driver(_gateway_info['driver']['module'], _gateway_info['driver']['class'])
+            driver = self.drivers.get_driver(driver_info['module'], driver_info['class'])
             dev = driver(**_gateway_info['args'])
             self._gateways[_gateway_info['sid']] = dev
         return self._gateways[gateway]
