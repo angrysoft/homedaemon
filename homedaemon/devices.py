@@ -63,6 +63,7 @@ class DevicesManager:
         self.drivers: Drivers = Drivers()
         self._devices: Devices = Devices()
         self._gateways: Dict[str, Drivers] = {}
+        self._gateways_info_list: Dict[str,Dict[str,Any]] = {}
         self._devices_info_list: Dict[str,Dict[str,Any]] = {}
         self._scenes_info_list: Dict[str,Dict[str,Any]] = {}
         self.config = Config()
@@ -90,11 +91,14 @@ class DevicesManager:
             for _file in _dir:
                 if _file.is_file and _file.name.endswith('.json'):
                     with open(_file.path) as dev_file:
+                        # TODO load_device_info if is not proper skip device
                         device_info = json.load(dev_file)
-                        if self._check_device_info(device_info):
-                            self._devices_info_list[device_info['sid']] = device_info
+                        if device_info.get('type', '') == 'gateway':
+                            self._gateways_info_list[device_info['sid']] = device_info
                         elif device_info.get('type', '') == 'scene':
-                            self._scenes_info_list[device_info['sid']] = device_info     
+                            self._scenes_info_list[device_info['sid']] = device_info   
+                        elif self._check_device_info(device_info):
+                            self._devices_info_list[device_info['sid']] = device_info
         except FileNotFoundError as fnf:
             self.logger.error(f'Get devices list {fnf}')
         except NotADirectoryError as nd:
@@ -125,16 +129,18 @@ class DevicesManager:
     
     def get_gateway(self, gateway:str):
         if gateway not in self._gateways:
-            _gateway_info = self._devices_info_list.pop(gateway)
-            driver_info: Dict[str,str] = _gateway_info['driver']
-            if not self.drivers.is_module_loaded(driver_info['module']):
-                self.drivers.load_driver_module(driver_info['module'])
-            print(_gateway_info)
-            driver = self.drivers.get_driver(driver_info['module'], driver_info['class'])
-            dev = driver(**_gateway_info['args'])
-            self._gateways[_gateway_info['sid']] = dev
+            self.register_gateway(gateway)
         return self._gateways[gateway]
     
+    def register_gateway(self, gateway_sid:str):
+        _gateway_info = self._gateways_info_list.pop(gateway_sid)
+        driver_info: Dict[str,str] = _gateway_info['driver']
+        if not self.drivers.is_module_loaded(driver_info['module']):
+            self.drivers.load_driver_module(driver_info['module'])
+        driver = self.drivers.get_driver(driver_info['module'], driver_info['class'])
+        dev = driver(**_gateway_info['args'])
+        self._gateways[_gateway_info['sid']] = dev
+
     def register_scene(self, sid:str, device_info: Dict[str, Any]):
         try:
             _scene_module = importlib.import_module(sid)
