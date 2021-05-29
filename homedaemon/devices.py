@@ -96,7 +96,6 @@ class DevicesManager:
     def load_devices_info(self) -> None:
         try:
             for _file in scandir(path=self.config.get('devices_dir')):
-                print(_file.name, _file.path)
                 if _file.is_file and _file.name.endswith('.json'):
                     with open(_file.path) as dev_file:
                         # TODO load_device_info if is not proper skip device
@@ -146,7 +145,7 @@ class DevicesManager:
         if not self.drivers.is_module_loaded(driver_info['module']):
             self.drivers.load_driver_module(driver_info['module'])
         driver = self.drivers.get_driver(driver_info['module'], driver_info['class'])
-        print(_gateway_info['args'])
+        print('gateway info', _gateway_info['args'])
         dev = driver(**_gateway_info['args'])
         self._gateways[_gateway_info['sid']] = dev
 
