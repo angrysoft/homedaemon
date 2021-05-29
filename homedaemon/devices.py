@@ -1,13 +1,11 @@
 from __future__ import annotations
 import importlib
-from logging import ERROR
 from os import DirEntry, scandir
 from homedaemon.config import Config
 from homedaemon.logger import Logger
 from homedaemon.bus import Bus
-from pyiot.exceptions import DeviceIsOffline
 import json
-from typing import Iterator, Dict, Any, Optional
+from typing import Generator, Iterator, Dict, Any, Optional
 
 class DriverInterface:
     pass
@@ -36,9 +34,12 @@ class Devices:
     
     def __new__(cls):
         if Devices._instance is None:
-            cls._devices: Dict[str, Drivers] = {}
+            # cls._devices: Dict[str, Drivers] = {}
             Devices._instance = object.__new__(cls)
         return cls._instance
+    
+    def __init__(self) -> None:
+        self._devices: Dict[str, Drivers] = {}
     
     def add(self, sid:str, device_instance: Any) -> None:
         self._devices[sid] = device_instance
@@ -70,7 +71,7 @@ class DevicesManager:
         self._scenes_info_list: Dict[str,Dict[str,Any]] = {}
         self._devices_offline: Dict[str,Dict[str,Any]] = {}
         self._devices
-        self.config = Config()
+        self.config: Config = Config()
         self.logger = Logger()
         self.bus = Bus()
         
@@ -95,8 +96,7 @@ class DevicesManager:
         
     def load_devices_info(self) -> None:
         try:
-            _dir: Iterator[DirEntry] = scandir(path=self.config.get('devices_dir'))
-            for _file in _dir:
+            for _file in scandir(path=self.config.get('devices_dir')):
                 if _file.is_file and _file.name.endswith('.json'):
                     with open(_file.path) as dev_file:
                         # TODO load_device_info if is not proper skip device

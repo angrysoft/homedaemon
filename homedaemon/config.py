@@ -36,13 +36,15 @@ class ArgConfig(BaseConfig):
 
 class Config:
     _instace = None
-    _configs: Dict[str, Any] = dict()
     
     def __new__(cls):
         if Config._instace is None:
             Config._instace = object.__new__(cls)
             
         return cls._instace
+    
+    def __init__(self) -> None:
+        self._configs: Dict[str, Any] = {}
     
     def load_config(self, configObj: BaseConfig) -> None:
         self._configs.update(configObj.get_config())
