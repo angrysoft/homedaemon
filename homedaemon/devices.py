@@ -74,7 +74,6 @@ class DevicesManager:
         self.config: Config = Config()
         self.logger = Logger()
         self.bus = Bus()
-        
         if self.config['scenes']:
             importlib.sys.path.append(self.config['scenes']['path'])
     
@@ -97,6 +96,7 @@ class DevicesManager:
     def load_devices_info(self) -> None:
         try:
             for _file in scandir(path=self.config.get('devices_dir')):
+                print(_file.name, _file.path)
                 if _file.is_file and _file.name.endswith('.json'):
                     with open(_file.path) as dev_file:
                         # TODO load_device_info if is not proper skip device

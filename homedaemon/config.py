@@ -3,7 +3,7 @@ import os
 import json 
 from typing import Dict, Any
 from abc import ABC, abstractmethod
-
+from threading import Lock
 
 class BaseConfig(ABC):
     @abstractmethod
@@ -36,15 +36,19 @@ class ArgConfig(BaseConfig):
 
 class Config:
     _instace = None
+    _lock = Lock()
     
     def __new__(cls):
-        if Config._instace is None:
-            Config._instace = object.__new__(cls)
+        with cls._lock:
+            if Config._instace is None:
+                Config._instace = object.__new__(cls)
+                cls._configs: Dict[str, Any] = {}
             
         return cls._instace
     
     def __init__(self) -> None:
-        self._configs: Dict[str, Any] = {}
+        pass
+        # self._configs: Dict[str, Any] = {}
     
     def load_config(self, configObj: BaseConfig) -> None:
         self._configs.update(configObj.get_config())

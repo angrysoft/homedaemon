@@ -130,6 +130,7 @@ if __name__ == '__main__':
     config: Config = Config()
     config.load_config(JsonConfig(args.config_dir))
     config.load_config(ArgConfig(args))
+    print(id(config))
     hd = HomeDaemon(config)
     hd.run()
    
