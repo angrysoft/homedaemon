@@ -146,6 +146,7 @@ class DevicesManager:
         if not self.drivers.is_module_loaded(driver_info['module']):
             self.drivers.load_driver_module(driver_info['module'])
         driver = self.drivers.get_driver(driver_info['module'], driver_info['class'])
+        print(_gateway_info['args'])
         dev = driver(**_gateway_info['args'])
         self._gateways[_gateway_info['sid']] = dev
 
