@@ -1,10 +1,11 @@
 from __future__ import annotations
 import importlib
+from logging import ERROR
 from os import DirEntry, scandir
 from homedaemon.config import Config
 from homedaemon.logger import Logger
 from homedaemon.bus import Bus
-from pyiot
+from pyiot.exceptions import DeviceIsOffline
 import json
 from typing import Iterator, Dict, Any, Optional
 
@@ -67,6 +68,7 @@ class DevicesManager:
         self._gateways_info_list: Dict[str,Dict[str,Any]] = {}
         self._devices_info_list: Dict[str,Dict[str,Any]] = {}
         self._scenes_info_list: Dict[str,Dict[str,Any]] = {}
+        self._devices_offline: Dict[str,Dict[str,Any]] = {}
         self._devices
         self.config = Config()
         self.logger = Logger()
@@ -82,10 +84,10 @@ class DevicesManager:
             self.logger.debug(f"Loading..{len(self._devices_info_list)}..{sid} : {device_info.get('name')} from {device_info.get('place')}")
             try:
                 self.register_dev(sid, device_info)
-            except DeviceIsOffline as err:Exception:
-                self.logger.error((str(err))
+            except DeviceIsOffline as err:
                 self._devices_offline[sid] = device_info
-                
+                self.logger.error( str(err) )
+        
         while self._scenes_info_list:
             sid, device_info = self._scenes_info_list.popitem()
             self.logger.debug(f"Loading..{len(self._scenes_info_list)}..{sid} : {device_info.get('name')} from {device_info.get('place')}")
