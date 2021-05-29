@@ -84,7 +84,7 @@ class DevicesManager:
             self.logger.debug(f"Loading..{len(self._devices_info_list)}..{sid} : {device_info.get('name')} from {device_info.get('place')}")
             try:
                 self.register_dev(sid, device_info)
-            except DeviceIsOffline as err:
+            except Exception as err:
                 self._devices_offline[sid] = device_info
                 self.logger.error( str(err) )
         
