@@ -98,6 +98,8 @@ class DevicesManager:
             self.logger.debug(f"Loading..{len(self._scenes_info_list)}..{sid} : {device_info.get('name')} from {device_info.get('place')}")
             self.register_scene(sid, device_info)
         
+        self.logger.debug(f'Devices loaded, devices offline: {self._devices_offline.keys()}')
+        
     def load_devices_info(self) -> None:
         try:
             for _file in scandir(path=self.config.get('devices_dir')):
