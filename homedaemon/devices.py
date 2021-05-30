@@ -5,10 +5,17 @@ from homedaemon.config import Config
 from homedaemon.logger import Logger
 from homedaemon.bus import Bus
 import json
-from typing import Generator, Iterator, Dict, Any, Optional
+from typing import Dict, Any, Optional
+
+class DriverClassNotFound(Exception):
+    pass
+
+class DriverError(Exception):
+    pass
 
 class DriverInterface:
     pass
+
 
 class Drivers:
     def __init__(self) -> None:
@@ -19,15 +26,13 @@ class Drivers:
 
     def get_driver(self, driver_module:str, driver_class:str):
         if not hasattr(self.drivers_modules[driver_module], driver_class):
-            print(f'class not found {driver_class}')
+            raise DriverClassNotFound(f'class not found {driver_class}')
         return getattr(self.drivers_modules[driver_module], driver_class)
 
     def load_driver_module(self, driver_module:str) -> None:
-        try:
-            drv_mod = importlib.import_module(driver_module)
-            self.drivers_modules[driver_module] = drv_mod
-        except ModuleNotFoundError as err:
-            print(f'module not fond {err}')
+        """ raise ModuleNotFoundError"""
+        drv_mod = importlib.import_module(driver_module)
+        self.drivers_modules[driver_module] = drv_mod
 
 class Devices:
     _instance = object = None
@@ -114,15 +119,12 @@ class DevicesManager:
     def register_dev(self, sid:str, device_info: Dict[str, Any]) -> None:
             
             driver_info: Dict[str,str] = device_info['driver']
-            if not self.drivers.is_module_loaded(driver_info['module']):
-                self.drivers.load_driver_module(driver_info['module'])
-            
             device_info['args']['sid'] = sid
             
+            driver = self.get_driver(driver_info['module'], driver_info['class'])
+                    
             if 'gateway' in driver_info:
                 device_info['args']['gateway'] = self.get_gateway(driver_info['gateway'])
-            
-            driver = self.drivers.get_driver(driver_info['module'], driver_info['class'])
             
             dev = driver(**device_info['args'])
             dev.status.name = device_info['name']
@@ -133,7 +135,7 @@ class DevicesManager:
             device_status = dev.get_device_status()
             device_status['cmd'] = 'init_device'
             self.bus.emit(f'homed.device.init.{sid}', device_status)
-    
+            
     def get_gateway(self, gateway:str):
         if gateway not in self._gateways:
             self.register_gateway(gateway)
@@ -142,13 +144,23 @@ class DevicesManager:
     def register_gateway(self, gateway_sid:str):
         _gateway_info = self._gateways_info_list.pop(gateway_sid)
         driver_info: Dict[str,str] = _gateway_info['driver']
-        if not self.drivers.is_module_loaded(driver_info['module']):
-            self.drivers.load_driver_module(driver_info['module'])
-        driver = self.drivers.get_driver(driver_info['module'], driver_info['class'])
-        print('gateway info', _gateway_info['args'])
+        driver = self.get_driver(driver_info['module'], driver_info['class'])
         dev = driver(**_gateway_info['args'])
         self._gateways[_gateway_info['sid']] = dev
 
+    def get_driver(self, module_name:str, class_name:str):
+        if not self.drivers.is_module_loaded(module_name):
+            try:
+                self.drivers.load_driver_module(module_name)
+            except ModuleNotFoundError as err:
+                self.logger.error(f'module not found {err}')
+                raise DriverError
+        try:
+            return self.drivers.get_driver(module_name, class_name)
+        except DriverClassNotFound as clserr:
+            self.logger.error(f"class not found {clserr}")
+            raise DriverError
+        
     def register_scene(self, sid:str, device_info: Dict[str, Any]):
         try:
             _scene_module = importlib.import_module(sid)
