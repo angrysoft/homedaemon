@@ -90,11 +90,11 @@ class DevicesManager:
         while self._devices_info_list:
             sid, device_info = self._devices_info_list.popitem()
             self.logger.debug(f"Loading..{len(self._devices_info_list)}..{sid} : {device_info.get('name')} from {device_info.get('place')}")
-            # try:
-            self.register_dev(sid, device_info)
-            # except Exception as err:
-            #     self._devices_offline[sid] = device_info
-            #     self.logger.error( str(err) )
+            try:
+                self.register_dev(sid, device_info)
+            except Exception as err:
+                self._devices_offline[sid] = device_info
+                self.logger.error( str(err) )
         
         while self._scenes_info_list:
             sid, device_info = self._scenes_info_list.popitem()
