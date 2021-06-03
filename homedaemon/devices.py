@@ -36,15 +36,17 @@ class Drivers:
 
 class Devices:
     _instance = object = None
+    _devices: Dict[str, Drivers] = {}
     
     def __new__(cls):
         if Devices._instance is None:
-            # cls._devices: Dict[str, Drivers] = {}
+            cls._devices: Dict[str, Drivers] = {}
             Devices._instance = object.__new__(cls)
         return cls._instance
     
     def __init__(self) -> None:
-        self._devices: Dict[str, Drivers] = {}
+        pass
+        # self._devices: Dict[str, Drivers] = {}
     
     def add(self, sid:str, device_instance: Any) -> None:
         self._devices[sid] = device_instance
@@ -80,6 +82,7 @@ class DevicesManager:
         self.logger = Logger()
         self.bus = Bus()
         if self.config['scenes']:
+            print(f"scene paty {self.config['scenes']['path']}")
             importlib.sys.path.append(self.config['scenes']['path'])
     
     def register_devices(self) -> None:

@@ -184,22 +184,3 @@ class TimeRange:
             return self._from <= value >= self._to
         elif value < self._to:
             return self._from >= value <= self._to
-
-
-class Time(time):
-    def __new__(cls, hour=0, minute=0, second=0, microsecond=0, tzinfo=None, time_str=None):
-        if time_str:
-            return time.__new__(cls, *[int(i) for i in time_str.split(':')])
-        else:
-           return time.__new__(cls, hour, minute, second, microsecond)
-    
-    def __add__(self, in_time):
-        return self.to_sec() + in_time.to_sec()
-    
-    def __sub__(self, in_time):
-        if self < in_time:
-            raise ValueError
-        return self.to_sec() - in_time.to_sec()
-    
-    def to_sec(self):
-        return self.microsecond/1000000 + self.second + self.minute * 60 + self.hour * 3600
