@@ -87,11 +87,11 @@ class DevicesManager:
         while self._devices_info_list:
             sid, device_info = self._devices_info_list.popitem()
             self.logger.debug(f"Loading..{len(self._devices_info_list)}..{sid} : {device_info.get('name')} from {device_info.get('place')}")
-            try:
-                self.register_dev(sid, device_info)
-            except Exception as err:
-                self._devices_offline[sid] = device_info
-                self.logger.error( str(err) )
+            # try:
+            self.register_dev(sid, device_info)
+            # except Exception as err:
+            #     self._devices_offline[sid] = device_info
+            #     self.logger.error( str(err) )
         
         while self._scenes_info_list:
             sid, device_info = self._scenes_info_list.popitem()
@@ -147,6 +147,7 @@ class DevicesManager:
         _gateway_info = self._gateways_info_list.pop(gateway_sid)
         driver_info: Dict[str,str] = _gateway_info['driver']
         driver = self.get_driver(driver_info['module'], driver_info['class'])
+        print(_gateway_info['args'])
         dev = driver(**_gateway_info['args'])
         self._gateways[_gateway_info['sid']] = dev
 
