@@ -56,7 +56,7 @@ class SceneInterface:
                'name': self.name,
                'place': self.place}
         if self.running:
-            events :List[Callable[[], None]] = [x.__name__ for x in self.running]
+            events :List[str] = [x.__name__ for x in self.running]
             ret['status'] = 'on'
             ret['events'] = events
         return ret
