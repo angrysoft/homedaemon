@@ -51,7 +51,7 @@ class HomeDaemon:
 
     def load_inputs(self) -> None:
         _input_name : str
-        for _input_name in self.config['inputs']:
+        for _input_name in self.config['io']:
             self.loop.run_in_executor(None, self._input, _input_name)
             
     def _input(self, _input_name:str) -> None:
