@@ -5,7 +5,8 @@ import amqpstorm
 import ssl
 import json
 from typing import Dict, Any
-
+from time import sleep
+import asyncio
 
 class Input(BaseInput):
     def __init__(self, bus: Bus, config:Dict[str, Any], loop):
@@ -42,26 +43,37 @@ class Input(BaseInput):
                 self.connected = True
                 self.publish_msg({"cmd": "connect", "homeid": self.config['homed']['homeid']}, routing_key='homedaemon.main')
                 self.bus.emit('info.rabbitmq.status.online')
+                self.loop.create_task(self.ping())
             except ConnectionRefusedError as err:
                 self.connected = False
                 self.bus.emit('info.rabbitmq.status.offline')
                 print(err)
                 sleep(10)
     
+    async def ping(self, interval: int = 5):
+        while True:
+            if self.connected:
+                self.publish_msg({"cmd": "ping", "homeid": self.config['homed']['homeid']}, routing_key='homedaemon.main')
+                await asyncio.sleep(interval)
+    
     def on_message(self, msg:Any) -> None:
-        print('on_msg', msg.body)
-        # self.bus.emit(msg.body) 
+        try:
+            _msg = json.loads(msg.body)
+            print(_msg)
+            # self.bus.emit_cmd(_msg) 
+        except json.JSONDecodeError as err:
+            print(f'json {err} : {msg}')
+            return
     
     def publish_msg(self, msg_data:Any, routing_key:str ='') -> None:
-        print('msg: ', msg_data)
         if not routing_key:
             routing_key = f"homedaemon.{self.config['homed']['homeid']}.reports"
             
         if self.connected:
-            properties = {'content_type': 'text/plain'}
+            properties = {'content_type': 'text/plain',
+                          'expiration': '3600',}
             
             try:
-                print('msg: ', msg_data)
                 txt_msg = json.dumps(msg_data)
             except json.JSONDecodeError as err:
                 print(f'json {err} : {msg_data}')
