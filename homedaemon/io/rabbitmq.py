@@ -59,12 +59,18 @@ class Input(BaseInput):
     def on_message(self, msg:Any) -> None:
         try:
             _msg = json.loads(msg.body)
-            print(_msg)
-            # self.bus.emit_cmd(_msg) 
+            if event := _msg.get('event'):
+                args = _msg.get('args')
+                print(args)
+                if args[1] is None:
+                    self.bus.emit(event, (args[0],))
+                else:
+                    self.bus.emit(event, args)
+                    
         except json.JSONDecodeError as err:
             print(f'json {err} : {msg}')
-            return
-    
+        #     return
+        
     def publish_msg(self, msg_data:Any, routing_key:str ='') -> None:
         if not routing_key:
             routing_key = f"homedaemon.{self.config['homed']['homeid']}.reports"

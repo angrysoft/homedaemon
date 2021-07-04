@@ -135,12 +135,16 @@ class DevicesManager:
             dev.status.name = device_info['name']
             dev.status.place = device_info['place']
             dev.watcher.add_report_handler(self.bus.emit_cmd)
-            self.bus.add_trigger(f'execute.{sid}.*.*', dev.execute)
+            self.bus.add_trigger(f'execute.{sid}.*.*', self._dev_execute, dev)
             self._devices.add(sid, dev)
             device_status = dev.get_device_status()
             device_status['cmd'] = 'init_device'
             self.bus.emit(f'homed.device.init.{sid}', device_status)
-            
+    
+    def _dev_execute(self, *args):
+       dev, cmd, *values = args
+       dev.execute(cmd, *values) 
+    
     def get_gateway(self, gateway:str):
         if gateway not in self._gateways:
             self.register_gateway(gateway)

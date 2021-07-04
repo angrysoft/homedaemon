@@ -6,7 +6,7 @@ class Trigger:
         if type(trigger) is str:
             _values = trigger.split('.', 3)
             if len(_values) == 4:
-                self.cmd,self.sid, self.event, self.value = _values
+                self.cmd, self.sid, self.event, self.value = _values
             else:
                 raise ValueError(f'incorrect trigger format:  {trigger}')
         
@@ -85,7 +85,7 @@ class Bus:
         
     def _run_handler(self, event:str, *payload:Any) -> None:
         trigger = Trigger(event)
-        
+        print('run_hundler', event, payload)
         for handler, args in self.get_handlers(trigger):
             if self.is_async(handler):
                 if payload:
@@ -114,6 +114,7 @@ class Bus:
                           {'cmd': event['cmd'],
                            'sid': event['sid'],
                            'data': {key: _data[key]}})
+                # self.emit(f"{event['cmd']}.{event['sid']}.{key}.{_data[key]}", {key: _data[key]})
         except KeyError:
             pass
         
