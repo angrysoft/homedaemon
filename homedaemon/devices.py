@@ -82,14 +82,14 @@ class DevicesManager:
         self.logger = Logger()
         self.bus = Bus()
         if self.config['scenes']:
-            print(f"scene paty {self.config['scenes']['path']}")
+            print(f"scene path {self.config['scenes']['path']}")
             importlib.sys.path.append(self.config['scenes']['path'])
     
     def register_devices(self) -> None:
         self.load_devices_info()
         while self._devices_info_list:
             sid, device_info = self._devices_info_list.popitem()
-            self.logger.debug(f"Loading..{len(self._devices_info_list)}..{sid} : {device_info.get('name')} from {device_info.get('place')}")
+            self.logger.debug(f"Loading..{len(self._devices_info_list)}..{sid} : {device_info.get('name', {}).get('en')} from {device_info.get('place', {}).get('en')}")
             try:
                 self.register_dev(sid, device_info)
             except Exception as err:
@@ -98,7 +98,7 @@ class DevicesManager:
         
         while self._scenes_info_list:
             sid, device_info = self._scenes_info_list.popitem()
-            self.logger.debug(f"Loading..{len(self._scenes_info_list)}..{sid} : {device_info.get('name')} from {device_info.get('place')}")
+            self.logger.debug(f"Loading..{len(self._scenes_info_list)}..{sid} : {device_info.get('name', {}).get('en')} from {device_info.get('place', {}).get('en')}")
             self.register_scene(sid, device_info)
         
         self.logger.debug(f'Devices loaded, devices offline: {self._devices_offline.keys()}')
