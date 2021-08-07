@@ -122,7 +122,6 @@ class DevicesManager:
             self.logger.error(f'Get devices list {nd}')
         
     def register_dev(self, sid:str, device_info: Dict[str, Any]) -> None:
-            
             driver_info: Dict[str,str] = device_info['driver']
             device_info['args']['sid'] = sid
             
