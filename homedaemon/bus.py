@@ -85,7 +85,6 @@ class Bus:
         
     def _run_handler(self, event:str, *payload:Any) -> None:
         trigger = Trigger(event)
-        print('run_hundler', event, payload)
         for handler, args in self.get_handlers(trigger):
             if self.is_async(handler):
                 if payload:

@@ -31,13 +31,14 @@ class SceneInterface:
                 self.running.add(handler)
             self.bus.emit(f'report.{self.sid}.status.on', f'Scene {self.name}: {handler.__name__} start')
             
-            try:
-                handler()
-            except Exception as err:
-                self.logger.error(f'scene running error {self.name} {err}')
-            finally:    
-                self.bus.emit(f'report.{self.sid}.status.off', f'Scene {self.name}: {handler.__name__} end')
-                self.running.remove(handler)
+            # try:
+            #     handler()
+            # except Exception as err:
+            #     self.logger.error(f'scene running error {self.name} {err}')
+            # finally:    
+            #     self.bus.emit(f'report.{self.sid}.status.off', f'Scene {self.name}: {handler.__name__} end')
+            #     self.running.remove(handler)
+            handler()
     
     def sleep(self, s:int):
         sleep(s)
