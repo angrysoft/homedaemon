@@ -44,7 +44,7 @@ class Input(BaseInput):
                 self.publish_msg({"cmd": "connect", "homeid": self.config['homed']['homeid']}, routing_key='homedaemon.main')
                 self.bus.emit('info.rabbitmq.status.online')
                 self.loop.create_task(self.ping())
-            except ConnectionRefusedError as err:
+            except (ConnectionRefusedError, amqpstorm.exception.AMQPConnectionError) as err:
                 self.connected = False
                 self.bus.emit('info.rabbitmq.status.offline')
                 print(err)
