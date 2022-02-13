@@ -1,3 +1,4 @@
 # README #
-Python script for home automatization.
+Home automatization daemon.
+
 
