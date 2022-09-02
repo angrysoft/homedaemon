@@ -14,7 +14,7 @@ class Input(BaseInput):
         self.config = config
         self.connection:amqpstorm.Connection
         self.connected = False
-        self.channel:amqpstorm.Channel
+        self.channel:amqpstorm.Channel | None = None
         context = ssl.create_default_context(cafile=self.config['rabbitmq']['cafile'])
         context.load_cert_chain(certfile=self.config['rabbitmq']['certfile'],
                                 keyfile=self.config['rabbitmq']['keyfile'],
@@ -27,7 +27,7 @@ class Input(BaseInput):
         self.bus.add_trigger('homed.device.init.*', self.publish_msg)
     
     def connect(self):
-        while not self.connected:
+        while not self.connected and self.loop.is_running():
             try:
                 self.connection:amqpstorm.Connection = amqpstorm.Connection(hostname=self.config['rabbitmq']['host'],
                                                                             username=self.config['rabbitmq']['user'],
