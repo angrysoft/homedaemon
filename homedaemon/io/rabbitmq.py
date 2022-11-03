@@ -27,7 +27,10 @@ class Input(BaseInput):
         self.bus.add_trigger('homed.device.init.*', self.publish_msg)
     
     def connect(self):
+        print("> connecting ", not self.connected, dir(self.loop))
+
         while not self.connected and self.loop.is_running():
+            print("in loop")
             try:
                 self.connection:amqpstorm.Connection = amqpstorm.Connection(hostname=self.config['rabbitmq']['host'],
                                                                             username=self.config['rabbitmq']['user'],
@@ -71,13 +74,13 @@ class Input(BaseInput):
             print(f'json {err} : {msg}')
         #     return
         
-    def publish_msg(self, msg_data:Any, routing_key:str ='') -> None:
+    def publish_msg(self, msg_data:Any, routing_key:str = '') -> None:
         if not routing_key:
             routing_key = f"homedaemon.{self.config['homed']['homeid']}.reports"
             
         if self.connected:
             properties = {'content_type': 'text/plain',
-                          'expiration': '3600',}
+                          'expiration': '3600'}
             
             try:
                 txt_msg = json.dumps(msg_data)
@@ -92,6 +95,7 @@ class Input(BaseInput):
         self.connect()
         while True:
             try:
+                print("koko channel", self.channel)
                 self.channel.start_consuming()
             except amqpstorm.AMQPConnectionError:
                 self.connected = False
