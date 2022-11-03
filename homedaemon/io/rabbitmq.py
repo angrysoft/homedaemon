@@ -26,38 +26,32 @@ class Input(BaseInput):
         self.bus.add_trigger('report.*.*.*', self.publish_msg)
         self.bus.add_trigger('homed.device.init.*', self.publish_msg)
     
-    def connect(self):
-        print("> connecting ", not self.connected, dir(self.loop))
-
-        while not self.connected and self.loop.is_running():
-            print("in loop")
-            try:
-                self.connection:amqpstorm.Connection = amqpstorm.Connection(hostname=self.config['rabbitmq']['host'],
-                                                                            username=self.config['rabbitmq']['user'],
-                                                                            password=self.config['rabbitmq']['user_password'],
-                                                                            port=self.config['rabbitmq']['port'],
-                                                                            ssl=self.config['rabbitmq']['ssl'],
-                                                                            ssl_options=self.ssl_options)
-                self.channel:amqpstorm.Channel = self.connection.channel()
-                self.channel.exchange.declare(exchange='homedaemon', exchange_type='topic', auto_delete=False)
-                self.channel.queue.declare(queue='homed_queue')
-                self.channel.queue.bind(queue='homed_queue', exchange='homedaemon', routing_key=f"homedaemon.{self.config['homed']['homeid']}.in")
-                self.channel.basic.consume(queue='homed_queue', callback=self.on_message, no_ack=True)
-                self.connected = True
-                self.publish_msg({"cmd": "connect", "homeid": self.config['homed']['homeid']}, routing_key='homedaemon.main')
-                self.bus.emit('info.rabbitmq.status.online')
-                self.loop.create_task(self.ping())
-            except (ConnectionRefusedError, amqpstorm.exception.AMQPConnectionError) as err:
-                self.connected = False
-                self.bus.emit('info.rabbitmq.status.offline')
-                print(err)
-                sleep(10)
-    
-    async def ping(self, interval: int = 5):
+    async def connection_guard(self):
         while True:
-            if self.connected:
-                self.publish_msg({"cmd": "ping", "homeid": self.config['homed']['homeid']}, routing_key='homedaemon.main')
-                await asyncio.sleep(interval)
+            if not self.connected:
+                try:
+                    self.connection:amqpstorm.Connection = amqpstorm.Connection(hostname=self.config['rabbitmq']['host'],
+                                                                                username=self.config['rabbitmq']['user'],
+                                                                                password=self.config['rabbitmq']['user_password'],
+                                                                                port=self.config['rabbitmq']['port'],
+                                                                                ssl=self.config['rabbitmq']['ssl'],
+                                                                                ssl_options=self.ssl_options)
+                    self.channel:amqpstorm.Channel = self.connection.channel()
+                    self.channel.exchange.declare(exchange='homedaemon', exchange_type='topic', auto_delete=False)
+                    self.channel.queue.declare(queue='homed_queue')
+                    self.channel.queue.bind(queue='homed_queue', exchange='homedaemon', routing_key=f"homedaemon.{self.config['homed']['homeid']}.in")
+                    self.channel.basic.consume(queue='homed_queue', callback=self.on_message, no_ack=True)
+                    self.connected = True
+                    self.publish_msg({"cmd": "connect", "homeid": self.config['homed']['homeid']}, routing_key='homedaemon.main')
+                    self.bus.emit('info.rabbitmq.status.online')
+                except (ConnectionRefusedError, amqpstorm.exception.AMQPConnectionError) as err:
+                    self.connected = False
+                    self.bus.emit('info.rabbitmq.status.offline')
+                    print(err)
+            else:
+                self.publish_msg({"cmd": "ping", "homeid": self.config['homed']['homeid']}, routing_key='homedaemon.main') 
+            await asyncio.sleep(5)
+
     
     def on_message(self, msg:Any) -> None:
         try:
@@ -92,17 +86,17 @@ class Input(BaseInput):
             message.publish(exchange='homedaemon', routing_key=routing_key)
             
     def run(self) -> None:
-        self.connect()
+        self.loop.create_task(self.connection_guard())
+
         while True:
-            try:
-                print("koko channel", self.channel)
-                self.channel.start_consuming()
-            except amqpstorm.AMQPConnectionError:
-                self.connected = False
-                self.connect()
-            except OSError:
-                self.connected = False
-                self.connect()
+            if self.connected and self.channel:
+                try:
+                    self.channel.start_consuming()
+                except amqpstorm.AMQPConnectionError:
+                    self.connected = False
+                except OSError:
+                    self.connected = False
+            sleep(5)
 
     
 
