@@ -70,6 +70,7 @@ class HomeDaemon:
         self.logger.debug(f'main thread {current_thread()} loop {id(self.loop)}')
         # self.loop.run_in_executor(None, self.load_inputs)
         # self.loop.run_in_executor(None, self.load_devices)
+        print("loop", self.loop.is_running())
         self.load_inputs()
         self.devices_manager.register_devices()
         # self.loop.add_signal_handler(signal.SIGINT, self.stop)
