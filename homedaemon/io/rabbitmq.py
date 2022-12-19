@@ -61,7 +61,7 @@ class Input(BaseInput):
                         {"cmd": "connect", "homeid": self.config["homed"]["homeid"]},
                         routing_key="homedaemon.main",
                     )
-                    self.bus.emit("info.rabbitmq.status.online")
+                    self.bus.emit({"cmd": "info", "msg": "rabbitmq status online"})
                 except (
                     ConnectionRefusedError,
                     amqpstorm.exception.AMQPConnectionError,
