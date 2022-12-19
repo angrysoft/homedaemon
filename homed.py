@@ -42,7 +42,10 @@ class HomeDaemon:
             raise ConfigError('Missing config value homed -> homeid')
         
         self.logger = Logger(debug=args.debug, std=args.log_to_stdout)
-        self.loop = asyncio.get_event_loop()
+        try:
+            self.loop = asyncio.get_running_loop()
+        except RuntimeError:
+            self.loop = asyncio.new_event_loop()
         self.inputs: Dict[str, BaseInput] = dict()
         self.bus = Bus(self.loop)
         self.logger.info('Starting Daemon')
@@ -79,13 +82,13 @@ class HomeDaemon:
             self.loop.run_forever()
         except KeyboardInterrupt:
             self.loop.stop()
-        finally:
-            try:
+        # finally:
+        #     try:
                 
-                self._cancel_all_tasks()
-                self.loop.run_until_complete(self.loop.shutdown_asyncgens())
-            finally:
-                self.loop.close()
+        #         self._cancel_all_tasks()
+        #         self.loop.run_until_complete(self.loop.shutdown_asyncgens())
+        #     finally:
+        #         self.loop.close()
 
     # def stop(self, *args, **kwargs):
     #     self.logger.info('Stop homed')
