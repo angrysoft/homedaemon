@@ -30,6 +30,7 @@ class Input(BaseInput):
     def _on_connect(
         self, client: mqtt.Client, userdata: Any, flags: Any, rc: Any
     ) -> None:
+        print('CONNECTED......')
         self._connected = True
         client.subscribe(f'homed/{self.config["homed"]["id"]}/set')
 
@@ -52,7 +53,12 @@ class Input(BaseInput):
         if rc != 0:
             client.reconnect()
 
-    def publish_msg(self, device_id: str, payload: Dict[str, Any]) -> None:
+    def publish_msg(self, payload: Dict[str, Any]) -> None:
+        print(
+            f'homed/{self.config["homed"]["id"]}/get',
+            json.dumps(payload),
+            self._connected,
+        )
         if self._connected:
             self._client.publish(
                 f'homed/{self.config["homed"]["id"]}/get', json.dumps(payload)
