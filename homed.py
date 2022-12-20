@@ -17,10 +17,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-__author__ = 'Angrysoft - Sebastian Zwierzchowski'
-__copyright__ = 'Copyright 2014-2021 Sebastian Zwierzchowski'
-__license__ = 'GPL2'
-__version__ = '0.9.5'
+__author__ = "Angrysoft - Sebastian Zwierzchowski"
+__copyright__ = "Copyright 2014-2021 Sebastian Zwierzchowski"
+__license__ = "GPL2"
+__version__ = "0.9.5"
 
 
 import asyncio
@@ -38,9 +38,9 @@ import argparse
 class HomeDaemon:
     def __init__(self, config: Config) -> None:
         self.config = config
-        if not self.config.get("homed", {}).get('homeid'):
-            raise ConfigError('Missing config value homed -> homeid')
-        
+        if not self.config.get("homed", {}).get("homeid"):
+            raise ConfigError("Missing config value homed -> homeid")
+
         self.logger = Logger(debug=args.debug, std=args.log_to_stdout)
         try:
             self.loop = asyncio.get_running_loop()
@@ -48,26 +48,25 @@ class HomeDaemon:
             self.loop = asyncio.new_event_loop()
         self.inputs: Dict[str, BaseInput] = dict()
         self.bus = Bus(self.loop)
-        self.logger.info('Starting Daemon')
+        self.logger.info("Starting Daemon")
         self.devices_manager = DevicesManager()
-        self.bus.add_trigger('*.*.*.*', self.logger.debug)
+        self.bus.add_trigger("*.*.*.*", self.logger.debug)
 
     def load_inputs(self) -> None:
-        _input_name : str
-        for _input_name in self.config['io']:
+        _input_name: str
+        for _input_name in self.config["io"]:
             self.loop.run_in_executor(None, self._input, _input_name)
-            
-    def _input(self, _input_name:str) -> None:
-        _input = importlib.import_module(f'homedaemon.io.{_input_name}')
+
+    def _input(self, _input_name: str) -> None:
+        _input = importlib.import_module(f"homedaemon.io.{_input_name}")
         inst: BaseInput = _input.Input(self.bus, self.config, self.loop)
         inst.name = _input_name
         self.inputs[inst.name] = inst
-        self.logger.info(f'load input: {inst.name}')
+        self.logger.info(f"load input: {inst.name}")
         self.inputs[inst.name].run()
 
-        
     def run(self) -> None:
-        self.logger.debug(f'main thread {current_thread()} loop {id(self.loop)}')
+        self.logger.debug(f"main thread {current_thread()} loop {id(self.loop)}")
         # self.loop.run_in_executor(None, self.load_inputs)
         # self.loop.run_in_executor(None, self.load_devices)
         print("loop", self.loop.is_running())
@@ -79,13 +78,13 @@ class HomeDaemon:
         # self.loop.add_signal_handler(signal.SIGTERM, self.stop)
         # return
         try:
-            self.bus.emit('info.homed.status.started', {"msg": "HomeDaemon started"})
+            self.bus.emit("info.homed.status.started", {"msg": "HomeDaemon started"})
             self.loop.run_forever()
         except KeyboardInterrupt:
             self.loop.stop()
         # finally:
         #     try:
-                
+
         #         self._cancel_all_tasks()
         #         self.loop.run_until_complete(self.loop.shutdown_asyncgens())
         #     finally:
@@ -99,7 +98,7 @@ class HomeDaemon:
     #         self.loop.run_until_complete(self.loop.shutdown_asyncgens())
     #     finally:
     #         self.loop.close()
-    
+
     def _cancel_all_tasks(self) -> None:
         to_cancel = asyncio.tasks.all_tasks(self.loop)
         if not to_cancel:
@@ -109,31 +108,49 @@ class HomeDaemon:
             task.cancel()
 
         self.loop.run_until_complete(
-            asyncio.tasks.gather(*to_cancel, loop=self.loop, return_exceptions=True))
+            asyncio.tasks.gather(*to_cancel, loop=self.loop, return_exceptions=True)
+        )
 
         for task in to_cancel:
             if task.cancelled():
                 continue
             if task.exception() is not None:
-                self.loop.call_exception_handler({
-                    'message': 'unhandled exception during asyncio.run() shutdown',
-                    'exception': task.exception(),
-                    'task': task,
-                })
+                self.loop.call_exception_handler(
+                    {
+                        "message": "unhandled exception during asyncio.run() shutdown",
+                        "exception": task.exception(),
+                        "task": task,
+                    }
+                )
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(usage='%(prog)s [options]')
-    parser.add_argument('-D', '--debug', action="store_true", help="Debug msg")
-    parser.add_argument('-d', '--devices-dir', nargs='?', default='/etc/homedaemon/dev.d', help='Path to devices dir')
-    parser.add_argument('-s', '--log-to-stdout', action="store_true", help="Print log info to stdout")
-    parser.add_argument('-c', '--config-dir', nargs='?', default='/etc/homedaemon/conf.d', help='Path to config dir')
-    parser.add_argument('--version', action='version', version=f'%(prog)s {__version__}')
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(usage="%(prog)s [options]")
+    parser.add_argument("-D", "--debug", action="store_true", help="Debug msg")
+    parser.add_argument(
+        "-d",
+        "--devices-dir",
+        nargs="?",
+        default="/etc/homedaemon/dev.d",
+        help="Path to devices dir",
+    )
+    parser.add_argument(
+        "-s", "--log-to-stdout", action="store_true", help="Print log info to stdout"
+    )
+    parser.add_argument(
+        "-c",
+        "--config-dir",
+        nargs="?",
+        default="/etc/homedaemon/conf.d",
+        help="Path to config dir",
+    )
+    parser.add_argument(
+        "--version", action="version", version=f"%(prog)s {__version__}"
+    )
     args = parser.parse_args()
-    
+
     config: Config = Config()
     config.load_config(JsonConfig(args.config_dir))
     config.load_config(ArgConfig(args))
     hd = HomeDaemon(config)
     hd.run()
-   
