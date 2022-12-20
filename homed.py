@@ -78,10 +78,14 @@ class HomeDaemon:
         # self.loop.add_signal_handler(signal.SIGTERM, self.stop)
         # return
         try:
-            self.bus.emit("info.homed.status.started", {"msg": "HomeDaemon started"})
+            self.bus.emit(
+                "info.homed.status.started",
+                {"cmd": "info", "msg": "HomeDaemon started"},
+            )
             self.loop.run_forever()
         except KeyboardInterrupt:
             self.loop.stop()
+            # self.stop()
         # finally:
         #     try:
 
@@ -90,14 +94,14 @@ class HomeDaemon:
         #     finally:
         #         self.loop.close()
 
-    # def stop(self, *args, **kwargs):
-    #     self.logger.info('Stop homed')
-    #     try:
-    #         self.loop.stop()
-    #         self._cancel_all_tasks()
-    #         self.loop.run_until_complete(self.loop.shutdown_asyncgens())
-    #     finally:
-    #         self.loop.close()
+    def stop(self, *args, **kwargs):
+        self.logger.info('Stop homed')
+        try:
+            self.loop.stop()
+            self._cancel_all_tasks()
+            self.loop.run_until_complete(self.loop.shutdown_asyncgens())
+        finally:
+            self.loop.close()
 
     def _cancel_all_tasks(self) -> None:
         to_cancel = asyncio.tasks.all_tasks(self.loop)
