@@ -19,7 +19,7 @@ class Input(BaseInput):
                 username=self.config["mqtt"]["user"],
                 password=self.config["mqtt"]["password"],
             )
-        print(self.config["mqtt"])
+        self._client.tls_set()
         self._client.connect(
             host=self.config.get("mqtt", {}).get("host", "localhost"),
             port=self.config.get("mqtt", {}).get("port", 1883),
@@ -30,6 +30,7 @@ class Input(BaseInput):
     def _on_connect(
         self, client: mqtt.Client, userdata: Any, flags: Any, rc: Any
     ) -> None:
+        print("Connected")
         self._connected = True
         client.subscribe(f'homed/{self.config["homed"]["id"]}/set')
 
@@ -52,7 +53,12 @@ class Input(BaseInput):
         if rc != 0:
             client.reconnect()
 
-    def publish_msg(self, device_id: str, payload: Dict[str, Any]) -> None:
+    def publish_msg(self, payload: Dict[str, Any]) -> None:
+        print(
+            f'homed/{self.config["homed"]["id"]}/get',
+            json.dumps(payload),
+            self._connected,
+        )
         if self._connected:
             self._client.publish(
                 f'homed/{self.config["homed"]["id"]}/get', json.dumps(payload)
