@@ -47,7 +47,6 @@ class Input(BaseInput):
         client.subscribe(f'homed/{self.config["homed"]["id"]}/set')
 
     def _on_message(self, client: mqtt.Client, userdata: Any, msg: mqtt.MQTTMessage):
-        print(userdata, msg)
         try:
             _msg = json.loads(msg.payload)
             if event := _msg.get("event"):
@@ -68,7 +67,7 @@ class Input(BaseInput):
     def publish_msg(self, payload: Dict[str, Any]) -> None:
         if self._connected:
             self._client.publish(
-                f'homed/{self.config["homed"]["id"]}/get', json.dumps(payload), qos=1
+                f'homed/{self.config["homed"]["id"]}/get', json.dumps(payload), qos=0
             )
 
     def run(self):
