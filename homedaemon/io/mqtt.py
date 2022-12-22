@@ -26,6 +26,7 @@ class Input(BaseInput):
             keepalive=self.config.get("mqtt", {}).get("keepalive", 60),
         )
         self.bus.add_trigger("report.*.*.*", self.publish_msg)
+        self.bus.add_trigger("homed.device.init.*", self.publish_msg)
 
     def _on_connect(
         self, client: mqtt.Client, userdata: Any, flags: Any, rc: Any

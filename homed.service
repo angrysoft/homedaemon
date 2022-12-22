@@ -4,7 +4,7 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
-ExecStart=/usr/bin/homed.py -D
+ExecStart=homed.py -D
 
 [Install]
 WantedBy=multi-user.target
