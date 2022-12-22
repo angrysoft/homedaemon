@@ -50,7 +50,6 @@ class Input(BaseInput):
         print(userdata, msg)
         try:
             _msg = json.loads(msg.payload)
-            print(msg.payload, _msg)
             if event := _msg.get("event"):
                 args = _msg.get("args")
                 if args[1] is None:
