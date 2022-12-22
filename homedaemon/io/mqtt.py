@@ -34,7 +34,7 @@ class Input(BaseInput):
     def collect_init_devices(self, dev):
         self.devices.append(dev)
 
-    def send_devices(self):
+    def send_devices(self, *args):
         while not self._connected:
             sleep(0.5)
         for dev in self.devices:
