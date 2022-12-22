@@ -47,6 +47,7 @@ class Input(BaseInput):
         client.subscribe(f'homed/{self.config["homed"]["id"]}/set')
 
     def _on_message(self, client: mqtt.Client, userdata: Any, msg: mqtt.MQTTMessage):
+        print(userdata, msg)
         try:
             _msg = json.loads(msg.payload)
             print(msg.payload, _msg)
