@@ -95,7 +95,7 @@ class HomeDaemon:
         #         self.loop.close()
 
     def stop(self, *args, **kwargs):
-        self.logger.info('Stop homed')
+        self.logger.info("Stop homed")
         try:
             self.loop.stop()
             self._cancel_all_tasks()
