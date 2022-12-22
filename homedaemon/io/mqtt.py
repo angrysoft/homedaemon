@@ -3,12 +3,14 @@ from homedaemon.io import BaseInput
 from homedaemon.bus import Bus
 from typing import Any, Dict
 import paho.mqtt.client as mqtt
+from time import sleep
 
 
 class Input(BaseInput):
     def __init__(self, bus: Bus, config: Dict[str, Any], loop):
         super(Input, self).__init__(bus, loop)
         self.config: Dict[str, Any] = config
+        self.devices = []
         self._connected = False
         self._client: mqtt.Client = mqtt.Client()
         self._client.on_connect = self._on_connect
@@ -26,7 +28,17 @@ class Input(BaseInput):
             keepalive=self.config.get("mqtt", {}).get("keepalive", 60),
         )
         self.bus.add_trigger("report.*.*.*", self.publish_msg)
-        self.bus.add_trigger("homed.device.init.*", self.publish_msg)
+        self.bus.add_trigger("homed.device.init.*", self.collect_init_devices)
+        self.bus.add_trigger("info.homed.status.started", self.send_devices)
+
+    def collect_init_devices(self, dev):
+        self.devices.append(dev)
+
+    def send_devices(self):
+        while not self._connected:
+            sleep(0.5)
+        for dev in self.devices:
+            self.publish_msg(dev)
 
     def _on_connect(
         self, client: mqtt.Client, userdata: Any, flags: Any, rc: Any
@@ -55,8 +67,7 @@ class Input(BaseInput):
     def publish_msg(self, payload: Dict[str, Any]) -> None:
         if self._connected:
             self._client.publish(
-                f'homed/{self.config["homed"]["id"]}/get', json.dumps(payload),
-                qos=1
+                f'homed/{self.config["homed"]["id"]}/get', json.dumps(payload), qos=1
             )
 
     def run(self):
