@@ -51,6 +51,7 @@ class Input(BaseInput):
             _msg = json.loads(msg.payload)
             if event := _msg.get("event"):
                 args = _msg.get("args")
+                print("mqtt set: ", event)
                 if args[1] is None:
                     self.bus.emit(event, (args[0],))
                 else:
