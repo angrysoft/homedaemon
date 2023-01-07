@@ -62,8 +62,8 @@ class Input(BaseInput):
 
     def _on_disconnect(self, client: mqtt.Client, userdata: Any, rc: Any):
         self._connected = False
-        if rc != 0:
-            client.reconnect()
+        # if rc != 0:
+        #     client.reconnect()
 
     def publish_msg(self, payload: Dict[str, Any]) -> None:
         if self._connected:
