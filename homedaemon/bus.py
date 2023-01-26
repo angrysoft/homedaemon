@@ -75,7 +75,7 @@ class Bus:
         value = event.setdefault(_trigger.value, [])
         value.append((handler, args))
 
-    def get_handlers(self, trigger: Trigger) -> list:
+    def get_handlers(self, trigger: Trigger) -> list[Any]:
         try:
             return self._triggers.get_path_key(
                 trigger.cmd, trigger.sid, trigger.event, trigger.value
