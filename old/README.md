@@ -1,0 +1,4 @@
+# README #
+Home automatization daemon.
+
+
