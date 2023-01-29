@@ -22,7 +22,7 @@ import (
 	"os"
 
 	"homedaemon.angrysoft.ovh/homedaemon/config"
-	"homedaemon.angrysoft.ovh/homedaemon/devices"
+	"homedaemon.angrysoft.ovh/homedaemon/manager"
 )
 
 const VERSION = "0.1.0"
@@ -48,7 +48,6 @@ func main() {
 		log.Fatal("Missing homeid value")
 	}
 
-	dm := devices.CreateManager(*devDir)
-	fmt.Println(conf, dm)
-	fmt.Println(conf.Get("homed", "homeid"))
+	dm := manager.New(*devDir)
+	dm.ListDevices()
 }
