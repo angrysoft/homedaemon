@@ -1,13 +1,17 @@
 package bus
 
+import "strings"
+
 type Event struct {
 	Topic string
 	payload any
+	topicList []string
 }
 
-func NewEvent(subject string, args any) *Event {
+func NewEvent(topic string, args any) *Event {
 	return &Event{
-		Topic: subject,
+		Topic: topic,
 		payload: args,
+		topicList: strings.Split(topic, "."),
 	}
 }
