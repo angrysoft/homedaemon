@@ -1,42 +1,36 @@
 package bus
 
 type Bus struct {
-	triggers []Trigger
+	triggers map[uint32]Trigger
 }
 
 func New() *Bus {
 	return &Bus{
-		triggers: []Trigger{},
+		triggers: make(map[uint32]Trigger),
 	}
 }
 
-func (b *Bus) AddTrigger(trigger Trigger) {
-	b.triggers = append(b.triggers, trigger)
+func (b *Bus) AddTrigger(trigger Trigger) uint32 {
+	var id uint32 = 0
+	for {
+		_, ok := b.triggers[id]
+		if !ok {
+			b.triggers[id] = trigger
+			return id
+		}
+		id++
+	}
 }
 
-func (b *Bus) DelTrigger(trigger Trigger) {
-	// for _, tr := range b.triggers {
-	// 	if tr == trigger {
-
-	// 	}
-	// }
+func (b *Bus) DelTrigger(id uint32) {
+	delete(b.triggers, id)
 }
 
 func (b *Bus) Emit(ev *Event) {
-	triggers := b.getTriggers(ev.Topic)
-	for _, trigger := range triggers {
-		trigger.handler.Call(ev.payload)
-
-	}
-}
-
-func (b *Bus) getTriggers(topic string) []Trigger {
-	var triggers []Trigger
-	for _, tr := range b.triggers {
-		if tr.Topic == topic {
-			triggers = append(triggers, tr)
+	for _, trigger := range b.triggers {
+		if trigger.Compare(ev.topicList) {
+			trigger.handler.Call(ev.payload)
 		}
-	}
 
-	return triggers
+	}
 }
