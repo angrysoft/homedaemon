@@ -2,7 +2,6 @@ package status
 
 import (
 	"fmt"
-	"reflect"
 	"testing"
 )
 
@@ -24,12 +23,11 @@ func TestRegisterAttribute(t *testing.T) {
 
 func TestRegisterAlreadyRegisteredAttribute(t *testing.T) {
 	status := CreateStatus()
-	attr := NewBoolAttr(false)
-	err := status.RegisterAttribute("power", attr)
+	err := status.RegisterAttribute("power", false)
 	if err != nil {
 		t.Error("Register attribute failed")
 	}
-	err = status.RegisterAttribute("power", attr)
+	err = status.RegisterAttribute("power", false)
 	if err == nil && status.Len() > 1 {
 		t.Error("Attribute re-registered")
 	}
@@ -37,8 +35,7 @@ func TestRegisterAlreadyRegisteredAttribute(t *testing.T) {
 
 func TestUnregisterAttribute(t *testing.T) {
 	status := CreateStatus()
-	attr := NewBoolAttr(false)
-	err := status.RegisterAttribute("power", attr)
+	err := status.RegisterAttribute("power", false)
 	if err != nil {
 		t.Error("Register attribute failed")
 	}
@@ -50,19 +47,37 @@ func TestUnregisterAttribute(t *testing.T) {
 
 func TestGet(t *testing.T) {
 	st := CreateStatus()
-	strAttr := NewStringAttr(false)
-	strAttr.SetValue("some value")
-	st.RegisterAttribute("test", strAttr)
+	st.RegisterAttribute("test", "some value")
 	v := st.Get("test")
-	vof := reflect.ValueOf(v)
-	fmt.Println(v.().Value(), vof.Type())
+	fmt.Println(v)
+	if v != "some value" {
+		t.Error("incorrect value")
+	}
 }
 
-// func TestAlias(t *testing.T) {
-// 	status := CreateStatus()
-// 	attr := NewBoolAttr(false)
-// 	status.RegisterAttribute("power", attr)
-// 	status.AddAlias("switch", "power")
-// 	if status.
+func TestSet(t *testing.T) {
+	st := CreateStatus()
+	st.RegisterAttribute("test", "")
+	st.Set("test", "other value")
+	v := st.Get("test")
+	if v != "other value" {
+		t.Error("incorrect value")
+	}
+}
 
-// }
+func TestAlias(t *testing.T) {
+	status := CreateStatus()
+	status.RegisterAttribute("power", "on")
+	status.AddAlias("switch", "power")
+	power := status.Get("power")
+	fmt.Println(power)
+
+	status.Set("switch", "off")
+	sw := status.Get("switch")
+	po := status.Get("power")
+	fmt.Println(sw, po)
+	if sw != po {
+		t.Error("incorrect alias value")
+	}
+
+}
