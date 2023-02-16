@@ -81,3 +81,23 @@ func TestAlias(t *testing.T) {
 	}
 
 }
+
+func TestUpdate(t *testing.T) {
+	st := CreateStatus()
+	st.RegisterAttribute("test", "some value")
+	st.RegisterAttribute("power", false)
+	newValues := map[string]any{
+		"power": true,
+		"test": "tset",
+	}
+	st.Update(newValues)
+	v := st.Get("test")
+	if v != "tset" {
+		t.Error("incorrect value")
+	}
+
+	v = st.Get("power")
+	if v != true {
+		t.Error("incorrect value")
+	}
+}

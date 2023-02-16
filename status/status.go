@@ -39,6 +39,12 @@ func (s *Status[T]) Set(name string, value T) {
 	}
 }
 
+func (s *Status[T]) Update(value map[string]T) {
+	for key, val := range(value) {
+		s.Set(key, val)
+	}
+}
+
 func (s *Status[T]) RegisterAttribute(name string, attr T) error {
 
 	if _, ok := s.attributes[name]; ok {
