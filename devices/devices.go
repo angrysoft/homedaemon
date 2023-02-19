@@ -15,7 +15,7 @@ type DeviceWithGateway interface {
 }
 
 type DeviceInfo struct {
-	Sid         string               `json:"sid"`
+	Sid         string            `json:"sid"`
 	Type        string            `json:"type"`
 	Manufacture string            `json:"manufacture"`
 	Model       string            `json:"model"`
@@ -31,5 +31,4 @@ type DriverInfo struct {
 }
 
 type BaseDevice struct {
-
 }
