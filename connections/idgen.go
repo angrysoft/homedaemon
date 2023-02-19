@@ -1,10 +1,10 @@
 package connections
 
 type IdGen struct {
-	current uint
+	current int
 }
 
-func (i *IdGen) GetId() uint {
+func (i *IdGen) GetId() int {
 	i.current++
 	if i.current > 1000 {
 		i.current = 1
