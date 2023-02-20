@@ -1,11 +1,18 @@
 package bus
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 type Event struct {
 	Topic string
 	payload any
 	topicList []string
+}
+
+func (e Event) String() string {
+	return fmt.Sprintf("Topic: %s, payload: %s", e.Topic, e.payload)
 }
 
 func NewEvent(topic string, args any) *Event {
