@@ -23,6 +23,7 @@ import (
 
 	"homedaemon.angrysoft.ovh/homedaemon/config"
 	"homedaemon.angrysoft.ovh/homedaemon/manager"
+	"homedaemon.angrysoft.ovh/homedaemon/watcher"
 )
 
 const VERSION = "0.1.0"
@@ -50,4 +51,7 @@ func main() {
 
 	dm := manager.New(*devDir)
 	dm.ListDevices()
+	wm := watcher.NewWatcherManager()
+	wm.RegisterWatcher(watcher.NewYeelightWatcher("0x0000000007200259", "192.168.10.16:55443"))
+	wm.Run()
 }
