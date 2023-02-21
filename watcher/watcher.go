@@ -15,7 +15,7 @@ type WatcherManager struct {
 	events chan *bus.Event
 }
 
-func NewWatcherManager() *WatcherManager {
+func New() *WatcherManager {
 	return &WatcherManager{
 		events: make(chan *bus.Event),
 	}
@@ -29,6 +29,8 @@ func (wm *WatcherManager) RegisterWatcher(watcher Watcher) {
 
 func (wm *WatcherManager) Run() {
 	for {
-		fmt.Println("Watcher: ", <-wm.events)
+		ev := <-wm.events
+		
+		fmt.Println("Watcher: ", ev.Topic, ev)
 	}
 }

@@ -19,6 +19,10 @@ func TestRegisterAttribute(t *testing.T) {
 	if err != nil && status.Len() != 1 {
 		t.Error("Register attribute failed")
 	}
+	err = status.RegisterAttribute("place", )
+	if err != nil && status.Len() != 1 {
+		t.Error("Register attribute failed")
+	}
 }
 
 func TestRegisterAlreadyRegisteredAttribute(t *testing.T) {

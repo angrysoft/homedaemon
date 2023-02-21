@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"homedaemon.angrysoft.ovh/homedaemon/connections"
+	"homedaemon.angrysoft.ovh/homedaemon/devices"
 )
 
 type command struct {
@@ -25,16 +26,18 @@ type resultError struct {
 	Message string `json:"message"`
 }
 
-type YeelightApi struct {
+type yeelightApi struct {
 	answers   map[int]cmdResult
 	answer_id *connections.IdGen
 	efx       string
 	duration  int
+	MinCt     int
+	MaxCt     int
 	conn      connections.TcpConnection
 }
 
-func newYeelightApi(addr string) *YeelightApi {
-	return &YeelightApi{
+func newYeelightApi(addr string) *yeelightApi {
+	return &yeelightApi{
 		answers:   make(map[int]cmdResult),
 		answer_id: &connections.IdGen{},
 		efx:       "smooth",
@@ -71,7 +74,7 @@ func newYeelightApi(addr string) *YeelightApi {
 // * bg_sat - Saturation of background light
 // * nl_br - Brightness of night mode light
 // * active_mode - ...
-func (y *YeelightApi) GetProp(props []any) (map[string]any, error) {
+func (y *yeelightApi) GetProp(props []any) (map[string]any, error) {
 	result := make(map[string]any)
 	answer, err := y.send("get_prop", props)
 	if err != nil || answer == nil {
@@ -96,7 +99,7 @@ func (y *YeelightApi) GetProp(props []any) (map[string]any, error) {
 //   - 3: Turn on and switch to HSV mode.
 //   - 4: Turn on and switch to color flow mode.
 //   - 5: Turn on and switch to Night light mode. (Ceiling light only).
-func (y *YeelightApi) SetPower(state string, mode int) error {
+func (y *yeelightApi) SetPower(state string, mode int) error {
 	if mode < 0 || mode > 5 {
 		return errors.New("incorrect mode")
 	}
@@ -104,15 +107,73 @@ func (y *YeelightApi) SetPower(state string, mode int) error {
 	return nil
 }
 
-func (y *YeelightApi) On() error {
+func (y *yeelightApi) On() error {
 	return y.SetPower("on", 0)
 }
 
-func (y *YeelightApi) Off() error {
+func (y *yeelightApi) Off() error {
 	return y.SetPower("off", 0)
 }
 
-func (y *YeelightApi) send(method string, params []any) (*cmdResult, error) {
+// This method is used to change the color temperature of a smart LED.
+
+//         Args:
+//             ct (int): The target color temperature.
+//                 The type is integer and range is 1700 ~ 6500 (k).
+
+//             efx (:obj:str, optional): support two values: sudden and smooth.
+//                 If effect is sudden, then change will be directly , under this case, parameter duration is ignored.
+//                 If effect is smooth, then the total time of gradual change is specified in parameter duration.
+//                 Default is smooth
+
+// duration (:obj:int, optional): Specifies the total time of the gradual changing.
+//
+//	The unit is milliseconds. The minimum support duration is 30 milliseconds.
+//	Default is 500
+func (y *yeelightApi) SetCtAbx(ct int) {
+	y.send("set_ct_abx", []any{ct, y.efx, y.duration})
+}
+
+// This method is used to change the color temperature of a smart LED with percent scale.
+
+// Args:
+//
+//	pc (int): Percentage target color temperature.
+//	    The type is integer and range is 0 ~ 100 (%).
+func (y *yeelightApi) SetCtPc(pc int) {
+	colorTemp := y.MinCt + ((y.MaxCt - y.MinCt) * pc / 100)
+	y.SetCtAbx(colorTemp)
+}
+
+// This method is used to change the color of a smart LED.
+
+// Args:
+//
+//	rgb (int): Color value in RGB
+func (y *yeelightApi) SetColor(rgb int) {
+	y.send("set_rgb", []any{rgb, y.efx, y.duration})
+}
+
+// This method is used to change the color of a smart LED.
+
+// Args:
+//
+//	red int: Red color value from 0 to 255.
+//	green int: Green color value from 0 to 255.
+//	blue int: Blue color value from 0 to 255.
+func (y *yeelightApi) SetRGB(red, green, blue int) {
+	rgb := (red << 16) + (green << 8) + blue
+	y.send("set_rgb", []any{rgb, y.efx, y.duration})
+}
+
+// This method is used to save current state of smart LED in persistent memory.
+// So if user powers off and then powers on the smart LED again (hard power reset),
+// the smart LED will show last saved state.
+func (y *yeelightApi) SetDefault() {
+	y.send("set_default", nil)
+}
+
+func (y *yeelightApi) send(method string, params []any) (*cmdResult, error) {
 	id := y.answer_id.GetId()
 	defer y.conn.Close()
 	var answer cmdResult
@@ -142,4 +203,18 @@ func (y *YeelightApi) send(method string, params []any) (*cmdResult, error) {
 		return nil, err
 	}
 	return &answer, nil
+}
+
+type Mono struct {
+	devices.BaseDevice
+	api yeelightApi
+	addr string
+}
+
+func (m *Mono) Setup(devInfo devices.DeviceInfo) error {
+	m.CreateStatus(devInfo)
+	m.Status.RegisterAttribute("addr", "")
+	m.Status.RegisterAttribute("color_mode", 0)
+	m.api = *newYeelightApi("")
+	return nil
 }
