@@ -51,7 +51,7 @@ func main() {
 
 	dm := manager.New(*devDir)
 	dm.ListDevices()
-	wm := watcher.NewWatcherManager()
+	wm := watcher.New()
 	wm.RegisterWatcher(watcher.NewYeelightWatcher("0x0000000007200259", "192.168.10.16:55443"))
 	wm.Run()
 }

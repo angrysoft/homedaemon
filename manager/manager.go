@@ -10,13 +10,17 @@ import (
 	"strings"
 
 	"homedaemon.angrysoft.ovh/homedaemon/devices"
+	"homedaemon.angrysoft.ovh/homedaemon/discover"
 	"homedaemon.angrysoft.ovh/homedaemon/drivers"
+	"homedaemon.angrysoft.ovh/homedaemon/watcher"
 )
 
 type DeviceManager struct {
 	devices  map[string]devices.Device
 	gateways map[string]devices.GatewayDevice
 	dir      string
+	discover *discover.DeviceDiscover
+	watcherManager *watcher.WatcherManager
 }
 
 func New(devDir string) *DeviceManager {
@@ -24,6 +28,8 @@ func New(devDir string) *DeviceManager {
 		dir:      devDir,
 		devices:  make(map[string]devices.Device),
 		gateways: make(map[string]devices.GatewayDevice),
+		discover: discover.New(),
+		watcherManager: watcher.New(),
 	}
 	dev.loadDevices()
 	return dev
@@ -106,6 +112,11 @@ func (dm *DeviceManager) setupDevices(deviceList []devices.DeviceInfo) {
 			dev, ok := drivers.GetDriver(devI)
 			if !ok {
 				log.Println("No driver for", devI.Sid, devI.Model)
+				continue
+			}
+			err := dev.Setup(devI)
+			if err != nil {
+				log.Println(err)
 				continue
 			}
 			dm.devices[devI.Sid] = dev

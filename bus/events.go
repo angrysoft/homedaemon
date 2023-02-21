@@ -11,8 +11,10 @@ type Event struct {
 	topicList []string
 }
 
+
+
 func (e Event) String() string {
-	return fmt.Sprintf("Topic: %s, payload: %s", e.Topic, e.payload)
+	return fmt.Sprintf("Topic: %s, payload: %v", e.Topic, e.payload)
 }
 
 func NewEvent(topic string, args any) *Event {

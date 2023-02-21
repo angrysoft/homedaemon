@@ -56,7 +56,7 @@ func (yw *YeelightWatcher) Watch(ev chan<- *bus.Event) {
 				if values.Field(i).IsZero() {
 					continue
 				}
-				topic := fmt.Sprintf("status.%s.%s.%s", yw.sid, types.Field(i).Name, values.Field(i))
+				topic := fmt.Sprintf("status.%s.%s.%v", yw.sid, types.Field(i).Name, values.Field(i))
 				event := bus.NewEvent(topic, map[string]any{
 					types.Field(i).Name : values.Field(i),
 				})

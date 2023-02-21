@@ -1,5 +1,7 @@
 package devices
 
+import "homedaemon.angrysoft.ovh/homedaemon/status"
+
 type GatewayDevice interface {
 	Setup(gateInfo DeviceInfo) error
 	Send()
@@ -31,4 +33,16 @@ type DriverInfo struct {
 }
 
 type BaseDevice struct {
+	Status status.Status[any]
+}
+
+func (bd *BaseDevice) Sid() string {
+	return bd.Status.Get("sid").(string)
+}
+
+func (bd *BaseDevice) CreateStatus(devInfo DeviceInfo) {
+	bd.Status = *status.CreateStatus()
+	bd.Status.RegisterAttribute("sid", devInfo.Sid)
+	bd.Status.RegisterAttribute("place", devInfo.Place)
+	bd.Status.RegisterAttribute("name", devInfo.Name)
 }

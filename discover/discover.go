@@ -15,6 +15,12 @@ type DeviceDiscover struct {
 	deviceCache map[string]DeviceBaseInfo
 }
 
+func New() *DeviceDiscover {
+	return &DeviceDiscover{
+		deviceCache: make(map[string]DeviceBaseInfo),
+	}
+}
+
 
 func (dd *DeviceDiscover) Discover(sid string, engine DiscoverEngine) DeviceBaseInfo {
 	var result DeviceBaseInfo
