@@ -29,7 +29,7 @@ func (b *Bus) DelTrigger(id uint32) {
 func (b *Bus) Emit(ev *Event) {
 	for _, trigger := range b.triggers {
 		if trigger.Compare(ev.topicList) {
-			trigger.handler.Call(ev.payload)
+			trigger.handler.Call(ev)
 		}
 
 	}

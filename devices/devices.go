@@ -1,18 +1,22 @@
 package devices
 
-import "homedaemon.angrysoft.ovh/homedaemon/status"
+import (
+	"homedaemon.angrysoft.ovh/homedaemon/discover"
+	"homedaemon.angrysoft.ovh/homedaemon/status"
+	"homedaemon.angrysoft.ovh/homedaemon/watcher"
+)
 
 type GatewayDevice interface {
-	Setup(gateInfo DeviceInfo) error
+	Setup(devInfo DeviceInfo, devDiscover *discover.DeviceDiscover, watcherManager *watcher.WatcherManager) error
 	Send()
 }
 
 type Device interface {
-	Setup(devInfo DeviceInfo) error
+	Setup(devInfo DeviceInfo, devDiscover *discover.DeviceDiscover, watcherManager *watcher.WatcherManager) error
 }
 
 type DeviceWithGateway interface {
-	Setup(devInfo DeviceInfo) error
+	Setup(devInfo DeviceInfo, devDiscover *discover.DeviceDiscover, watcherManager *watcher.WatcherManager) error
 	SetGateway(gate GatewayDevice)
 }
 

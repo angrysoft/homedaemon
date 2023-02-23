@@ -15,8 +15,8 @@ func TestNew(t *testing.T) {
 
 func TestAddTrigger(t *testing.T) {
 	bus := New()
-	h := func(args any) {
-		fmt.Print(args)
+	h := func(ev *Event) {
+		fmt.Print(ev)
 	}
 	trig := NewTrigger("report.123341421.status.off", *NewHandler(h))
 	bus.AddTrigger(*trig)
@@ -27,8 +27,8 @@ func TestAddTrigger(t *testing.T) {
 
 func TestDelTrigger(t *testing.T) {
 	bus := New()
-	h := func(args any) {
-		fmt.Print(args)
+	h := func(ev *Event) {
+		fmt.Print(ev)
 	}
 	trig := NewTrigger("report.123341421.status.off", *NewHandler(h))
 
@@ -41,9 +41,9 @@ func TestDelTrigger(t *testing.T) {
 
 func TestEmit(t *testing.T) {
 	var result string
-	h := func(args any) {
-		fmt.Print(args)
-		result = args.(string)
+	h := func(ev *Event) {
+		fmt.Print(ev)
+		result = ev.payload.(string)
 	}
 
 	bus := New()
@@ -58,9 +58,9 @@ func TestEmit(t *testing.T) {
 
 func TestEmitWildCard(t *testing.T) {
 	var result string
-	h := func(args any) {
-		fmt.Print(args)
-		result = args.(string)
+	h := func(ev *Event) {
+		fmt.Print(ev)
+		result = ev.payload.(string)
 	}
 
 	bus := New()

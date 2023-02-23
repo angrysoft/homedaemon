@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"homedaemon.angrysoft.ovh/homedaemon/bus"
 	"homedaemon.angrysoft.ovh/homedaemon/devices"
 	"homedaemon.angrysoft.ovh/homedaemon/discover"
 	"homedaemon.angrysoft.ovh/homedaemon/drivers"
@@ -21,6 +22,7 @@ type DeviceManager struct {
 	dir      string
 	discover *discover.DeviceDiscover
 	watcherManager *watcher.WatcherManager
+	bus *bus.Bus
 }
 
 func New(devDir string) *DeviceManager {
@@ -79,7 +81,7 @@ func (dm *DeviceManager) setupGateways(gatewayList []devices.DeviceInfo) {
 			log.Println("No driver for", devI.Model)
 			continue
 		}
-		err := dev.Setup(devI)
+		err := dev.Setup(devI, dm.discover, dm.watcherManager)
 		if err != nil {
 			log.Println(err)
 			continue
@@ -102,7 +104,7 @@ func (dm *DeviceManager) setupDevices(deviceList []devices.DeviceInfo) {
 				continue
 			}
 			dev.SetGateway(gate)
-			err := dev.Setup(devI)
+			err := dev.Setup(devI, dm.discover, dm.watcherManager)
 			if err != nil {
 				log.Println(err)
 				continue
@@ -114,7 +116,7 @@ func (dm *DeviceManager) setupDevices(deviceList []devices.DeviceInfo) {
 				log.Println("No driver for", devI.Sid, devI.Model)
 				continue
 			}
-			err := dev.Setup(devI)
+			err := dev.Setup(devI, dm.discover, dm.watcherManager)
 			if err != nil {
 				log.Println(err)
 				continue
@@ -137,4 +139,13 @@ func (dm *DeviceManager) ListDevices() []devices.Device {
 		result = append(result, dev)
 	}
 	return result
+}
+
+func (dm *DeviceManager) Run() {
+	dm.watcherManager.Run()
+}
+
+func (dm *DeviceManager) SetBus(bus *bus.Bus) {
+	dm.bus = bus
+	dm.watcherManager.SetHandler(bus.Emit)
 }
