@@ -1,5 +1,5 @@
 run:
-	go run homed.go
+	go run homed.go -conf tmp/conf.d -dev tmp/dev.d
 
 build:
 	go build homed.go

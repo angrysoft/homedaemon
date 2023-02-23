@@ -21,14 +21,15 @@ import (
 	"log"
 	"os"
 
+	"homedaemon.angrysoft.ovh/homedaemon/bus"
 	"homedaemon.angrysoft.ovh/homedaemon/config"
 	"homedaemon.angrysoft.ovh/homedaemon/manager"
-	"homedaemon.angrysoft.ovh/homedaemon/watcher"
 )
 
 const VERSION = "0.1.0"
 
 func main() {
+	evBus := bus.New()
 	conf := config.New()
 	debug := flag.Bool("D", false, "Debug messages")
 	devDir := flag.String("dev", "/etc/homedaemon/dev.d", "Path to devices dir")
@@ -45,13 +46,15 @@ func main() {
 	conf.Set("debug", "status", *debug)
 	conf.Set("devDir", "path", *devDir)
 
-	if id := conf.Get("homed", "id"); id == nil || id =="" {
+	if id := conf.Get("homed", "id"); id == nil || id == "" {
 		log.Fatal("Missing homeid value")
 	}
-
+	h := func (ev *bus.Event) {
+		fmt.Println(ev)
+	}
+	evBus.AddTrigger(*bus.NewTrigger("*", *bus.NewHandler(h)))
 	dm := manager.New(*devDir)
+	dm.SetBus(evBus)
 	dm.ListDevices()
-	wm := watcher.New()
-	wm.RegisterWatcher(watcher.NewYeelightWatcher("0x0000000007200259", "192.168.10.16:55443"))
-	wm.Run()
+	dm.Run()
 }

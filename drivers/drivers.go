@@ -5,6 +5,7 @@ import (
 
 	"homedaemon.angrysoft.ovh/homedaemon/devices"
 	"homedaemon.angrysoft.ovh/homedaemon/drivers/software"
+	"homedaemon.angrysoft.ovh/homedaemon/drivers/yeelight"
 )
 
 func GetDriver(devInfo devices.DeviceInfo) (devices.Device, bool) {
@@ -14,6 +15,13 @@ func GetDriver(devInfo devices.DeviceInfo) (devices.Device, bool) {
 	case "Clock":
 		fmt.Println(devInfo)
 		dev = &software.Clock{}
+	case "mono":
+		dev = &yeelight.Mono{}
+	case "desklamp":
+		dev = &yeelight.DeskLamp{}
+	case "color":
+		dev = &yeelight.Color{}
+
 	default:
 		dev = nil
 		ok = false

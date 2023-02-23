@@ -6,7 +6,6 @@ import (
 	"log"
 
 	"homedaemon.angrysoft.ovh/homedaemon/connections"
-	"homedaemon.angrysoft.ovh/homedaemon/devices"
 )
 
 type command struct {
@@ -203,18 +202,4 @@ func (y *yeelightApi) send(method string, params []any) (*cmdResult, error) {
 		return nil, err
 	}
 	return &answer, nil
-}
-
-type Mono struct {
-	devices.BaseDevice
-	api yeelightApi
-	addr string
-}
-
-func (m *Mono) Setup(devInfo devices.DeviceInfo) error {
-	m.CreateStatus(devInfo)
-	m.Status.RegisterAttribute("addr", "")
-	m.Status.RegisterAttribute("color_mode", 0)
-	m.api = *newYeelightApi("")
-	return nil
 }

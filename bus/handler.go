@@ -1,17 +1,17 @@
 package bus
 
 type Handler struct {
-	fn func(any)
+	fn func(*Event)
 }
 
-func NewHandler(fn func(any)) *Handler {
+func NewHandler(fn func(*Event)) *Handler {
 	return &Handler{
-		fn: func(args any) {
-			fn(args)
+		fn: func(ev *Event) {
+			fn(ev)
 		},
 	}
 }
 
-func (h *Handler) Call(args any) {
-	go h.fn(args)
+func (h *Handler) Call(ev *Event) {
+	go h.fn(ev)
 }
