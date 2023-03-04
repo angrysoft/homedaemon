@@ -10,13 +10,11 @@ import ovh.angrysoft.homedaemon.exceptions.connctions.DeviceConnectionError;
 
 public class TcpConnection {
     private InetAddress addr;
-    private int port;
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
 
     public TcpConnection(String ip, int port) throws DeviceConnectionError {
-        this.port = port;
         try {
             this.addr = InetAddress.getByName(ip);
             this.socket = new Socket(addr, port);
