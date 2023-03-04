@@ -1,46 +1,46 @@
 package ovh.angrysoft.homedaemon.config;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
 public class Config {
-    private HashMap<String, HashMap<String, ConfigValue<T>>> data;
+    private HashMap<String, JsonObject> data;
     private static final Logger LOGGER = Logger.getLogger(Config.class.getName());
 
     public Config() {
         data = new HashMap<>();
     }
 
-    public HashMap<String, ConfigValue<?>> getCategory(String name) {
+    private JsonObject getCategory(String name) {
         if (data.containsKey(name)) {
-            return (HashMap<String, ConfigValue<?>>) data.get(name);
+
+            return data.get(name);
         }
         return null;
     }
 
-    public <T> T get(String category, String key) {
-        if (data.containsKey(category)) {
-            HashMap<String, ConfigValue<?>> cat = data.get(category);
-            return (T) cat.get(key);
+    public JsonElement get(String category, String key) {
+        JsonObject cat = getCategory(category);
+        if (cat != null) {
+            return cat.get(key);
         }
         return null;
     }
 
-    public <T> void set(String categoryName, HashMap<String, ConfigValue<T>> category) {
+    public void setCategory(String categoryName, JsonObject category) {
         data.put(categoryName, category);
     }
 
@@ -63,17 +63,16 @@ public class Config {
     }
 
     /**
-     * @param path
+     * @param path - directory witch json configs
      * @throws FileNotFoundException
      */
-    private <T> void loadConfigFile(Path path) {
+    private void loadConfigFile(Path path) {
         try {
-            Gson gson = new Gson();
-            HashMap<String, ConfigValue<T>> conf = new HashMap<>();
-            conf = (HashMap<String, ConfigValue<T>>) gson.fromJson(new FileReader(path.toString()), HashMap.class);
+
+            JsonObject conf = new Gson().fromJson(new FileReader(path.toString()), JsonObject.class);
             String fileName = path.getFileName().toString();
             String[] name = fileName.split(".json");
-            set(name[0], conf);
+            setCategory(name[0], conf);
         } catch (FileNotFoundException e) {
             LOGGER.log(Level.ALL, "Config file {0} not found", path.getFileName().toString());
         } catch (JsonSyntaxException e) {
