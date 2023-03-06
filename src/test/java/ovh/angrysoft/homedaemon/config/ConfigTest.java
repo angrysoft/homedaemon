@@ -1,5 +1,6 @@
 package ovh.angrysoft.homedaemon.config;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -28,7 +29,8 @@ public class ConfigTest {
         Config config = new Config();
         System.out.println("Working Directory = " + System.getProperty("user.dir"));
         config.loadFromDir("src/test/java/ovh/angrysoft/homedaemon/config");
-        System.out.println(config.get("testlist", "io"));
-        config.listCategory();
+        assertEquals("stringTwo", config.get("test", "two").getAsString());
+        assertEquals(1, config.get("test", "one").getAsInt());
+        assertEquals(config.categorySet().size(), 2);
     }
 }
