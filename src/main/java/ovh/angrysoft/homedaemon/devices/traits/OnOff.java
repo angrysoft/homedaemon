@@ -1,9 +1,8 @@
-package ovh.angrysoft.homedaemon.traits;
+package ovh.angrysoft.homedaemon.devices.traits;
 
 public interface OnOff extends Trait {
     void on();
     void off();
     boolean isOn();
-    boolean isOff();
     
 }

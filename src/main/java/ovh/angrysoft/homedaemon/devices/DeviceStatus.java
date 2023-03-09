@@ -1,4 +1,4 @@
-package ovh.angrysoft.homedaemon;
+package ovh.angrysoft.homedaemon.devices;
 
 import java.util.HashMap;
 import java.util.Map;

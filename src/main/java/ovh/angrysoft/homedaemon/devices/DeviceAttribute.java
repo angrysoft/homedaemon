@@ -1,4 +1,4 @@
-package ovh.angrysoft.homedaemon;
+package ovh.angrysoft.homedaemon.devices;
 
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeReadOnly;
 
@@ -6,22 +6,19 @@ public class DeviceAttribute<T> {
     private T value;
     private String name;
     private boolean readonly = false;
-
     
-    public DeviceAttribute(String name, boolean readonly, T value) {
+    public DeviceAttribute(String name, T value) {
+        this.name = name;
+        this.value = value;
+    }
+    
+    public DeviceAttribute(String name, T value, boolean readonly) {
         this.name = name;
         this.readonly = readonly;
         this.value = value;
     }
     
-    public DeviceAttribute(String name) {
-        this.name = name;
-    }
-    
-    public DeviceAttribute(String name, boolean readonly) {
-       this.name = name;
-       this.readonly = readonly;
-    }
+
     
     public String getName() {
         return this.name;

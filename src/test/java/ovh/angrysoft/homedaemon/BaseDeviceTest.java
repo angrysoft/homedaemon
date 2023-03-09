@@ -3,9 +3,11 @@ package ovh.angrysoft.homedaemon;
 
 import org.junit.jupiter.api.Test;
 
+import ovh.angrysoft.homedaemon.devices.BaseDevice;
+import ovh.angrysoft.homedaemon.devices.DeviceAttribute;
+import ovh.angrysoft.homedaemon.devices.traits.OnOff;
+import ovh.angrysoft.homedaemon.devices.traits.Toggle;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
-import ovh.angrysoft.homedaemon.traits.OnOff;
-import ovh.angrysoft.homedaemon.traits.Toggle;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,7 +32,7 @@ class DummyDevice extends BaseDevice implements OnOff, Toggle {
     public DummyDevice() {
         super();
         try {
-            status.registerAttribute(new DeviceAttribute<>("power", false, "off"));
+            status.registerAttribute(new DeviceAttribute<>("power", "off"));
         } catch ( AttributeAlreadyExist e) {}
     }
 
@@ -45,6 +47,6 @@ class DummyDevice extends BaseDevice implements OnOff, Toggle {
         return false;
     }
 
-    public void Toggle() {}
+    public void toggle() {}
 
 }

@@ -10,23 +10,22 @@ import java.util.Map;
 
 import ovh.angrysoft.homedaemon.exceptions.connctions.DeviceConnectionError;
 
-
-public class UdpConnection {
+public class UdpConnection implements AutoCloseable {
     protected DatagramSocket socket;
     private int retryNumber = 3;
 
     public UdpConnection() throws DeviceConnectionError {
         try {
             this.socket = new DatagramSocket();
-            this.socket.setSoTimeout(5);
-        } catch (SocketException e ) {
+            this.socket.setSoTimeout(5000);
+        } catch (SocketException e) {
             throw new DeviceConnectionError("Create udp socket error: " + e);
         }
 
     }
 
-    public void sendJson(Map<String,?> msg, String addr, int port, int retry) {
-        
+    public void sendJson(Map<String, ?> msg, String addr, int port, int retry) {
+
     }
 
     public void send(String msg, String addr, int port) throws DeviceConnectionError {
@@ -37,9 +36,9 @@ public class UdpConnection {
                 DatagramPacket packet = new DatagramPacket(buf, buf.length, InetAddress.getByName(addr), port);
                 this.socket.send(packet);
                 return;
-            } catch ( IOException e ) {
+            } catch (IOException e) {
                 if (retry == 1)
-                    throw new DeviceConnectionError("packet send error: " + e );
+                    throw new DeviceConnectionError("packet send error: " + e);
             }
             retry--;
         }
@@ -47,17 +46,18 @@ public class UdpConnection {
 
     public String recv() throws DeviceConnectionError {
         int retry = this.getRetryNumber();
-        var ret = "";
+        String ret = "";
         while (retry != 0) {
             try {
                 byte[] buf = new byte[1024];
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 this.socket.receive(packet);
-                ret = this.getStringFromArrayByte(packet.getData());
+                byte[] retbyte = packet.getData();
+                ret = getStringFromArrayByte(retbyte);
                 break;
             } catch (IOException e) {
                 if (retry == 1)
-                    throw new DeviceConnectionError("packet send error: " + e );
+                    throw new DeviceConnectionError("packet recv error: " + e);
             }
             retry--;
         }
@@ -68,17 +68,18 @@ public class UdpConnection {
         int offset = -1;
         for (int i = 0; i < arrayIN.length; i++) {
             if (arrayIN[i] == 0) {
-                offset = i;
+                offset = i-1;
                 break;
             }
         }
-        
-        return new String(arrayIN, 0 , offset, StandardCharsets.UTF_8);
+
+        return new String(arrayIN, 0, offset, StandardCharsets.UTF_8);
     }
 
     public int getRetryNumber() {
         return this.retryNumber;
     }
+
     public void close() {
         this.socket.close();
     }

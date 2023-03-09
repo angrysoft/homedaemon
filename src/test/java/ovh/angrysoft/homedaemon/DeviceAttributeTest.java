@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import ovh.angrysoft.homedaemon.devices.DeviceAttribute;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeReadOnly;
 
 
@@ -14,7 +15,7 @@ public class DeviceAttributeTest {
     @Test
     @DisplayName("Test string attribute")
     void testStringAttribute() {
-        DeviceAttribute<String> attr = new DeviceAttribute<>("test", false, "StringValue");
+        DeviceAttribute<String> attr = new DeviceAttribute<>("test", "StringValue");
         assertEquals("test", attr.getName());
         assertEquals("StringValue", attr.getValue()); 
     }
@@ -22,7 +23,7 @@ public class DeviceAttributeTest {
     @Test
     @DisplayName("Test change value")
     void testChangeValue() {
-        DeviceAttribute<String> attr = new DeviceAttribute<>("test", false, "StringValue");
+        DeviceAttribute<String> attr = new DeviceAttribute<>("test", "StringValue");
         try {
             attr.setValue("NewValue");
             
@@ -34,7 +35,7 @@ public class DeviceAttributeTest {
     
     @Test
     void testReadOnlyException() {
-        DeviceAttribute<String> attr = new DeviceAttribute<>("test", true, "StringValue");
+        DeviceAttribute<String> attr = new DeviceAttribute<>("test", "StringValue", true);
         Throwable exception = assertThrows(AttributeReadOnly.class, () -> attr.setValue("NewValue"));
         assertEquals("Read only parameter", exception.getMessage());
 }
