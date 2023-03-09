@@ -1,4 +1,4 @@
-package ovh.angrysoft.homedaemon.traits;
+package ovh.angrysoft.homedaemon.devices.traits;
 
 public interface MultiSwitch extends Trait {
     void on(String switchName);

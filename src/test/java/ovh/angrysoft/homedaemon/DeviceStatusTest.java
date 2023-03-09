@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeNotFound;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeReadOnly;
+import ovh.angrysoft.homedaemon.devices.DeviceAttribute;
+import ovh.angrysoft.homedaemon.devices.DeviceStatus;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
 
 
@@ -28,7 +30,7 @@ public class DeviceStatusTest {
     @DisplayName("Test Register attribute")
     void testRegisterAttribute() {
         try {
-            status.registerAttribute( new DeviceAttribute<>("test", false, "StringValue") );
+            status.registerAttribute( new DeviceAttribute<>("test", "StringValue") );
         } catch ( AttributeAlreadyExist e) {}
         assertEquals("StringValue", status.get("test"));
     }
@@ -37,7 +39,7 @@ public class DeviceStatusTest {
     @DisplayName("Unregister attribute")
     void testUnregisterAttribute() {
         try {
-            status.registerAttribute( new DeviceAttribute<>("attrToRemove", false, "StringValue") );
+            status.registerAttribute( new DeviceAttribute<>("attrToRemove", "StringValue") );
         } catch ( AttributeAlreadyExist e) {}
         status.unregisterAttribute("attrToRemove");
         assertNull(status.get("attrToRemove"));
@@ -47,7 +49,7 @@ public class DeviceStatusTest {
     @DisplayName("Add Attribute Alias")
     void testAddAlias() {
         try {
-            status.registerAttribute( new DeviceAttribute<>("test", false, "StringValue") );
+            status.registerAttribute( new DeviceAttribute<>("test", "StringValue") );
             status.addAlias("aliasName", "test");
         } catch ( AttributeAlreadyExist|AttributeNotFound e) {}
 
@@ -58,7 +60,7 @@ public class DeviceStatusTest {
     @DisplayName("Set Attribute")
     void testSetAttribute() {
         try {
-            status.registerAttribute( new DeviceAttribute<>("test", false, "StringValue") );
+            status.registerAttribute( new DeviceAttribute<>("test", "StringValue") );
             status.set("test", "newStringValue");
         } catch ( AttributeAlreadyExist| AttributeReadOnly e) {
         }
@@ -70,8 +72,8 @@ public class DeviceStatusTest {
     @DisplayName("Update Attributes")
     void testUpdateAttributes() {
         try {
-            status.registerAttribute( new DeviceAttribute<>("attr1", false, "StringValue") );
-            status.registerAttribute( new DeviceAttribute<>("attr2", false, 1) );
+            status.registerAttribute( new DeviceAttribute<>("attr1", "StringValue") );
+            status.registerAttribute( new DeviceAttribute<>("attr2", 1) );
         } catch ( AttributeAlreadyExist e) {}
 
         HashMap<String, Object> toUpdate = new HashMap<>();
@@ -91,8 +93,8 @@ public class DeviceStatusTest {
     @DisplayName("Get all Attributes")
     void testGetAll() {
         try {
-            status.registerAttribute( new DeviceAttribute<>("attr1", false, "value1") );
-            status.registerAttribute( new DeviceAttribute<>("attr2", false, 1) );
+            status.registerAttribute( new DeviceAttribute<>("attr1", "value1") );
+            status.registerAttribute( new DeviceAttribute<>("attr2", 1) );
         } catch ( AttributeAlreadyExist e) {}
 
         Map<String, String> stringAttrs = status.getAll();

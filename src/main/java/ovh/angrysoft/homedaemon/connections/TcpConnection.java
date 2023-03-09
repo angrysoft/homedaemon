@@ -8,7 +8,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import ovh.angrysoft.homedaemon.exceptions.connctions.DeviceConnectionError;
 
-public class TcpConnection {
+public class TcpConnection implements AutoCloseable {
     private InetAddress addr;
     private Socket socket;
     private PrintWriter out;
@@ -18,11 +18,12 @@ public class TcpConnection {
         try {
             this.addr = InetAddress.getByName(ip);
             this.socket = new Socket(addr, port);
+            // this.socket.setSoTimeout(5000);
             this.in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
             this.out = new PrintWriter(this.socket.getOutputStream(), true);
         } catch (IOException e) {
             throw new DeviceConnectionError("Tcp socket error: " + e);
-            
+
         }
     }
 
@@ -47,5 +48,5 @@ public class TcpConnection {
             throw new DeviceConnectionError("Receive error: " + e);
         }
     }
-    
+
 }
