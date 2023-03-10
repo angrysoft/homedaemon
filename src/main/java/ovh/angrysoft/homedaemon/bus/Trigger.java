@@ -1,7 +1,5 @@
 package ovh.angrysoft.homedaemon.bus;
 
-import java.util.Arrays;
-
 public class Trigger {
     private Handler handler;
     private String[] topicList;
