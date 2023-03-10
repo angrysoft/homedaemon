@@ -35,6 +35,7 @@ public class DeviceStatus {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T get(String attrName) {
         if (this.attributes.containsKey(attrName)) {
             return (T) this.attributes.get(attrName).getValue();
@@ -52,6 +53,7 @@ public class DeviceStatus {
         return ret;
     }
 
+    @SuppressWarnings("unchecked")
     public <T> void set(String attrName, T value) throws AttributeReadOnly {
         if (this.attributes.containsKey(attrName)) {
             DeviceAttribute<T> attr = (DeviceAttribute<T>) this.attributes.get(attrName);
