@@ -24,11 +24,15 @@ public class DeviceAttribute<T> {
         return this.name;
     }
     
-    public void setValue(T value) throws AttributeReadOnly {
+    public synchronized boolean setValue(T value) throws AttributeReadOnly {
         if (this.readonly && this.value != null) {
                 throw new AttributeReadOnly("Read only parameter");
         }
-        this.value = value;
+        if (this.value != value) {
+            this.value = value;
+            return true;
+        }
+        return false;
     }
     
     public T getValue() {

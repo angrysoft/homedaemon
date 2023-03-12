@@ -3,6 +3,7 @@ package ovh.angrysoft.homedaemon.devices;
 import java.util.HashMap;
 import java.util.Map;
 
+import ovh.angrysoft.homedaemon.bus.Events.StatusEvent;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeNotFound;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeReadOnly;
@@ -54,17 +55,18 @@ public class DeviceStatus {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> void set(String attrName, T value) throws AttributeReadOnly {
-        if (this.attributes.containsKey(attrName)) {
-            DeviceAttribute<T> attr = (DeviceAttribute<T>) this.attributes.get(attrName);
-            attr.setValue(value);
-        }
-    }
+    public <T> boolean update(StatusEvent status) throws AttributeReadOnly {
+        try {
+            String attrName = status.getName();
+            if (this.attributes.containsKey(attrName)) {
+                DeviceAttribute<T> attr = (DeviceAttribute<T>) this.attributes.get(attrName);
+                return attr.setValue((T) status.getValue());
+            }
 
-    public void update(Map<String, ?> status) throws AttributeReadOnly {
-        for (String attrName : status.keySet()) {
-            this.set(attrName, status.get(attrName));
+        } catch (ClassCastException e) {
+            
         }
+        return false;
     }
 
 }

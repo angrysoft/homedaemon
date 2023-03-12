@@ -19,7 +19,7 @@ import com.google.gson.JsonSyntaxException;
 
 public class Config {
     private HashMap<String, JsonObject> data;
-    private static final Logger LOGGER = Logger.getLogger(Config.class.getName());
+    private static final Logger LOGGER = Logger.getLogger("Homedaemon");
 
     public Config() {
         data = new HashMap<>();

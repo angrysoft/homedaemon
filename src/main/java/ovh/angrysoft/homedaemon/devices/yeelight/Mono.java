@@ -8,11 +8,12 @@ import ovh.angrysoft.homedaemon.discover.yeelight.YeelightDeviceInfo;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
 import ovh.angrysoft.homedaemon.exceptions.connctions.DeviceConnectionError;
 
-public class Mono extends BaseDevice implements OnOff, Dimmer {
+class Mono extends BaseDevice implements OnOff, Dimmer {
     protected YeelightApi api;
 
     public Mono(YeelightDeviceInfo info) {
         try {
+            this.status.registerAttribute(new DeviceAttribute<>("power", info.getPower()));
             this.status.registerAttribute(new DeviceAttribute<>("color_mode", info.getColorMode()));
             this.status.registerAttribute(new DeviceAttribute<>("bright", info.getBright()));
             this.api = new YeelightApi(info.getAddr(), info.getPort());
