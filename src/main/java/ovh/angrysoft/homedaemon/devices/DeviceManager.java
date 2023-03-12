@@ -4,22 +4,36 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
-public class Manager {
+import ovh.angrysoft.homedaemon.bus.EventBus;
+import ovh.angrysoft.homedaemon.bus.Events.StatusEvent;
+import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeReadOnly;
+import ovh.angrysoft.homedaemon.exceptions.devices.DeviceNotSupported;
+import ovh.angrysoft.homedaemon.exceptions.discover.DeviceNotDiscovered;
+import ovh.angrysoft.homedaemon.watcher.WatcherManager;
+
+public class DeviceManager {
+    private static final Logger LOGGER = Logger.getLogger("Homedaemon");
+    private DeviceFactory deviceFactory;
     private String deviceInfoDir;
-    private static final Logger LOGGER = Logger.getLogger(Manager.class.getName());
     private ArrayList<DeviceInfo> gatewaysInfoList;
     private ArrayList<DeviceInfo> devicesInfoList;
+    private EventBus bus;
+    private HashMap<String, BaseDevice> devices;
 
-    public Manager(String deviceInfoDir) {
+    public DeviceManager(String deviceInfoDir, EventBus bus) {
         this.deviceInfoDir = deviceInfoDir;
         this.gatewaysInfoList = new ArrayList<DeviceInfo>();
         this.devicesInfoList = new ArrayList<DeviceInfo>();
+        this.bus = bus;
+        this.deviceFactory = new DeviceFactory(new WatcherManager(this));
+        this.devices = new HashMap<>();
     }
 
     public void loadDevice() {
@@ -64,10 +78,32 @@ public class Manager {
     private void setupDevices() {
         for (DeviceInfo devInfo : devicesInfoList) {
             LOGGER.log(Level.INFO, "load device: {0}", devInfo.sid);
+            try {
+                BaseDevice device = deviceFactory.getDevice(devInfo);
+                addDevice(devInfo.sid, device);
+            } catch (DeviceNotSupported e) {
+                LOGGER.warning(e.getMessage());
+            } catch (DeviceNotDiscovered e) {
+                LOGGER.warning(e.getMessage());
+            }
         }
     }
 
-    public BaseDevice getDriver(DeviceInfo deviceInfo) {
-        return null;
+    private synchronized void addDevice(String sid, BaseDevice device) {
+        this.devices.put(sid, device);
     }
+
+    public void update(StatusEvent statusEvent) {
+        BaseDevice dev = this.devices.get(statusEvent.getSid());
+        if (dev != null) {
+            try {
+                if (dev.status.update(statusEvent)) {
+                    bus.dispatch(statusEvent);
+                }
+            } catch (AttributeReadOnly e) {
+                LOGGER.warning(String.format("Attribute %s is readonly", statusEvent.getName()));
+            }
+        }
+    }
+
 }

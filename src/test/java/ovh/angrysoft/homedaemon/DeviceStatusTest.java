@@ -3,18 +3,18 @@ package ovh.angrysoft.homedaemon;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeNotFound;
-import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeReadOnly;
+import ovh.angrysoft.homedaemon.bus.Events.StatusEvent;
 import ovh.angrysoft.homedaemon.devices.DeviceAttribute;
 import ovh.angrysoft.homedaemon.devices.DeviceStatus;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
+import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeNotFound;
+import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeReadOnly;
 
 
 
@@ -56,17 +56,6 @@ public class DeviceStatusTest {
         assertEquals("StringValue", status.get("aliasName"));
     }
 
-    @Test
-    @DisplayName("Set Attribute")
-    void testSetAttribute() {
-        try {
-            status.registerAttribute( new DeviceAttribute<>("test", "StringValue") );
-            status.set("test", "newStringValue");
-        } catch ( AttributeAlreadyExist| AttributeReadOnly e) {
-        }
-
-        assertEquals("newStringValue", status.get("test"));
-    }
 
     @Test
     @DisplayName("Update Attributes")
@@ -76,15 +65,21 @@ public class DeviceStatusTest {
             status.registerAttribute( new DeviceAttribute<>("attr2", 1) );
         } catch ( AttributeAlreadyExist e) {}
 
-        HashMap<String, Object> toUpdate = new HashMap<>();
-        toUpdate.put("attr1", "value1");
-        toUpdate.put("attr2", 10);
+        StatusEvent toUpdateAttr1 = new StatusEvent("112233445566", "attr1", "value1");
         try {
-            status.update(toUpdate);
+            status.update(toUpdateAttr1);
         } catch ( AttributeReadOnly e) {
 
         }
         assertEquals("value1", status.get("attr1"));
+        
+        StatusEvent toUpdateAttr2 = new StatusEvent("112233445566", "attr2", 10);
+        try {
+            status.update(toUpdateAttr2);
+        } catch ( AttributeReadOnly e) {
+
+        }
+        
         assertEquals(10, (int) status.get("attr2"));
 
     }

@@ -4,7 +4,7 @@ import ovh.angrysoft.homedaemon.devices.traits.Rgb;
 import ovh.angrysoft.homedaemon.devices.traits.RgbColor;
 import ovh.angrysoft.homedaemon.discover.yeelight.YeelightDeviceInfo;
 
-public class Color  extends DeskLamp implements Rgb, RgbColor {
+class Color  extends DeskLamp implements Rgb, RgbColor {
     public Color(YeelightDeviceInfo info) {
         super(info);
         this.api.setMinCt(1700);

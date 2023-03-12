@@ -77,9 +77,9 @@ public class YeelightDeviceInfo implements DeviceDiscoverInfo {
                     this.sat = Integer.parseInt(value);
                     break;
 
-                default:
-                    System.err.println(name + " : " + value);
-                    break;
+                // default:
+                //     System.err.println(name + " : " + value);
+                //     break;
             }
         }
     }

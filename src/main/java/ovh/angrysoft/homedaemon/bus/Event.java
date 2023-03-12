@@ -1,19 +1,10 @@
 package ovh.angrysoft.homedaemon.bus;
 
-public class Event {
-    private String[] topicList;
-    private Object payload;
+import java.util.HashMap;
 
-    public Event(String topic, Object payload) {
-        this.topicList = topic.split("\\.");
-        this.payload = payload;
-    }
+public interface Event {
 
-    public Object getPayload() {
-        return payload;
-    }
+    public HashMap<String, Object> getPayload();
 
-    public String[] getTopicList() {
-        return topicList;
-    }
+    public String[] getTopicList();
 }

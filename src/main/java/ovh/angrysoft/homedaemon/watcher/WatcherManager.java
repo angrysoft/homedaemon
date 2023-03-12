@@ -2,15 +2,16 @@ package ovh.angrysoft.homedaemon.watcher;
 
 import java.util.ArrayList;
 
-import ovh.angrysoft.homedaemon.bus.EventBus;
+import ovh.angrysoft.homedaemon.bus.Events.StatusEvent;
+import ovh.angrysoft.homedaemon.devices.DeviceManager;
 
 public class WatcherManager  implements WatcherHandler {
     private ArrayList<Watcher> watchers;
-    private EventBus bus;
+    private DeviceManager deviceManager;
     
-    public WatcherManager(EventBus bus) {
+    public WatcherManager(DeviceManager deviceManager) {
         this.watchers = new ArrayList<>();
-        this.bus = bus;
+        this.deviceManager = deviceManager;
     }
 
     public void registerWatcher(Watcher watcher) {
@@ -19,8 +20,7 @@ public class WatcherManager  implements WatcherHandler {
         watcher.start();
     }
 
-    public void call(StatusMessage message) {
-        System.out.println(message);
-        //TODO device update status if change call bus.dispatch
+    public void call(StatusEvent message) {
+        deviceManager.update(message);
     }
 }

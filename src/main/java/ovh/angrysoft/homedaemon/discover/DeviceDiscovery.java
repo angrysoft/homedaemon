@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import ovh.angrysoft.homedaemon.exceptions.discover.DeviceNotDiscovered;
+
 public class DeviceDiscovery {
     private Map<String, DeviceDiscoverInfo> deviceCache;
 
@@ -11,14 +13,19 @@ public class DeviceDiscovery {
         this.deviceCache = new HashMap<>();
     }
 
-    public DeviceDiscoverInfo discover(String sid, DiscoverEngine engine) {
+    public DeviceDiscoverInfo discover(String sid, DiscoverEngine engine) throws DeviceNotDiscovered {
         if (!this.deviceCache.containsKey(sid)) {
             ArrayList<DeviceDiscoverInfo> devicesInfo = engine.search();
+            
             for (DeviceDiscoverInfo devInfo : devicesInfo) {
-                this.deviceCache.put(sid, devInfo);
+                System.out.println("discover " + devInfo.getSid());
+                this.deviceCache.put(devInfo.getSid(), devInfo);
             }
         }
-
-        return this.deviceCache.get(sid);
+        DeviceDiscoverInfo result = this.deviceCache.get(sid);
+        if (result == null)
+            throw new DeviceNotDiscovered("Can't discover device: " + sid);
+        
+        return result;
     }
 }
