@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public abstract class BaseDevice {
     protected DeviceStatus status;
+    protected static final Logger LOGGER = Logger.getLogger("Homedaemon");
 
     protected BaseDevice() {
         this.status = new DeviceStatus();

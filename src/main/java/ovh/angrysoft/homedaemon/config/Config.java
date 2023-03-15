@@ -45,7 +45,7 @@ public class Config {
         data.put(categoryName, category);
     }
 
-    public void loadFromDir(String dirPath) throws IOException {
+    public void loadConfigs(String dirPath) {
         Path path = Paths.get(dirPath);
         try (Stream<Path> paths = Files.walk(path, 1)) {
             for (Path file : paths.filter(Files::isRegularFile)
@@ -54,6 +54,8 @@ public class Config {
 
                 loadConfigFile(file);
             }
+        } catch (IOException e) {
+            LOGGER.log(Level.ALL, "Reading dir error {0}", e.getMessage());
         }
     }
 
