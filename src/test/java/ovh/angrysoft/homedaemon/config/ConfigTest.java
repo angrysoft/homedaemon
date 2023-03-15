@@ -28,7 +28,7 @@ public class ConfigTest {
     void testLoadFromFile() throws IOException {
         Config config = new Config();
         System.out.println("Working Directory = " + System.getProperty("user.dir"));
-        config.loadFromDir("src/test/java/ovh/angrysoft/homedaemon/config");
+        config.loadConfigs("src/test/java/ovh/angrysoft/homedaemon/config");
         assertEquals("stringTwo", config.get("test", "two").getAsString());
         assertEquals(1, config.get("test", "one").getAsInt());
         assertEquals(config.categorySet().size(), 2);
