@@ -41,6 +41,14 @@ public class Config {
         return null;
     }
 
+    public boolean hasKeyInCategory(String category, String key) {
+        JsonObject cat = getCategory(category);
+        if (cat != null)
+            return cat.has(key);
+
+        return false;
+    }
+
     public void setCategory(String categoryName, JsonObject category) {
         data.put(categoryName, category);
     }
