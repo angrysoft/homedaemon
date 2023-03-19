@@ -2,7 +2,7 @@ package ovh.angrysoft.homedaemon.devices;
 
 import java.util.Map;
 
-class DeviceInfo {
+public class DeviceInfo {
     public String sid;
     public String type;
     public String manufacturer;
