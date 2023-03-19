@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Map;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import ovh.angrysoft.homedaemon.exceptions.connctions.DeviceConnectionError;
@@ -12,6 +13,7 @@ import ovh.angrysoft.homedaemon.exceptions.connctions.DeviceConnectionError;
 public class YeelightApiTest {
     @Test
     @DisplayName("Yeelight api set power test")
+    @Tag("IntegrationTest")
     public void setPowerTest() {
         try {
             YeelightApi api = new YeelightApi("192.168.10.27", 55443);
@@ -30,6 +32,7 @@ public class YeelightApiTest {
 
     @Test
     @DisplayName("Yeelight api test set bright")
+    @Tag("IntegrationTest")
     public void setBrightTest() {
         try {
             YeelightApi api = new YeelightApi("192.168.10.27", 55443);
@@ -53,6 +56,7 @@ public class YeelightApiTest {
 
     @Test
     @DisplayName("Yeelight api test set ct")
+    @Tag("IntegrationTest")
     public void setCtTest() {
         try {
             YeelightApi api = new YeelightApi("192.168.10.27", 55443);
@@ -75,6 +79,7 @@ public class YeelightApiTest {
 
     @Test
     @DisplayName("Yeelight api get prop")
+    @Tag("IntegrationTest")
     public void getPropTest() {
         try {
             YeelightApi api = new YeelightApi("192.168.10.27", 55443);
