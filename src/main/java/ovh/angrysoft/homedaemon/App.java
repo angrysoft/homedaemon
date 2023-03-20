@@ -35,6 +35,7 @@ public class App {
 
         DeviceManager manger = new DeviceManager(devDir, bus);
         manger.loadDevice();
+        logger.info("HomeDaemon Started");
         manger.setup();
     }
 }

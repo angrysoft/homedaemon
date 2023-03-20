@@ -1,6 +1,6 @@
 package ovh.angrysoft.homedaemon.discover.xiaomi;
 
-import java.util.ArrayList;
+import java.util.Set;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,7 @@ public class YeelightDiscoveryTest {
     @Tag("IntegrationTest")
     public void testDiscovery() {
         YeelightDiscovery discovery = new YeelightDiscovery();
-        ArrayList<DeviceDiscoverInfo> devInfo =  discovery.search();
+        Set<DeviceDiscoverInfo> devInfo =  discovery.search();
         for (DeviceDiscoverInfo dev : devInfo) {
             YeelightDeviceInfo yDev = (YeelightDeviceInfo) dev;
             System.out.print(yDev.getSid() + " ");

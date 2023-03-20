@@ -14,8 +14,8 @@ public class Zigbee2MqttGateway extends BaseDevice implements Gateway {
     private MqttV5Connection connection;
 
     public Zigbee2MqttGateway(DeviceInfo devInfo) {
-        if (devInfo.args != null)
-            this.connection = new MqttV5Connection(devInfo.args);
+        if (devInfo.getArgs() != null)
+            this.connection = new MqttV5Connection(devInfo.getArgs());
         this.connection.connect();
     }
 

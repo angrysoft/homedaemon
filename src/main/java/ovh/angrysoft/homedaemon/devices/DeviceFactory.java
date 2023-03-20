@@ -22,10 +22,10 @@ class DeviceFactory {
     }
 
     public BaseDevice getDevice(DeviceInfo deviceInfo) throws DeviceNotSupported, DeviceNotDiscovered {
-        switch (deviceInfo.manufacturer) {
+        switch (deviceInfo.getManufacturer()) {
             case "yeelight":
                 YeelightDeviceInfo yeelightDeviceInfo = (YeelightDeviceInfo) this.deviceDiscovery
-                        .discover(deviceInfo.sid, new YeelightDiscovery());
+                        .discover(deviceInfo.getSid(), new YeelightDiscovery());
 
                 watcherManager.registerWatcher(new YeelightWatcher(yeelightDeviceInfo.getSid(),
                         yeelightDeviceInfo.getAddr(), yeelightDeviceInfo.getPort()));
@@ -39,17 +39,30 @@ class DeviceFactory {
         }
 
         throw new DeviceNotSupported(
-                String.format("Device %s - %s not supported", deviceInfo.manufacturer, deviceInfo.model));
+                String.format("Device %s - %s not supported", deviceInfo.getManufacturer(), deviceInfo.getModel()));
     }
 
     public BaseDevice getDevice(DeviceInfo deviceInfo, Gateway gateway) throws DeviceNotSupported, DeviceNotDiscovered {
-        switch (deviceInfo.manufacturer) {
+        switch (deviceInfo.getManufacturer()) {
             case "sonoff":
                 return SonoffZigbeeDeviceFactory.getDevice(deviceInfo, gateway);
 
         }
 
         throw new DeviceNotSupported(
-                String.format("Device %s - %s not supported", deviceInfo.manufacturer, deviceInfo.model));
+                String.format("Device %s - %s not supported", deviceInfo.getManufacturer(), deviceInfo.getModel()));
+    }
+
+    public Gateway getGateway(DeviceInfo deviceInfo) throws DeviceNotSupported, DeviceNotDiscovered {
+        switch (deviceInfo.getManufacturer()) {
+            case "zigbee2mqtt":
+                Zigbee2MqttGateway z2m = new Zigbee2MqttGateway(deviceInfo);
+                watcherManager.registerWatcher(new Zigbee2MqttWatcher(z2m));
+                return z2m;
+
+        }
+
+        throw new DeviceNotSupported(
+                String.format("Device %s - %s not supported", deviceInfo.getManufacturer(), deviceInfo.getModel()));
     }
 }
