@@ -49,9 +49,14 @@ public class DeviceManager {
             try {
 
                 DeviceInfo deviceInfo = new Gson().fromJson(new FileReader(devInfoFile), DeviceInfo.class);
-                if (deviceInfo.type != null && deviceInfo.type.equals("gateway")) {
+                String devType = deviceInfo.getType();
+                if (devType != null && devType.equals("gateway")) {
+                    if (gatewaysInfoList.contains(deviceInfo))
+                        continue;
                     gatewaysInfoList.add(deviceInfo);
                 } else {
+                    if (devicesInfoList.contains(deviceInfo))
+                        continue;
                     devicesInfoList.add(deviceInfo);
                 }
 
@@ -70,23 +75,33 @@ public class DeviceManager {
 
     private void setupGateways() {
         for (DeviceInfo gatewayInfo : gatewaysInfoList) {
-            LOGGER.log(Level.INFO, "load gateway: {0}", gatewayInfo.sid);
+            LOGGER.log(Level.INFO, "load gateway: {0}", gatewayInfo.getSid());
         }
 
     }
 
     private void setupDevices() {
         for (DeviceInfo devInfo : devicesInfoList) {
-            LOGGER.log(Level.INFO, "load device: {0}", devInfo.sid);
+            LOGGER.log(Level.INFO, "load device: {0}", devInfo.getSid());
             try {
-                BaseDevice device = deviceFactory.getDevice(devInfo);
-                addDevice(devInfo.sid, device);
+                BaseDevice device;
+                if (devInfo.getArgs().containsKey("gateway")) {
+
+                    device = deviceFactory.getDevice(devInfo, this.getGateway(devInfo.get
+                    device = deviceFactory.getDevice(devInfo);
+                }
+                addDevice(devInfo.getSid(), device);
             } catch (DeviceNotSupported e) {
                 LOGGER.warning(e.getMessage());
             } catch (DeviceNotDiscovered e) {
                 LOGGER.warning(e.getMessage());
             }
         }
+    }
+
+    private synchronized Gateway getGateway(String sid) {
+        // throw new GatewayNotFound("")
+        return null;
     }
 
     private synchronized void addDevice(String sid, BaseDevice device) {

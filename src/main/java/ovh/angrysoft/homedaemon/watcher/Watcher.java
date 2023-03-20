@@ -7,6 +7,10 @@ public abstract class Watcher extends Thread {
         this.sid = sid;
     }
 
+    public String getSid() {
+        return sid;
+    }
+
     public WatcherHandler handler;
     public abstract void run();
     public void setHandler(WatcherHandler handler) {

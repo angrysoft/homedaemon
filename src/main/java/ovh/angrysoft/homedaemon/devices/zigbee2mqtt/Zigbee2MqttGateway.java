@@ -34,7 +34,7 @@ public class Zigbee2MqttGateway extends BaseDevice implements Gateway {
     }
 
     public void registerSubDevice(String sid, String model) {
-        this.connection.addTopic("zigbee2mqtt/" + sid);
+        this.connection.addTopic(String.format("zigbee2mqtt/%s", sid));
     }
 
 }
