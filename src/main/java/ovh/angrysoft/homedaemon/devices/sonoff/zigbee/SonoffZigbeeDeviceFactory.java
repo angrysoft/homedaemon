@@ -9,7 +9,7 @@ public class SonoffZigbeeDeviceFactory {
     public static BaseDevice getDevice(DeviceInfo deviceInfo, Gateway gateway) {
         switch (deviceInfo.getModel()) {
             case "SNZB-03":
-                return null;
+                return new Snzb03(deviceInfo, gateway);
         }
         return null;
     }

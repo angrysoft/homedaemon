@@ -1,8 +1,8 @@
 package ovh.angrysoft.homedaemon.discover;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import ovh.angrysoft.homedaemon.exceptions.discover.DeviceNotDiscovered;
 
@@ -15,7 +15,7 @@ public class DeviceDiscovery {
 
     public DeviceDiscoverInfo discover(String sid, DiscoverEngine engine) throws DeviceNotDiscovered {
         if (!this.deviceCache.containsKey(sid)) {
-            ArrayList<DeviceDiscoverInfo> devicesInfo = engine.search();
+            Set<DeviceDiscoverInfo> devicesInfo = engine.search();
             
             for (DeviceDiscoverInfo devInfo : devicesInfo) {
                 System.out.println("discover " + devInfo.getSid());

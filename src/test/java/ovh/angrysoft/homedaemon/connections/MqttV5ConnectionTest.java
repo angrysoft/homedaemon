@@ -10,7 +10,7 @@ public class MqttV5ConnectionTest {
     @Test
     @Tag("IntegrationTest")
     public void testSubscribe() {
-        HashMap<String, Object> config = new HashMap<>();
+        HashMap<String, String> config = new HashMap<>();
         config.put("uri", "tcp://test.mosquito.org:1883");
         config.put("user", "wildcard");
         MqttV5Connection conn = new MqttV5Connection(config);
@@ -31,7 +31,7 @@ public class MqttV5ConnectionTest {
     @Test
     @Tag("IntegrationTest")
     public void testPublish() {
-        HashMap<String, Object> config = new HashMap<>();
+        HashMap<String, String> config = new HashMap<>();
         // config.put("uri", "tcp://test.mosquito.org:1883");
         config.put("uri", "tcp://192.168.10.4:1883");
         config.put("user", "homedaemon");

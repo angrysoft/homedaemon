@@ -122,7 +122,6 @@ public class MqttV5Connection implements MqttCallback {
 
     public void connect() {
         MemoryPersistence persistence = new MemoryPersistence();
-        LOGGER.info("Try to connect");
         try {
             this.client = new MqttAsyncClient(this.getUri(), this.getClientID(), persistence);
             this.client.setCallback(this);
@@ -216,7 +215,7 @@ public class MqttV5Connection implements MqttCallback {
     @Override
     public void messageArrived(String topic, MqttMessage message) throws Exception {
         String messageContent = new String(message.getPayload());
-        if (this.onMsgHandler == null) {
+        if (this.onMsgHandler != null) {
             this.onMsgHandler.accept(topic, messageContent);
             return;
         }

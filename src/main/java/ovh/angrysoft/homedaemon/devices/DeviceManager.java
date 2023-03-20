@@ -15,6 +15,7 @@ import ovh.angrysoft.homedaemon.bus.EventBus;
 import ovh.angrysoft.homedaemon.bus.Events.StatusEvent;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeReadOnly;
 import ovh.angrysoft.homedaemon.exceptions.devices.DeviceNotSupported;
+import ovh.angrysoft.homedaemon.exceptions.devices.GatewayNotFound;
 import ovh.angrysoft.homedaemon.exceptions.discover.DeviceNotDiscovered;
 import ovh.angrysoft.homedaemon.watcher.WatcherManager;
 
@@ -26,6 +27,7 @@ public class DeviceManager {
     private ArrayList<DeviceInfo> devicesInfoList;
     private EventBus bus;
     private HashMap<String, BaseDevice> devices;
+    private HashMap<String, Gateway> gateways;
 
     public DeviceManager(String deviceInfoDir, EventBus bus) {
         this.deviceInfoDir = deviceInfoDir;
@@ -34,6 +36,7 @@ public class DeviceManager {
         this.bus = bus;
         this.deviceFactory = new DeviceFactory(new WatcherManager(this));
         this.devices = new HashMap<>();
+        this.gateways = new HashMap<>();
     }
 
     public void loadDevice() {
@@ -49,6 +52,8 @@ public class DeviceManager {
             try {
 
                 DeviceInfo deviceInfo = new Gson().fromJson(new FileReader(devInfoFile), DeviceInfo.class);
+                deviceInfo.checkFields();
+
                 String devType = deviceInfo.getType();
                 if (devType != null && devType.equals("gateway")) {
                     if (gatewaysInfoList.contains(deviceInfo))
@@ -61,9 +66,12 @@ public class DeviceManager {
                 }
 
             } catch (FileNotFoundException e) {
-                LOGGER.log(Level.ALL, "Device info file {0} not found", devInfoFile.getName());
+                LOGGER.log(Level.SEVERE, "Device info file {0} not found", devInfoFile.getName());
             } catch (JsonSyntaxException e) {
-                LOGGER.log(Level.ALL, "Device info file parse error: {0}", devInfoFile.getName());
+                LOGGER.log(Level.SEVERE, "Device info file parse error: {0}", devInfoFile.getName());
+            } catch (VerifyError e) {
+                LOGGER.log(Level.SEVERE,
+                        String.format("Device info file parse error: %s : %s", devInfoFile.getName(), e.getMessage()));
             }
         }
     }
@@ -76,18 +84,25 @@ public class DeviceManager {
     private void setupGateways() {
         for (DeviceInfo gatewayInfo : gatewaysInfoList) {
             LOGGER.log(Level.INFO, "load gateway: {0}", gatewayInfo.getSid());
+            try {
+                Gateway gateway = deviceFactory.getGateway(gatewayInfo);
+                addGateway(gatewayInfo.getSid(), gateway);
+            } catch (DeviceNotSupported | DeviceNotDiscovered e) {
+                LOGGER.warning(e.getMessage());
+            }
         }
 
     }
 
     private void setupDevices() {
         for (DeviceInfo devInfo : devicesInfoList) {
-            LOGGER.log(Level.INFO, "load device: {0}", devInfo.getSid());
+            LOGGER.log(Level.INFO, String.format("load device: %s model : %s", devInfo.getSid(), devInfo.getModel()));
             try {
                 BaseDevice device;
                 if (devInfo.getArgs().containsKey("gateway")) {
-
-                    device = deviceFactory.getDevice(devInfo, this.getGateway(devInfo.get
+                    String gatewaySid = devInfo.getArgs().get("gateway");
+                    device = deviceFactory.getDevice(devInfo, this.getGateway(gatewaySid));
+                } else {
                     device = deviceFactory.getDevice(devInfo);
                 }
                 addDevice(devInfo.getSid(), device);
@@ -95,13 +110,21 @@ public class DeviceManager {
                 LOGGER.warning(e.getMessage());
             } catch (DeviceNotDiscovered e) {
                 LOGGER.warning(e.getMessage());
+            } catch (GatewayNotFound e) {
+                LOGGER.warning(e.getMessage());
             }
         }
     }
 
-    private synchronized Gateway getGateway(String sid) {
-        // throw new GatewayNotFound("")
-        return null;
+    private synchronized void addGateway(String sid, Gateway gateway) {
+        this.gateways.put(sid, gateway);
+    }
+
+    private Gateway getGateway(String sid) throws GatewayNotFound {
+        if (!this.gateways.containsKey(sid)) {
+            throw new GatewayNotFound(String.format("Gateway : %s not found", sid));
+        }
+        return this.gateways.get(sid);
     }
 
     private synchronized void addDevice(String sid, BaseDevice device) {

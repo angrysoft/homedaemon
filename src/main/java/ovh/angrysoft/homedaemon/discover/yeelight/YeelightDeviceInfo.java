@@ -76,10 +76,6 @@ public class YeelightDeviceInfo implements DeviceDiscoverInfo {
                 case "sat":
                     this.sat = Integer.parseInt(value);
                     break;
-
-                // default:
-                //     System.err.println(name + " : " + value);
-                //     break;
             }
         }
     }
@@ -131,4 +127,5 @@ public class YeelightDeviceInfo implements DeviceDiscoverInfo {
     public int getSat() {
         return this.sat;
     }
+
 }
