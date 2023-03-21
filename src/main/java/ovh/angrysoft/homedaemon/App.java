@@ -30,7 +30,7 @@ public class App {
 
         EventBus bus = new EventBus();
         bus.addTrigger(new Trigger("status.*", (Event event) -> {
-            System.out.println("handled event: " + Arrays.toString(event.getTopicList()));
+            logger.info("handled event: " + Arrays.toString(event.getTopicList()));
         }));
 
         DeviceManager manger = new DeviceManager(devDir, bus);

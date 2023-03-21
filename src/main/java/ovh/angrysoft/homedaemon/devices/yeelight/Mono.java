@@ -39,4 +39,8 @@ class Mono extends BaseDevice implements OnOff, Dimmer {
     public void setBright(int value) {
         this.api.setBright(value);
     }
+
+    public int getBright() {
+        return this.status.get("bright");
+    }
 }
