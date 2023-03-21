@@ -6,11 +6,10 @@ import ovh.angrysoft.homedaemon.devices.DeviceInfo;
 import ovh.angrysoft.homedaemon.devices.Gateway;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
 
-public class Snzb03 extends BaseDevice {
-    public Snzb03(DeviceInfo deviceInfo, Gateway gateway) {
+public class Snzb01 extends BaseDevice {
+    public Snzb01(DeviceInfo deviceInfo, Gateway gateway) {
         try {
-            this.status.registerAttribute(new DeviceAttribute<>("occupancy", false));
-            this.status.registerAttribute(new DeviceAttribute<>("battery_low", false));
+            this.status.registerAttribute(new DeviceAttribute<>("action", "", false, true));
             this.status.registerAttribute(new DeviceAttribute<>("voltage", 0));
         } catch (AttributeAlreadyExist e) {
             LOGGER.warning(e.getMessage());
