@@ -19,10 +19,10 @@ public class Zigbee2MqttGateway extends BaseDevice implements Gateway {
         this.connection.connect();
     }
 
-    @Override
-    public void send(String msg) {
+    public void send(String sid, String msg) {
+        String topic = String.format("zigbee2mqtt/%s/set", sid);
         try {
-            this.connection.publishMessage(msg.getBytes(), 0, false, msg);
+            this.connection.publishMessage(msg.getBytes(), 0, false, topic);
         } catch (MqttException e) {
             LOGGER.log(Level.SEVERE, "Zigbee2mqtt gateway : {0}", e.getMessage());
             ;

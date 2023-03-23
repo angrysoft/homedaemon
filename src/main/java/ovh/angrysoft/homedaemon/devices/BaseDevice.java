@@ -35,4 +35,8 @@ public abstract class BaseDevice {
         return ret;
 
     }
+
+    public void execute(String methodName, Map<string, Object>) {
+        throw new UnsupportedOperationException("Unimplemented method 'execute'");
+    }
 }
