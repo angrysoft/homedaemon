@@ -46,9 +46,8 @@ public class YeelightDiscovery extends DiscoverEngine {
             if (dev.length() == 0)
                 continue;
             YeelightDeviceInfo yi = new YeelightDeviceInfo(dev);
-            System.out.println(yi.hashCode());
             synchronized (this) {
-                results.add(new YeelightDeviceInfo(dev));
+                results.add(yi);
             }
         }
 

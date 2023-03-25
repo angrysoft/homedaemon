@@ -13,7 +13,6 @@ public class WirelessSwitch extends ZigbeeBaseDevice {
         try {
             this.status.registerAttribute(new DeviceAttribute<>("model", "WXKG01LM"));
             this.status.registerAttribute(new DeviceAttribute<>("action", "", false, true));
-            this.status.registerAttribute(new DeviceAttribute<>("voltage", 0));
         } catch (AttributeAlreadyExist e) {
             LOGGER.warning(e.getMessage());
         }

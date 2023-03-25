@@ -21,7 +21,6 @@ public class MqttV5ConnectionTest {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             timeout++;
@@ -34,8 +33,8 @@ public class MqttV5ConnectionTest {
         HashMap<String, String> config = new HashMap<>();
         // config.put("uri", "tcp://test.mosquito.org:1883");
         config.put("uri", "tcp://192.168.10.4:1883");
-        config.put("user", "homedaemon");
-        config.put("password", "spyb0tk34s");
+        config.put("user", "");
+        config.put("password", "");
         // config.put("timeout", 10000);
         // config.put("user", "wildcard");
         MqttV5Connection conn = new MqttV5Connection(config);
@@ -44,7 +43,6 @@ public class MqttV5ConnectionTest {
         try {
             conn.publishMessage("test test test".getBytes(), 0, false, "homed/test");
         } catch (MqttException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         Integer timeout = 0;
@@ -52,7 +50,6 @@ public class MqttV5ConnectionTest {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             timeout++;
@@ -60,7 +57,6 @@ public class MqttV5ConnectionTest {
             try {
                 conn.publishMessage(msg.getBytes(), 0, false, "homed/test");
             } catch (MqttException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
