@@ -8,25 +8,37 @@ import org.eclipse.paho.mqttv5.common.MqttException;
 import ovh.angrysoft.homedaemon.connections.MqttV5Connection;
 import ovh.angrysoft.homedaemon.devices.BaseDevice;
 import ovh.angrysoft.homedaemon.devices.DeviceInfo;
-import ovh.angrysoft.homedaemon.devices.Gateway;
+import ovh.angrysoft.homedaemon.devices.ZigbeeGateway;
 
-public class Zigbee2MqttGateway extends BaseDevice implements Gateway {
+public class Zigbee2MqttGateway extends BaseDevice implements ZigbeeGateway {
     private MqttV5Connection connection;
 
     public Zigbee2MqttGateway(DeviceInfo devInfo) {
+        super(devInfo);
         if (devInfo.getArgs() != null)
             this.connection = new MqttV5Connection(devInfo.getArgs());
         this.connection.connect();
     }
 
-    public void send(String sid, String msg) {
+    public void sendSet(String sid, String cmd, Object value) {
         String topic = String.format("zigbee2mqtt/%s/set", sid);
+        String msg = String.format("{\"%s\": \"%s\"}", cmd, value);
+        this.send(msg, topic);
+    }
+
+    public void sendGet(String sid, String cmd, Object value) {
+        String topic = String.format("zigbee2mqtt/%s/get", sid);
+        String msg = String.format("{\"%s\": \"%s\"}", cmd, value);
+        this.send(msg, topic);
+    }
+
+    public void send(String msg, String topic) {
         try {
             this.connection.publishMessage(msg.getBytes(), 0, false, topic);
         } catch (MqttException e) {
             LOGGER.log(Level.SEVERE, "Zigbee2mqtt gateway : {0}", e.getMessage());
-            ;
         }
+
     }
 
     public void setOnMsgHandler(BiConsumer<String, String> handler) {

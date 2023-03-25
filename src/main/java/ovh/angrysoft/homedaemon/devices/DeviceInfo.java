@@ -11,6 +11,18 @@ public class DeviceInfo {
     private Map<String, String> name;
     private Map<String, String> place;
     private Map<String, String> args;
+    
+    public DeviceInfo(String sid, String type, String manufacturer, String model, Map<String, String> name,
+            Map<String, String> place, Map<String, String> args) {
+        this.sid = sid;
+        this.type = type;
+        this.manufacturer = manufacturer;
+        this.model = model;
+        this.name = name;
+        this.place = place;
+        this.args = args;
+    }
+
 
     public String getSid() {
         return sid;

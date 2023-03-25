@@ -6,17 +6,31 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
+
 public abstract class BaseDevice {
     protected DeviceStatus status;
     protected static final Logger LOGGER = Logger.getLogger("Homedaemon");
 
-    protected BaseDevice() {
+    protected BaseDevice(DeviceInfo deviceInfo) {
         this.status = new DeviceStatus();
+        try {
+            this.status.registerAttribute(new DeviceAttribute<>("sid", deviceInfo.getSid(),  true));
+            this.status.registerAttribute(new DeviceAttribute<>("name", deviceInfo.getName()));
+            this.status.registerAttribute(new DeviceAttribute<>("place", deviceInfo.getPlace()));
+        } catch (AttributeAlreadyExist e) {
+            LOGGER.warning(e.getMessage());
+        }
+
     }
-    
+
+    protected String getSid() {
+        return this.status.get("sid");
+    }
+
     public List<String> getTraits() {
         List<String> ret = new ArrayList<>();
-        for (Class<?> cls: this.getClass().getInterfaces()) {
+        for (Class<?> cls : this.getClass().getInterfaces()) {
             String className = cls.getName();
             int lastDot = className.lastIndexOf(".");
             ret.add(className.substring(++lastDot));
@@ -36,7 +50,7 @@ public abstract class BaseDevice {
 
     }
 
-    public void execute(String methodName, Map<string, Object>) {
+    public void execute(String methodName, Map<String, Object> data) {
         throw new UnsupportedOperationException("Unimplemented method 'execute'");
     }
 }

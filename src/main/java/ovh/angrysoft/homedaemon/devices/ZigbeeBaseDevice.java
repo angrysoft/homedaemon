@@ -3,9 +3,10 @@ package ovh.angrysoft.homedaemon.devices;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
 
 public class ZigbeeBaseDevice extends BaseDevice {
-    protected Gateway gateway;
+    protected ZigbeeGateway gateway;
 
-    public ZigbeeBaseDevice(DeviceInfo deviceInfo, Gateway gateway) {
+    public ZigbeeBaseDevice(DeviceInfo deviceInfo, ZigbeeGateway gateway) {
+        super(deviceInfo);
         try {
             this.status.registerAttribute(new DeviceAttribute<>("linkquality", 0));
             this.status.registerAttribute(new DeviceAttribute<>("voltage", 0));
@@ -15,7 +16,4 @@ public class ZigbeeBaseDevice extends BaseDevice {
         this.gateway = gateway;
     }
 
-    protected void setDevice(String cmd, String value) {
-        this.gateway.send(this.status.get("sid"), String.format("{\"%s\": \"%s\"}", cmd, value));
-    }
 }

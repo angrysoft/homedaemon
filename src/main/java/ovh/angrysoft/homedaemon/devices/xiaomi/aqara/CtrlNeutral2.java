@@ -1,15 +1,15 @@
-package ovh.angrysoft.homedaemon.devices.xiaomi;
+package ovh.angrysoft.homedaemon.devices.xiaomi.aqara;
 
 import ovh.angrysoft.homedaemon.devices.DeviceAttribute;
 import ovh.angrysoft.homedaemon.devices.DeviceInfo;
-import ovh.angrysoft.homedaemon.devices.Gateway;
+import ovh.angrysoft.homedaemon.devices.ZigbeeGateway;
 import ovh.angrysoft.homedaemon.devices.ZigbeeBaseDevice;
 import ovh.angrysoft.homedaemon.devices.traits.DoubleSwitch;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
 
 public class CtrlNeutral2 extends ZigbeeBaseDevice implements DoubleSwitch {
 
-    public CtrlNeutral2(DeviceInfo deviceInfo, Gateway gateway) {
+    public CtrlNeutral2(DeviceInfo deviceInfo, ZigbeeGateway gateway) {
         super(deviceInfo, gateway);
         try {
             this.status.registerAttribute(new DeviceAttribute<>("model", "QBKG03LM"));
@@ -27,11 +27,11 @@ public class CtrlNeutral2 extends ZigbeeBaseDevice implements DoubleSwitch {
     }
 
     public void left(boolean state) {
-        this.setDevice("state_left", state ? "ON" : "OFF");
+        this.gateway.sendSet(this.getSid(), "state_left", state ? "ON" : "OFF");
     }
 
     public void right(boolean state) {
-        this.setDevice("state_right", state ? "ON" : "OFF");
+        this.gateway.sendSet(this.getSid(), "state_right", state ? "ON" : "OFF");
     }
 
     public boolean isLeftOn() {
@@ -44,26 +44,26 @@ public class CtrlNeutral2 extends ZigbeeBaseDevice implements DoubleSwitch {
     }
 
     public void toggleLeft() {
-        this.setDevice("state_right", "toggle");
+        this.gateway.sendSet(this.getSid(), "state_right", "toggle");
     }
 
     public void toggleRight() {
-        this.setDevice("state_right", "toggle");
+        this.gateway.sendSet(this.getSid(), "state_right", "toggle");
     }
 
     public void setLeftDecoupled() {
-        this.setDevice("operation_mode_left", "decoupled");
+        this.gateway.sendSet(this.getSid(), "operation_mode_left", "decoupled");
     }
 
     public void setRightDecoupled() {
-        this.setDevice("operation_mode_right", "decoupled");
+        this.gateway.sendSet(this.getSid(), "operation_mode_right", "decoupled");
     }
 
     public void setLeftRelay() {
-        this.setDevice("operation_mode_right", "control_left_relay");
+        this.gateway.sendSet(this.getSid(), "operation_mode_right", "control_left_relay");
     }
 
     public void setRightRelay() {
-        this.setDevice("operation_mode_right", "control_right_relay");
+        this.gateway.sendSet(this.getSid(), "operation_mode_right", "control_right_relay");
     }
 }

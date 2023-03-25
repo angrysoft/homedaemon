@@ -1,15 +1,17 @@
-package ovh.angrysoft.homedaemon.devices.sonoff.zigbee;
+package ovh.angrysoft.homedaemon.devices.xiaomi.aqara;
 
-import ovh.angrysoft.homedaemon.devices.BaseDevice;
 import ovh.angrysoft.homedaemon.devices.DeviceAttribute;
 import ovh.angrysoft.homedaemon.devices.DeviceInfo;
 import ovh.angrysoft.homedaemon.devices.ZigbeeGateway;
+import ovh.angrysoft.homedaemon.devices.ZigbeeBaseDevice;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
 
-public class Snzb01 extends BaseDevice {
-    public Snzb01(DeviceInfo deviceInfo, ZigbeeGateway gateway) {
-        super(deviceInfo);
+public class WirelessSwitch extends ZigbeeBaseDevice {
+
+    public WirelessSwitch(DeviceInfo deviceInfo, ZigbeeGateway gateway) {
+        super(deviceInfo, gateway);
         try {
+            this.status.registerAttribute(new DeviceAttribute<>("model", "WXKG01LM"));
             this.status.registerAttribute(new DeviceAttribute<>("action", "", false, true));
             this.status.registerAttribute(new DeviceAttribute<>("voltage", 0));
         } catch (AttributeAlreadyExist e) {
