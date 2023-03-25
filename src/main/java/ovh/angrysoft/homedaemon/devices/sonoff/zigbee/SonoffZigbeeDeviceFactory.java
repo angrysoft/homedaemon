@@ -2,11 +2,11 @@ package ovh.angrysoft.homedaemon.devices.sonoff.zigbee;
 
 import ovh.angrysoft.homedaemon.devices.BaseDevice;
 import ovh.angrysoft.homedaemon.devices.DeviceInfo;
-import ovh.angrysoft.homedaemon.devices.Gateway;
+import ovh.angrysoft.homedaemon.devices.ZigbeeGateway;
 
 public class SonoffZigbeeDeviceFactory {
 
-    public static BaseDevice getDevice(DeviceInfo deviceInfo, Gateway gateway) {
+    public static BaseDevice getDevice(DeviceInfo deviceInfo, ZigbeeGateway gateway) {
         switch (deviceInfo.getModel()) {
             case "SNZB-01":
                 return new Snzb01(deviceInfo, gateway);

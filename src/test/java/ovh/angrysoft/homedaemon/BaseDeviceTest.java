@@ -5,9 +5,12 @@ import org.junit.jupiter.api.Test;
 
 import ovh.angrysoft.homedaemon.devices.BaseDevice;
 import ovh.angrysoft.homedaemon.devices.DeviceAttribute;
+import ovh.angrysoft.homedaemon.devices.DeviceInfo;
 import ovh.angrysoft.homedaemon.devices.traits.OnOff;
 import ovh.angrysoft.homedaemon.devices.traits.Toggle;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
+
+import java.util.HashMap;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,7 +20,12 @@ public class BaseDeviceTest {
 
     @BeforeEach
     void setUp() {
-        device = new DummyDevice();
+        HashMap<String, String> name = new HashMap<>();
+        name.put("pl", "Lampa");
+        HashMap<String, String> place = new HashMap<>();
+        name.put("pl", "Salon");
+        DeviceInfo deviceInfo = new DeviceInfo("aaaaaabbb", "light", "diy", "superLight", name, place, new HashMap<>());
+        device = new DummyDevice(deviceInfo);
     }
 
     @Test
@@ -29,8 +37,8 @@ public class BaseDeviceTest {
 
 class DummyDevice extends BaseDevice implements OnOff, Toggle {
 
-    public DummyDevice() {
-        super();
+    public DummyDevice(DeviceInfo deviceInfo) {
+        super(deviceInfo);
         try {
             status.registerAttribute(new DeviceAttribute<>("power", "off"));
         } catch ( AttributeAlreadyExist e) {}

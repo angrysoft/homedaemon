@@ -27,7 +27,7 @@ public class DeviceManager {
     private ArrayList<DeviceInfo> devicesInfoList;
     private EventBus bus;
     private HashMap<String, BaseDevice> devices;
-    private HashMap<String, Gateway> gateways;
+    private HashMap<String, ZigbeeGateway> gateways;
 
     public DeviceManager(String deviceInfoDir, EventBus bus) {
         this.deviceInfoDir = deviceInfoDir;
@@ -85,7 +85,7 @@ public class DeviceManager {
         for (DeviceInfo gatewayInfo : gatewaysInfoList) {
             LOGGER.log(Level.INFO, "load gateway: {0}", gatewayInfo.getSid());
             try {
-                Gateway gateway = deviceFactory.getGateway(gatewayInfo);
+                ZigbeeGateway gateway = deviceFactory.getGateway(gatewayInfo);
                 addGateway(gatewayInfo.getSid(), gateway);
             } catch (DeviceNotSupported | DeviceNotDiscovered e) {
                 LOGGER.warning(e.getMessage());
@@ -116,11 +116,11 @@ public class DeviceManager {
         }
     }
 
-    private synchronized void addGateway(String sid, Gateway gateway) {
+    private synchronized void addGateway(String sid, ZigbeeGateway gateway) {
         this.gateways.put(sid, gateway);
     }
 
-    private Gateway getGateway(String sid) throws GatewayNotFound {
+    private ZigbeeGateway getGateway(String sid) throws GatewayNotFound {
         if (!this.gateways.containsKey(sid)) {
             throw new GatewayNotFound(String.format("Gateway : %s not found", sid));
         }
