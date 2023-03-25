@@ -50,7 +50,7 @@ public abstract class BaseDevice {
 
     }
 
-    public void execute(String methodName, Map<String, Object> data) {
-        throw new UnsupportedOperationException("Unimplemented method 'execute'");
+    public void execute(String methodName, Object arg) {
+        
     }
 }

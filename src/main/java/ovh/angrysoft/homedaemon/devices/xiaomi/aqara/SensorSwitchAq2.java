@@ -14,7 +14,6 @@ public class SensorSwitchAq2 extends ZigbeeBaseDevice {
             this.status.registerAttribute(new DeviceAttribute<>("model", "WXKG11LM"));
             this.status.registerAttribute(new DeviceAttribute<>("action", "", false, true));
             this.status.registerAttribute(new DeviceAttribute<>("device_temperature", 0));
-            this.status.registerAttribute(new DeviceAttribute<>("voltage", 0));
         } catch (AttributeAlreadyExist e) {
             LOGGER.warning(e.getMessage());
         }

@@ -17,7 +17,7 @@ public class DeviceStatus {
 
     public void registerAttribute(DeviceAttribute<?> attr) throws AttributeAlreadyExist {
         if (this.attributes.containsKey(attr.getName())) {
-            throw new AttributeAlreadyExist("Attribute" + attr.getName() + "already registered");
+            throw new AttributeAlreadyExist(String.format("Attribute %s already registered", attr.getName()));
         }
         this.attributes.put(attr.getName(), attr);
     }
@@ -32,7 +32,7 @@ public class DeviceStatus {
         if (this.attributes.containsKey(attrName)) {
             this.attributes.put(aliasName, this.attributes.get(attrName));
         } else {
-            throw new AttributeNotFound("Attribute" + attrName + "not found");
+            throw new AttributeNotFound(String.format("Attribute %s not found", attrName));
         }
     }
 

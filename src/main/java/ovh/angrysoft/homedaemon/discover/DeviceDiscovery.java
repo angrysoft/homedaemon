@@ -16,7 +16,6 @@ public class DeviceDiscovery {
     public DeviceDiscoverInfo discover(String sid, DiscoverEngine engine) throws DeviceNotDiscovered {
         if (!this.deviceCache.containsKey(sid)) {
 
-            //TODO hash code for discoverd devices
             Set<DeviceDiscoverInfo> devicesInfo = engine.search();
             
             for (DeviceDiscoverInfo devInfo : devicesInfo) {

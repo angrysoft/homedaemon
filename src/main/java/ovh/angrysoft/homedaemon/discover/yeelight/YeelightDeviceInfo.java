@@ -2,6 +2,7 @@ package ovh.angrysoft.homedaemon.discover.yeelight;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Objects;
 
 import ovh.angrysoft.homedaemon.discover.DeviceDiscoverInfo;
 
@@ -126,6 +127,19 @@ public class YeelightDeviceInfo implements DeviceDiscoverInfo {
 
     public int getSat() {
         return this.sat;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.sid, this.model);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof YeelightDeviceInfo))
+            return false;
+        YeelightDeviceInfo yi = (YeelightDeviceInfo) o;
+        return this.sid.equals(yi.getSid()) && this.getModel().equals(yi.getModel());
     }
 
 }
