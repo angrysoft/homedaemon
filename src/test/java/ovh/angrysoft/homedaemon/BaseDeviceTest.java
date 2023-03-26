@@ -3,12 +3,9 @@ package ovh.angrysoft.homedaemon;
 
 import org.junit.jupiter.api.Test;
 
-import ovh.angrysoft.homedaemon.devices.BaseDevice;
-import ovh.angrysoft.homedaemon.devices.DeviceAttribute;
 import ovh.angrysoft.homedaemon.devices.DeviceInfo;
-import ovh.angrysoft.homedaemon.devices.traits.OnOff;
-import ovh.angrysoft.homedaemon.devices.traits.Toggle;
-import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashMap;
 
@@ -16,7 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 
 public class BaseDeviceTest {
-    BaseDevice device;
+    DummyDevice device;
 
     @BeforeEach
     void setUp() {
@@ -33,28 +30,32 @@ public class BaseDeviceTest {
     void testGetDeviceStatus() {
         System.out.println(device.getDeviceStatus());
     }
-}
 
-class DummyDevice extends BaseDevice implements OnOff, Toggle {
+    @Test
+    @DisplayName("Execute command")
+    void testExecute() {
+        assertEquals("off", this.device.query("power"));
+        this.device.execute("on", null);
+        assertEquals("on", this.device.query("power"));
 
-    public DummyDevice(DeviceInfo deviceInfo) {
-        super(deviceInfo);
-        try {
-            status.registerAttribute(new DeviceAttribute<>("power", "off"));
-        } catch ( AttributeAlreadyExist e) {}
     }
 
+    @Test
+    @DisplayName("Execute command witch args")
+    void testExecuteWitchArgs() {
+        assertEquals(0, (Integer) this.device.query("state"));
+        this.device.execute("changeState", 5);
+        assertEquals(5, (Integer) this.device.query("state"));
 
-    public void on() {}
-    public void off() {}
-    public boolean isOff() {
-        return true;
     }
 
-    public boolean isOn() {
-        return false;
+    @Test
+    @DisplayName("Execute command not allowed")
+    void testExecuteNotAllowed() {
+        assertEquals("off", this.device.query("power"));
+        this.device.execute("off", null);
+        assertEquals("off", this.device.query("power"));
+
+
     }
-
-    public void toggle() {}
-
 }
