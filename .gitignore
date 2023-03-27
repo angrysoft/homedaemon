@@ -1,5 +1,4 @@
 tools/*.json
-.vscode
 *.log
 experiments/*
 scenes

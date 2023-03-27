@@ -18,7 +18,7 @@ import org.eclipse.paho.mqttv5.common.MqttMessage;
 import org.eclipse.paho.mqttv5.common.MqttPersistenceException;
 import org.eclipse.paho.mqttv5.common.packet.MqttProperties;
 
-public class MqttV5Connection implements MqttCallback {
+public class MqttV5Connection extends Thread implements MqttCallback {
     // MQTT broker URI to connect to. Defaults to tcp://iot.eclipse.org:1883. Use
     // ws:// for Websockets, wss:// for secure Websockets and ssl:// for TLS
     // encrypted TCP connections.");
@@ -35,7 +35,7 @@ public class MqttV5Connection implements MqttCallback {
     final Thread mainThread = Thread.currentThread();
     static volatile boolean keepRunning = true;
     private List<String> topics;
-    private BiConsumer<String,String> onMsgHandler;
+    private BiConsumer<String, String> onMsgHandler;
 
     public MqttV5Connection(Map<String, String> config) {
 
@@ -120,7 +120,8 @@ public class MqttV5Connection implements MqttCallback {
         return topics;
     }
 
-    public void connect() {
+    public void run() {
+
         MemoryPersistence persistence = new MemoryPersistence();
         try {
             this.client = new MqttAsyncClient(this.getUri(), this.getClientID(), persistence);
@@ -128,10 +129,10 @@ public class MqttV5Connection implements MqttCallback {
             IMqttToken connectToken = this.client.connect(this.connOpts);
             connectToken.waitForCompletion(this.timeout);
             subscribe();
-            addShutdownHook();
         } catch (MqttException e) {
             e.printStackTrace();
         }
+        System.err.println(String.format("from run Watcher %s - %s", Thread.currentThread(), mainThread));
     }
 
     private void subscribe() {
@@ -158,15 +159,6 @@ public class MqttV5Connection implements MqttCallback {
         this.onMsgHandler = onMsgHandler;
     }
 
-    public void addShutdownHook() {
-
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            public void run() {
-                keepRunning = false;
-            }
-        });
-    }
-
     public void disconnect() throws MqttException {
         LOGGER.info("Disconnecting from server.");
         IMqttToken disconnectToken = client.disconnect();
@@ -178,7 +170,7 @@ public class MqttV5Connection implements MqttCallback {
             LOGGER.info("Client Closed.");
             mainThread.join();
         } catch (MqttException | InterruptedException e) {
-            LOGGER.log(Level.ALL, "Mqtt client exit with: {0}", e.getMessage());
+            LOGGER.severe(String.format("Mqtt client exit with: %s", e.getMessage()));
         }
 
     }
@@ -220,7 +212,7 @@ public class MqttV5Connection implements MqttCallback {
             return;
         }
         LOGGER.info(messageContent);
-        
+
     }
 
     @Override

@@ -5,10 +5,10 @@ import java.util.HashMap;
 import ovh.angrysoft.homedaemon.bus.Events.StatusEvent;
 import ovh.angrysoft.homedaemon.devices.DeviceManager;
 
-public class WatcherManager  implements WatcherHandler {
+public class WatcherManager implements WatcherHandler {
     private HashMap<String, Watcher> watchers;
     private DeviceManager deviceManager;
-    
+
     public WatcherManager(DeviceManager deviceManager) {
         this.watchers = new HashMap<>();
         this.deviceManager = deviceManager;
@@ -19,7 +19,9 @@ public class WatcherManager  implements WatcherHandler {
     }
 
     public void registerWatcher(Watcher watcher) {
-        assert watchers.containsKey(watcher.getSid()) == false : "Watcher is registered";
+        if (watchers.containsKey(watcher.getSid())) {
+            return;
+        }
         watcher.setHandler(this);
         watchers.put(watcher.getSid(), watcher);
         watcher.start();

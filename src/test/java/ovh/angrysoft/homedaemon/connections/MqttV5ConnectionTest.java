@@ -15,9 +15,9 @@ public class MqttV5ConnectionTest {
         config.put("user", "wildcard");
         MqttV5Connection conn = new MqttV5Connection(config);
         conn.addTopic("#");
-        conn.connect();
+        conn.run();
         int timeout = 0;
-        while(timeout < 200) {
+        while (timeout < 200) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
@@ -39,14 +39,14 @@ public class MqttV5ConnectionTest {
         // config.put("user", "wildcard");
         MqttV5Connection conn = new MqttV5Connection(config);
         conn.addTopic("homed/test");
-        conn.connect();
+        conn.run();
         try {
             conn.publishMessage("test test test".getBytes(), 0, false, "homed/test");
         } catch (MqttException e) {
             e.printStackTrace();
         }
         Integer timeout = 0;
-        while(timeout < 20) {
+        while (timeout < 20) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {

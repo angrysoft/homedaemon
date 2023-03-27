@@ -16,8 +16,9 @@ public class Zigbee2MqttWatcher extends Watcher {
         this.gateway.setOnMsgHandler((String topic, String msg) -> {
             onMessage(topic, msg);
         });
+        
     }
-
+    
     @SuppressWarnings("unchecked")
     private void onMessage(String topic, String msg) {
         HashMap<String, Object> notify = (HashMap<String, Object>) new Gson().fromJson(msg, HashMap.class);
@@ -25,20 +26,15 @@ public class Zigbee2MqttWatcher extends Watcher {
             handler.call(new StatusEvent(getSidFromTopic(topic), k, v));
         });
     }
-
+    
     private String getSidFromTopic(String topic) {
         return topic.split("/")[1];
     }
-
+    
     @Override
     public void run() {
-        while (true) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        //TODO remove me 
+        System.err.println(String.format("from run Zigbee2Watcher %s  Thread %s", sid, Thread.currentThread()));
     }
 
 }
