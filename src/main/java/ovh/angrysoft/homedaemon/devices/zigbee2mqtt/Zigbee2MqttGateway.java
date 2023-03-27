@@ -17,7 +17,7 @@ public class Zigbee2MqttGateway extends BaseDevice implements ZigbeeGateway {
         super(devInfo);
         if (devInfo.getArgs() != null)
             this.connection = new MqttV5Connection(devInfo.getArgs());
-        this.connection.connect();
+        this.connection.start();
     }
 
     public void sendSet(String sid, String cmd, Object value) {

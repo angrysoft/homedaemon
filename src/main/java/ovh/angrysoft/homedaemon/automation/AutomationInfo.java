@@ -9,10 +9,10 @@ public class AutomationInfo {
     private String trigger;
     private Map<String, String> name;
     private Map<String, Condition> conditions;
-    private List<Action> actions;
+    private Map<String, Action> actions;
 
     public AutomationInfo(String sid, String type, String trigger, Map<String, String> name,
-            Map<String, Condition> conditions, List<Action> actions) {
+            Map<String, Condition> conditions, Map<String, Action> actions) {
         this.sid = sid;
         this.type = type;
         this.trigger = trigger;
@@ -41,7 +41,7 @@ public class AutomationInfo {
         return conditions;
     }
 
-    public List<Action> getActions() {
+    public Map<String, Action> getActions() {
         return actions;
     }
 
