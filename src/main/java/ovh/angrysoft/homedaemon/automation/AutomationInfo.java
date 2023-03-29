@@ -64,24 +64,66 @@ public class AutomationInfo {
         if (conditions == null)
             throw new VerifyError("conditions is null");
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("sid = ")
+        .append(sid)
+        .append("\n");
+
+        sb.append("trigger = ")
+        .append(trigger)
+        .append("\n");
+        return sb.toString();
+    }
 }
 
 class Condition {
 }
 
+class Actions {
+    private List<Action> parallel;
+    private List<Action> serial;
+    private Action execute;
+    private Action script;
+
+    public Actions(List<Action> parallel, List<Action> serial, Action execute, Action script) {
+        this.parallel = parallel;
+        this.serial = serial;
+        this.execute = execute;
+        this.script = script;
+    }
+
+    public List<Action> getParallel() {
+        return parallel;
+    }
+
+    public List<Action> getSerial() {
+        return serial;
+    }
+
+    public Action getExecute() {
+        return execute;
+    }
+
+    public Action getScript() {
+        return script;
+    }
+}
+
+
 class Action {
     private String type;
     private String sid;
-    private String command;
-    private String argType;
-    private Object arg;
+    private String cmd;
+    private Object args;
 
-    public Action(String type, String sid, String command, String argType, Object arg) {
+    public Action(String type, String sid, String cmd, Object args) {
         this.type = type;
         this.sid = sid;
-        this.command = command;
-        this.argType = argType;
-        this.arg = arg;
+        this.cmd = cmd;
+        this.args = args;
     }
 
     public String getType() {
@@ -92,15 +134,12 @@ class Action {
         return sid;
     }
 
-    public String getCommand() {
-        return command;
+    public String getCmd() {
+        return cmd;
     }
 
-    public String getArgType() {
-        return argType;
+    public Object getArgs() {
+        return args;
     }
 
-    public Object getArg() {
-        return arg;
-    }
 }

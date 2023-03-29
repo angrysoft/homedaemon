@@ -6,4 +6,12 @@ public class AutomationParser {
         System.out.println(info.getTrigger());
         return null;
     }
+
+    private void parseActions() {
+
+    }
+
+    private void parseAction() {
+        
+    }
 }

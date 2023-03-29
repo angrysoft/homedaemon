@@ -16,17 +16,20 @@ import com.google.gson.JsonSyntaxException;
 import ovh.angrysoft.homedaemon.bus.Event;
 import ovh.angrysoft.homedaemon.bus.EventBus;
 import ovh.angrysoft.homedaemon.bus.Trigger;
+import ovh.angrysoft.homedaemon.devices.DeviceManager;
 
 public class AutomationManager {
     private static final Logger LOGGER = Logger.getLogger("Homedaemon");
     private AutomationParser automationParser;
     private EventBus bus;
+    private DeviceManager deviceManager;
     private String automationDirPath;
     private Set<Automation> automations;
 
-    public AutomationManager(String automationDirPath, EventBus bus) {
+    public AutomationManager(String automationDirPath, EventBus bus, DeviceManager deviceManager) {
         this.automationParser = new AutomationParser();
         this.bus = bus;
+        this.deviceManager =  deviceManager;
         this.automationDirPath = automationDirPath;
         this.automations = new HashSet<>();
     }
@@ -44,13 +47,14 @@ public class AutomationManager {
                 continue;
 
             try {
-                
-                AutomationInfo automationInfo = new Gson().fromJson(new FileReader(automationInfoFile),
-                AutomationInfo.class);
-                automationInfo.checkFields();
 
-                LOGGER.log(Level.INFO, "load automation: {0}", automationInfo.getSid());
+                AutomationInfo automationInfo = new Gson().fromJson(new FileReader(automationInfoFile),
+                        AutomationInfo.class);
+                automationInfo.checkFields();
+                System.out.println(automationInfo);
                 
+                LOGGER.log(Level.INFO, "load automation: {0}", automationInfo.getSid());
+
                 Automation automation = automationParser.parse(automationInfo);
                 this.registerAutomation(automationInfo.getTrigger(), automation);
             } catch (JsonSyntaxException | JsonIOException | FileNotFoundException e) {
@@ -59,9 +63,11 @@ public class AutomationManager {
         }
     }
 
-    private synchronized void registerAutomation(String triggerString, Automation automation) {
-        this.automations.add(automation);
-        Trigger automationTrigger = new Trigger(triggerString, (Event event) ->{
+    private void registerAutomation(String triggerString, Automation automation) {
+        synchronized(this) {
+            this.automations.add(automation);
+        }
+        Trigger automationTrigger = new Trigger(triggerString, (Event event) -> {
             LOGGER.info(String.format("automation: %s - action", Arrays.toString(event.getTopicList())));
         });
         this.bus.addTrigger(automationTrigger);
