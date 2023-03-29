@@ -38,11 +38,6 @@
             "sid": "device sid",
             "cmd": "command Name",
             "args": []
-        },
-        "script": {
-            "sid": "script sid",
-            "type": "groovy",
-            "path": "/path/to/script.groovy"
         }
     }
 }

@@ -11,11 +11,11 @@ public class EventBus {
         this.triggers = new HashMap<>();
     }
 
-    public int triggersSize() {
+    public synchronized int triggersSize() {
         return triggers.size();
     }
 
-    public String addTrigger(Trigger trigger) {
+    public synchronized String addTrigger(Trigger trigger) {
         String id = UUID.randomUUID().toString();
         if (triggers.containsKey(id)) {
             return addTrigger(trigger);
@@ -24,7 +24,7 @@ public class EventBus {
         return id;
     }
 
-    public void delTrigger(String id) {
+    public synchronized void delTrigger(String id) {
         if (triggers.containsKey(id)) {
             triggers.remove(id);
         }

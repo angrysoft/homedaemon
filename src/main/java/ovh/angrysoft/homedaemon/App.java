@@ -40,7 +40,7 @@ public class App {
         deviceManager.setup();
         logger.info(String.format("HomeDaemon Started thread : %s", Thread.currentThread()));
         
-        AutomationManager automationManager = new AutomationManager(automationDir, bus);
+        AutomationManager automationManager = new AutomationManager(automationDir, bus, deviceManager);
         automationManager.loadAutomation();
         
         while(true) {
