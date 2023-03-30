@@ -94,9 +94,9 @@ public class MqttV5Connection extends Thread implements MqttCallback {
 
     }
 
-    public void addTopic(String topic) {
+    public synchronized void addTopic(String topic) {
         this.topics.add(topic);
-        if (this.client.isConnected()) {
+        if (isConnected()) {
             try {
                 this.client.subscribe(topic, this.qos);
             } catch (MqttException e) {
@@ -105,7 +105,7 @@ public class MqttV5Connection extends Thread implements MqttCallback {
         }
     }
 
-    public void removeTopic(String topic) {
+    public synchronized void removeTopic(String topic) {
         this.topics.remove(topic);
         if (this.client.isConnected()) {
             try {
@@ -148,6 +148,10 @@ public class MqttV5Connection extends Thread implements MqttCallback {
 
     public void publishMessage(byte[] payload, int qos, boolean retain, String topic)
             throws MqttPersistenceException, MqttException {
+        if (! isConnected()) {
+            LOGGER.warning("Not Connected");
+            return;
+        }
         MqttMessage message = new MqttMessage(payload);
         message.setQos(qos);
         message.setRetained(retain);
@@ -230,5 +234,11 @@ public class MqttV5Connection extends Thread implements MqttCallback {
         LOGGER.warning(
                 String.format("Auth packet received, this client does not currently support them. Reason Code: %d.",
                         reasonCode));
+    }
+
+    private boolean isConnected() {
+        if (client != null && client.isConnected())
+            return true;
+        return false;
     }
 }

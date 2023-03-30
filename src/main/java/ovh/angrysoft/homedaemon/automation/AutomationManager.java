@@ -27,9 +27,9 @@ public class AutomationManager {
     private Set<Automation> automations;
 
     public AutomationManager(String automationDirPath, EventBus bus, DeviceManager deviceManager) {
-        this.automationParser = new AutomationParser();
-        this.bus = bus;
         this.deviceManager =  deviceManager;
+        this.automationParser = new AutomationParser(this.deviceManager);
+        this.bus = bus;
         this.automationDirPath = automationDirPath;
         this.automations = new HashSet<>();
     }
@@ -69,6 +69,7 @@ public class AutomationManager {
         }
         Trigger automationTrigger = new Trigger(triggerString, (Event event) -> {
             LOGGER.info(String.format("automation: %s - action", Arrays.toString(event.getTopicList())));
+            new Thread(automation).start();;
         });
         this.bus.addTrigger(automationTrigger);
     }
