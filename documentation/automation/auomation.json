@@ -31,13 +31,20 @@
             "value": "object"
         }
     },
-    "actions": {
-        "parallel": [],
-        "serial": [],
-        "execute": {
+    "actions": [
+        {
+            "type": "execute",
             "sid": "device sid",
             "cmd": "command Name",
-            "args": []
+            "arg": "object",
+            "runInBackground": false
+        },
+        {
+            "type": "execute",
+            "sid": "device sid",
+            "cmd": "command Name",
+            "arg": "object",
+            "runInBackground": true
         }
-    }
+    ]
 }

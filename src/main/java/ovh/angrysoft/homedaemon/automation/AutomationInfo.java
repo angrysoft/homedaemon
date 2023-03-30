@@ -1,5 +1,6 @@
 package ovh.angrysoft.homedaemon.automation;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -9,10 +10,10 @@ public class AutomationInfo {
     private String trigger;
     private Map<String, String> name;
     private Map<String, Condition> conditions;
-    private Map<String, Action> actions;
+    private List<ActionInfo> actions;
 
     public AutomationInfo(String sid, String type, String trigger, Map<String, String> name,
-            Map<String, Condition> conditions, Map<String, Action> actions) {
+            Map<String, Condition> conditions, List<ActionInfo> actions) {
         this.sid = sid;
         this.type = type;
         this.trigger = trigger;
@@ -41,7 +42,7 @@ public class AutomationInfo {
         return conditions;
     }
 
-    public Map<String, Action> getActions() {
+    public List<ActionInfo> getActions() {
         return actions;
     }
 
@@ -69,12 +70,12 @@ public class AutomationInfo {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("sid = ")
-        .append(sid)
-        .append("\n");
+                .append(sid)
+                .append("\n");
 
         sb.append("trigger = ")
-        .append(trigger)
-        .append("\n");
+                .append(trigger)
+                .append("\n");
         return sb.toString();
     }
 }
@@ -83,47 +84,57 @@ class Condition {
 }
 
 class Actions {
-    private List<Action> parallel;
-    private List<Action> serial;
-    private Action execute;
-    private Action script;
+    private List<ActionInfo> parallel;
+    private List<ActionInfo> sequential;
 
-    public Actions(List<Action> parallel, List<Action> serial, Action execute, Action script) {
+    public Actions(List<ActionInfo> parallel, List<ActionInfo> sequential) {
         this.parallel = parallel;
-        this.serial = serial;
-        this.execute = execute;
-        this.script = script;
+        this.sequential = sequential;
     }
 
-    public List<Action> getParallel() {
+    public List<ActionInfo> getParallel() {
+        if (parallel == null)
+            return new ArrayList<>();
         return parallel;
     }
 
-    public List<Action> getSerial() {
-        return serial;
+    public List<ActionInfo> getSequential() {
+        if (sequential == null)
+            return new ArrayList<>();
+        return sequential;
     }
 
-    public Action getExecute() {
-        return execute;
-    }
-
-    public Action getScript() {
-        return script;
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        if (this.parallel != null)
+            result.append(this.parallel.toString());
+        if (this.sequential != null)
+            result.append(this.sequential.toString());
+        return result.toString();
     }
 }
 
-
-class Action {
+class ActionInfo {
     private String type;
     private String sid;
     private String cmd;
-    private Object args;
+    private Object arg;
+    private boolean runInBackground;
 
-    public Action(String type, String sid, String cmd, Object args) {
+    /**
+     * @param type
+     * @param sid
+     * @param cmd
+     * @param arg
+     * @param runInBackground
+     */
+    public ActionInfo(String type, String sid, String cmd, Object arg, boolean runInBackground) {
         this.type = type;
         this.sid = sid;
         this.cmd = cmd;
-        this.args = args;
+        this.arg = arg;
+        this.runInBackground = runInBackground;
     }
 
     public String getType() {
@@ -138,8 +149,30 @@ class Action {
         return cmd;
     }
 
-    public Object getArgs() {
-        return args;
+    public Object getArg() {
+        return arg;
+    }
+
+    public boolean isRunInBackground() {
+        return runInBackground;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        if (this.type != null)
+            result.append(this.type.toString())
+                    .append(", ");
+        if (this.sid != null)
+            result.append(this.sid.toString())
+                    .append(", ");
+        if (this.cmd != null)
+            result.append(this.cmd.toString())
+                    .append(", ");
+        if (this.arg != null)
+            result.append(this.arg.toString())
+                    .append(", ");
+        return result.toString();
     }
 
 }

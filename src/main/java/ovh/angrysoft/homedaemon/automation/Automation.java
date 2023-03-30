@@ -1,16 +1,30 @@
 package ovh.angrysoft.homedaemon.automation;
 
+import java.util.List;
 import java.util.Objects;
 
-public abstract class Automation {
+import ovh.angrysoft.homedaemon.automation.actions.Action;
+
+public class Automation implements Runnable {
     protected boolean running = false;
     protected String sid;
-    
+    protected List<Action> actions;
+
+    public Automation(boolean running, String sid, List<Action> actions) {
+        this.running = running;
+        this.sid = sid;
+        this.actions = actions;
+    }
+
     public String getSid() {
         return sid;
     }
 
-    public abstract void run();
+    public void run() {
+        for (Action action : actions) {
+            action.run();
+        }
+    }
 
     public boolean isRunning() {
         return running;

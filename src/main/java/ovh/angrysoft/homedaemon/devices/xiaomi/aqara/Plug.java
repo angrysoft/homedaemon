@@ -22,6 +22,9 @@ public class Plug extends ZigbeeBaseDevice implements OnOff, Toggle {
         } catch (AttributeAlreadyExist e) {
             LOGGER.warning(e.getMessage());
         }
+        this.commands.add("toggle");
+        this.commands.add("on");
+        this.commands.add("off");
     }
 
     public void requestOfPowerInfo() {

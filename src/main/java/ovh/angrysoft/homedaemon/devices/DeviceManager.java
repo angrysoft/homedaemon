@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -141,6 +142,13 @@ public class DeviceManager {
             } catch (AttributeReadOnly e) {
                 LOGGER.warning(String.format("Attribute %s is readonly", statusEvent.getName()));
             }
+        }
+    }
+
+    public void execute(String sid, String cmd, Object args) {
+        if (this.devices.containsKey(sid)) {
+            BaseDevice device = this.devices.get(sid);
+            device.execute(cmd, args);
         }
     }
 
