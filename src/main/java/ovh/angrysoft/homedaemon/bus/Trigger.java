@@ -4,8 +4,15 @@ public class Trigger {
     private Handler handler;
     private String[] topicList;
     private boolean wildCard;
+    private boolean oneShot;
+    private String id = "";
 
     public Trigger(String topic, Handler handler) {
+        this(topic, handler, false);
+    }
+
+    public Trigger(String topic, Handler handler, boolean oneShot) {
+        this.oneShot = oneShot;
         topicList = topic.split("\\.");
         this.handler = handler;
         this.wildCard = false;
@@ -22,7 +29,7 @@ public class Trigger {
         for (int i = 0; i < maxLoop; i++) {
             if (this.topicList[i].equals("*"))
                 break;
-            if (! this.topicList[i].equals(topicList[i]))
+            if (!this.topicList[i].equals(topicList[i]))
                 return false;
         }
         return true;
@@ -35,5 +42,17 @@ public class Trigger {
                 handler.call(event);
             }
         }).start();
+    }
+
+    public boolean isOneShot() {
+        return oneShot;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

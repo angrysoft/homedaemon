@@ -21,9 +21,13 @@ public class Automation implements Runnable {
     }
 
     public void run() {
+        if (running)
+            return;
+        running = true;
         for (Action action : actions) {
-            action.run();
+                action.run(); 
         }
+        running = false;
     }
 
     public boolean isRunning() {

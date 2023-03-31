@@ -26,11 +26,11 @@ public class CtrlNeutral2 extends ZigbeeBaseDevice implements DoubleSwitch {
 
     }
 
-    public void left(boolean state) {
+    public void left(Boolean state) {
         this.gateway.sendSet(this.getSid(), "state_left", state ? "ON" : "OFF");
     }
 
-    public void right(boolean state) {
+    public void right(Boolean state) {
         this.gateway.sendSet(this.getSid(), "state_right", state ? "ON" : "OFF");
     }
 

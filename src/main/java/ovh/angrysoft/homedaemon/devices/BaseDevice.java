@@ -3,6 +3,7 @@ package ovh.angrysoft.homedaemon.devices;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -21,6 +22,7 @@ public abstract class BaseDevice {
     protected BaseDevice(DeviceInfo deviceInfo) {
         this.status = new DeviceStatus();
         this.commands = new HashSet<>();
+        this.setupCommandSet();
         try {
             this.status.registerAttribute(new DeviceAttribute<>("sid", deviceInfo.getSid(), true));
             this.status.registerAttribute(new DeviceAttribute<>("name", deviceInfo.getName()));
@@ -33,6 +35,14 @@ public abstract class BaseDevice {
 
     protected String getSid() {
         return this.status.get("sid");
+    }
+
+    protected void setupCommandSet() {
+        for (Class<?> cls : this.getClass().getInterfaces()) {
+            for (Method method : cls.getDeclaredMethods()) {
+                this.commands.add(method.getName());
+            }
+        }
     }
 
     public List<String> getTraits() {
@@ -70,6 +80,7 @@ public abstract class BaseDevice {
         }
 
         try {
+            //TODO delete this
             for (Method met : this.getClass().getDeclaredMethods()) {
                 if (met.getName().equals(methodName))
                     System.out.println(met.getName());
