@@ -21,6 +21,7 @@ public class EventBus {
             return addTrigger(trigger);
         }
         triggers.put(id, trigger);
+        trigger.setId(id);
         return id;
     }
 
@@ -35,6 +36,8 @@ public class EventBus {
             Trigger trigger = entry.getValue();
             if (trigger.compareTopic(event.getTopicList())) {
                 trigger.call(event);
+                if (trigger.isOneShot())
+                    delTrigger(trigger.getId());
             }
         }
     }

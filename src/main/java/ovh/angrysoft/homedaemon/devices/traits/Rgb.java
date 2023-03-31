@@ -1,5 +1,5 @@
 package ovh.angrysoft.homedaemon.devices.traits;
 
 public interface Rgb {
-    void setRgb(int red, int green, int blue);
+    void setRgb(Integer red, Integer green, Integer blue);
 }

@@ -6,6 +6,10 @@
         "pl": "Światło w kuchni"
     },
     "trigger": "status.0x00158d000200a020.action.single",
+    "state": {
+        "state_name": "state_init_value",
+        "occupancy": false
+    },
     "conditions": {
         "and": [],
         "or": [],
@@ -29,6 +33,9 @@
             "sid": "device_sid",
             "attr": "device attribute",
             "value": "object"
+        },
+        "state": {
+            "occupancy": true
         }
     },
     "actions": [
