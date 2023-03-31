@@ -23,11 +23,11 @@ class Color  extends DeskLamp implements Rgb, RgbColor {
 
     }
 
-    public void setRgb(int red, int green, int blue) {
+    public void setRgb(Integer red, Integer green, Integer blue) {
         this.api.setRGB(red, green, blue);
     }
 
-    public void setColor(int rgb) {
+    public void setColor(Integer rgb) {
         this.api.setColor(rgb);
     }
 }

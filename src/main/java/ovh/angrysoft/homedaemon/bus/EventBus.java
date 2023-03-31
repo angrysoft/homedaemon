@@ -36,8 +36,10 @@ public class EventBus {
             Trigger trigger = entry.getValue();
             if (trigger.compareTopic(event.getTopicList())) {
                 trigger.call(event);
-                if (trigger.isOneShot())
+                if (trigger.isOneShot()) {
+                    System.err.println("im a oneshot");
                     delTrigger(trigger.getId());
+                }
             }
         }
     }

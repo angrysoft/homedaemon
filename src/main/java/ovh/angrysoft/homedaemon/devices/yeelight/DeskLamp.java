@@ -20,7 +20,7 @@ public class DeskLamp extends Mono implements ColorTemperature {
         this.api.setMaxCt(6500);
     }
 
-    public void setCtPc(int pc) {
+    public void setCtPc(Integer pc) {
         this.api.setCtPc(pc);
     }
 
