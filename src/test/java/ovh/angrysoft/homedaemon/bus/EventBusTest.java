@@ -25,6 +25,26 @@ public class EventBusTest {
 
     @Test
     @DisplayName("Test Event bus addTrigger")
+    public void testAddOneShotTrigger() {
+        Trigger trigger = new Trigger("status.123341421.status.off", (Event event) -> {
+            System.out.println((String) event.getPayload().toString());
+        }, true);
+
+        EventBus bus = new EventBus();
+        bus.addTrigger(trigger);
+        assertEquals(bus.triggersSize(), 1);
+        bus.dispatch(new StatusEvent("123341421", "status", "off"));
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        assertEquals(bus.triggersSize(), 0);
+    }
+
+    @Test
+    @DisplayName("Test Event bus addTrigger")
     public void testDelTrigger() {
         Trigger trigger = new Trigger("status.123341421.status.off", (Event event) -> {
             System.out.println((String) event.getPayload().toString());
