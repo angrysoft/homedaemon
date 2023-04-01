@@ -10,8 +10,8 @@ public class Snzb01 extends BaseDevice {
     public Snzb01(DeviceInfo deviceInfo, ZigbeeGateway gateway) {
         super(deviceInfo);
         try {
-            this.status.registerAttribute(new DeviceAttribute<>("action", "", false, true));
-            this.status.registerAttribute(new DeviceAttribute<>("voltage", 0));
+            this.status.registerAttribute(new DeviceAttribute<String>("action", "", false, true));
+            this.status.registerAttribute(new DeviceAttribute<Integer>("voltage", 0));
         } catch (AttributeAlreadyExist e) {
             LOGGER.warning(e.getMessage());
         }

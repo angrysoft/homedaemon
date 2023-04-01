@@ -47,8 +47,7 @@ public class FakeDeviceManager implements DeviceManager {
 
     public <T> T queryStatus(String sid, String attrName) {
         BaseDevice dev = this.devices.get(sid);
-        DeviceAttribute<T> attr = (DeviceAttribute<T>) dev.query(attrName);
-        return attr.getValue();
+        return dev.query(attrName);
     }
 
 }

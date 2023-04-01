@@ -14,10 +14,10 @@ public class WeatherV1 extends ZigbeeBaseDevice implements Temperature, Humidity
     public WeatherV1(DeviceInfo deviceInfo, ZigbeeGateway gateway) {
         super(deviceInfo, gateway);
         try {
-            this.status.registerAttribute(new DeviceAttribute<>("model", "WSDCGQ11LM"));
-            this.status.registerAttribute(new DeviceAttribute<>("temperature", 0));
-            this.status.registerAttribute(new DeviceAttribute<>("humidity", 0));
-            this.status.registerAttribute(new DeviceAttribute<>("pressure", 0));
+            this.status.registerAttribute(new DeviceAttribute<String>("model", "WSDCGQ11LM"));
+            this.status.registerAttribute(new DeviceAttribute<Integer>("temperature", 0));
+            this.status.registerAttribute(new DeviceAttribute<Integer>("humidity", 0));
+            this.status.registerAttribute(new DeviceAttribute<Integer>("pressure", 0));
         } catch (AttributeAlreadyExist e) {
             LOGGER.warning(e.getMessage());
         }

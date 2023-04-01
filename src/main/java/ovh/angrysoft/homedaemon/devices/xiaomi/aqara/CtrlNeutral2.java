@@ -12,13 +12,13 @@ public class CtrlNeutral2 extends ZigbeeBaseDevice implements DoubleSwitch {
     public CtrlNeutral2(DeviceInfo deviceInfo, ZigbeeGateway gateway) {
         super(deviceInfo, gateway);
         try {
-            this.status.registerAttribute(new DeviceAttribute<>("model", "QBKG03LM"));
-            this.status.registerAttribute(new DeviceAttribute<>("state_left", ""));
-            this.status.registerAttribute(new DeviceAttribute<>("state_right", ""));
-            this.status.registerAttribute(new DeviceAttribute<>("device_temperature", 0));
-            this.status.registerAttribute(new DeviceAttribute<>("operation_mode_left", ""));
-            this.status.registerAttribute(new DeviceAttribute<>("operation_mode_right", ""));
-            this.status.registerAttribute(new DeviceAttribute<>("action", "", false, true));
+            this.status.registerAttribute(new DeviceAttribute<String>("model", "QBKG03LM"));
+            this.status.registerAttribute(new DeviceAttribute<String>("state_left", ""));
+            this.status.registerAttribute(new DeviceAttribute<String>("state_right", ""));
+            this.status.registerAttribute(new DeviceAttribute<Integer>("device_temperature", 0));
+            this.status.registerAttribute(new DeviceAttribute<String>("operation_mode_left", ""));
+            this.status.registerAttribute(new DeviceAttribute<String>("operation_mode_right", ""));
+            this.status.registerAttribute(new DeviceAttribute<String>("action", "", false, true));
         } catch (AttributeAlreadyExist e) {
             LOGGER.warning(e.getMessage());
         }

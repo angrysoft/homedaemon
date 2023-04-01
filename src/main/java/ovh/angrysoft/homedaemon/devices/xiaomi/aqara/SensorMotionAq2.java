@@ -13,11 +13,11 @@ public class SensorMotionAq2 extends ZigbeeBaseDevice implements Motion, Illumin
     public SensorMotionAq2(DeviceInfo deviceInfo, ZigbeeGateway gateway) {
         super(deviceInfo, gateway);
         try {
-            this.status.registerAttribute(new DeviceAttribute<>("model", "RTCGQ11LM"));
-            this.status.registerAttribute(new DeviceAttribute<>("occupancy", false));
-            this.status.registerAttribute(new DeviceAttribute<>("illuminance", 0));
-            this.status.registerAttribute(new DeviceAttribute<>("illuminance_lux", 0));
-            this.status.registerAttribute(new DeviceAttribute<>("device_temperature", 0));
+            this.status.registerAttribute(new DeviceAttribute<String>("model", "RTCGQ11LM"));
+            this.status.registerAttribute(new DeviceAttribute<Boolean>("occupancy", false));
+            this.status.registerAttribute(new DeviceAttribute<Integer>("illuminance", 0));
+            this.status.registerAttribute(new DeviceAttribute<Integer>("illuminance_lux", 0));
+            this.status.registerAttribute(new DeviceAttribute<Integer>("device_temperature", 0));
         } catch (AttributeAlreadyExist e) {
             LOGGER.warning(e.getMessage());
         }

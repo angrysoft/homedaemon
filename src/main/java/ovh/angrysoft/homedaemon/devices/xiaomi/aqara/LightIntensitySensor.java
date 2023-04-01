@@ -12,9 +12,9 @@ public class LightIntensitySensor extends ZigbeeBaseDevice implements Illuminanc
     public LightIntensitySensor(DeviceInfo deviceInfo, ZigbeeGateway gateway) {
         super(deviceInfo, gateway);
         try { 
-            this.status.registerAttribute(new DeviceAttribute<>("model", "GZCGQ01LM"));
-            this.status.registerAttribute(new DeviceAttribute<>("illuminance", 0));
-            this.status.registerAttribute(new DeviceAttribute<>("illuminance_lux", 0));
+            this.status.registerAttribute(new DeviceAttribute<String>("model", "GZCGQ01LM"));
+            this.status.registerAttribute(new DeviceAttribute<Integer>("illuminance", 0));
+            this.status.registerAttribute(new DeviceAttribute<Integer>("illuminance_lux", 0));
         } catch (AttributeAlreadyExist e) {
             LOGGER.warning(e.getMessage());
         }
