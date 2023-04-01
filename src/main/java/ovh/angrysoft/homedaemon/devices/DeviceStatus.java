@@ -15,7 +15,7 @@ public class DeviceStatus {
         this.attributes = new HashMap<>();
     }
 
-    public void registerAttribute(DeviceAttribute<?> attr) throws AttributeAlreadyExist {
+    public <T> void registerAttribute(DeviceAttribute<?> attr) throws AttributeAlreadyExist {
         if (this.attributes.containsKey(attr.getName())) {
             throw new AttributeAlreadyExist(String.format("Attribute %s already registered", attr.getName()));
         }
