@@ -18,6 +18,7 @@ public class DummyDevice extends BaseDevice implements OnOff, Toggle {
 
         try {
             status.registerAttribute(new DeviceAttribute<>("power", "off"));
+            status.registerAttribute(new DeviceAttribute<>("stringState", ""));
             status.registerAttribute(new DeviceAttribute<>("state", 0));
         } catch ( AttributeAlreadyExist e) {}
     }
@@ -39,6 +40,14 @@ public class DummyDevice extends BaseDevice implements OnOff, Toggle {
     }
     
     public void changeState(Integer state) {
+        try {
+            this.status.update(new StatusEvent("aaaaaabbb", "state", state));
+        } catch (AttributeReadOnly e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void forbidden(Integer state) {
         try {
             this.status.update(new StatusEvent("aaaaaabbb", "state", state));
         } catch (AttributeReadOnly e) {
