@@ -79,11 +79,6 @@ public abstract class BaseDevice {
         }
 
         try {
-            //TODO delete this
-            for (Method met : this.getClass().getDeclaredMethods()) {
-                if (met.getName().equals(methodName))
-                    System.out.println(met.getName());
-            }
             if (arg != null) {
                 Method cmd = this.getClass().getDeclaredMethod(methodName, arg.getClass());
                 cmd.invoke(this, arg);
