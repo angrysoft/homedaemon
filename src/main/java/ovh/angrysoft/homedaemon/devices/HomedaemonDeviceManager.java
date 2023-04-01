@@ -157,4 +157,8 @@ public class HomedaemonDeviceManager implements DeviceManager {
         return attr.getValue();
     }
 
+    public EventBus getBus() {
+        return this.bus;
+    }
+
 }

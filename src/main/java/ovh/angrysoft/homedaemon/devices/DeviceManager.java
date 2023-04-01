@@ -1,5 +1,6 @@
 package ovh.angrysoft.homedaemon.devices;
 
+import ovh.angrysoft.homedaemon.bus.EventBus;
 import ovh.angrysoft.homedaemon.bus.Events.StatusEvent;
 
 public interface DeviceManager {
@@ -12,4 +13,6 @@ public interface DeviceManager {
     public void update(StatusEvent statusEvent);
 
     public <T> T queryStatus(String sid, String attr);
+
+    public EventBus getBus();
 }
