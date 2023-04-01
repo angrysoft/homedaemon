@@ -3,6 +3,7 @@ package ovh.angrysoft.homedaemon.devices;
 import java.util.HashMap;
 
 import ovh.angrysoft.homedaemon.DummyDevice;
+import ovh.angrysoft.homedaemon.bus.EventBus;
 import ovh.angrysoft.homedaemon.bus.Events.StatusEvent;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeReadOnly;
 
@@ -48,6 +49,12 @@ public class FakeDeviceManager implements DeviceManager {
     public <T> T queryStatus(String sid, String attrName) {
         BaseDevice dev = this.devices.get(sid);
         return dev.query(attrName);
+    }
+
+    @Override
+    public EventBus getBus() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getBus'");
     }
 
 }
