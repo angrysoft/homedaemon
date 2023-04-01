@@ -11,9 +11,9 @@ public class SensorSwitchAq2 extends ZigbeeBaseDevice {
     public SensorSwitchAq2(DeviceInfo deviceInfo, ZigbeeGateway gateway) {
         super(deviceInfo, gateway);
         try {
-            this.status.registerAttribute(new DeviceAttribute<>("model", "WXKG11LM"));
-            this.status.registerAttribute(new DeviceAttribute<>("action", "", false, true));
-            this.status.registerAttribute(new DeviceAttribute<>("device_temperature", 0));
+            this.status.registerAttribute(new DeviceAttribute<String>("model", "WXKG11LM"));
+            this.status.registerAttribute(new DeviceAttribute<String>("action", "", false, true));
+            this.status.registerAttribute(new DeviceAttribute<Integer>("device_temperature", 0));
         } catch (AttributeAlreadyExist e) {
             LOGGER.warning(e.getMessage());
         }

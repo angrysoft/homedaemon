@@ -15,9 +15,9 @@ class Mono extends BaseDevice implements OnOff, Dimmer {
     public Mono(DeviceInfo deviceInfo, YeelightDeviceInfo initData) {
         super(deviceInfo);
         try {
-            this.status.registerAttribute(new DeviceAttribute<>("power", initData.getPower()));
-            this.status.registerAttribute(new DeviceAttribute<>("color_mode", initData.getColorMode()));
-            this.status.registerAttribute(new DeviceAttribute<>("bright", initData.getBright()));
+            this.status.registerAttribute(new DeviceAttribute<String>("power", initData.getPower()));
+            this.status.registerAttribute(new DeviceAttribute<Integer>("color_mode", initData.getColorMode()));
+            this.status.registerAttribute(new DeviceAttribute<Integer>("bright", initData.getBright()));
             this.api = new YeelightApi(initData.getAddr(), initData.getPort());
         } catch (AttributeAlreadyExist e) {
             e.printStackTrace();
@@ -35,7 +35,7 @@ class Mono extends BaseDevice implements OnOff, Dimmer {
     }
 
     public boolean isOn() {
-        return (String) this.status.get("power") == "on";
+        return this.status.get("power").equals("on");
     }
 
     public void setBright(Integer value) {

@@ -24,9 +24,9 @@ public abstract class BaseDevice {
         this.commands = new HashSet<>();
         this.setupCommandSet();
         try {
-            this.status.registerAttribute(new DeviceAttribute<>("sid", deviceInfo.getSid(), true));
-            this.status.registerAttribute(new DeviceAttribute<>("name", deviceInfo.getName()));
-            this.status.registerAttribute(new DeviceAttribute<>("place", deviceInfo.getPlace()));
+            this.status.registerAttribute(new DeviceAttribute<String>("sid", deviceInfo.getSid(), true));
+            this.status.registerAttribute(new DeviceAttribute<Map<String,String>>("name", deviceInfo.getName()));
+            this.status.registerAttribute(new DeviceAttribute<Map<String,String>>("place", deviceInfo.getPlace()));
         } catch (AttributeAlreadyExist e) {
             LOGGER.warning(e.getMessage());
         }

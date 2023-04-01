@@ -18,8 +18,8 @@ public class ConditionTest {
 
     @Test
     public void testAndCases() {
-        // deviceManager.update(new StatusEvent("123", "stringState", "enabled"));
-        // var o = deviceManager.queryStatus("123", "stringState");
-        // System.out.println(o.toString());
+        deviceManager.update(new StatusEvent("123", "stringState", "enabled"));
+        var o = deviceManager.queryStatus("123", "stringState");
+        System.out.println(o.toString());
     }
 }

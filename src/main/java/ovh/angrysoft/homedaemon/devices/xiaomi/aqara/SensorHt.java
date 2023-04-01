@@ -13,9 +13,9 @@ public class SensorHt extends ZigbeeBaseDevice implements Temperature, Humidity 
     public SensorHt(DeviceInfo deviceInfo, ZigbeeGateway gateway) {
         super(deviceInfo, gateway);
         try {
-            this.status.registerAttribute(new DeviceAttribute<>("model", "WSDCGQ01LM"));
-            this.status.registerAttribute(new DeviceAttribute<>("temperature", 0));
-            this.status.registerAttribute(new DeviceAttribute<>("humidity", 0));
+            this.status.registerAttribute(new DeviceAttribute<String>("model", "WSDCGQ01LM"));
+            this.status.registerAttribute(new DeviceAttribute<Integer>("temperature", 0));
+            this.status.registerAttribute(new DeviceAttribute<Integer>("humidity", 0));
         } catch (AttributeAlreadyExist e) {
             LOGGER.warning(e.getMessage());
         }

@@ -11,8 +11,8 @@ public class WirelessSwitch extends ZigbeeBaseDevice {
     public WirelessSwitch(DeviceInfo deviceInfo, ZigbeeGateway gateway) {
         super(deviceInfo, gateway);
         try {
-            this.status.registerAttribute(new DeviceAttribute<>("model", "WXKG01LM"));
-            this.status.registerAttribute(new DeviceAttribute<>("action", "", false, true));
+            this.status.registerAttribute(new DeviceAttribute<String>("model", "WXKG01LM"));
+            this.status.registerAttribute(new DeviceAttribute<String>("action", "", false, true));
         } catch (AttributeAlreadyExist e) {
             LOGGER.warning(e.getMessage());
         }

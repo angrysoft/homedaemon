@@ -8,8 +8,8 @@ public class ZigbeeBaseDevice extends BaseDevice {
     public ZigbeeBaseDevice(DeviceInfo deviceInfo, ZigbeeGateway gateway) {
         super(deviceInfo);
         try {
-            this.status.registerAttribute(new DeviceAttribute<>("linkquality", 0));
-            this.status.registerAttribute(new DeviceAttribute<>("voltage", 0));
+            this.status.registerAttribute(new DeviceAttribute<Integer>("linkquality", 0));
+            this.status.registerAttribute(new DeviceAttribute<Integer>("voltage", 0));
         } catch (AttributeAlreadyExist e) {
             LOGGER.warning(e.getMessage());
         }

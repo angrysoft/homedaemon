@@ -8,7 +8,7 @@ import ovh.angrysoft.homedaemon.discover.DeviceDiscoverInfo;
 
 public class YeelightDeviceInfo implements DeviceDiscoverInfo {
     private String sid;
-    private boolean power;
+    private String power;
     private String addr;
     private int port;
     private String model;
@@ -33,7 +33,7 @@ public class YeelightDeviceInfo implements DeviceDiscoverInfo {
                     break;
 
                 case "power":
-                    this.power = Boolean.parseBoolean(value);
+                    this.power = value;
                     break;
 
                 case "Location":
@@ -85,7 +85,7 @@ public class YeelightDeviceInfo implements DeviceDiscoverInfo {
         return this.sid;
     }
 
-    public boolean getPower() {
+    public String getPower() {
         return this.power;
     }
 

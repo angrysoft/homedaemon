@@ -12,9 +12,9 @@ public class Snzb02 extends BaseDevice implements Temperature, Humidity {
     public Snzb02(DeviceInfo deviceInfo, ZigbeeGateway gateway) {
         super(deviceInfo);
         try {
-            this.status.registerAttribute(new DeviceAttribute<>("temperature", 0));
-            this.status.registerAttribute(new DeviceAttribute<>("humidity", 0));
-            this.status.registerAttribute(new DeviceAttribute<>("voltage", 0));
+            this.status.registerAttribute(new DeviceAttribute<Integer>("temperature", 0));
+            this.status.registerAttribute(new DeviceAttribute<Integer>("humidity", 0));
+            this.status.registerAttribute(new DeviceAttribute<Integer>("voltage", 0));
         } catch (AttributeAlreadyExist e) {
             LOGGER.warning(e.getMessage());
         }
