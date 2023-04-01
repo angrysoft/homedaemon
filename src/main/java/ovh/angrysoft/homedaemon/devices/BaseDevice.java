@@ -15,9 +15,10 @@ import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
 public abstract class BaseDevice {
     protected DeviceStatus status;
     protected Set<String> commands;
+    
     protected static final Logger LOGGER = Logger.getLogger("Homedaemon");
-
-
+    
+    
     protected BaseDevice(DeviceInfo deviceInfo) {
         this.status = new DeviceStatus();
         this.commands = new HashSet<>();
@@ -29,9 +30,13 @@ public abstract class BaseDevice {
         } catch (AttributeAlreadyExist e) {
             LOGGER.warning(e.getMessage());
         }
-
+        
     }
-
+    
+    public Set<String> getCommands() {
+        return commands;
+    }
+    
     protected String getSid() {
         return this.status.get("sid");
     }

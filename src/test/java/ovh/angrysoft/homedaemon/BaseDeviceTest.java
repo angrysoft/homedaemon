@@ -32,6 +32,13 @@ public class BaseDeviceTest {
     }
 
     @Test
+    @DisplayName("Get Device status")
+    void testCommand() {
+        System.out.println(this.device.getCommands());
+        assertEquals(5, this.device.getCommands().size());
+    }
+
+    @Test
     @DisplayName("Execute command")
     void testExecute() {
         assertEquals("off", this.device.query("power"));
