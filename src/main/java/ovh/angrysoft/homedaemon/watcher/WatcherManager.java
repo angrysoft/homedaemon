@@ -3,13 +3,13 @@ package ovh.angrysoft.homedaemon.watcher;
 import java.util.HashMap;
 
 import ovh.angrysoft.homedaemon.bus.Events.StatusEvent;
-import ovh.angrysoft.homedaemon.devices.DeviceManager;
+import ovh.angrysoft.homedaemon.devices.HomedaemonDeviceManager;
 
 public class WatcherManager implements WatcherHandler {
     private HashMap<String, Watcher> watchers;
-    private DeviceManager deviceManager;
+    private HomedaemonDeviceManager deviceManager;
 
-    public WatcherManager(DeviceManager deviceManager) {
+    public WatcherManager(HomedaemonDeviceManager deviceManager) {
         this.watchers = new HashMap<>();
         this.deviceManager = deviceManager;
     }

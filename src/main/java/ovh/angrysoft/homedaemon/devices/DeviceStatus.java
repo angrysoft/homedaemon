@@ -44,6 +44,12 @@ public class DeviceStatus {
         return null;
     }
 
+    public DeviceAttribute<?> getAttr(String attrName) {
+        if (this.attributes.containsKey(attrName))
+            return this.attributes.get(attrName);
+        return null;
+    }
+
     public Map<String, String> getAll() {
         HashMap<String, String> ret = new HashMap<>();
         for (Map.Entry<String, DeviceAttribute<?>> attr : attributes.entrySet()) {
