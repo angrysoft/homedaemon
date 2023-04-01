@@ -13,12 +13,13 @@ public class ConditionTest {
     @BeforeEach
     public void setUp() {
         deviceManager = new FakeDeviceManager();
+        deviceManager.loadDevice();
     }
 
     @Test
     public void testAndCases() {
         deviceManager.update(new StatusEvent("123", "stringState", "enabled"));
-        String o = deviceManager.query("123", "stringState");
-        System.out.println(o);
+        var o = deviceManager.queryStatus("123", "stringState");
+        System.out.println(o.toString());
     }
 }

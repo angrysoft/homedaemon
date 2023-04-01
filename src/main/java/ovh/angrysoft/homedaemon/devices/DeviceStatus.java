@@ -38,9 +38,8 @@ public class DeviceStatus {
 
     @SuppressWarnings("unchecked")
     public <T> T get(String attrName) {
-        if (this.attributes.containsKey(attrName)) {
+        if (this.attributes.containsKey(attrName))
             return (T) this.attributes.get(attrName).getValue();
-        }
         return null;
     }
 
