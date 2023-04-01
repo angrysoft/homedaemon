@@ -6,8 +6,12 @@ import ovh.angrysoft.homedaemon.DummyDevice;
 import ovh.angrysoft.homedaemon.bus.Events.StatusEvent;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeReadOnly;
 
-public class FakeDeviceManager implements DeviceManager{
+public class FakeDeviceManager implements DeviceManager {
     private HashMap<String, BaseDevice> devices;
+
+    public FakeDeviceManager() {
+        this.devices = new HashMap<>();
+    }
 
     public void loadDevice() {
         HashMap<String, String> name = new HashMap<>();
@@ -17,6 +21,7 @@ public class FakeDeviceManager implements DeviceManager{
         DeviceInfo deviceInfo = new DeviceInfo("123", "light", "diy", "superLight", name, place, new HashMap<>());
         BaseDevice device = new DummyDevice(deviceInfo);
         devices.put("123", device);
+        System.out.println(devices.size());
     }
 
     public void setup() {
@@ -40,10 +45,10 @@ public class FakeDeviceManager implements DeviceManager{
         }
     }
 
-    public <T> T query(String sid, String attrName) {
+    public <T> T queryStatus(String sid, String attrName) {
         BaseDevice dev = this.devices.get(sid);
-        DeviceAttribute<T> attr = dev.query(attrName);
+        DeviceAttribute<T> attr = (DeviceAttribute<T>) dev.query(attrName);
         return attr.getValue();
     }
-    
+
 }

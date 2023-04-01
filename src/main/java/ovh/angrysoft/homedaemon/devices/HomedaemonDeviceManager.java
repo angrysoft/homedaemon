@@ -151,9 +151,9 @@ public class HomedaemonDeviceManager implements DeviceManager {
         }
     }
 
-    public <T> T query(String sid, String attrName) {
+    public <T> T queryStatus(String sid, String attrName) {
         BaseDevice dev = devices.get(sid);
-        DeviceAttribute<T> attr =  dev.query(attrName);
+        DeviceAttribute<T> attr = dev.query(attrName);
         return attr.getValue();
     }
 
