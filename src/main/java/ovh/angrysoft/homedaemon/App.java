@@ -10,7 +10,7 @@ import ovh.angrysoft.homedaemon.bus.Event;
 import ovh.angrysoft.homedaemon.bus.EventBus;
 import ovh.angrysoft.homedaemon.bus.Trigger;
 import ovh.angrysoft.homedaemon.config.Config;
-import ovh.angrysoft.homedaemon.devices.DeviceManager;
+import ovh.angrysoft.homedaemon.devices.HomedaemonDeviceManager;
 
 public class App {
     public static void main(String[] args) {
@@ -35,7 +35,7 @@ public class App {
             logger.info(String.format("handled event: %s with payload: %s", Arrays.toString(event.getTopicList()), event.getPayload()));
         }));
 
-        DeviceManager deviceManager = new DeviceManager(devDir, bus);
+        HomedaemonDeviceManager deviceManager = new HomedaemonDeviceManager(devDir, bus);
         deviceManager.loadDevice();
         deviceManager.setup();
         logger.info(String.format("HomeDaemon Started thread : %s", Thread.currentThread()));

@@ -10,34 +10,51 @@
         "state_name": "state_init_value",
         "occupancy": false
     },
-    "conditions": {
-        "and": [],
-        "or": [],
-        "not": [],
-        "gt": {
-            "sid": "device_sid",
-            "attr": "device numeric attribute",
-            "value": 0
+    "conditions": [
+        {
+            "type": "and",
+            "testCases": [
+                {
+                    "type": "gt",
+                    "sid": "device_sid",
+                    "attr": "device numeric attribute",
+                    "value": 0
+                },
+                {
+                    "type": "lt",
+                    "sid": "device_sid",
+                    "attr": "device numeric attribute",
+                    "value": 0
+                },
+                {
+                    "type": "eq",
+                    "sid": "device_sid",
+                    "attr": "device numeric attribute",
+                    "value": 0
+                },
+                {
+                    "type": "status",
+                    "sid": "device_sid",
+                    "attr": "device attribute",
+                    "value": "object"
+                },
+                {
+                    "type": "state",
+                    "attr": "occupancy",
+                    "value": true
+                }
+
+            ]
         },
-        "lt": {
-            "sid": "device_sid",
-            "attr": "device numeric attribute",
-            "value": 0
+        {
+            "type": "or",
+            "testCases": []
         },
-        "eq": {
-            "sid": "device_sid",
-            "attr": "device numeric attribute",
-            "value": 0
-        },
-        "status": {
-            "sid": "device_sid",
-            "attr": "device attribute",
-            "value": "object"
-        },
-        "state": {
-            "occupancy": true
+        {
+            "type": "not",
+            "testCases": []
         }
-    },
+    ],
     "actions": [
         {
             "type": "execute",
