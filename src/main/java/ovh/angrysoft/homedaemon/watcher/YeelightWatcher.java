@@ -37,8 +37,6 @@ public class YeelightWatcher extends Watcher {
 
     @Override
     public void run() {
-        //TODO remove me 
-        System.err.println(String.format("from run YeelightWatcher Thread %s", Thread.currentThread()));
 
         try (TcpConnection conn = new TcpConnection(ip, port)) {
             while (true) {
