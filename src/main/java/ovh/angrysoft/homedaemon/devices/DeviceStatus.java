@@ -9,7 +9,7 @@ import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeNotFound;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeReadOnly;
 
 public class DeviceStatus {
-    private HashMap<String, DeviceAttribute<?>> attributes;
+    private final HashMap<String, DeviceAttribute<?>> attributes;
 
     public DeviceStatus() {
         this.attributes = new HashMap<>();
