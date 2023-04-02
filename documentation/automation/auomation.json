@@ -16,7 +16,7 @@
             "testCases": [
                 {
                     "type": "gt",
-                    "deviceSid": "device_sid",
+                    "sid": "device_sid",
                     "attrName": "device numeric attribute",
                     "attrValue": 0
                 },
@@ -61,7 +61,9 @@
             "sid": "device sid",
             "cmd": "command Name",
             "arg": "object",
-            "runInBackground": false
+            "runInBackground": false,
+            "delayIn": 1000,
+            "delayOut": 1000
         },
         {
             "type": "execute",

@@ -5,6 +5,10 @@ import java.util.List;
 
 import ovh.angrysoft.homedaemon.automation.actions.Action;
 import ovh.angrysoft.homedaemon.automation.actions.ActionExecute;
+import ovh.angrysoft.homedaemon.automation.conditions.AndCondition;
+import ovh.angrysoft.homedaemon.automation.conditions.Condition;
+import ovh.angrysoft.homedaemon.automation.conditions.IntGtTestCase;
+import ovh.angrysoft.homedaemon.automation.conditions.TestCase;
 import ovh.angrysoft.homedaemon.devices.DeviceManager;
 
 public class AutomationParser {
@@ -18,8 +22,33 @@ public class AutomationParser {
         System.out.println(info.getSid());
         System.out.println(info.getTrigger());
         List<Action> actions = this.parseActions(info.getActions());
-        List<Condition> conditions = this.parseConditions(info.getConditoins());
-        return new Automation(false, info.getSid(), actions);
+        List<Condition> conditions = this.parseConditions(info.getConditions());
+        return new Automation(false, info.getSid(), actions, conditions);
+    }
+
+    private List<Condition> parseConditions(List<ConditionInfo> conditionsInfos) {
+        List<Condition> result = new ArrayList<>();
+        for (ConditionInfo conditionInfo : conditionsInfos) {
+            switch (conditionInfo.type) {
+                case "and":
+                    AndCondition andCondition = new AndCondition(deviceManager);
+                    conditionInfo.testCases.forEach(testCaseInfo -> {
+                        andCondition.addCase(this.parseTestCase(testCaseInfo));
+                    });
+                    result.add(andCondition);
+
+            }
+        }
+        return result;
+    }
+
+    private TestCase<?> parseTestCase(TestCaseInfo testCaseInfo) {
+        switch (testCaseInfo.type) {
+            case "gt":
+                return new IntGtTestCase(testCaseInfo.type, testCaseInfo.sid, testCaseInfo.attrName,
+                        testCaseInfo.attrValue);
+        }
+        return null;
     }
 
     private List<Action> parseActions(List<ActionInfo> actions) {

@@ -82,14 +82,14 @@ public class AutomationInfo {
 
 class ConditionInfo {
     String type;
-    List<CaseInfo> cases;
+    List<TestCaseInfo> testCases;
 }
 
-class CaseInfo {
+class TestCaseInfo {
     String type;
     String sid;
-    String attr;
-    Object val;
+    String attrName;
+    Object attrValue;
 }
 
 class Actions {

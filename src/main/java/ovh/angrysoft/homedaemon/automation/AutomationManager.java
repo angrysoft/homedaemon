@@ -10,8 +10,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.ToNumberPolicy;
 
 import ovh.angrysoft.homedaemon.bus.Event;
 import ovh.angrysoft.homedaemon.bus.EventBus;
@@ -27,7 +29,7 @@ public class AutomationManager {
     private Set<Automation> automations;
 
     public AutomationManager(String automationDirPath, EventBus bus, DeviceManager deviceManager) {
-        this.deviceManager =  deviceManager;
+        this.deviceManager = deviceManager;
         this.automationParser = new AutomationParser(this.deviceManager);
         this.bus = bus;
         this.automationDirPath = automationDirPath;
@@ -47,12 +49,13 @@ public class AutomationManager {
                 continue;
 
             try {
+                Gson gson = new GsonBuilder().setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE).create();
 
-                AutomationInfo automationInfo = new Gson().fromJson(new FileReader(automationInfoFile),
+                AutomationInfo automationInfo = gson.fromJson(new FileReader(automationInfoFile),
                         AutomationInfo.class);
                 automationInfo.checkFields();
                 System.out.println(automationInfo);
-                
+
                 LOGGER.log(Level.INFO, "load automation: {0}", automationInfo.getSid());
 
                 Automation automation = automationParser.parse(automationInfo);
@@ -64,12 +67,13 @@ public class AutomationManager {
     }
 
     private void registerAutomation(String triggerString, Automation automation) {
-        synchronized(this) {
+        synchronized (this) {
             this.automations.add(automation);
         }
         Trigger automationTrigger = new Trigger(triggerString, (Event event) -> {
             LOGGER.info(String.format("automation: %s - action", Arrays.toString(event.getTopicList())));
-            new Thread(automation).start();;
+            new Thread(automation).start();
+            ;
         });
         this.bus.addTrigger(automationTrigger);
     }
