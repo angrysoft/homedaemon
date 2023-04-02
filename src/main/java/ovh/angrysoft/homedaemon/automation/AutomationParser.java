@@ -18,6 +18,7 @@ public class AutomationParser {
         System.out.println(info.getSid());
         System.out.println(info.getTrigger());
         List<Action> actions = this.parseActions(info.getActions());
+        List<Condition> conditions = this.parseConditions(info.getConditoins());
         return new Automation(false, info.getSid(), actions);
     }
 

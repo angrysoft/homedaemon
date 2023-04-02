@@ -16,32 +16,32 @@
             "testCases": [
                 {
                     "type": "gt",
-                    "sid": "device_sid",
-                    "attr": "device numeric attribute",
-                    "value": 0
+                    "deviceSid": "device_sid",
+                    "attrName": "device numeric attribute",
+                    "attrValue": 0
                 },
                 {
                     "type": "lt",
                     "sid": "device_sid",
-                    "attr": "device numeric attribute",
-                    "value": 0
+                    "attrName": "device numeric attribute",
+                    "attrValue": 0
                 },
                 {
                     "type": "eq",
                     "sid": "device_sid",
-                    "attr": "device numeric attribute",
-                    "value": 0
+                    "attrName": "device numeric attribute",
+                    "attrValue": 0
                 },
                 {
                     "type": "status",
                     "sid": "device_sid",
-                    "attr": "device attribute",
-                    "value": "object"
+                    "attrName": "device attribute",
+                    "attrValue": "object"
                 },
                 {
                     "type": "state",
-                    "attr": "occupancy",
-                    "value": true
+                    "attrName": "occupancy",
+                    "attrValue": true
                 }
 
             ]
