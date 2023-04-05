@@ -1,4 +1,5 @@
 {
     "one": 1,
-    "two": "stringTwo"
+    "two": "stringTwo",
+    "three": 1.1
 }

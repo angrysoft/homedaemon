@@ -1,11 +1,12 @@
 package ovh.angrysoft.homedaemon.watcher;
 
+import java.lang.reflect.Type;
 import java.util.HashMap;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.ToNumberPolicy;
-import com.google.gson.ToNumberStrategy;
+import com.google.gson.reflect.TypeToken;
 
 import ovh.angrysoft.homedaemon.bus.Events.StatusEvent;
 import ovh.angrysoft.homedaemon.devices.zigbee2mqtt.Zigbee2MqttGateway;
@@ -25,7 +26,9 @@ public class Zigbee2MqttWatcher extends Watcher {
     @SuppressWarnings("unchecked")
     private void onMessage(String topic, String msg) {
         Gson gson = new GsonBuilder().setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE).create();
-        HashMap<String, Object> notify = (HashMap<String, Object>) gson.fromJson(msg, HashMap.class);
+        Type mapType = new TypeToken<HashMap<String, Object>>(){}.getType();
+
+        HashMap<String, Object> notify = (HashMap<String, Object>) gson.fromJson(msg, mapType);
         notify.forEach((k, v) -> {
             handler.call(new StatusEvent(getSidFromTopic(topic), k, v));
         });

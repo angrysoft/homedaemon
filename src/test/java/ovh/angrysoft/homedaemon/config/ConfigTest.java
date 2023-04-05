@@ -33,4 +33,5 @@ public class ConfigTest {
         assertEquals(1, config.get("test", "one").getAsInt());
         assertEquals(config.categorySet().size(), 2);
     }
+
 }
