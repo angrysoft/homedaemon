@@ -77,7 +77,6 @@ public class Config {
      */
     private void loadConfigFile(Path path) {
         try {
-
             JsonObject conf = new Gson().fromJson(new FileReader(path.toString()), JsonObject.class);
             String fileName = path.getFileName().toString();
             String[] name = fileName.split(".json");
