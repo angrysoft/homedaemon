@@ -18,19 +18,19 @@
                     "type": "gt",
                     "sid": "device_sid",
                     "attrName": "device numeric attribute",
-                    "attrValue": 0
+                    "attrValue": 10
                 },
                 {
                     "type": "lt",
                     "sid": "device_sid",
                     "attrName": "device numeric attribute",
-                    "attrValue": 0
+                    "attrValue": 11
                 },
                 {
                     "type": "eq",
                     "sid": "device_sid",
                     "attrName": "device numeric attribute",
-                    "attrValue": 0
+                    "attrValue": 12
                 },
                 {
                     "type": "status",
