@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.LongSerializationPolicy;
 import com.google.gson.ToNumberPolicy;
 
 import ovh.angrysoft.homedaemon.bus.Event;
@@ -49,7 +50,7 @@ public class AutomationManager {
                 continue;
 
             try {
-                Gson gson = new GsonBuilder().setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE).create();
+                Gson gson = new GsonBuilder().setObjectToNumberStrategy(ToNumberPolicy.LAZILY_PARSED_NUMBER).create();
 
                 AutomationInfo automationInfo = gson.fromJson(new FileReader(automationInfoFile),
                         AutomationInfo.class);

@@ -1,12 +1,12 @@
 package ovh.angrysoft.homedaemon.automation.conditions;
 
-public abstract class TestCase<E> {
+public abstract class TestCase<T> {
     protected final String type;
     protected final String deviceSid;
     protected final String attrName;
-    protected final E attrValue;
+    protected final T attrValue;
 
-    public TestCase(String type, String deviceSid, String attrName, E attrValue) {
+    public TestCase(String type, String deviceSid, String attrName, T attrValue) {
         this.type = type;
         this.deviceSid = deviceSid;
         this.attrName = attrName;
@@ -27,7 +27,7 @@ public abstract class TestCase<E> {
         return attrName;
     }
 
-    public E getAttrValue() {
+    public T getAttrValue() {
         return attrValue;
     }
 

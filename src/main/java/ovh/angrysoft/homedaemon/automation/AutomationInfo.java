@@ -1,6 +1,7 @@
 package ovh.angrysoft.homedaemon.automation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -76,6 +77,9 @@ public class AutomationInfo {
         sb.append("trigger = ")
                 .append(trigger)
                 .append("\n");
+        sb.append("... ")
+        .append(conditions)
+        .append(actions);
         return sb.toString();
     }
 }
@@ -83,6 +87,17 @@ public class AutomationInfo {
 class ConditionInfo {
     String type;
     List<TestCaseInfo> testCases;
+    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("type: ")
+        .append(type);
+
+        sb.append("TestCases: ")
+        .append(testCases);
+        return sb.toString();
+    }
 }
 
 class TestCaseInfo {

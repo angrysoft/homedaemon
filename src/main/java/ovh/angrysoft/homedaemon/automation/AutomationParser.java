@@ -3,6 +3,8 @@ package ovh.angrysoft.homedaemon.automation;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.internal.LazilyParsedNumber;
+
 import ovh.angrysoft.homedaemon.automation.actions.Action;
 import ovh.angrysoft.homedaemon.automation.actions.ActionExecute;
 import ovh.angrysoft.homedaemon.automation.conditions.AndCondition;
@@ -45,8 +47,9 @@ public class AutomationParser {
     private TestCase<?> parseTestCase(TestCaseInfo testCaseInfo) {
         switch (testCaseInfo.type) {
             case "gt":
+                LazilyParsedNumber number = (LazilyParsedNumber) testCaseInfo.attrValue;
                 return new IntGtTestCase(testCaseInfo.type, testCaseInfo.sid, testCaseInfo.attrName,
-                        testCaseInfo.attrValue);
+                        number.intValue());
         }
         return null;
     }
