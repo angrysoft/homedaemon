@@ -9,7 +9,11 @@ import ovh.angrysoft.homedaemon.automation.actions.Action;
 import ovh.angrysoft.homedaemon.automation.actions.ActionExecute;
 import ovh.angrysoft.homedaemon.automation.conditions.AndCondition;
 import ovh.angrysoft.homedaemon.automation.conditions.Condition;
+import ovh.angrysoft.homedaemon.automation.conditions.IntEqTestCase;
 import ovh.angrysoft.homedaemon.automation.conditions.IntGtTestCase;
+import ovh.angrysoft.homedaemon.automation.conditions.IntLtTestCase;
+import ovh.angrysoft.homedaemon.automation.conditions.NullTestCase;
+import ovh.angrysoft.homedaemon.automation.conditions.StatusTestCase;
 import ovh.angrysoft.homedaemon.automation.conditions.TestCase;
 import ovh.angrysoft.homedaemon.devices.DeviceManager;
 
@@ -46,12 +50,33 @@ public class AutomationParser {
 
     private TestCase<?> parseTestCase(TestCaseInfo testCaseInfo) {
         switch (testCaseInfo.type) {
-            case "gt":
+            case "gt": {
                 LazilyParsedNumber number = (LazilyParsedNumber) testCaseInfo.attrValue;
                 return new IntGtTestCase(testCaseInfo.type, testCaseInfo.sid, testCaseInfo.attrName,
                         number.intValue());
+            }
+            case "lt": {
+                LazilyParsedNumber number = (LazilyParsedNumber) testCaseInfo.attrValue;
+                return new IntLtTestCase(testCaseInfo.type, testCaseInfo.sid, testCaseInfo.attrName,
+                        number.intValue());
+            }
+            case "eq": {
+                LazilyParsedNumber number = (LazilyParsedNumber) testCaseInfo.attrValue;
+                return new IntEqTestCase(testCaseInfo.type, testCaseInfo.sid, testCaseInfo.attrName,
+                        number.intValue());
+            }
+            case "status": {
+                return new StatusTestCase(testCaseInfo.type, testCaseInfo.sid, testCaseInfo.attrName,
+                        testCaseInfo.attrValue);
+            }
+            // case "state": {
+            //     return new StateTestCase(testCaseInfo.type, testCaseInfo.sid, testCaseInfo.attrName,
+            //             testCaseInfo.attrValue);
+            // }
+            default:
+                return new NullTestCase(testCaseInfo.type, testCaseInfo.sid, testCaseInfo.attrName,
+                        testCaseInfo.attrValue);
         }
-        return null;
     }
 
     private List<Action> parseActions(List<ActionInfo> actions) {
