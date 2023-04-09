@@ -13,7 +13,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
-import com.google.gson.LongSerializationPolicy;
 import com.google.gson.ToNumberPolicy;
 
 import ovh.angrysoft.homedaemon.bus.Event;
@@ -55,7 +54,6 @@ public class AutomationManager {
                 AutomationInfo automationInfo = gson.fromJson(new FileReader(automationInfoFile),
                         AutomationInfo.class);
                 automationInfo.checkFields();
-                System.out.println(automationInfo);
 
                 LOGGER.log(Level.INFO, "load automation: {0}", automationInfo.getSid());
 

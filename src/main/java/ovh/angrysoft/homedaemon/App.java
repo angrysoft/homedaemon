@@ -1,6 +1,5 @@
 package ovh.angrysoft.homedaemon;
 
-
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,7 +16,10 @@ public class App {
         String devDir = System.getenv("DEVICE.DIR");
         String confDir = System.getenv("CONFIG.DIR");
         String automationDir = System.getenv("AUTOMATION.DIR");
-        
+        if (devDir == null || confDir == null || automationDir == null) {
+            System.err.println("Add env DEVICE.DIR CONFIG.DIR AUTOMATION.DIR");
+            return;
+        }
         Config config = new Config();
         config.loadConfigs(confDir);
         Logger logger = Logger.getLogger("Homedaemon");
@@ -29,21 +31,21 @@ public class App {
             logger.setLevel(Level.WARNING);
         }
 
-
         EventBus bus = new EventBus();
         bus.addTrigger(new Trigger("status.*", (Event event) -> {
-            logger.info(String.format("handled event: %s with payload: %s", Arrays.toString(event.getTopicList()), event.getPayload()));
+            logger.info(String.format("handled event: %s with payload: %s", Arrays.toString(event.getTopicList()),
+                    event.getPayload()));
         }));
 
         HomedaemonDeviceManager deviceManager = new HomedaemonDeviceManager(devDir, bus);
         deviceManager.loadDevice();
         deviceManager.setup();
         logger.info(String.format("HomeDaemon Started thread : %s", Thread.currentThread()));
-        
+
         AutomationManager automationManager = new AutomationManager(automationDir, bus, deviceManager);
         automationManager.loadAutomation();
-        
-        while(true) {
+
+        while (true) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
