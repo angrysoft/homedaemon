@@ -26,7 +26,6 @@ public class CtrlNeutral2Test {
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         CtrlNeutral2 ctrl = new CtrlNeutral2(deviceInfo, gateway);

@@ -1,6 +1,5 @@
 package ovh.angrysoft.homedaemon.automation;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -104,38 +103,6 @@ class TestCaseInfo {
     String sid;
     String attrName;
     Object attrValue;
-}
-
-class Actions {
-    private List<ActionInfo> parallel;
-    private List<ActionInfo> sequential;
-
-    public Actions(List<ActionInfo> parallel, List<ActionInfo> sequential) {
-        this.parallel = parallel;
-        this.sequential = sequential;
-    }
-
-    public List<ActionInfo> getParallel() {
-        if (parallel == null)
-            return new ArrayList<>();
-        return parallel;
-    }
-
-    public List<ActionInfo> getSequential() {
-        if (sequential == null)
-            return new ArrayList<>();
-        return sequential;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder result = new StringBuilder();
-        if (this.parallel != null)
-            result.append(this.parallel.toString());
-        if (this.sequential != null)
-            result.append(this.sequential.toString());
-        return result.toString();
-    }
 }
 
 class ActionInfo {

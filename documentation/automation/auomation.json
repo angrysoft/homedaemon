@@ -70,6 +70,12 @@
             "cmd": "command Name",
             "arg": "object",
             "runInBackground": true
+        },
+        {
+            "type": "dispatch",
+            "sid": "device sid",
+            "cmd": "event to dispatch",
+            "arg": "object"
         }
     ],
     "actionsFalse": []

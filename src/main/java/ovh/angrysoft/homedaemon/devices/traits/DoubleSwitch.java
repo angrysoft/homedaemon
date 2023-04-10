@@ -7,4 +7,6 @@ public interface DoubleSwitch extends Trait {
     boolean isRightOn();
     void toggleLeft();
     void toggleRight();
+    void allOn();
+    void allOff();
 }

@@ -44,7 +44,7 @@ public class CtrlNeutral2 extends ZigbeeBaseDevice implements DoubleSwitch {
     }
 
     public void toggleLeft() {
-        this.gateway.sendSet(this.getSid(), "state_right", "toggle");
+        this.gateway.sendSet(this.getSid(), "state_left", "toggle");
     }
 
     public void toggleRight() {
@@ -65,5 +65,17 @@ public class CtrlNeutral2 extends ZigbeeBaseDevice implements DoubleSwitch {
 
     public void setRightRelay() {
         this.gateway.sendSet(this.getSid(), "operation_mode_right", "control_right_relay");
+    }
+
+    @Override
+    public void allOn() {
+        this.gateway.sendSet(this.getSid(), "state_left", "ON");
+        this.gateway.sendSet(this.getSid(), "state_right", "ON");
+    }
+    
+    @Override
+    public void allOff() {
+        this.gateway.sendSet(this.getSid(), "state_left", "OFF");
+        this.gateway.sendSet(this.getSid(), "state_right", "OFF");
     }
 }

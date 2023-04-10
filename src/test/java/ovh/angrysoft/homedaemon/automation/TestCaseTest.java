@@ -23,6 +23,12 @@ public class TestCaseTest {
     }
 
     @Test
+    public void testIntEqTestCase() {
+        assertTrue(new StatusTestCase("status", "123", "stateString", 11).check(11));
+        assertFalse(new StatusTestCase("status", "123", "stateString", 11).check(1));
+    }
+
+    @Test
     public void testStatusTestCase() {
         assertTrue(new StatusTestCase("status", "123", "stateString", "foo").check("foo"));
         assertFalse(new StatusTestCase("status", "123", "stateString", "foo").check("bar"));

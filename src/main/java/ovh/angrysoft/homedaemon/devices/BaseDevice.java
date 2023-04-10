@@ -15,35 +15,42 @@ import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
 public abstract class BaseDevice {
     protected DeviceStatus status;
     protected Set<String> commands;
-    
+
     protected static final Logger LOGGER = Logger.getLogger("Homedaemon");
-    
-    
+
     protected BaseDevice(DeviceInfo deviceInfo) {
         this.status = new DeviceStatus();
         this.commands = new HashSet<>();
         this.setupCommandSet();
         try {
             this.status.registerAttribute(new DeviceAttribute<String>("sid", deviceInfo.getSid(), true));
-            this.status.registerAttribute(new DeviceAttribute<Map<String,String>>("name", deviceInfo.getName()));
-            this.status.registerAttribute(new DeviceAttribute<Map<String,String>>("place", deviceInfo.getPlace()));
+            this.status.registerAttribute(new DeviceAttribute<Map<String, String>>("name", deviceInfo.getName()));
+            this.status.registerAttribute(new DeviceAttribute<Map<String, String>>("place", deviceInfo.getPlace()));
         } catch (AttributeAlreadyExist e) {
             LOGGER.warning(e.getMessage());
         }
-        
+
     }
-    
+
     public Set<String> getCommands() {
         return commands;
     }
-    
+
     protected String getSid() {
         return this.status.get("sid");
     }
 
     protected void setupCommandSet() {
-        for (Class<?> cls : this.getClass().getInterfaces()) {
-            for (Method method : cls.getDeclaredMethods()) {
+        getAllMethods(this.getClass());
+    }
+
+    private void getAllMethods(Class<?> cls) {
+        if (!(cls.getSuperclass().getSimpleName().equals("Object"))) {
+            getAllMethods(cls.getSuperclass());
+        }
+
+        for (Class<?> inter : cls.getInterfaces()) {
+            for (Method method : inter.getDeclaredMethods()) {
                 this.commands.add(method.getName());
             }
         }
@@ -74,8 +81,9 @@ public abstract class BaseDevice {
     /**
      * Execute allowed method from device commands
      * executed method arguments must by not a primitive type
+     * 
      * @param methodName method to be executed
-     * @param arg arg optional method argument
+     * @param arg        arg optional method argument
      */
     public void execute(String methodName, Object arg) {
         if (!this.commands.contains(methodName)) {
@@ -85,16 +93,18 @@ public abstract class BaseDevice {
 
         try {
             if (arg != null) {
-                Method cmd = this.getClass().getDeclaredMethod(methodName, arg.getClass());
+                Method cmd = this.getClass().getMethod(methodName, arg.getClass());
                 cmd.invoke(this, arg);
                 return;
             }
-            Method cmd = this.getClass().getDeclaredMethod(methodName);
+            Method cmd = this.getClass().getMethod(methodName);
             cmd.invoke(this);
         } catch (NoSuchMethodException | SecurityException e) {
             LOGGER.warning(e.getMessage());
+            e.printStackTrace();
         } catch (InvocationTargetException | IllegalAccessException | IllegalArgumentException e) {
-           LOGGER.warning(e.getMessage());
+            LOGGER.warning(e.getMessage());
+            e.printStackTrace();
         }
     }
 }
