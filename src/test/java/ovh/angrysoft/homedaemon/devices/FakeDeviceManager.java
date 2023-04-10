@@ -26,12 +26,10 @@ public class FakeDeviceManager implements DeviceManager {
     }
 
     public void setup() {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'setup'");
     }
 
     public void execute(String sid, String cmd, Object args) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'execute'");
     }
 
@@ -53,7 +51,6 @@ public class FakeDeviceManager implements DeviceManager {
 
     @Override
     public EventBus getBus() {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getBus'");
     }
 

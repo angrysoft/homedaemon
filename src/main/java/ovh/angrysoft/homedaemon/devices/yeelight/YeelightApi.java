@@ -202,9 +202,7 @@ class YeelightApi {
     }
 
     public void setPower(boolean state) {
-        String powerState = state ? "on" : "off";
-        Object[] params = { powerState, efx, duration, PowerModes.NORMAL };
-        send("set_power", params);
+        setPower(state, PowerModes.NORMAL);
     }
 
     public void toggle() {
