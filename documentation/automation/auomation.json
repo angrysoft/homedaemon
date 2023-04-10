@@ -5,7 +5,7 @@
         "en": "Kitchen Light",
         "pl": "Światło w kuchni"
     },
-    "trigger": "status.0x00158d000200a020.action.single",
+    "trigger": "status.0x00124b00244504ca.voltage.3000",
     "state": {
         "state_name": "state_init_value",
         "occupancy": false
