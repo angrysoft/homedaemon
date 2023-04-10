@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.LongSerializationPolicy;
 import com.google.gson.ToNumberPolicy;
 import com.google.gson.reflect.TypeToken;
 
@@ -20,24 +21,29 @@ public class Zigbee2MqttWatcher extends Watcher {
         this.gateway.setOnMsgHandler((String topic, String msg) -> {
             onMessage(topic, msg);
         });
-        
+
     }
-    
+
     @SuppressWarnings("unchecked")
     private void onMessage(String topic, String msg) {
         Gson gson = new GsonBuilder().setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE).create();
-        Type mapType = new TypeToken<HashMap<String, Object>>(){}.getType();
+        Type mapType = new TypeToken<HashMap<String, Object>>() {
+        }.getType();
 
         HashMap<String, Object> notify = (HashMap<String, Object>) gson.fromJson(msg, mapType);
         notify.forEach((k, v) -> {
-            handler.call(new StatusEvent(getSidFromTopic(topic), k, v));
+            Object value = v;
+            if (v instanceof Long) {
+                value = Integer.parseInt(v.toString());
+            }
+            handler.call(new StatusEvent(getSidFromTopic(topic), k, value));
         });
     }
-    
+
     private String getSidFromTopic(String topic) {
         return topic.split("/")[1];
     }
-    
+
     @Override
     public void run() {
     }
