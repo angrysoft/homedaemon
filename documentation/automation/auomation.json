@@ -7,7 +7,7 @@
     },
     "trigger": "status.0x00124b00244504ca.voltage.3000",
     "state": {
-        "state_name": "state_init_value",
+        "stateName": "state_init_value",
         "occupancy": false
     },
     "conditions": [

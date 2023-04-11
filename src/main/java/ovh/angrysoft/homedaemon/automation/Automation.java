@@ -1,6 +1,8 @@
 package ovh.angrysoft.homedaemon.automation;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import ovh.angrysoft.homedaemon.automation.actions.Action;
@@ -10,13 +12,22 @@ public class Automation implements Runnable {
     protected boolean running = false;
     protected String sid;
     protected List<Action> actions;
+    protected List<Action> actionsFalse;
     protected List<Condition> conditions;
+    protected Map<String, Object> state;
 
-    public Automation(boolean running, String sid, List<Action> actions, List<Condition> conditions) {
+    public Automation(boolean running, String sid, List<Condition> conditions, List<Action> actions,
+            List<Action> actionsFalse, Map<String, Object> state) {
         this.running = running;
         this.sid = sid;
         this.actions = actions;
+        this.actionsFalse = actionsFalse;
         this.conditions = conditions;
+        this.state = new HashMap<>();
+        if (state != null) {
+            this.state.putAll(state);
+        }
+
     }
 
     public String getSid() {
@@ -27,15 +38,26 @@ public class Automation implements Runnable {
         if (running)
             return;
         running = true;
-        for (Condition condition : conditions) {
-            if (!condition.check())
-                return;
+        List<Action> actionsToRun = this.actions;
+
+        if (!checkCondition()) {
+            actionsToRun = this.actionsFalse;
         }
 
-        for (Action action : actions) {
+        for (Action action : actionsToRun) {
             action.run();
         }
         running = false;
+    }
+
+    //TODO Condition state ...
+    private boolean checkCondition() {
+        for (Condition condition : conditions) {
+            if (!condition.check()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public boolean isRunning() {

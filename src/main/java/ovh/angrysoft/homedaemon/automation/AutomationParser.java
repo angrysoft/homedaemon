@@ -29,8 +29,9 @@ public class AutomationParser {
 
     public Automation parse(AutomationInfo info) {
         List<Action> actions = this.parseActions(info.getActions());
+        List<Action> actionsFalse = this.parseActions(info.getActionsFalse());
         List<Condition> conditions = this.parseConditions(info.getConditions());
-        return new Automation(false, info.getSid(), actions, conditions);
+        return new Automation(false, info.getSid(), conditions, actions, actionsFalse, info.getState());
     }
 
     private List<Condition> parseConditions(List<ConditionInfo> conditionsInfos) {

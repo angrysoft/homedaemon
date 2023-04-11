@@ -10,15 +10,20 @@ public class AutomationInfo {
     private Map<String, String> name;
     private List<ConditionInfo> conditions;
     private List<ActionInfo> actions;
+    private List<ActionInfo> actionsFalse;
+    private Map<String, Object> state;
 
     public AutomationInfo(String sid, String type, String trigger, Map<String, String> name,
-            List<ConditionInfo> conditions, List<ActionInfo> actions) {
+            List<ConditionInfo> conditions, List<ActionInfo> actions, List<ActionInfo> actionsFalse,
+            Map<String, Object> state) {
         this.sid = sid;
         this.type = type;
         this.trigger = trigger;
         this.name = name;
         this.conditions = conditions;
         this.actions = actions;
+        this.actionsFalse = actionsFalse;
+        this.state = state;
     }
 
     public String getSid() {
@@ -45,6 +50,14 @@ public class AutomationInfo {
         return actions;
     }
 
+    public List<ActionInfo> getActionsFalse() {
+        return actionsFalse;
+    }
+
+    public Map<String, Object> getState() {
+        return state;
+    }
+
     public void checkFields() throws VerifyError {
         if (sid == null)
             throw new VerifyError("sid is null");
@@ -61,6 +74,9 @@ public class AutomationInfo {
         if (actions == null)
             throw new VerifyError("actions is null");
 
+        if (actionsFalse == null)
+            throw new VerifyError("actionsFalse is null");
+
         if (conditions == null)
             throw new VerifyError("conditions is null");
     }
@@ -76,24 +92,25 @@ public class AutomationInfo {
                 .append(trigger)
                 .append("\n");
         sb.append("... ")
-        .append(conditions)
-        .append(actions);
+                .append(conditions)
+                .append(actions);
         return sb.toString();
     }
+
 }
 
 class ConditionInfo {
     String type;
     List<TestCaseInfo> testCases;
-    
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("type: ")
-        .append(type);
+                .append(type);
 
         sb.append("TestCases: ")
-        .append(testCases);
+                .append(testCases);
         return sb.toString();
     }
 }
