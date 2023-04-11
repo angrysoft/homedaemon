@@ -11,9 +11,9 @@
             "request": "launch",
             "mainClass": "${workspaceFolder}/src/main/java/ovh/angrysoft/homedaemon/App.java",
             "env": {
-                "DEVICE.DIR": "/home/seba/workspace/homedaemon/tmp/dev.d",
-                "CONFIG.DIR": "/home/seba/workspace/homedaemon/tmp/conf.d",
-                "AUTOMATION.DIR": "/home/seba/workspace/homedaemon/tmp/automation.d"
+                "DEVICE.DIR": "/home/seba/workspace/homedaemon/tmp/devices.d",
+                "CONFIG.DIR": "/home/seba/workspace/homedaemon/tmp/configs.d",
+                "AUTOMATION.DIR": "/home/seba/workspace/homedaemon/tmp/automations.d"
             }
         },
         {
