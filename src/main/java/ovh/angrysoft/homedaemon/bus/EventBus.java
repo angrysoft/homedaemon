@@ -35,6 +35,7 @@ public class EventBus {
         for (Map.Entry<String, Trigger> entry : triggers.entrySet()) {
             Trigger trigger = entry.getValue();
             if (trigger.compareTopic(event.getTopicList())) {
+                // TODO ThreadPool
                 trigger.call(event);
                 if (trigger.isOneShot())
                     delTrigger(trigger.getId());

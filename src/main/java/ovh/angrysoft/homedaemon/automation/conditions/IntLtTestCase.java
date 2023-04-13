@@ -10,7 +10,6 @@ public class IntLtTestCase extends TestCase<Integer> {
     public boolean check(Object value) {
         if (value == null)
             return false;
-        System.err.println("LT" + value.toString() + " " + attrValue.toString());
         return  (Integer) value < attrValue;
     }
 

@@ -3,12 +3,12 @@ package ovh.angrysoft.homedaemon.automation.actions;
 import ovh.angrysoft.homedaemon.bus.EventBus;
 import ovh.angrysoft.homedaemon.bus.Events.ActionEvent;
 
-public class ActionDispatch extends Action {
+public class ActionState extends Action {
     private EventBus bus;
     private String eventName;
     private Object eventValue;
 
-    public ActionDispatch(String eventName, Object eventValue, EventBus bus) {
+    public ActionState(String eventName, Object eventValue, EventBus bus) {
         this.bus = bus;
         this.eventName = eventName;
         this.eventValue = eventValue;

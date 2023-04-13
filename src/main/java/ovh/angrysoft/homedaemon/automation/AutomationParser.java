@@ -82,11 +82,10 @@ public class AutomationParser {
                 return new StatusTestCase(testCaseInfo.type, testCaseInfo.sid, testCaseInfo.attrName,
                         testCaseInfo.attrValue);
             }
-            // case "state": {
-            // return new StateTestCase(testCaseInfo.type, testCaseInfo.sid,
-            // testCaseInfo.attrName,
-            // testCaseInfo.attrValue);
-            // }
+            case "state": {
+                return new StatusTestCase(testCaseInfo.type, "state", testCaseInfo.attrName,
+                        testCaseInfo.attrValue);
+            }
             default:
                 return new NullTestCase(testCaseInfo.type, testCaseInfo.sid, testCaseInfo.attrName,
                         testCaseInfo.attrValue);
