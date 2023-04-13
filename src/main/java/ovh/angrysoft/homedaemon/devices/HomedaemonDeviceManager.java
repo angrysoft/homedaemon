@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,6 +41,8 @@ public class HomedaemonDeviceManager implements DeviceManager {
     }
 
     public void loadDevice() {
+        addInternalDevicesInfo();
+
         File devDir = new File(deviceInfoDir);
         if (!devDir.exists() && !devDir.isDirectory()) {
             LOGGER.log(Level.ALL, "Cannot access device dir : {0}", deviceInfoDir);
@@ -74,6 +77,31 @@ public class HomedaemonDeviceManager implements DeviceManager {
                         String.format("Device info file parse error: %s : %s", devInfoFile.getName(), e.getMessage()));
             }
         }
+    }
+
+    private void addInternalDevicesInfo() {
+        // Clock
+        Map<String, String> clockName = new HashMap<>();
+        clockName.put("pl", "Zegar");
+        clockName.put("en", "Clock");
+        Map<String, String> clockPlace = new HashMap<>();
+        clockPlace.put("pl", "Wszędzie");
+        clockPlace.put("en", "everywhere");
+        DeviceInfo clockInfo = new DeviceInfo("clock", "clock", "homedaemon", "clock", clockName, clockPlace,
+                new HashMap<>());
+        this.devicesInfoList.add(clockInfo);
+
+        // State
+        Map<String, String> stateName = new HashMap<>();
+        clockName.put("pl", "Stan");
+        clockName.put("en", "State");
+        Map<String, String> statePlace = new HashMap<>();
+        clockPlace.put("pl", "Wszędzie");
+        clockPlace.put("en", "everywhere");
+        DeviceInfo stateInfo = new DeviceInfo("state", "state", "homedaemon", "state", stateName, statePlace,
+                new HashMap<>());
+        this.devicesInfoList.add(stateInfo);
+
     }
 
     public void setup() {
@@ -155,6 +183,10 @@ public class HomedaemonDeviceManager implements DeviceManager {
         BaseDevice dev = devices.get(sid);
         T attr = dev.query(attrName);
         return attr;
+    }
+
+    public BaseDevice getDevice(String sid) {
+        return devices.get(sid);
     }
 
     public EventBus getBus() {

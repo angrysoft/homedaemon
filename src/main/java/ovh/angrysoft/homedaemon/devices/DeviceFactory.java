@@ -1,5 +1,7 @@
 package ovh.angrysoft.homedaemon.devices;
 
+import ovh.angrysoft.homedaemon.devices.software.ClockDevice;
+import ovh.angrysoft.homedaemon.devices.software.StateDevice;
 import ovh.angrysoft.homedaemon.devices.sonoff.zigbee.SonoffZigbeeDeviceFactory;
 import ovh.angrysoft.homedaemon.devices.xiaomi.aqara.AqaraZigbeeDeviceFactory;
 import ovh.angrysoft.homedaemon.devices.yeelight.YeelightDeviceFactory;
@@ -9,6 +11,7 @@ import ovh.angrysoft.homedaemon.discover.yeelight.YeelightDeviceInfo;
 import ovh.angrysoft.homedaemon.discover.yeelight.YeelightDiscovery;
 import ovh.angrysoft.homedaemon.exceptions.devices.DeviceNotSupported;
 import ovh.angrysoft.homedaemon.exceptions.discover.DeviceNotDiscovered;
+import ovh.angrysoft.homedaemon.watcher.ClockWatcher;
 import ovh.angrysoft.homedaemon.watcher.WatcherManager;
 import ovh.angrysoft.homedaemon.watcher.YeelightWatcher;
 import ovh.angrysoft.homedaemon.watcher.Zigbee2MqttWatcher;
@@ -24,6 +27,13 @@ class DeviceFactory {
 
     public BaseDevice getDevice(DeviceInfo deviceInfo) throws DeviceNotSupported, DeviceNotDiscovered {
         switch (deviceInfo.getManufacturer()) {
+            case "homedaemon":
+                if (deviceInfo.getModel().equals("clock")) {
+                    watcherManager.registerWatcher(new ClockWatcher(deviceInfo.getSid()));
+                    return new ClockDevice(deviceInfo);
+                } else if (deviceInfo.getModel().equals("state")){
+                    return new StateDevice(deviceInfo);
+                }
             case "yeelight":
                 YeelightDeviceInfo yeelightDeviceInfo = (YeelightDeviceInfo) this.deviceDiscovery
                         .discover(deviceInfo.getSid(), new YeelightDiscovery());

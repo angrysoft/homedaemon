@@ -15,4 +15,6 @@ public interface DeviceManager {
     public <T> T queryStatus(String sid, String attr);
 
     public EventBus getBus();
+
+    public BaseDevice getDevice(String sid);
 }

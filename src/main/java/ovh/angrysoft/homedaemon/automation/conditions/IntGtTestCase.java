@@ -10,7 +10,6 @@ public class IntGtTestCase extends TestCase<Integer> {
     public boolean check(Object value) {
         if (value == null)
             return false;
-        System.err.println("GT: " + value.toString() + " " + attrValue.toString());
         return (Integer) value > attrValue;
     }
 }
