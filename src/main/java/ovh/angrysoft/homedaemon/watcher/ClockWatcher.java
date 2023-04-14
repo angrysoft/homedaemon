@@ -25,7 +25,6 @@ public class ClockWatcher extends Watcher {
         while (true) {
             now = LocalTime.now();
             handler.call(new StatusEvent(sid, "time", String.format("%02d:%02d", now.getHour(), now.getMinute())));
-            System.out.println(now);
             try {
                 Thread.sleep(60000);
             } catch (InterruptedException e) {

@@ -36,12 +36,7 @@ public class Trigger {
     }
 
     public void call(Event event) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                handler.call(event);
-            }
-        }).start();
+        handler.call(event);
     }
 
     public boolean isOneShot() {

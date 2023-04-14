@@ -54,4 +54,10 @@ public class FakeDeviceManager implements DeviceManager {
         throw new UnsupportedOperationException("Unimplemented method 'getBus'");
     }
 
+    @Override
+    public BaseDevice getDevice(String sid) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getDevice'");
+    }
+
 }
