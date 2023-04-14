@@ -5,7 +5,7 @@ import java.util.HashMap;
 import ovh.angrysoft.homedaemon.bus.Events.StatusEvent;
 import ovh.angrysoft.homedaemon.devices.HomedaemonDeviceManager;
 
-public class WatcherManager implements WatcherHandler {
+public class WatcherManager {
     private HashMap<String, Watcher> watchers;
     private HomedaemonDeviceManager deviceManager;
 
@@ -22,12 +22,8 @@ public class WatcherManager implements WatcherHandler {
         if (watchers.containsKey(watcher.getSid())) {
             return;
         }
-        watcher.setHandler(this);
+        watcher.setHandler((StatusEvent message) -> deviceManager.update(message));
         watchers.put(watcher.getSid(), watcher);
         watcher.start();
-    }
-
-    public void call(StatusEvent message) {
-        deviceManager.update(message);
     }
 }

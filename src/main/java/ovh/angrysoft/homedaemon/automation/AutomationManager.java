@@ -71,8 +71,7 @@ public class AutomationManager {
         }
         Trigger automationTrigger = new Trigger(triggerString, (Event event) -> {
             LOGGER.info(String.format("automation: %s - action", Arrays.toString(event.getTopicList())));
-            // TODO ThreadPool
-            new Thread(automation).start();
+            automation.run();
         });
         this.bus.addTrigger(automationTrigger);
     }

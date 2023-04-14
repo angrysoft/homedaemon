@@ -3,12 +3,16 @@ package ovh.angrysoft.homedaemon.bus;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class EventBus {
     private HashMap<String, Trigger> triggers;
+    private ThreadPoolExecutor triggerExecutor;
 
     public EventBus() {
         this.triggers = new HashMap<>();
+        this.triggerExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
     }
 
     public synchronized int triggersSize() {
@@ -33,13 +37,14 @@ public class EventBus {
 
     public void dispatch(Event event) {
         for (Map.Entry<String, Trigger> entry : triggers.entrySet()) {
-            Trigger trigger = entry.getValue();
-            if (trigger.compareTopic(event.getTopicList())) {
-                // TODO ThreadPool
-                trigger.call(event);
-                if (trigger.isOneShot())
-                    delTrigger(trigger.getId());
-            }
+            triggerExecutor.submit(() -> {
+                Trigger trigger = entry.getValue();
+                if (trigger.compareTopic(event.getTopicList())) {
+                    trigger.call(event);
+                    if (trigger.isOneShot())
+                        delTrigger(trigger.getId());
+                }
+            });
         }
     }
 }
