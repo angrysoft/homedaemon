@@ -1,8 +1,6 @@
 package ovh.angrysoft.homedaemon.automation;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import ovh.angrysoft.homedaemon.automation.actions.Action;
@@ -14,20 +12,13 @@ public class Automation implements Runnable {
     protected List<Action> actions;
     protected List<Action> actionsFalse;
     protected List<Condition> conditions;
-    protected Map<String, Object> state;
 
-    public Automation(boolean running, String sid, List<Condition> conditions, List<Action> actions,
-            List<Action> actionsFalse, Map<String, Object> state) {
-        this.running = running;
+    public Automation(String sid, List<Condition> conditions, List<Action> actions,
+            List<Action> actionsFalse) {
         this.sid = sid;
         this.actions = actions;
         this.actionsFalse = actionsFalse;
         this.conditions = conditions;
-        this.state = new HashMap<>();
-        if (state != null) {
-            this.state.putAll(state);
-        }
-
     }
 
     public String getSid() {
@@ -50,7 +41,6 @@ public class Automation implements Runnable {
         running = false;
     }
 
-    //TODO Condition state ...
     private boolean checkCondition() {
         for (Condition condition : conditions) {
             if (!condition.check()) {

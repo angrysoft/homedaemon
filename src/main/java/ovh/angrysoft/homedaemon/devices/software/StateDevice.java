@@ -1,7 +1,5 @@
 package ovh.angrysoft.homedaemon.devices.software;
 
-import java.util.Map;
-
 import ovh.angrysoft.homedaemon.devices.BaseDevice;
 import ovh.angrysoft.homedaemon.devices.DeviceAttribute;
 import ovh.angrysoft.homedaemon.devices.DeviceInfo;
@@ -12,13 +10,11 @@ public class StateDevice extends BaseDevice {
         super(deviceInfo);
     }
 
-    public void registerStateAttribute(String attrName, Map<String,Object> attrValue) {
+    public <T> void registerStateAttribute(String stateName, T stateValue) {
         try {
-            this.status.registerAttribute(new DeviceAttribute<Map<String,Object>>(attrName, attrValue, false, false));
+            this.status.registerAttribute(new DeviceAttribute<T>(stateName, stateValue, false, false));
         } catch (AttributeAlreadyExist e) {
             LOGGER.warning(e.getMessage());
         }
     }
-
-    
 }

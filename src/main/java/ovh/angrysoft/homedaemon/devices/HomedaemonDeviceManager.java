@@ -41,7 +41,7 @@ public class HomedaemonDeviceManager implements DeviceManager {
     }
 
     public void loadDevice() {
-        addInternalDevicesInfo();
+        setupInternalDevicesInfo();
 
         File devDir = new File(deviceInfoDir);
         if (!devDir.exists() && !devDir.isDirectory()) {
@@ -79,7 +79,7 @@ public class HomedaemonDeviceManager implements DeviceManager {
         }
     }
 
-    private void addInternalDevicesInfo() {
+    private void setupInternalDevicesInfo() {
         // Clock
         Map<String, String> clockName = new HashMap<>();
         clockName.put("pl", "Zegar");
