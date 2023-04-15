@@ -1,21 +1,22 @@
 package ovh.angrysoft.homedaemon.automation.actions;
 
 import ovh.angrysoft.homedaemon.bus.EventBus;
-import ovh.angrysoft.homedaemon.bus.Events.ActionEvent;
+import ovh.angrysoft.homedaemon.bus.Events.StatusEvent;
 
 public class ActionState extends Action {
     private EventBus bus;
-    private String eventName;
-    private Object eventValue;
+    private String attrName;
+    private Object attrValue;
 
-    public ActionState(String eventName, Object eventValue, EventBus bus) {
+    public ActionState(String attrName, Object attrValue, EventBus bus) {
         this.bus = bus;
-        this.eventName = eventName;
-        this.eventValue = eventValue;
+        this.attrName = attrName;
+        this.attrValue = attrValue;
     }
 
     @Override
     public void run() {
-        bus.dispatch(new ActionEvent(eventName, eventValue));
+        System.err.println("state." + attrName + "." + attrValue);
+        bus.dispatch(new StatusEvent("state", attrName, attrValue));
     }
 }

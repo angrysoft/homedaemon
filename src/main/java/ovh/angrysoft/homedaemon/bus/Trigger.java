@@ -22,6 +22,7 @@ public class Trigger {
         }
     }
 
+    // TODO seperate class topic topic.equals
     public boolean compareTopic(String[] topicList) {
         if (!this.wildCard && topicList.length != this.topicList.length)
             return false;

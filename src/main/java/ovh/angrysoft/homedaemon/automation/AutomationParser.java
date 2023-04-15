@@ -2,12 +2,14 @@ package ovh.angrysoft.homedaemon.automation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gson.internal.LazilyParsedNumber;
 
 import ovh.angrysoft.homedaemon.automation.actions.Action;
 import ovh.angrysoft.homedaemon.automation.actions.ActionDispatch;
 import ovh.angrysoft.homedaemon.automation.actions.ActionExecute;
+import ovh.angrysoft.homedaemon.automation.actions.ActionState;
 import ovh.angrysoft.homedaemon.automation.conditions.AndCondition;
 import ovh.angrysoft.homedaemon.automation.conditions.Condition;
 import ovh.angrysoft.homedaemon.automation.conditions.IntEqTestCase;
@@ -19,6 +21,7 @@ import ovh.angrysoft.homedaemon.automation.conditions.OrCondition;
 import ovh.angrysoft.homedaemon.automation.conditions.StatusTestCase;
 import ovh.angrysoft.homedaemon.automation.conditions.TestCase;
 import ovh.angrysoft.homedaemon.devices.DeviceManager;
+import ovh.angrysoft.homedaemon.devices.software.StateDevice;
 
 public class AutomationParser {
     private DeviceManager deviceManager;
@@ -31,7 +34,19 @@ public class AutomationParser {
         List<Action> actions = this.parseActions(info.getActions());
         List<Action> actionsFalse = this.parseActions(info.getActionsFalse());
         List<Condition> conditions = this.parseConditions(info.getConditions());
-        return new Automation(false, info.getSid(), conditions, actions, actionsFalse, info.getState());
+        registerStateAttribute(info.getState());
+        //TODO: throw parse error if something go wrong 
+        return new Automation(info.getSid(), conditions, actions, actionsFalse);
+    }
+
+    private void registerStateAttribute(Map<String, Object> state)  {
+        if (state == null) return;
+
+        StateDevice stateDevice = (StateDevice) deviceManager.getDevice("state");
+        state.forEach((attrName, attrValue) -> {
+            System.out.println("registring: " + attrName + "=" +attrValue );
+            stateDevice.registerStateAttribute(attrName, attrValue);
+        });
     }
 
     private List<Condition> parseConditions(List<ConditionInfo> conditionsInfos) {
@@ -107,6 +122,8 @@ public class AutomationParser {
                         deviceManager);
             case "dispatch":
                 return new ActionDispatch(action.getCmd(), action.getArg(), deviceManager.getBus());
+            case "state":
+                return new ActionState(action.getCmd(), action.getArg(), deviceManager.getBus());
         }
         return null;
     }
