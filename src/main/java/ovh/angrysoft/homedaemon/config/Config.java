@@ -55,6 +55,9 @@ public class Config {
 
     public void loadConfigs(String dirPath) {
         Path path = Paths.get(dirPath);
+        if (!Files.isDirectory(path))
+            LOGGER.log(Level.ALL, "Reading dir error {0}", path.getFileName());
+
         try (Stream<Path> paths = Files.walk(path, 1)) {
             for (Path file : paths.filter(Files::isRegularFile)
                     .filter(f -> f.getFileName().toString().endsWith(".json"))
