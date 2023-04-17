@@ -14,7 +14,7 @@ public class EventBusTest {
     @Test
     @DisplayName("Test Event bus addTrigger")
     public void testAddTrigger() {
-        Trigger trigger = new Trigger("status.123341421.status.off", (Event event) -> {
+        Trigger trigger = new Trigger(Topic.fromString("status.123341421.status.off"), (Event event) -> {
             System.out.println((String) event.getPayload().toString());
         });
 
@@ -26,7 +26,7 @@ public class EventBusTest {
     @Test
     @DisplayName("Test Event bus addTrigger")
     public void testAddOneShotTrigger() {
-        Trigger trigger = new Trigger("status.123341421.status.off", (Event event) -> {
+        Trigger trigger = new Trigger(Topic.fromString("status.123341421.status.off"), (Event event) -> {
             System.out.println((String) event.getPayload().toString());
         }, true);
 
@@ -45,7 +45,7 @@ public class EventBusTest {
     @Test
     @DisplayName("Test Event bus addTrigger")
     public void testDelTrigger() {
-        Trigger trigger = new Trigger("status.123341421.status.off", (Event event) -> {
+        Trigger trigger = new Trigger(Topic.fromString("status.123341421.status.off"), (Event event) -> {
             System.out.println((String) event.getPayload().toString());
         });
 
@@ -59,7 +59,7 @@ public class EventBusTest {
     @DisplayName("Test Event bus addTrigger")
     public void testDispatch() {
         List<String> status = new ArrayList<>();
-        Trigger trigger = new Trigger("status.123341421.status.off", (Event event) -> {
+        Trigger trigger = new Trigger(Topic.fromString("status.123341421.status.off"), (Event event) -> {
             status.add((String) event.getPayload().get("status"));
         });
 
@@ -78,7 +78,7 @@ public class EventBusTest {
     @DisplayName("Test Event bus addTrigger")
     public void testDispatchWildcard() {
         List<String> status = new ArrayList<>();
-        Trigger trigger = new Trigger("status.*", (Event event) -> {
+        Trigger trigger = new Trigger(Topic.fromString("status.*"), (Event event) -> {
             status.add((String) event.getPayload().get("status"));
         });
 

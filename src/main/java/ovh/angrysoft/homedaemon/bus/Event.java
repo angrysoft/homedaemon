@@ -6,5 +6,5 @@ public interface Event {
 
     public HashMap<String, Object> getPayload();
 
-    public String[] getTopicList();
+    public Topic getTopic();
 }

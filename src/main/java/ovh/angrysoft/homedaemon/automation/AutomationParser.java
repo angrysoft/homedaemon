@@ -44,7 +44,7 @@ public class AutomationParser {
 
         StateDevice stateDevice = (StateDevice) deviceManager.getDevice("state");
         state.forEach((attrName, attrValue) -> {
-            System.out.println("registring: " + attrName + "=" +attrValue );
+            System.out.println("registering: " + attrName + "=" +attrValue );
             stateDevice.registerStateAttribute(attrName, attrValue);
         });
     }

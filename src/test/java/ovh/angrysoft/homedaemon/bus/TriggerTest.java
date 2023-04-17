@@ -9,20 +9,21 @@ public class TriggerTest {
     @Test
     @DisplayName("Trigger compare test")
     public void testCompareTopic() {
-        Trigger trigger = new Trigger("status.123341421.status.off", (Event event) -> {
+        Trigger trigger = new Trigger(Topic.fromString("status.123341421.status.off"), (Event event) -> {
             System.out.println((String) event.getPayload().get("status"));
         });
-        String[] topicList = "status.123341421.status.off".split("\\.");
-        assertTrue(trigger.compareTopic(topicList));
+        Topic topicToTest = Topic.fromString("status.123341421.status.off");
+        assertTrue(trigger.compareTopic(topicToTest));
     }
 
     @Test
     @DisplayName("Trigger compare test")
     public void testCompareTopicWildCard() {
-        Trigger trigger = new Trigger("status.*", (Event event) -> {
+        Trigger trigger = new Trigger(Topic.fromString("status.*"), (Event event) -> {
             System.out.println((String) event.getPayload().get("status"));
         });
-        String[] topicList = "status.123341421.status.off".split("\\.");
-        assertTrue(trigger.compareTopic(topicList));
+        Topic topicToTest = Topic.fromString("status.123341421.status.off");
+
+        assertTrue(trigger.compareTopic(topicToTest));
     }
 }
