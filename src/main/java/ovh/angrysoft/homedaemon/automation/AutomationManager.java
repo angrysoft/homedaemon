@@ -3,7 +3,6 @@ package ovh.angrysoft.homedaemon.automation;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
@@ -17,6 +16,7 @@ import com.google.gson.ToNumberPolicy;
 
 import ovh.angrysoft.homedaemon.bus.Event;
 import ovh.angrysoft.homedaemon.bus.EventBus;
+import ovh.angrysoft.homedaemon.bus.Topic;
 import ovh.angrysoft.homedaemon.bus.Trigger;
 import ovh.angrysoft.homedaemon.devices.DeviceManager;
 
@@ -69,8 +69,8 @@ public class AutomationManager {
         synchronized (this) {
             this.automations.add(automation);
         }
-        Trigger automationTrigger = new Trigger(triggerString, (Event event) -> {
-            LOGGER.info(String.format("automation: %s - action", Arrays.toString(event.getTopicList())));
+        Trigger automationTrigger = new Trigger(Topic.fromString(triggerString), (Event event) -> {
+            LOGGER.info(String.format("automation: %s - action", event.getTopic().toString()));
             automation.run();
         });
         this.bus.addTrigger(automationTrigger);

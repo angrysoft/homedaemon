@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import ovh.angrysoft.homedaemon.automation.AutomationManager;
 import ovh.angrysoft.homedaemon.bus.Event;
 import ovh.angrysoft.homedaemon.bus.EventBus;
+import ovh.angrysoft.homedaemon.bus.Topic;
 import ovh.angrysoft.homedaemon.bus.Trigger;
 import ovh.angrysoft.homedaemon.config.Config;
 import ovh.angrysoft.homedaemon.devices.HomedaemonDeviceManager;
@@ -32,8 +33,13 @@ public class App {
         }
 
         EventBus bus = new EventBus();
-        bus.addTrigger(new Trigger("status.*", (Event event) -> {
-            logger.info(String.format("handled event: %s with payload: %s", Arrays.toString(event.getTopicList()),
+        bus.addTrigger(new Trigger(Topic.fromString("status.*"), (Event event) -> {
+            logger.info(String.format("handled event: %s with payload: %s", event.getTopic().toString(),
+                    event.getPayload()));
+        }));
+
+        bus.addTrigger(new Trigger(Topic.fromString("status.*"), (Event event) -> {
+            logger.info(String.format("debug msg: %s with payload: %s", event.getTopic().toString(),
                     event.getPayload()));
         }));
 

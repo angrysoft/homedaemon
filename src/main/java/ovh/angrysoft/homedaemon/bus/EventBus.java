@@ -39,7 +39,7 @@ public class EventBus {
         for (Map.Entry<String, Trigger> entry : triggers.entrySet()) {
             triggerExecutor.submit(() -> {
                 Trigger trigger = entry.getValue();
-                if (trigger.compareTopic(event.getTopicList())) {
+                if (trigger.compareTopic(event.getTopic())) {
                     trigger.call(event);
                     if (trigger.isOneShot())
                         delTrigger(trigger.getId());

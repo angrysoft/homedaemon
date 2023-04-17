@@ -3,12 +3,13 @@ package ovh.angrysoft.homedaemon.bus.Events;
 import java.util.HashMap;
 
 import ovh.angrysoft.homedaemon.bus.Event;
+import ovh.angrysoft.homedaemon.bus.Topic;
 
 public abstract class DeviceEvent implements Event{
     protected String sid;
     protected String name;
     protected Object value;
-    protected String[] topicList;
+    protected Topic topic;
 
     public DeviceEvent(String sid, String name, Object value) {
         this.sid = sid;
@@ -29,7 +30,7 @@ public abstract class DeviceEvent implements Event{
     }
 
     public String toString() {
-        return String.join(".", topicList);
+        return topic.toString();
     }
 
     public HashMap<String, Object> getPayload() {
@@ -38,7 +39,7 @@ public abstract class DeviceEvent implements Event{
         return payload;
     }
 
-    public String[] getTopicList() {
-        return this.topicList;
+    public Topic getTopic() {
+        return topic;
     }
 }
