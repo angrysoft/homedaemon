@@ -4,9 +4,9 @@ import ovh.angrysoft.homedaemon.bus.EventBus;
 import ovh.angrysoft.homedaemon.bus.Events.StatusEvent;
 
 public interface DeviceManager {
-    public void loadDevice();
+    public void loadDeviceInfo();
 
-    public void setup();
+    public void setupDevices();
 
     public void execute(String sid, String cmd, Object args);
 

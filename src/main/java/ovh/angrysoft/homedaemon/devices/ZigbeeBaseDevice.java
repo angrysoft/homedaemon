@@ -3,9 +3,9 @@ package ovh.angrysoft.homedaemon.devices;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
 
 public class ZigbeeBaseDevice extends BaseDevice {
-    protected ZigbeeGateway gateway;
+    protected Gateway gateway;
 
-    public ZigbeeBaseDevice(DeviceInfo deviceInfo, ZigbeeGateway gateway) {
+    public ZigbeeBaseDevice(DeviceInfo deviceInfo, Gateway gateway) {
         super(deviceInfo);
         try {
             this.status.registerAttribute(new DeviceAttribute<Integer>("linkquality", 0));

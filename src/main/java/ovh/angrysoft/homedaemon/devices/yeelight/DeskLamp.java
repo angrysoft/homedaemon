@@ -11,7 +11,7 @@ public class DeskLamp extends Mono implements ColorTemperature {
     public DeskLamp(DeviceInfo deviceInfo, YeelightDeviceInfo initData) {
         super(deviceInfo, initData);
         try {
-            this.status.registerAttribute(new DeviceAttribute<Integer>("ct", initData.getCt()));
+            this.status.registerAttribute(new DeviceAttribute<Integer>("ct", initData.get("ct")));
 
         } catch (AttributeAlreadyExist e) {
             e.printStackTrace();

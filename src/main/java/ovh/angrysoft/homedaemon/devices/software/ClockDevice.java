@@ -4,6 +4,7 @@ import ovh.angrysoft.homedaemon.devices.BaseDevice;
 import ovh.angrysoft.homedaemon.devices.DeviceAttribute;
 import ovh.angrysoft.homedaemon.devices.DeviceInfo;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
+import ovh.angrysoft.homedaemon.watcher.ClockWatcher;
 
 public class ClockDevice extends BaseDevice {
 
@@ -14,6 +15,7 @@ public class ClockDevice extends BaseDevice {
         } catch (AttributeAlreadyExist e) {
             LOGGER.warning(e.getMessage());
         }
+        this.watcher = new ClockWatcher(getSid());
     }
 
 }

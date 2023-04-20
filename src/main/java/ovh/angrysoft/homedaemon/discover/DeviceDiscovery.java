@@ -17,16 +17,16 @@ public class DeviceDiscovery {
         if (!this.deviceCache.containsKey(sid)) {
 
             Set<DeviceDiscoverInfo> devicesInfo = engine.search();
-            
+
             for (DeviceDiscoverInfo devInfo : devicesInfo) {
-                System.out.println("discover " + devInfo.getSid());
-                this.deviceCache.put(devInfo.getSid(), devInfo);
+                System.out.println("discover " + devInfo.getDeviceSid());
+                this.deviceCache.put(devInfo.getDeviceSid(), devInfo);
             }
         }
         DeviceDiscoverInfo result = this.deviceCache.get(sid);
         if (result == null)
             throw new DeviceNotDiscovered("Can't discover device: " + sid);
-        
+
         return result;
     }
 }

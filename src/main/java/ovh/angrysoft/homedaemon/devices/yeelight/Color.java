@@ -14,9 +14,9 @@ class Color  extends DeskLamp implements Rgb, RgbColor {
         super(deviceInfo, initData);
         this.api.setMinCt(1700);
         try {
-            this.status.registerAttribute(new DeviceAttribute<Integer>("rgb", initData.getRGB()));
-            this.status.registerAttribute(new DeviceAttribute<Integer>("sat", initData.getSat()));
-            this.status.registerAttribute(new DeviceAttribute<Integer>("hue", initData.getHue()));
+            this.status.registerAttribute(new DeviceAttribute<Integer>("rgb", initData.get("rgb")));
+            this.status.registerAttribute(new DeviceAttribute<Integer>("sat", initData.get("sat")));
+            this.status.registerAttribute(new DeviceAttribute<Integer>("hue", initData.get("hue")));
         } catch (AttributeAlreadyExist e) {
             LOGGER.log(Level.ALL, "{0}", e.getMessage());
         }
