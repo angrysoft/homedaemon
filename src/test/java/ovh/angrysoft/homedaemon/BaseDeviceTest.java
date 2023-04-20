@@ -21,7 +21,7 @@ public class BaseDeviceTest {
         name.put("pl", "Lampa");
         HashMap<String, String> place = new HashMap<>();
         name.put("pl", "Salon");
-        DeviceInfo deviceInfo = new DeviceInfo("aaaaaabbb", "light", "diy", "superLight", name, place, new HashMap<>());
+        DeviceInfo deviceInfo = new DeviceInfo("aaaaaabbb", "light", "diy", "superLight", name, place, "", new HashMap<>());
         device = new DummyDevice(deviceInfo);
     }
 

@@ -15,13 +15,13 @@ public class CtrlNeutral2Test {
     @Tag("IntegrationTest")
     public void testOn() {
         DeviceInfo deviceInfo = new DeviceInfo("0x00158d0002bffe5a", "switch", "aqara",
-            "QBKG03LM", null, null, null);
+            "QBKG03LM", null, null, "", null);
 
         HashMap<String, String> args = new HashMap<>();
         args.put("uri", "tcp://192.168.10.4:1883");
         args.put("user", "homedaemon");
         args.put("password", "spyb0tk34s");
-        DeviceInfo gatewayInfo = new DeviceInfo("zigbee2mqtt", "gateway", "zigbee2mqtt", null, null, null, args);
+        DeviceInfo gatewayInfo = new DeviceInfo("zigbee2mqtt", "gateway", "zigbee2mqtt", null, null, null, "", args);
         Zigbee2MqttGateway gateway = new Zigbee2MqttGateway(gatewayInfo);
         try {
             Thread.sleep(1000);

@@ -21,7 +21,7 @@ public class ConditionTest {
     @BeforeEach
     public void setUp() {
         deviceManager = new FakeDeviceManager();
-        deviceManager.loadDevice();
+        deviceManager.loadDeviceInfo();
     }
 
     @Test

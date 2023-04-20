@@ -8,9 +8,9 @@ import org.eclipse.paho.mqttv5.common.MqttException;
 import ovh.angrysoft.homedaemon.connections.MqttV5Connection;
 import ovh.angrysoft.homedaemon.devices.BaseDevice;
 import ovh.angrysoft.homedaemon.devices.DeviceInfo;
-import ovh.angrysoft.homedaemon.devices.ZigbeeGateway;
+import ovh.angrysoft.homedaemon.devices.Gateway;
 
-public class Zigbee2MqttGateway extends BaseDevice implements ZigbeeGateway {
+public class Zigbee2MqttGateway extends BaseDevice implements Gateway {
     private MqttV5Connection connection;
 
     public Zigbee2MqttGateway(DeviceInfo devInfo) {

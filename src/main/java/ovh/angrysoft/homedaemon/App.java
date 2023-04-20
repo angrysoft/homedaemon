@@ -43,8 +43,8 @@ public class App {
         }));
 
         HomedaemonDeviceManager deviceManager = new HomedaemonDeviceManager(devDir, bus);
-        deviceManager.loadDevice();
-        deviceManager.setup();
+        deviceManager.loadDeviceInfo();
+        deviceManager.setupDevices();
         logger.info(String.format("HomeDaemon Started thread : %s", Thread.currentThread()));
 
         AutomationManager automationManager = new AutomationManager(automationDir, bus, deviceManager);

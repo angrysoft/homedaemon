@@ -2,14 +2,14 @@ package ovh.angrysoft.homedaemon.devices.xiaomi.aqara;
 
 import ovh.angrysoft.homedaemon.devices.DeviceAttribute;
 import ovh.angrysoft.homedaemon.devices.DeviceInfo;
-import ovh.angrysoft.homedaemon.devices.ZigbeeGateway;
+import ovh.angrysoft.homedaemon.devices.Gateway;
 import ovh.angrysoft.homedaemon.devices.ZigbeeBaseDevice;
 import ovh.angrysoft.homedaemon.devices.traits.Contact;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
 
 public class Magnet extends ZigbeeBaseDevice implements Contact {
 
-    public Magnet(DeviceInfo deviceInfo, ZigbeeGateway gateway) {
+    public Magnet(DeviceInfo deviceInfo, Gateway gateway) {
         super(deviceInfo, gateway);
         try {
             this.status.registerAttribute(new DeviceAttribute<String>("model", "MCCGQ01LM"));
@@ -24,5 +24,5 @@ public class Magnet extends ZigbeeBaseDevice implements Contact {
     public boolean isContact() {
         return this.status.get("contact");
     }
-    
+
 }

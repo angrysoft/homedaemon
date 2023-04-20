@@ -10,11 +10,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import ovh.angrysoft.homedaemon.discover.DiscoverEngine;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
+import ovh.angrysoft.homedaemon.watcher.Watcher;
 
 public abstract class BaseDevice {
     protected DeviceStatus status;
     protected Set<String> commands;
+    protected boolean discoverable = false;
+    protected DiscoverEngine discoverEngine = null;
+    protected Watcher watcher = null;
 
     protected static final Logger LOGGER = Logger.getLogger("Homedaemon");
 
@@ -29,7 +34,18 @@ public abstract class BaseDevice {
         } catch (AttributeAlreadyExist e) {
             LOGGER.warning(e.getMessage());
         }
+    }
 
+    public Watcher getWatcher() {
+        return watcher;
+    }
+
+    public boolean isDiscoverable() {
+        return discoverable;
+    }
+
+    public DiscoverEngine getDiscoverEngine() {
+        return discoverEngine;
     }
 
     public Set<String> getCommands() {

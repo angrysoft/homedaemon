@@ -14,18 +14,18 @@ public class FakeDeviceManager implements DeviceManager {
         this.devices = new HashMap<>();
     }
 
-    public void loadDevice() {
+    public void loadDeviceInfo() {
         HashMap<String, String> name = new HashMap<>();
         name.put("pl", "Lampa");
         HashMap<String, String> place = new HashMap<>();
         name.put("pl", "Salon");
-        DeviceInfo deviceInfo = new DeviceInfo("123", "light", "diy", "superLight", name, place, new HashMap<>());
+        DeviceInfo deviceInfo = new DeviceInfo("123", "light", "diy", "superLight", name, place, "", new HashMap<>());
         BaseDevice device = new DummyDevice(deviceInfo);
         devices.put("123", device);
         System.out.println(devices.size());
     }
 
-    public void setup() {
+    public void setupDevices() {
         throw new UnsupportedOperationException("Unimplemented method 'setup'");
     }
 

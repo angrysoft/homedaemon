@@ -3,8 +3,11 @@ package ovh.angrysoft.homedaemon.devices;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,32 +18,36 @@ import com.google.gson.JsonSyntaxException;
 import ovh.angrysoft.homedaemon.bus.EventBus;
 import ovh.angrysoft.homedaemon.bus.Events.StatusEvent;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeReadOnly;
+import ovh.angrysoft.homedaemon.exceptions.devices.DeviceInitError;
 import ovh.angrysoft.homedaemon.exceptions.devices.DeviceNotSupported;
 import ovh.angrysoft.homedaemon.exceptions.devices.GatewayNotFound;
-import ovh.angrysoft.homedaemon.exceptions.discover.DeviceNotDiscovered;
+import ovh.angrysoft.homedaemon.watcher.Watcher;
 import ovh.angrysoft.homedaemon.watcher.WatcherManager;
 
 public class HomedaemonDeviceManager implements DeviceManager {
     private static final Logger LOGGER = Logger.getLogger("Homedaemon");
-    private DeviceFactory deviceFactory;
     private String deviceInfoDir;
-    private ArrayList<DeviceInfo> gatewaysInfoList;
-    private ArrayList<DeviceInfo> devicesInfoList;
+    private List<DeviceInfo> devicesInfoList;
     private EventBus bus;
-    private HashMap<String, BaseDevice> devices;
-    private HashMap<String, ZigbeeGateway> gateways;
+    private Map<String, BaseDevice> devices;
+    private Map<String, Class<?>> drivers;
+    private WatcherManager watcherManager;
+    private String driverPackage = "ovh.angrysoft.homedaemon.devices";
 
     public HomedaemonDeviceManager(String deviceInfoDir, EventBus bus) {
         this.deviceInfoDir = deviceInfoDir;
-        this.gatewaysInfoList = new ArrayList<DeviceInfo>();
         this.devicesInfoList = new ArrayList<DeviceInfo>();
         this.bus = bus;
-        this.deviceFactory = new DeviceFactory(new WatcherManager(this));
         this.devices = new HashMap<>();
-        this.gateways = new HashMap<>();
+        this.drivers = new HashMap<>();
+        this.watcherManager = new WatcherManager(this);
     }
 
-    public void loadDevice() {
+    public WatcherManager getWatcherManager() {
+        return watcherManager;
+    }
+
+    public void loadDeviceInfo() {
         setupInternalDevicesInfo();
 
         File devDir = new File(deviceInfoDir);
@@ -49,24 +56,25 @@ public class HomedaemonDeviceManager implements DeviceManager {
             return;
         }
 
-        for (File devInfoFile : devDir.listFiles()) {
-            if (!devInfoFile.getName().endsWith(".json"))
-                continue;
+        for (File devInfoFile : devDir.listFiles((File file) -> {
+            if (file.getName().endsWith(".json"))
+                return true;
+            return false;
+        })) {
             try {
 
                 DeviceInfo deviceInfo = new Gson().fromJson(new FileReader(devInfoFile), DeviceInfo.class);
                 deviceInfo.checkFields();
 
                 String devType = deviceInfo.getType();
-                if (devType != null && devType.equals("gateway")) {
-                    if (gatewaysInfoList.contains(deviceInfo))
-                        continue;
-                    gatewaysInfoList.add(deviceInfo);
-                } else {
-                    if (devicesInfoList.contains(deviceInfo))
-                        continue;
-                    devicesInfoList.add(deviceInfo);
+                if (devType == null || devicesInfoList.contains(deviceInfo))
+                    continue;
+
+                if (devType.equals("gateway")) {
+                    devicesInfoList.add(0, deviceInfo);
+                    continue;
                 }
+                devicesInfoList.add(deviceInfo);
 
             } catch (FileNotFoundException e) {
                 LOGGER.log(Level.SEVERE, "Device info file {0} not found", devInfoFile.getName());
@@ -87,7 +95,14 @@ public class HomedaemonDeviceManager implements DeviceManager {
         Map<String, String> clockPlace = new HashMap<>();
         clockPlace.put("pl", "Wszędzie");
         clockPlace.put("en", "everywhere");
-        DeviceInfo clockInfo = new DeviceInfo("clock", "clock", "homedaemon", "clock", clockName, clockPlace,
+        DeviceInfo clockInfo = new DeviceInfo(
+                "clock",
+                "clock",
+                "homedaemon",
+                "clock",
+                clockName,
+                clockPlace,
+                "software.ClockDevice",
                 new HashMap<>());
         this.devicesInfoList.add(clockInfo);
 
@@ -98,61 +113,70 @@ public class HomedaemonDeviceManager implements DeviceManager {
         Map<String, String> statePlace = new HashMap<>();
         clockPlace.put("pl", "Wszędzie");
         clockPlace.put("en", "everywhere");
-        DeviceInfo stateInfo = new DeviceInfo("state", "state", "homedaemon", "state", stateName, statePlace,
+        DeviceInfo stateInfo = new DeviceInfo(
+                "state",
+                "state",
+                "homedaemon",
+                "state",
+                stateName,
+                statePlace,
+                "software.StateDevice",
                 new HashMap<>());
         this.devicesInfoList.add(stateInfo);
-
     }
 
-    public void setup() {
-        setupGateways();
-        setupDevices();
-    }
-
-    private void setupGateways() {
-        for (DeviceInfo gatewayInfo : gatewaysInfoList) {
-            LOGGER.log(Level.INFO, "load gateway: {0}", gatewayInfo.getSid());
-            try {
-                ZigbeeGateway gateway = deviceFactory.getGateway(gatewayInfo);
-                addGateway(gatewayInfo.getSid(), gateway);
-            } catch (DeviceNotSupported | DeviceNotDiscovered e) {
-                LOGGER.warning(e.getMessage());
-            }
-        }
-
-    }
-
-    private void setupDevices() {
+    public void setupDevices() {
         for (DeviceInfo devInfo : devicesInfoList) {
             LOGGER.log(Level.INFO, String.format("load device: %s model : %s", devInfo.getSid(), devInfo.getModel()));
             try {
-                BaseDevice device;
-                if (devInfo.getArgs().containsKey("gateway")) {
-                    String gatewaySid = devInfo.getArgs().get("gateway");
-                    device = deviceFactory.getDevice(devInfo, this.getGateway(gatewaySid));
-                } else {
-                    device = deviceFactory.getDevice(devInfo);
+                Class<?> driver = getDriver(devInfo.getDriver());
+                BaseDevice device = initDevice(driver, devInfo);
+                Watcher deviceWatcher = device.getWatcher();
+                if (deviceWatcher != null) {
+                    watcherManager.registerWatcher(deviceWatcher);
                 }
+
                 addDevice(devInfo.getSid(), device);
-            } catch (DeviceNotSupported e) {
-                LOGGER.warning(e.getMessage());
-            } catch (DeviceNotDiscovered e) {
-                LOGGER.warning(e.getMessage());
-            } catch (GatewayNotFound e) {
+            } catch (DeviceNotSupported | GatewayNotFound | DeviceInitError e) {
                 LOGGER.warning(e.getMessage());
             }
         }
     }
 
-    private synchronized void addGateway(String sid, ZigbeeGateway gateway) {
-        this.gateways.put(sid, gateway);
+    private Class<?> getDriver(String driverName) throws DeviceNotSupported {
+        if (!drivers.containsKey(driverName)) {
+            try {
+                StringBuilder fullDriverNamBuilder = new StringBuilder(driverPackage).append(".").append(driverName);
+                Class<?> driver = Class.forName(fullDriverNamBuilder.toString());
+                drivers.put(driverName, driver);
+                return driver;
+            } catch (ClassNotFoundException e) {
+                throw new DeviceNotSupported(driverName);
+            }
+        }
+        return drivers.get(driverName);
     }
 
-    private ZigbeeGateway getGateway(String sid) throws GatewayNotFound {
-        if (!this.gateways.containsKey(sid)) {
+    private BaseDevice initDevice(Class<?> driver, DeviceInfo deviceInfo) throws DeviceInitError, GatewayNotFound {
+        // discover if nessesery
+        try {
+            Constructor<?>[] deviceConstructor = driver.getDeclaredConstructors();
+            if (deviceInfo.getArgs().containsKey("gateway")) {
+                return (BaseDevice) deviceConstructor[0].newInstance(deviceInfo,
+                        getGateway(deviceInfo.getArgs().get("gateway")));
+            }
+            return (BaseDevice) deviceConstructor[0].newInstance(deviceInfo);
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+                | InvocationTargetException e) {
+            throw new DeviceInitError(e.getMessage());
+        }
+    }
+
+    private Gateway getGateway(String sid) throws GatewayNotFound {
+        if (!this.devices.containsKey(sid)) {
             throw new GatewayNotFound(String.format("Gateway : %s not found", sid));
         }
-        return this.gateways.get(sid);
+        return (Gateway) this.devices.get(sid);
     }
 
     private synchronized void addDevice(String sid, BaseDevice device) {

@@ -14,13 +14,13 @@ public class YeelightDiscoveryTest {
     @Tag("IntegrationTest")
     public void testDiscovery() {
         YeelightDiscovery discovery = new YeelightDiscovery();
-        Set<DeviceDiscoverInfo> devInfo =  discovery.search();
+        Set<DeviceDiscoverInfo> devInfo = discovery.search();
         for (DeviceDiscoverInfo dev : devInfo) {
             YeelightDeviceInfo yDev = (YeelightDeviceInfo) dev;
-            System.out.print(yDev.getSid() + " ");
-            System.out.print(yDev.getAddr() + " ");
-            System.out.print(yDev.getPort() + " ");
-            System.out.println(yDev.getModel());
+            System.out.print(yDev.getDeviceSid() + " ");
+            System.out.print(yDev.get("addr") + " ");
+            System.out.print(yDev.get("port") + " ");
+            System.out.println(yDev.get("model").toString());
         }
 
     }

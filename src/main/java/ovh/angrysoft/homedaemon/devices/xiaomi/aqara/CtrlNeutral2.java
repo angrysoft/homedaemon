@@ -2,14 +2,14 @@ package ovh.angrysoft.homedaemon.devices.xiaomi.aqara;
 
 import ovh.angrysoft.homedaemon.devices.DeviceAttribute;
 import ovh.angrysoft.homedaemon.devices.DeviceInfo;
-import ovh.angrysoft.homedaemon.devices.ZigbeeGateway;
+import ovh.angrysoft.homedaemon.devices.Gateway;
 import ovh.angrysoft.homedaemon.devices.ZigbeeBaseDevice;
 import ovh.angrysoft.homedaemon.devices.traits.DoubleSwitch;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
 
 public class CtrlNeutral2 extends ZigbeeBaseDevice implements DoubleSwitch {
 
-    public CtrlNeutral2(DeviceInfo deviceInfo, ZigbeeGateway gateway) {
+    public CtrlNeutral2(DeviceInfo deviceInfo, Gateway gateway) {
         super(deviceInfo, gateway);
         try {
             this.status.registerAttribute(new DeviceAttribute<String>("model", "QBKG03LM"));
@@ -72,7 +72,7 @@ public class CtrlNeutral2 extends ZigbeeBaseDevice implements DoubleSwitch {
         this.gateway.sendSet(this.getSid(), "state_left", "ON");
         this.gateway.sendSet(this.getSid(), "state_right", "ON");
     }
-    
+
     @Override
     public void allOff() {
         this.gateway.sendSet(this.getSid(), "state_left", "OFF");
