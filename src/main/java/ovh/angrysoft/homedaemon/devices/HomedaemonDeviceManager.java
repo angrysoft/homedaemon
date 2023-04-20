@@ -158,9 +158,9 @@ public class HomedaemonDeviceManager implements DeviceManager {
     }
 
     private BaseDevice initDevice(Class<?> driver, DeviceInfo deviceInfo) throws DeviceInitError, GatewayNotFound {
-        // discover if nessesery
         try {
             Constructor<?>[] deviceConstructor = driver.getDeclaredConstructors();
+            //TODO discover if nessesery
             if (deviceInfo.getArgs().containsKey("gateway")) {
                 return (BaseDevice) deviceConstructor[0].newInstance(deviceInfo,
                         getGateway(deviceInfo.getArgs().get("gateway")));
