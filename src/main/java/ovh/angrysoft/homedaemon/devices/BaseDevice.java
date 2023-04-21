@@ -18,7 +18,7 @@ public abstract class BaseDevice {
     protected DeviceStatus status;
     protected Set<String> commands;
     protected boolean discoverable = false;
-    protected DiscoverEngine discoverEngine = null;
+    protected static DiscoverEngine discoverEngine = null;
     protected Watcher watcher = null;
 
     protected static final Logger LOGGER = Logger.getLogger("Homedaemon");

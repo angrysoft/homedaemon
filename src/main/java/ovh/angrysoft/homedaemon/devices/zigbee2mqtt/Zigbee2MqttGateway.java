@@ -9,6 +9,7 @@ import ovh.angrysoft.homedaemon.connections.MqttV5Connection;
 import ovh.angrysoft.homedaemon.devices.BaseDevice;
 import ovh.angrysoft.homedaemon.devices.DeviceInfo;
 import ovh.angrysoft.homedaemon.devices.Gateway;
+import ovh.angrysoft.homedaemon.watcher.Zigbee2MqttWatcher;
 
 public class Zigbee2MqttGateway extends BaseDevice implements Gateway {
     private MqttV5Connection connection;
@@ -18,6 +19,7 @@ public class Zigbee2MqttGateway extends BaseDevice implements Gateway {
         if (devInfo.getArgs() != null)
             this.connection = new MqttV5Connection(devInfo.getArgs());
         this.connection.start();
+        this.watcher = new Zigbee2MqttWatcher(this);
     }
 
     public void sendSet(String sid, String cmd, Object value) {
