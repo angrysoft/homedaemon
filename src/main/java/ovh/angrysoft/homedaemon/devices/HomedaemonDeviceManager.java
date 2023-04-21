@@ -17,10 +17,13 @@ import com.google.gson.JsonSyntaxException;
 
 import ovh.angrysoft.homedaemon.bus.EventBus;
 import ovh.angrysoft.homedaemon.bus.Events.StatusEvent;
+import ovh.angrysoft.homedaemon.discover.DeviceDiscoverInfo;
+import ovh.angrysoft.homedaemon.discover.DeviceDiscovery;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeReadOnly;
 import ovh.angrysoft.homedaemon.exceptions.devices.DeviceInitError;
 import ovh.angrysoft.homedaemon.exceptions.devices.DeviceNotSupported;
 import ovh.angrysoft.homedaemon.exceptions.devices.GatewayNotFound;
+import ovh.angrysoft.homedaemon.exceptions.discover.DeviceNotDiscovered;
 import ovh.angrysoft.homedaemon.watcher.Watcher;
 import ovh.angrysoft.homedaemon.watcher.WatcherManager;
 
@@ -32,6 +35,7 @@ public class HomedaemonDeviceManager implements DeviceManager {
     private Map<String, BaseDevice> devices;
     private Map<String, Class<?>> drivers;
     private WatcherManager watcherManager;
+    private DeviceDiscovery deviceDiscovery;
     private String driverPackage = "ovh.angrysoft.homedaemon.devices";
 
     public HomedaemonDeviceManager(String deviceInfoDir, EventBus bus) {
@@ -130,14 +134,19 @@ public class HomedaemonDeviceManager implements DeviceManager {
             LOGGER.log(Level.INFO, String.format("load device: %s model : %s", devInfo.getSid(), devInfo.getModel()));
             try {
                 Class<?> driver = getDriver(devInfo.getDriver());
+            
                 BaseDevice device = initDevice(driver, devInfo);
+                if (device.isDiscoverable() && device.getDiscoverEngine() != null) {
+                    DeviceDiscoverInfo discoveryInfo = deviceDiscovery.discover(devInfo.getSid(), device.getDiscoverEngine());
+                    // TODO add discovery info before constructor or  
+                }
                 Watcher deviceWatcher = device.getWatcher();
                 if (deviceWatcher != null) {
                     watcherManager.registerWatcher(deviceWatcher);
                 }
 
                 addDevice(devInfo.getSid(), device);
-            } catch (DeviceNotSupported | GatewayNotFound | DeviceInitError e) {
+            } catch (DeviceNotSupported | GatewayNotFound | DeviceInitError | DeviceNotDiscovered e) {
                 LOGGER.warning(e.getMessage());
             }
         }
@@ -151,7 +160,7 @@ public class HomedaemonDeviceManager implements DeviceManager {
                 drivers.put(driverName, driver);
                 return driver;
             } catch (ClassNotFoundException e) {
-                throw new DeviceNotSupported(driverName);
+                throw new DeviceNotSupported(new StringBuilder(e.getMessage().toString()).append(" ").append(driverName).toString());
             }
         }
         return drivers.get(driverName);

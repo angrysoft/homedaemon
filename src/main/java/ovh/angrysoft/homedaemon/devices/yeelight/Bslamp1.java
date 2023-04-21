@@ -9,8 +9,8 @@ import ovh.angrysoft.homedaemon.devices.traits.RgbColor;
 import ovh.angrysoft.homedaemon.discover.DeviceDiscoverInfo;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
 
-class Color  extends DeskLamp implements Rgb, RgbColor {
-    public Color(DeviceInfo deviceInfo, DeviceDiscoverInfo initData) {
+class Bslamp1  extends DeskLamp implements Rgb, RgbColor {
+    public Bslamp1(DeviceInfo deviceInfo, DeviceDiscoverInfo initData) {
         super(deviceInfo, initData);
         this.api.setMinCt(1700);
         try {
