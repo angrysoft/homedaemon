@@ -5,7 +5,6 @@ import ovh.angrysoft.homedaemon.devices.DeviceAttribute;
 import ovh.angrysoft.homedaemon.devices.DeviceInfo;
 import ovh.angrysoft.homedaemon.devices.traits.Dimmer;
 import ovh.angrysoft.homedaemon.devices.traits.OnOff;
-import ovh.angrysoft.homedaemon.discover.DeviceDiscoverInfo;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
 import ovh.angrysoft.homedaemon.exceptions.connctions.DeviceConnectionError;
 import ovh.angrysoft.homedaemon.watcher.YeelightWatcher;
@@ -13,23 +12,23 @@ import ovh.angrysoft.homedaemon.watcher.YeelightWatcher;
 class Mono extends BaseDevice implements OnOff, Dimmer {
     protected YeelightApi api;
 
-    public Mono(DeviceInfo deviceInfo, DeviceDiscoverInfo initData) {
+    public Mono(DeviceInfo deviceInfo) {
         super(deviceInfo);
         try {
-            this.status.registerAttribute(new DeviceAttribute<String>("power", initData.get("power")));
-            this.status.registerAttribute(new DeviceAttribute<Integer>("color_mode", initData.get("colorMode")));
-            this.status.registerAttribute(new DeviceAttribute<Integer>("bright", initData.get("bright")));
+            this.status.registerAttribute(new DeviceAttribute<String>("power", ""));
+            this.status.registerAttribute(new DeviceAttribute<Integer>("color_mode", 0));
+            this.status.registerAttribute(new DeviceAttribute<Integer>("bright", 0));
             this.status.registerAttribute(new DeviceAttribute<String>("addr", "localhost"));
             this.status.registerAttribute(new DeviceAttribute<Integer>("port", 0));
         } catch (AttributeAlreadyExist e) {
             e.printStackTrace();
         }
     }
-    
+
     public void on() {
         this.api.setPower(true);
     }
-    
+
     public void off() {
         this.api.setPower(false);
     }
@@ -37,15 +36,15 @@ class Mono extends BaseDevice implements OnOff, Dimmer {
     public boolean isOn() {
         return this.status.get("power").equals("on");
     }
-    
+
     public void setBright(Integer value) {
         this.api.setBright(value);
     }
-    
+
     public int getBright() {
         return this.status.get("bright");
     }
-    
+
     @Override
     public void setup() {
         try {

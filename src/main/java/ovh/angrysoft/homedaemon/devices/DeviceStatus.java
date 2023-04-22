@@ -3,7 +3,6 @@ package ovh.angrysoft.homedaemon.devices;
 import java.util.HashMap;
 import java.util.Map;
 
-import ovh.angrysoft.homedaemon.bus.Events.StatusEvent;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeNotFound;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeReadOnly;

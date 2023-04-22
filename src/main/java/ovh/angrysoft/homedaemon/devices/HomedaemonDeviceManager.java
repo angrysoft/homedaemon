@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -135,18 +136,34 @@ public class HomedaemonDeviceManager implements DeviceManager {
             try {
                 Class<?> driver = getDriver(devInfo.getDriver());
                 BaseDevice device = initDevice(driver, devInfo);
+
                 if (device.isDiscoverable() && device.getDiscoverEngine() != null) {
-                    DeviceDiscoverInfo discoveryInfo = deviceDiscovery.discover(devInfo.getSid(), device.getDiscoverEngine());
-                    // TODO add discovery info before constructor or  
+                    DeviceDiscoverInfo discoveryInfo = deviceDiscovery.discover(devInfo.getSid(),
+                            device.getDiscoverEngine());
+                    for (Entry<String, Object> entry : discoveryInfo.entrySet()) {
+                        device.status.update(entry.getKey(), entry.getValue());
+                    }
                 }
+
+                if (device.isGatewayNeeded()) {
+                    String gatewaySid = devInfo.getArgs().get("gateway");
+                    device.setGateway(getGateway(gatewaySid));
+                }
+
+                device.setup();
+
                 Watcher deviceWatcher = device.getWatcher();
                 if (deviceWatcher != null) {
                     watcherManager.registerWatcher(deviceWatcher);
                 }
-                device.setup();
+
                 addDevice(devInfo.getSid(), device);
+
             } catch (DeviceNotSupported | GatewayNotFound | DeviceInitError | DeviceNotDiscovered e) {
                 LOGGER.warning(e.getMessage());
+            } catch (AttributeReadOnly e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
         }
     }
@@ -159,7 +176,8 @@ public class HomedaemonDeviceManager implements DeviceManager {
                 drivers.put(driverName, driver);
                 return driver;
             } catch (ClassNotFoundException e) {
-                throw new DeviceNotSupported(new StringBuilder(e.getMessage().toString()).append(" ").append(driverName).toString());
+                throw new DeviceNotSupported(
+                        new StringBuilder(e.getMessage().toString()).append(" ").append(driverName).toString());
             }
         }
         return drivers.get(driverName);

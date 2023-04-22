@@ -20,6 +20,7 @@ public abstract class BaseDevice {
     protected boolean discoverable = false;
     protected static DiscoverEngine discoverEngine = null;
     protected Watcher watcher = null;
+    protected boolean gatewayNeeded = false;
 
     protected static final Logger LOGGER = Logger.getLogger("Homedaemon");
 
@@ -36,7 +37,7 @@ public abstract class BaseDevice {
         }
     }
 
-    // For thins like setup watcher 
+    // For thinks like setup watcher
     public abstract void setup();
 
     public Watcher getWatcher() {
@@ -126,4 +127,13 @@ public abstract class BaseDevice {
             e.printStackTrace();
         }
     }
+
+    public boolean isGatewayNeeded() {
+        return gatewayNeeded;
+    }
+
+    public void setGateway(Gateway gateway) {
+        throw new UnsupportedOperationException("Unimplemented method 'setGateway'");
+    }
+
 }

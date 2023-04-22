@@ -2,7 +2,6 @@ package ovh.angrysoft.homedaemon.devices.xiaomi.aqara;
 
 import ovh.angrysoft.homedaemon.devices.DeviceAttribute;
 import ovh.angrysoft.homedaemon.devices.DeviceInfo;
-import ovh.angrysoft.homedaemon.devices.Gateway;
 import ovh.angrysoft.homedaemon.devices.ZigbeeBaseDevice;
 import ovh.angrysoft.homedaemon.devices.traits.OnOff;
 import ovh.angrysoft.homedaemon.devices.traits.Toggle;
@@ -10,8 +9,8 @@ import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
 
 public class Plug extends ZigbeeBaseDevice implements OnOff, Toggle {
 
-    public Plug(DeviceInfo deviceInfo, Gateway gateway) {
-        super(deviceInfo, gateway);
+    public Plug(DeviceInfo deviceInfo) {
+        super(deviceInfo);
         try {
             this.status.registerAttribute(new DeviceAttribute<String>("model", "ZNCZ02LM"));
             this.status.registerAttribute(new DeviceAttribute<String>("state", ""));

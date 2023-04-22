@@ -4,7 +4,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
 
 import ovh.angrysoft.homedaemon.discover.DeviceDiscoverInfo;
 
@@ -22,7 +24,7 @@ public class YeelightDeviceInfo implements DeviceDiscoverInfo {
             String value = item[1].strip();
             switch (name) {
                 case "id":
-                    info.put("id", value);
+                    info.put("sid", value);
                     break;
 
                 case "power":
@@ -76,8 +78,8 @@ public class YeelightDeviceInfo implements DeviceDiscoverInfo {
     }
 
     // @SuppressWarnings("unchecked")
-    public <T> T get(String key) {
-        return (T) this.info.get(key);
+    public Object get(String key) {
+        return this.info.get(key);
     }
 
     public String getDeviceSid() {
@@ -100,6 +102,11 @@ public class YeelightDeviceInfo implements DeviceDiscoverInfo {
     @Override
     public boolean containsKey(String key) {
         return info.containsKey(key);
+    }
+
+    @Override
+    public Set<Entry<String, Object>> entrySet() {
+        return info.entrySet();
     }
 
 }

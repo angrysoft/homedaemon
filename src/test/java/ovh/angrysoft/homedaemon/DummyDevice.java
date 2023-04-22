@@ -68,7 +68,6 @@ public class DummyDevice extends BaseDevice implements OnOff, Toggle {
 
     @Override
     public void setup() {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'setup'");
     }
 

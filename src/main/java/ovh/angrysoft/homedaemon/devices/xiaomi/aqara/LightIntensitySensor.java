@@ -2,15 +2,14 @@ package ovh.angrysoft.homedaemon.devices.xiaomi.aqara;
 
 import ovh.angrysoft.homedaemon.devices.DeviceAttribute;
 import ovh.angrysoft.homedaemon.devices.DeviceInfo;
-import ovh.angrysoft.homedaemon.devices.Gateway;
 import ovh.angrysoft.homedaemon.devices.ZigbeeBaseDevice;
 import ovh.angrysoft.homedaemon.devices.traits.Illuminance;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
 
 public class LightIntensitySensor extends ZigbeeBaseDevice implements Illuminance {
 
-    public LightIntensitySensor(DeviceInfo deviceInfo, Gateway gateway) {
-        super(deviceInfo, gateway);
+    public LightIntensitySensor(DeviceInfo deviceInfo) {
+        super(deviceInfo);
         try {
             this.status.registerAttribute(new DeviceAttribute<String>("model", "GZCGQ01LM"));
             this.status.registerAttribute(new DeviceAttribute<Integer>("illuminance", 0));
@@ -18,7 +17,6 @@ public class LightIntensitySensor extends ZigbeeBaseDevice implements Illuminanc
         } catch (AttributeAlreadyExist e) {
             LOGGER.warning(e.getMessage());
         }
-        gateway.registerSubDevice(deviceInfo.getSid(), deviceInfo.getModel());
         this.requestOfIlluminanceInfo();
         this.requestOfIlluminanceLuxInfo();
 
