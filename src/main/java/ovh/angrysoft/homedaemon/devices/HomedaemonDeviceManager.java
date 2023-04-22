@@ -134,7 +134,6 @@ public class HomedaemonDeviceManager implements DeviceManager {
             LOGGER.log(Level.INFO, String.format("load device: %s model : %s", devInfo.getSid(), devInfo.getModel()));
             try {
                 Class<?> driver = getDriver(devInfo.getDriver());
-            
                 BaseDevice device = initDevice(driver, devInfo);
                 if (device.isDiscoverable() && device.getDiscoverEngine() != null) {
                     DeviceDiscoverInfo discoveryInfo = deviceDiscovery.discover(devInfo.getSid(), device.getDiscoverEngine());
@@ -144,7 +143,7 @@ public class HomedaemonDeviceManager implements DeviceManager {
                 if (deviceWatcher != null) {
                     watcherManager.registerWatcher(deviceWatcher);
                 }
-
+                device.setup();
                 addDevice(devInfo.getSid(), device);
             } catch (DeviceNotSupported | GatewayNotFound | DeviceInitError | DeviceNotDiscovered e) {
                 LOGGER.warning(e.getMessage());
@@ -168,13 +167,8 @@ public class HomedaemonDeviceManager implements DeviceManager {
 
     private BaseDevice initDevice(Class<?> driver, DeviceInfo deviceInfo) throws DeviceInitError, GatewayNotFound {
         try {
-            Constructor<?>[] deviceConstructor = driver.getDeclaredConstructors();
-            //TODO discover if nessesery
-            if (deviceInfo.getArgs().containsKey("gateway")) {
-                return (BaseDevice) deviceConstructor[0].newInstance(deviceInfo,
-                        getGateway(deviceInfo.getArgs().get("gateway")));
-            }
-            return (BaseDevice) deviceConstructor[0].newInstance(deviceInfo);
+            Constructor<?> deviceConstructor = driver.getConstructors()[0];
+            return (BaseDevice) deviceConstructor.newInstance(deviceInfo);
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException e) {
             throw new DeviceInitError(e.getMessage());
@@ -196,7 +190,7 @@ public class HomedaemonDeviceManager implements DeviceManager {
         BaseDevice dev = this.devices.get(statusEvent.getSid());
         if (dev != null) {
             try {
-                if (dev.status.update(statusEvent)) {
+                if (dev.status.update(statusEvent.getName(), statusEvent.getValue())) {
                     bus.dispatch(statusEvent);
                 }
             } catch (AttributeReadOnly e) {

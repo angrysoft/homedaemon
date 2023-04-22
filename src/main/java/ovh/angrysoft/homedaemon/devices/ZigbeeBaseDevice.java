@@ -16,4 +16,10 @@ public class ZigbeeBaseDevice extends BaseDevice {
         this.gateway = gateway;
     }
 
+    @Override
+    public void setup() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setup'");
+    }
+
 }

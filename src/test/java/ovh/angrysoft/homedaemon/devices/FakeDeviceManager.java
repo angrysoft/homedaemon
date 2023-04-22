@@ -38,7 +38,7 @@ public class FakeDeviceManager implements DeviceManager {
 
         BaseDevice dev = this.devices.get(statusEvent.getSid());
         try {
-            dev.status.update(statusEvent);
+            dev.status.update(statusEvent.getName(), statusEvent.getValue());
         } catch (AttributeReadOnly e) {
             e.printStackTrace();
         }

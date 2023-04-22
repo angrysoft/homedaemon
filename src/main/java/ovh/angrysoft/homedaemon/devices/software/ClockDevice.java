@@ -15,6 +15,10 @@ public class ClockDevice extends BaseDevice {
         } catch (AttributeAlreadyExist e) {
             LOGGER.warning(e.getMessage());
         }
+    }
+    
+    @Override
+    public void setup() {
         this.watcher = new ClockWatcher(getSid());
     }
 

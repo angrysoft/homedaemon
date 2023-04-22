@@ -60,12 +60,12 @@ public class DeviceStatus {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> boolean update(StatusEvent status) throws AttributeReadOnly {
+    public <T> boolean update(String attrName, T attrValue) throws AttributeReadOnly {
         try {
-            String attrName = status.getName();
+            
             if (this.attributes.containsKey(attrName)) {
                 DeviceAttribute<T> attr = (DeviceAttribute<T>) this.attributes.get(attrName);
-                return attr.setValue((T) status.getValue());
+                return attr.setValue(attrValue);
             }
 
         } catch (ClassCastException e) {

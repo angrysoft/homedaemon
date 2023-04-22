@@ -9,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import ovh.angrysoft.homedaemon.bus.Events.StatusEvent;
 import ovh.angrysoft.homedaemon.devices.DeviceAttribute;
 import ovh.angrysoft.homedaemon.devices.DeviceStatus;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
@@ -65,17 +64,15 @@ public class DeviceStatusTest {
             status.registerAttribute( new DeviceAttribute<>("attr2", 1) );
         } catch ( AttributeAlreadyExist e) {}
 
-        StatusEvent toUpdateAttr1 = new StatusEvent("112233445566", "attr1", "value1");
         try {
-            status.update(toUpdateAttr1);
+            status.update("attr1", "value1");
         } catch ( AttributeReadOnly e) {
 
         }
         assertEquals("value1", status.get("attr1"));
         
-        StatusEvent toUpdateAttr2 = new StatusEvent("112233445566", "attr2", 10);
         try {
-            status.update(toUpdateAttr2);
+            status.update("attr2", 10);
         } catch ( AttributeReadOnly e) {
 
         }

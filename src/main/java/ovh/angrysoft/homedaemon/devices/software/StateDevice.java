@@ -17,4 +17,8 @@ public class StateDevice extends BaseDevice {
             LOGGER.warning(e.getMessage());
         }
     }
+
+    @Override
+    public void setup() {
+    }
 }

@@ -36,6 +36,9 @@ public abstract class BaseDevice {
         }
     }
 
+    // For thins like setup watcher 
+    public abstract void setup();
+
     public Watcher getWatcher() {
         return watcher;
     }
