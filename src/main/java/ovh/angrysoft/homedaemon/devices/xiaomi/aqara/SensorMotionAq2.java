@@ -2,7 +2,6 @@ package ovh.angrysoft.homedaemon.devices.xiaomi.aqara;
 
 import ovh.angrysoft.homedaemon.devices.DeviceAttribute;
 import ovh.angrysoft.homedaemon.devices.DeviceInfo;
-import ovh.angrysoft.homedaemon.devices.Gateway;
 import ovh.angrysoft.homedaemon.devices.ZigbeeBaseDevice;
 import ovh.angrysoft.homedaemon.devices.traits.Illuminance;
 import ovh.angrysoft.homedaemon.devices.traits.Motion;
@@ -10,8 +9,8 @@ import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
 
 public class SensorMotionAq2 extends ZigbeeBaseDevice implements Motion, Illuminance {
 
-    public SensorMotionAq2(DeviceInfo deviceInfo, Gateway gateway) {
-        super(deviceInfo, gateway);
+    public SensorMotionAq2(DeviceInfo deviceInfo) {
+        super(deviceInfo);
         try {
             this.status.registerAttribute(new DeviceAttribute<String>("model", "RTCGQ11LM"));
             this.status.registerAttribute(new DeviceAttribute<Boolean>("occupancy", false));
@@ -22,7 +21,6 @@ public class SensorMotionAq2 extends ZigbeeBaseDevice implements Motion, Illumin
         } catch (AttributeAlreadyExist e) {
             LOGGER.warning(e.getMessage());
         }
-        gateway.registerSubDevice(deviceInfo.getSid(), deviceInfo.getModel());
     }
 
     public boolean getOccupancy() {

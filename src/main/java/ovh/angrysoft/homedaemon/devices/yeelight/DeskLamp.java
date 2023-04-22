@@ -3,15 +3,14 @@ package ovh.angrysoft.homedaemon.devices.yeelight;
 import ovh.angrysoft.homedaemon.devices.DeviceAttribute;
 import ovh.angrysoft.homedaemon.devices.DeviceInfo;
 import ovh.angrysoft.homedaemon.devices.traits.ColorTemperature;
-import ovh.angrysoft.homedaemon.discover.DeviceDiscoverInfo;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
 
 public class DeskLamp extends Mono implements ColorTemperature {
 
-    public DeskLamp(DeviceInfo deviceInfo, DeviceDiscoverInfo initData) {
-        super(deviceInfo, initData);
+    public DeskLamp(DeviceInfo deviceInfo) {
+        super(deviceInfo);
         try {
-            this.status.registerAttribute(new DeviceAttribute<Integer>("ct", initData.get("ct")));
+            this.status.registerAttribute(new DeviceAttribute<Integer>("ct", 0));
 
         } catch (AttributeAlreadyExist e) {
             e.printStackTrace();

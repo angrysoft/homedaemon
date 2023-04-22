@@ -2,15 +2,14 @@ package ovh.angrysoft.homedaemon.devices.xiaomi.aqara;
 
 import ovh.angrysoft.homedaemon.devices.DeviceAttribute;
 import ovh.angrysoft.homedaemon.devices.DeviceInfo;
-import ovh.angrysoft.homedaemon.devices.Gateway;
 import ovh.angrysoft.homedaemon.devices.ZigbeeBaseDevice;
 import ovh.angrysoft.homedaemon.devices.traits.OnOff;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
 
 public class CtrlNeutral extends ZigbeeBaseDevice implements OnOff {
 
-    public CtrlNeutral(DeviceInfo deviceInfo, Gateway gateway) {
-        super(deviceInfo, gateway);
+    public CtrlNeutral(DeviceInfo deviceInfo) {
+        super(deviceInfo);
         try {
             this.status.registerAttribute(new DeviceAttribute<String>("model", "QBKG04LM"));
             this.status.registerAttribute(new DeviceAttribute<String>("state", ""));
@@ -19,7 +18,6 @@ public class CtrlNeutral extends ZigbeeBaseDevice implements OnOff {
         } catch (AttributeAlreadyExist e) {
             LOGGER.warning(e.getMessage());
         }
-        gateway.registerSubDevice(deviceInfo.getSid(), deviceInfo.getModel());
 
     }
 

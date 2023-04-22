@@ -68,23 +68,6 @@ public class MqttV5Connection extends Thread implements MqttCallback {
 
         this.qos = 0;
 
-        // if (cliOptions.hasOption("will-payload") &&
-        // cliOptions.hasOption("will-topic")) {
-        // String willPayload = cliOptions.getOptionValue("will-payload");
-        // String willTopic = cliOptions.getOptionValue("will-topic");
-        // int qos = 0;
-        // boolean retained = false;
-        // if (cliOptions.hasOption("will-qos")) {
-        // qos = Integer.parseInt(cliOptions.getOptionValue("will-qos"));
-        // }
-        // if (cliOptions.hasOption("will-retain")) {
-        // retained = true;
-        // }
-        // MqttMessage willMessage = new MqttMessage(willPayload.getBytes(), qos,
-        // retained, null);
-        // conOpts.setWill(willTopic, willMessage);
-        // }
-
         this.topics = new ArrayList<String>();
 
         if (clientID == null || clientID == "") {
@@ -148,7 +131,7 @@ public class MqttV5Connection extends Thread implements MqttCallback {
 
     public void publishMessage(byte[] payload, int qos, boolean retain, String topic)
             throws MqttPersistenceException, MqttException {
-        if (! isConnected()) {
+        if (!isConnected()) {
             LOGGER.warning("Not Connected");
             return;
         }

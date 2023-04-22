@@ -28,7 +28,9 @@ public class CtrlNeutral2Test {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        CtrlNeutral2 ctrl = new CtrlNeutral2(deviceInfo, gateway);
+        CtrlNeutral2 ctrl = new CtrlNeutral2(deviceInfo);
+        ctrl.setGateway(gateway);
+        ctrl.setup();
         ctrl.left(true);
         ctrl.right(true);
         try {

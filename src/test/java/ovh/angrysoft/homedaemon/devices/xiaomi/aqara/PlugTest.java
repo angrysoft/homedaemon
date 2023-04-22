@@ -28,7 +28,9 @@ public class PlugTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        Plug plug = new Plug(deviceInfo, gateway);
+        Plug plug = new Plug(deviceInfo);
+        plug.setGateway(gateway);
+        plug.setup();
         plug.on();
         try {
             Thread.sleep(2000);
