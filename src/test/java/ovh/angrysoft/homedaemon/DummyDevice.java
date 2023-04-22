@@ -1,6 +1,5 @@
 package ovh.angrysoft.homedaemon;
 
-import ovh.angrysoft.homedaemon.bus.Events.StatusEvent;
 import ovh.angrysoft.homedaemon.devices.BaseDevice;
 import ovh.angrysoft.homedaemon.devices.DeviceAttribute;
 import ovh.angrysoft.homedaemon.devices.DeviceInfo;
@@ -26,14 +25,14 @@ public class DummyDevice extends BaseDevice implements OnOff, Toggle {
 
     public void on() {
         try {
-            this.status.update(new StatusEvent("aaaaaabbb", "power", "on"));
+            this.status.update("power", "on");
         } catch (AttributeReadOnly e) {
             e.printStackTrace();
         }
     }
     public void off() {
         try {
-            this.status.update(new StatusEvent("aaaaaabbb", "power", "off"));
+            this.status.update("power", "off");
         } catch (AttributeReadOnly e) {
             e.printStackTrace();
         }
@@ -41,7 +40,7 @@ public class DummyDevice extends BaseDevice implements OnOff, Toggle {
     
     public void changeState(Integer state) {
         try {
-            this.status.update(new StatusEvent("aaaaaabbb", "state", state));
+            this.status.update("state", state);
         } catch (AttributeReadOnly e) {
             e.printStackTrace();
         }
@@ -49,7 +48,7 @@ public class DummyDevice extends BaseDevice implements OnOff, Toggle {
 
     public void forbidden(Integer state) {
         try {
-            this.status.update(new StatusEvent("aaaaaabbb", "state", state));
+            this.status.update("state", state);
         } catch (AttributeReadOnly e) {
             e.printStackTrace();
         }
@@ -65,5 +64,12 @@ public class DummyDevice extends BaseDevice implements OnOff, Toggle {
     }
 
     public void toggle() {}
+
+
+    @Override
+    public void setup() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setup'");
+    }
 
 }

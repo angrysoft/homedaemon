@@ -19,19 +19,17 @@ class Mono extends BaseDevice implements OnOff, Dimmer {
             this.status.registerAttribute(new DeviceAttribute<String>("power", initData.get("power")));
             this.status.registerAttribute(new DeviceAttribute<Integer>("color_mode", initData.get("colorMode")));
             this.status.registerAttribute(new DeviceAttribute<Integer>("bright", initData.get("bright")));
-            this.api = new YeelightApi(initData.get("addr"), initData.get("port"));
+            this.status.registerAttribute(new DeviceAttribute<String>("addr", "localhost"));
+            this.status.registerAttribute(new DeviceAttribute<Integer>("port", 0));
         } catch (AttributeAlreadyExist e) {
             e.printStackTrace();
-        } catch (DeviceConnectionError e) {
-            e.printStackTrace();
         }
-        this.watcher = new YeelightWatcher(getSid(), initData.get("addr"), initData.get("port"));
     }
-
+    
     public void on() {
         this.api.setPower(true);
     }
-
+    
     public void off() {
         this.api.setPower(false);
     }
@@ -39,12 +37,22 @@ class Mono extends BaseDevice implements OnOff, Dimmer {
     public boolean isOn() {
         return this.status.get("power").equals("on");
     }
-
+    
     public void setBright(Integer value) {
         this.api.setBright(value);
     }
-
+    
     public int getBright() {
         return this.status.get("bright");
+    }
+    
+    @Override
+    public void setup() {
+        try {
+            this.api = new YeelightApi(status.get("addr"), status.get("port"));
+        } catch (DeviceConnectionError e) {
+            LOGGER.warning(e.getMessage());
+        }
+        this.watcher = new YeelightWatcher(getSid(), status.get("addr"), status.get("port"));
     }
 }
