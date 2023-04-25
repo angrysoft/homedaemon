@@ -20,6 +20,7 @@ import ovh.angrysoft.homedaemon.automation.conditions.NullTestCase;
 import ovh.angrysoft.homedaemon.automation.conditions.OrCondition;
 import ovh.angrysoft.homedaemon.automation.conditions.StatusTestCase;
 import ovh.angrysoft.homedaemon.automation.conditions.TestCase;
+import ovh.angrysoft.homedaemon.devices.DeviceAttribute;
 import ovh.angrysoft.homedaemon.devices.DeviceManager;
 import ovh.angrysoft.homedaemon.devices.software.StateDevice;
 
@@ -35,17 +36,31 @@ public class AutomationParser {
         List<Action> actionsFalse = this.parseActions(info.getActionsFalse());
         List<Condition> conditions = this.parseConditions(info.getConditions());
         registerStateAttribute(info.getState());
-        //TODO: throw parse error if something go wrong 
+        // TODO: throw parse error if something go wrong
         return new Automation(info.getSid(), conditions, actions, actionsFalse);
     }
 
-    private void registerStateAttribute(Map<String, Object> state)  {
-        if (state == null) return;
+    private void registerStateAttribute(List<State> states) {
+        if (states == null)
+            return;
 
         StateDevice stateDevice = (StateDevice) deviceManager.getDevice("state");
-        state.forEach((attrName, attrValue) -> {
-            System.out.println("registering: " + attrName + "=" +attrValue );
-            stateDevice.registerStateAttribute(attrName, attrValue);
+        states.forEach((state) -> {
+            System.out.println("registering (" + state.attrType + "): " + state.attrName + "=" + state.attrValue);
+            switch (state.attrType) {
+                case "bool":
+                    stateDevice.registerStateAttribute(
+                            new DeviceAttribute<Boolean>(state.attrName, (Boolean) state.attrValue));
+                    break;
+                case "str":
+                    stateDevice.registerStateAttribute(
+                            new DeviceAttribute<String>(state.attrName, (String) state.attrValue));
+                    break;
+                case "int":
+                    stateDevice.registerStateAttribute(
+                            new DeviceAttribute<Integer>(state.attrName, (Integer) state.attrValue));
+                    break;
+            }
         });
     }
 

@@ -46,6 +46,7 @@ public class HomedaemonDeviceManager implements DeviceManager {
         this.devices = new HashMap<>();
         this.drivers = new HashMap<>();
         this.watcherManager = new WatcherManager(this);
+        this.deviceDiscovery = new DeviceDiscovery();
     }
 
     public WatcherManager getWatcherManager() {
@@ -113,11 +114,11 @@ public class HomedaemonDeviceManager implements DeviceManager {
 
         // State
         Map<String, String> stateName = new HashMap<>();
-        clockName.put("pl", "Stan");
-        clockName.put("en", "State");
+        stateName.put("pl", "Stan");
+        stateName.put("en", "State");
         Map<String, String> statePlace = new HashMap<>();
-        clockPlace.put("pl", "Wszędzie");
-        clockPlace.put("en", "everywhere");
+        statePlace.put("pl", "Wszędzie");
+        statePlace.put("en", "everywhere");
         DeviceInfo stateInfo = new DeviceInfo(
                 "state",
                 "state",
@@ -141,7 +142,12 @@ public class HomedaemonDeviceManager implements DeviceManager {
                     DeviceDiscoverInfo discoveryInfo = deviceDiscovery.discover(devInfo.getSid(),
                             device.getDiscoverEngine());
                     for (Entry<String, Object> entry : discoveryInfo.entrySet()) {
-                        device.status.update(entry.getKey(), entry.getValue());
+                        try {
+                            device.status.update(entry.getKey(), entry.getValue());
+                        } catch (AttributeReadOnly e) {
+                            LOGGER.warning(new StringBuilder("Attribute Read Only - ").append(devInfo.getSid()).toString());
+
+                        }
                     }
                 }
 
@@ -159,13 +165,17 @@ public class HomedaemonDeviceManager implements DeviceManager {
 
                 addDevice(devInfo.getSid(), device);
 
-            } catch (DeviceNotSupported | GatewayNotFound | DeviceInitError | DeviceNotDiscovered e) {
-                LOGGER.warning(e.getMessage());
-            } catch (AttributeReadOnly e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            } catch (DeviceNotSupported e) {
+                LOGGER.warning(new StringBuilder("Device not supported - ").append(e.getMessage()).toString());
+            } catch (GatewayNotFound e) {
+                LOGGER.warning(new StringBuilder("Gateway not found - ").append(e.getMessage()).toString());
+            } catch (DeviceNotDiscovered e) {
+                LOGGER.warning(new StringBuilder("Device not Discovered - ").append(devInfo.getSid()).toString());
+            } catch (DeviceInitError e) {
+                LOGGER.warning(new StringBuilder("Device Init - ").append(devInfo.getSid()).toString());
             }
         }
+
     }
 
     private Class<?> getDriver(String driverName) throws DeviceNotSupported {
@@ -189,6 +199,7 @@ public class HomedaemonDeviceManager implements DeviceManager {
             return (BaseDevice) deviceConstructor.newInstance(deviceInfo);
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException e) {
+            e.printStackTrace();
             throw new DeviceInitError(e.getMessage());
         }
     }

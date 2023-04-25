@@ -6,10 +6,24 @@
         "pl": "Światło w kuchni"
     },
     "trigger": "status.0x00124b00244504ca.voltage.3000",
-    "state": {
-        "stateName": "state_init_value",
-        "occupancy": false
-    },
+    "state": [
+        {
+            "attrName": "attrName",
+            "attrType": "bool",
+            "attrValue": false
+        },
+        {
+            "attrName": "attrName",
+            "attrType": "str",
+            "attrValue": "test"
+        },
+        {
+            "attrName": "attrName",
+            "attrType": "int",
+            "attrValue": 0
+        }
+
+    ],
     "conditions": [
         {
             "type": "and",

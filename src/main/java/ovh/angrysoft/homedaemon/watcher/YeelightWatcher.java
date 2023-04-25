@@ -37,7 +37,8 @@ public class YeelightWatcher extends Watcher {
 
     @Override
     public void run() {
-
+        System.err.println(ip+":" + port);
+        
         try (TcpConnection conn = new TcpConnection(ip, port)) {
             while (true) {
                 String rec = conn.recv();

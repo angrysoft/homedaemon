@@ -12,17 +12,18 @@ import java.util.logging.Logger;
 
 import ovh.angrysoft.homedaemon.discover.DiscoverEngine;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
+import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeReadOnly;
 import ovh.angrysoft.homedaemon.watcher.Watcher;
 
 public abstract class BaseDevice {
     protected DeviceStatus status;
     protected Set<String> commands;
     protected boolean discoverable = false;
-    protected static DiscoverEngine discoverEngine = null;
+    protected DiscoverEngine discoverEngine = null;
     protected Watcher watcher = null;
     protected boolean gatewayNeeded = false;
 
-    protected static final Logger LOGGER = Logger.getLogger("Homedaemon");
+    protected final Logger LOGGER = Logger.getLogger("Homedaemon");
 
     protected BaseDevice(DeviceInfo deviceInfo) {
         this.status = new DeviceStatus();
@@ -96,6 +97,10 @@ public abstract class BaseDevice {
         ret.put("traits", this.getTraits().toString());
         return ret;
 
+    }
+
+    public <T> Boolean updateStatus(String attrName, T attrValue) throws AttributeReadOnly {
+        return this.status.update(attrName, attrValue);
     }
 
     /**
