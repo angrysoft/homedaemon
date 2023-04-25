@@ -17,9 +17,6 @@ public class LightIntensitySensor extends ZigbeeBaseDevice implements Illuminanc
         } catch (AttributeAlreadyExist e) {
             LOGGER.warning(e.getMessage());
         }
-        this.requestOfIlluminanceInfo();
-        this.requestOfIlluminanceLuxInfo();
-
     }
 
     public void requestOfIlluminanceInfo() {
@@ -32,6 +29,13 @@ public class LightIntensitySensor extends ZigbeeBaseDevice implements Illuminanc
 
     public int getIlluminance() {
         return this.status.get("illuminance");
+    }
+
+    @Override
+    public void setup() {
+        super.setup();
+        this.requestOfIlluminanceInfo();
+        this.requestOfIlluminanceLuxInfo();
     }
 
 }

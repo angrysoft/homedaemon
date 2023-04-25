@@ -23,13 +23,15 @@ public class App {
         Config config = new Config();
         config.loadConfigs(confDir);
         Logger logger = Logger.getLogger("Homedaemon");
+        Level logLevel = Level.WARNING;
+        String logFormat = "[ %4$s ] %5$s%6$s%n";
         if (config.get("homed", "debug").getAsBoolean()) {
-            System.setProperty("java.util.logging.SimpleFormatter.format", "%1$tF %1$tT %2$s - %4$s: %5$s%6$s%n");
-            logger.setLevel(Level.FINE);
-        } else {
-            System.setProperty("java.util.logging.SimpleFormatter.format", "[ %4$s ] %5$s%6$s%n");
-            logger.setLevel(Level.WARNING);
+            logFormat = "%1$tF %1$tT %2$s - %4$s: %5$s%6$s%n";
+            logLevel = Level.FINE;
         }
+        System.setProperty("java.util.logging.SimpleFormatter.format", logFormat);
+        logger.setLevel(logLevel);
+        // logger.getHandlers()[0].setLevel(logLevel);
 
         EventBus bus = new EventBus();
         bus.addTrigger(new Trigger(Topic.fromString("status.*"), (Event event) -> {
@@ -37,8 +39,8 @@ public class App {
                     event.getPayload()));
         }));
 
-        bus.addTrigger(new Trigger(Topic.fromString("status.*"), (Event event) -> {
-            logger.info(String.format("debug msg: %s with payload: %s", event.getTopic().toString(),
+        bus.addTrigger(new Trigger(Topic.fromString("*"), (Event event) -> {
+            logger.fine(String.format("debug msg: %s with payload: %s", event.getTopic().toString(),
                     event.getPayload()));
         }));
 

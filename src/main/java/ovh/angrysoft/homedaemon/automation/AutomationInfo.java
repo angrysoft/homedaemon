@@ -11,11 +11,11 @@ public class AutomationInfo {
     private List<ConditionInfo> conditions;
     private List<ActionInfo> actions;
     private List<ActionInfo> actionsFalse;
-    private Map<String, Object> state;
+    private List<State> state;
 
     public AutomationInfo(String sid, String type, String trigger, Map<String, String> name,
             List<ConditionInfo> conditions, List<ActionInfo> actions, List<ActionInfo> actionsFalse,
-            Map<String, Object> state) {
+            List<State> state) {
         this.sid = sid;
         this.type = type;
         this.trigger = trigger;
@@ -54,7 +54,7 @@ public class AutomationInfo {
         return actionsFalse;
     }
 
-    public Map<String, Object> getState() {
+    public List<State> getState() {
         return state;
     }
 
@@ -97,6 +97,12 @@ public class AutomationInfo {
         return sb.toString();
     }
 
+}
+
+class State {
+    String attrName;
+    String attrType;
+    Object attrValue;
 }
 
 class ConditionInfo {

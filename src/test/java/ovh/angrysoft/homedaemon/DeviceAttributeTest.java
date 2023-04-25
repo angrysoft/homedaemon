@@ -19,6 +19,14 @@ public class DeviceAttributeTest {
         assertEquals("test", attr.getName());
         assertEquals("StringValue", attr.getValue()); 
     }
+
+    @Test
+    @DisplayName("Test boolean attribute")
+    void testBooleanAttribute() {
+        DeviceAttribute<Boolean> attr = new DeviceAttribute<>("testBool", false);
+        assertEquals("testBool", attr.getName());
+        assertEquals(false , attr.getValue()); 
+    }
     
     @Test
     @DisplayName("Test change value")

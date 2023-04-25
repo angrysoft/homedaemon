@@ -10,9 +10,9 @@ public class StateDevice extends BaseDevice {
         super(deviceInfo);
     }
 
-    public <T> void registerStateAttribute(String stateName, T stateValue) {
+    public <T> void registerStateAttribute(DeviceAttribute<T> deviceAttribute) {
         try {
-            this.status.registerAttribute(new DeviceAttribute<T>(stateName, stateValue, false, false));
+            this.status.registerAttribute(deviceAttribute);
         } catch (AttributeAlreadyExist e) {
             LOGGER.warning(e.getMessage());
         }
