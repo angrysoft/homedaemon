@@ -16,7 +16,7 @@ public class ActionState extends Action {
 
     @Override
     public void run() {
-        System.err.println("state." + attrName + "." + attrValue);
+        //TODO this not update device state
         bus.dispatch(new StatusEvent("state", attrName, attrValue));
     }
 }
