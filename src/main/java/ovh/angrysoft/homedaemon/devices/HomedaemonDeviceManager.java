@@ -145,7 +145,7 @@ public class HomedaemonDeviceManager implements DeviceManager {
                         try {
                             device.status.update(entry.getKey(), entry.getValue());
                         } catch (AttributeReadOnly e) {
-                            LOGGER.warning(new StringBuilder("Attribute Read Only - ").append(devInfo.getSid()).toString());
+                            LOGGER.warning(new StringBuilder("Attribute Read Only - ").append(devInfo.getSid()).append(" - ").append(entry.getKey()).toString());
 
                         }
                     }
