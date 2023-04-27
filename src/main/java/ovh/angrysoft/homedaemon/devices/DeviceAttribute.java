@@ -4,7 +4,7 @@ import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeReadOnly;
 
 public class DeviceAttribute<T> {
     private T value;
-    private String name;
+    private final String name;
     private boolean readonly = false;
     private boolean alwaysUpdate = false;
     private boolean initValue = true;

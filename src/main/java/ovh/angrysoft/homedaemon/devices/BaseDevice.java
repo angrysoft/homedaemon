@@ -16,8 +16,8 @@ import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeReadOnly;
 import ovh.angrysoft.homedaemon.watcher.Watcher;
 
 public abstract class BaseDevice {
-    protected DeviceStatus status;
-    protected Set<String> commands;
+    protected final DeviceStatus status;
+    protected final Set<String> commands;
     protected boolean discoverable = false;
     protected DiscoverEngine discoverEngine = null;
     protected Watcher watcher = null;

@@ -2,7 +2,6 @@ package ovh.angrysoft.homedaemon.automation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import com.google.gson.internal.LazilyParsedNumber;
 
@@ -138,7 +137,7 @@ public class AutomationParser {
             case "dispatch":
                 return new ActionDispatch(action.getCmd(), action.getArg(), deviceManager.getBus());
             case "state":
-                return new ActionState(action.getCmd(), action.getArg(), deviceManager.getBus());
+                return new ActionState(action.getCmd(), action.getArg(), deviceManager);
         }
         return null;
     }
