@@ -15,7 +15,7 @@ public class ConfigTest {
     @Test
     @DisplayName("Test config set category/value")
     void testSet() {
-        Config conf = new Config();
+        ConfigBak conf = new ConfigBak();
         JsonObject cat = new JsonObject();
         cat.add("enable", new JsonPrimitive(true));
         conf.setCategory("debug", cat);
@@ -26,7 +26,7 @@ public class ConfigTest {
     @Test
     @DisplayName("Test Load from dir")
     void testLoadFromFile() throws IOException {
-        Config config = new Config();
+        ConfigBak config = new ConfigBak();
         System.out.println("Working Directory = " + System.getProperty("user.dir"));
         config.loadConfigs("src/test/java/ovh/angrysoft/homedaemon/config");
         assertEquals("stringTwo", config.get("test", "two").getAsString());
