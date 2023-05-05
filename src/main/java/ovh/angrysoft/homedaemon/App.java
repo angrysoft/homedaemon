@@ -8,8 +8,9 @@ import ovh.angrysoft.homedaemon.bus.Event;
 import ovh.angrysoft.homedaemon.bus.EventBus;
 import ovh.angrysoft.homedaemon.bus.Topic;
 import ovh.angrysoft.homedaemon.bus.Trigger;
-import ovh.angrysoft.homedaemon.config.Config;
+import ovh.angrysoft.homedaemon.config.ConfigBak;
 import ovh.angrysoft.homedaemon.devices.HomedaemonDeviceManager;
+import ovh.angrysoft.homedaemon.io.IOManager;
 
 public class App {
     public static void main(String[] args) {
@@ -20,9 +21,9 @@ public class App {
             System.err.println("Add env DEVICE.DIR CONFIG.DIR AUTOMATION.DIR");
             return;
         }
-        Config config = new Config();
-        config.loadConfigs(confDir);
         Logger logger = Logger.getLogger("Homedaemon");
+        ConfigBak config = new ConfigBak();
+        config.loadConfigs(confDir);
         Level logLevel = Level.WARNING;
         String logFormat = "[ %4$s ] %5$s%6$s%n";
         if (config.get("homed", "debug").getAsBoolean()) {
@@ -51,6 +52,9 @@ public class App {
 
         AutomationManager automationManager = new AutomationManager(automationDir, bus, deviceManager);
         automationManager.loadAutomation();
+
+        // IOManager ioManager = new IOManager(config.get("homed", "io"), bus);
+        // ioManager.loadIO();
 
         while (true) {
             try {
