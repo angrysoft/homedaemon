@@ -1,37 +1,29 @@
 package ovh.angrysoft.homedaemon.config;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.IOException;
-
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
-
 public class ConfigTest {
+
     @Test
-    @DisplayName("Test config set category/value")
-    void testSet() {
-        ConfigBak conf = new ConfigBak();
-        JsonObject cat = new JsonObject();
-        cat.add("enable", new JsonPrimitive(true));
-        conf.setCategory("debug", cat);
-        boolean enable = conf.get("debug", "enable").getAsBoolean();
-        assertTrue(enable);
+    void testRegisterAndLoadConfig() {
+        Config config = new Config("src/test/java/ovh/angrysoft/homedaemon/config");
+
+        config.resisterConfigType("test", new ConfigType<TestConfig>(TestConfig.class));
     }
 
     @Test
-    @DisplayName("Test Load from dir")
-    void testLoadFromFile() throws IOException {
-        ConfigBak config = new ConfigBak();
-        System.out.println("Working Directory = " + System.getProperty("user.dir"));
-        config.loadConfigs("src/test/java/ovh/angrysoft/homedaemon/config");
-        assertEquals("stringTwo", config.get("test", "two").getAsString());
-        assertEquals(1, config.get("test", "one").getAsInt());
-        assertEquals(config.categorySet().size(), 2);
+    void testGet() {
+        Config config = new Config("src/test/java/ovh/angrysoft/homedaemon/config");
+        config.resisterConfigType("test", new ConfigType<TestConfig>(TestConfig.class));
+        TestConfig conf = (TestConfig) config.get("test");
+        System.out.println(conf.one());
+        assertEquals(1, conf.one());
+        assertEquals("stringTwo", conf.two());
+        assertEquals(1.1, conf.three());
     }
+}
 
+record TestConfig(Integer one, String two, Double three) {
 }
