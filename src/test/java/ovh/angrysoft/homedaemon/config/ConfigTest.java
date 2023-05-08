@@ -18,12 +18,12 @@ public class ConfigTest {
         Config config = new Config("src/test/java/ovh/angrysoft/homedaemon/config");
         config.resisterConfigType("test", new ConfigType<TestConfig>(TestConfig.class));
         TestConfig conf = (TestConfig) config.get("test");
-        System.out.println(conf.one());
         assertEquals(1, conf.one());
         assertEquals("stringTwo", conf.two());
         assertEquals(1.1, conf.three());
+        assertEquals(3, conf.four().length);
     }
 }
 
-record TestConfig(Integer one, String two, Double three) {
+record TestConfig(Integer one, String two, Double three, String[] four) {
 }
