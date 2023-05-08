@@ -12,6 +12,7 @@ import ovh.angrysoft.homedaemon.config.Config;
 import ovh.angrysoft.homedaemon.config.ConfigType;
 import ovh.angrysoft.homedaemon.config.Homed;
 import ovh.angrysoft.homedaemon.devices.HomedaemonDeviceManager;
+import ovh.angrysoft.homedaemon.io.IOManager;
 
 public class App {
     public static void main(String[] args) {
@@ -27,7 +28,8 @@ public class App {
         config.resisterConfigType("homed", new ConfigType<Homed>(Homed.class));
         Level logLevel = Level.WARNING;
         String logFormat = "[ %4$s ] %5$s%6$s%n";
-        if (((Homed) config.get("homed")).debug()) {
+        Homed homedConfig = (Homed) config.get("homed");
+        if (homedConfig.debug()) {
             logFormat = "%1$tF %1$tT %2$s - %4$s: %5$s%6$s%n";
             logLevel = Level.FINE;
         }
@@ -54,8 +56,8 @@ public class App {
         AutomationManager automationManager = new AutomationManager(automationDir, bus, deviceManager);
         automationManager.loadAutomation();
 
-        // IOManager ioManager = new IOManager(config.get("homed", "io"), bus);
-        // ioManager.loadIO();
+        IOManager ioManager = new IOManager(homedConfig.io(), bus);
+        ioManager.loadIO();
 
         while (true) {
             try {
