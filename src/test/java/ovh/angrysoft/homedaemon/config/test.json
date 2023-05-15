@@ -1,0 +1,10 @@
+{
+    "one": 1,
+    "two": "stringTwo",
+    "three": 1.1,
+    "four": [
+        "one",
+        "two",
+        "three"
+    ]
+}
