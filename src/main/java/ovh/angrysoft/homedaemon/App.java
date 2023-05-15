@@ -16,11 +16,11 @@ import ovh.angrysoft.homedaemon.io.IOManager;
 
 public class App {
     public static void main(String[] args) {
-        String devDir = System.getenv("DEVICE.DIR");
-        String confDir = System.getenv("CONFIG.DIR");
-        String automationDir = System.getenv("AUTOMATION.DIR");
+        String devDir = System.getenv("DEVICE_DIR");
+        String confDir = System.getenv("CONFIG_DIR");
+        String automationDir = System.getenv("AUTOMATION_DIR");
         if (devDir == null || confDir == null || automationDir == null) {
-            System.err.println("Add env DEVICE.DIR CONFIG.DIR AUTOMATION.DIR");
+            System.err.println("Add env DEVICE_DIR CONFIG_DIR AUTOMATION_DIR");
             return;
         }
         Logger logger = Logger.getLogger("Homedaemon");
