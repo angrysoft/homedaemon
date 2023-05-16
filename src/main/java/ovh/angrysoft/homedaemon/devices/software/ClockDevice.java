@@ -16,7 +16,7 @@ public class ClockDevice extends BaseDevice {
             LOGGER.warning(e.getMessage());
         }
     }
-    
+
     @Override
     public void setup() {
         this.watcher = new ClockWatcher(getSid());
