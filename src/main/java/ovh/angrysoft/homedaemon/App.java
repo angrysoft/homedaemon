@@ -10,7 +10,7 @@ import ovh.angrysoft.homedaemon.bus.Topic;
 import ovh.angrysoft.homedaemon.bus.Trigger;
 import ovh.angrysoft.homedaemon.config.Config;
 import ovh.angrysoft.homedaemon.config.ConfigType;
-import ovh.angrysoft.homedaemon.config.Homed;
+import ovh.angrysoft.homedaemon.config.HomedConfig;
 import ovh.angrysoft.homedaemon.devices.HomedaemonDeviceManager;
 import ovh.angrysoft.homedaemon.io.IOManager;
 
@@ -25,10 +25,10 @@ public class App {
         }
         Logger logger = Logger.getLogger("Homedaemon");
         Config config = new Config(confDir);
-        config.resisterConfigType("homed", new ConfigType<Homed>(Homed.class));
+        config.resisterConfigType("homed", new ConfigType<HomedConfig>(HomedConfig.class));
         Level logLevel = Level.WARNING;
         String logFormat = "[ %4$s ] %5$s%6$s%n";
-        Homed homedConfig = (Homed) config.get("homed");
+        HomedConfig homedConfig = (HomedConfig) config.get("homed");
         if (homedConfig.debug()) {
             logFormat = "%1$tF %1$tT %2$s - %4$s: %5$s%6$s%n";
             logLevel = Level.FINE;
