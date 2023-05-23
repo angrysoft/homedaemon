@@ -6,30 +6,30 @@ public class DeviceAttribute<T> {
     private T value;
     private final String name;
     private boolean readonly = false;
-    private boolean alwaysUpdate = false;
     private boolean initValue = true;
+    private AttributeUpdateBehavior behavior;
 
     public DeviceAttribute(String name, T value) {
-        this(name, value, false, false);
+        this(name, value, false, AttributeUpdateBehavior.NORMAL);
     }
 
     public DeviceAttribute(String name, T value, boolean readonly) {
-        this(name, value, readonly, false);
+        this(name, value, readonly, AttributeUpdateBehavior.NORMAL);
     }
 
-    public DeviceAttribute(String name, T value, boolean readonly, boolean alwaysUpdate) {
+    public DeviceAttribute(String name, T value, boolean readonly, AttributeUpdateBehavior behavior) {
         this.name = name;
         this.readonly = readonly;
         this.value = value;
-        this.alwaysUpdate = alwaysUpdate;
+        this.behavior = behavior;
     }
 
-    public boolean isAlwaysUpdate() {
-        return alwaysUpdate;
+    public AttributeUpdateBehavior getBehavior() {
+        return behavior;
     }
 
-    public void setAlwaysUpdate(boolean alwaysUpdate) {
-        this.alwaysUpdate = alwaysUpdate;
+    public void setBehavior(AttributeUpdateBehavior behavior) {
+        this.behavior = behavior;
     }
 
     public String getName() {
@@ -46,9 +46,20 @@ public class DeviceAttribute<T> {
             ret = true;
         }
 
-        if (this.alwaysUpdate || !this.value.equals(value)) {
+        if (!this.value.equals(value)) {
             this.value = value;
             ret = true;
+        }
+
+        switch(behavior) {
+            case ALWAYS:
+                ret = true;
+                break;
+            case IGNORE:
+                ret = false;
+                break;
+            case NORMAL:
+                break;
         }
         return ret;
     }
