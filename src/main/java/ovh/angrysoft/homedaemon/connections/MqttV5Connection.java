@@ -3,6 +3,7 @@ package ovh.angrysoft.homedaemon.connections;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,18 +19,17 @@ import org.eclipse.paho.mqttv5.common.MqttMessage;
 import org.eclipse.paho.mqttv5.common.MqttPersistenceException;
 import org.eclipse.paho.mqttv5.common.packet.MqttProperties;
 
+import ovh.angrysoft.homedaemon.devices.xiaomi.aqara.Plug;
+
 public class MqttV5Connection extends Thread implements MqttCallback {
     // MQTT broker URI to connect to. Defaults to tcp://iot.eclipse.org:1883. Use
     // ws:// for Websockets, wss:// for secure Websockets and ssl:// for TLS
     // encrypted TCP connections.");
     private static final Logger LOGGER = Logger.getLogger("Homedaemon");
-    private String uri;
-    private String user;
-    private String password;
-    private String clientID;
-    private int timeout;
+
+    private String clientId;
     private int qos;
-    private boolean autoReconnect = false;
+    protected int timeout;
     private MqttConnectionOptions connOpts = new MqttConnectionOptions();
     private MqttAsyncClient client;
     final Thread mainThread = Thread.currentThread();
@@ -37,44 +37,96 @@ public class MqttV5Connection extends Thread implements MqttCallback {
     private List<String> topics;
     private BiConsumer<String, String> onMsgHandler;
 
-    public MqttV5Connection(Map<String, String> config) {
+    private void setUri(String uri) {
+        this.connOpts.setServerURIs(new String[] { uri });
+    }
 
+    private void setUser(String user) {
+        this.connOpts.setUserName(user);
+    }
+
+    private void setPassword(String password) {
+        this.connOpts.setPassword(password.getBytes());
+    }
+
+    private void setAutomaticReconnect(boolean isAutoRec) {
+        this.connOpts.setAutomaticReconnect(isAutoRec);
+    }
+
+    private void setKeepAlive(int keepAlive) {
+        this.connOpts.setKeepAliveInterval(timeout);
+    }
+
+    private MqttV5Connection() {
         this.connOpts = new MqttConnectionOptions();
-        if (config.containsKey("uri")) {
-            this.uri = config.get("uri");
-            this.connOpts.setServerURIs(new String[] { this.uri });
-        }
-
-        if (config.containsKey("user")) {
-            this.user = config.get("user");
-            this.connOpts.setUserName(this.user);
-        }
-
-        if (config.containsKey("password")) {
-            this.password = config.get("password");
-            this.connOpts.setPassword(this.password.getBytes());
-        }
-
-        if (config.containsKey("autoReconnect")) {
-            this.autoReconnect = Boolean.parseBoolean(config.get("autoReconnect"));
-            this.connOpts.setAutomaticReconnect(this.autoReconnect);
-        }
-
-        this.timeout = 5000;
-        if (config.containsKey("timeout")) {
-            this.timeout = Integer.parseInt(config.get("timeout"));
-        }
-        this.connOpts.setKeepAliveInterval(this.timeout);
-
         this.qos = 0;
-
         this.topics = new ArrayList<String>();
+    }
 
-        if (clientID == null || clientID == "") {
-            long pid = Thread.currentThread().getId();
-            clientID = "homedaemon-client" + pid;
+    public static final class Builder {
+        private String uri;
+        private Optional<String> user;
+        private Optional<String> password;
+        private Optional<Boolean> autoReconnect;
+        private int keepAlive = 5000;
+        private int timeout = 5000;
+        private String clientId;
+
+        public Builder uri(String uri) {
+            this.uri = uri;
+            return this;
         }
 
+        public Builder user(String user) {
+            this.user = Optional.of(user);
+            return this;
+        }
+
+        public Builder password(String password) {
+            this.password = Optional.of(password);
+            return this;
+        }
+
+        public Builder autoReconnect(Boolean autoRec) {
+            this.autoReconnect = Optional.of(autoRec);
+            return this;
+        }
+
+        public Builder keepAlive(int keepAlive) {
+            this.keepAlive = keepAlive;
+            return this;
+        }
+
+        public Builder timeout(int timeout) {
+            this.timeout = timeout;
+            return this;
+        }
+
+        public Builder clientId(String clientId) {
+            this.clientId = clientId;
+            return this;
+        }
+
+        public MqttV5Connection build() {
+            MqttV5Connection mqttConn = new MqttV5Connection();
+            mqttConn.setUri(uri);
+            this.user.ifPresent(mqttConn::setUser);
+            this.password.ifPresent(mqttConn::setPassword);
+            this.autoReconnect.ifPresent(mqttConn::setAutomaticReconnect);
+            mqttConn.timeout = timeout;
+            mqttConn.setKeepAlive(keepAlive);
+            if (clientId == null || clientId.isEmpty()) {
+                long pid = Thread.currentThread().getId();
+                clientId = "homedaemon-client" + pid;
+            }
+            mqttConn.clientId = clientId;
+            return mqttConn;
+        }
+
+    }
+
+    public static Builder builder() {
+        return new Builder();
     }
 
     public synchronized void addTopic(String topic) {
@@ -107,7 +159,7 @@ public class MqttV5Connection extends Thread implements MqttCallback {
 
         MemoryPersistence persistence = new MemoryPersistence();
         try {
-            this.client = new MqttAsyncClient(this.getUri(), this.getClientID(), persistence);
+            this.client = new MqttAsyncClient(this.getUris()[0], this.getClientId(), persistence);
             this.client.setCallback(this);
             IMqttToken connectToken = this.client.connect(this.connOpts);
             connectToken.waitForCompletion(this.timeout);
@@ -121,7 +173,7 @@ public class MqttV5Connection extends Thread implements MqttCallback {
     private void subscribe() {
         try {
             for (String topic : this.topics) {
-                IMqttToken subToken = this.client.subscribe(topic, 0);
+                IMqttToken subToken = this.client.subscribe(topic, this.qos);
                 subToken.waitForCompletion(timeout);
             }
         } catch (MqttException e) {
@@ -162,16 +214,12 @@ public class MqttV5Connection extends Thread implements MqttCallback {
 
     }
 
-    public String getUri() {
-        return uri;
+    public String[] getUris() {
+        return this.connOpts.getServerURIs();
     }
 
-    public String getClientID() {
-        return clientID;
-    }
-
-    public MqttConnectionOptions getConnOpts() {
-        return connOpts;
+    public String getClientId() {
+        return clientId;
     }
 
     @Override
