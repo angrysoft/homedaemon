@@ -1,11 +1,13 @@
 package ovh.angrysoft.homedaemon.devices.zigbee2mqtt;
 
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.logging.Level;
 
 import org.eclipse.paho.mqttv5.common.MqttException;
 
 import ovh.angrysoft.homedaemon.connections.MqttV5Connection;
+import ovh.angrysoft.homedaemon.connections.MqttV5Connection.Builder;
 import ovh.angrysoft.homedaemon.devices.BaseDevice;
 import ovh.angrysoft.homedaemon.devices.DeviceInfo;
 import ovh.angrysoft.homedaemon.devices.Gateway;
@@ -16,8 +18,14 @@ public class Zigbee2MqttGateway extends BaseDevice implements Gateway {
 
     public Zigbee2MqttGateway(DeviceInfo devInfo) {
         super(devInfo);
-        if (devInfo.getArgs() != null)
-            this.connection = new MqttV5Connection(devInfo.getArgs());
+        Builder connBuilder = MqttV5Connection.builder();
+        Map<String, String> args = devInfo.getArgs();
+        connBuilder.uri(args.get("uri"));
+        if (args.containsKey("user") && args.containsKey("password")) {
+            connBuilder.user(args.get("user"));
+            connBuilder.password(args.get("password"));
+        }
+        this.connection = connBuilder.build();
         this.connection.start();
     }
 
