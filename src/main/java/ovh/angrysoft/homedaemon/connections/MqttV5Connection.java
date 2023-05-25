@@ -2,7 +2,6 @@ package ovh.angrysoft.homedaemon.connections;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.logging.Level;
@@ -19,8 +18,6 @@ import org.eclipse.paho.mqttv5.common.MqttMessage;
 import org.eclipse.paho.mqttv5.common.MqttPersistenceException;
 import org.eclipse.paho.mqttv5.common.packet.MqttProperties;
 
-import ovh.angrysoft.homedaemon.devices.xiaomi.aqara.Plug;
-
 public class MqttV5Connection extends Thread implements MqttCallback {
     // MQTT broker URI to connect to. Defaults to tcp://iot.eclipse.org:1883. Use
     // ws:// for Websockets, wss:// for secure Websockets and ssl:// for TLS
@@ -29,7 +26,7 @@ public class MqttV5Connection extends Thread implements MqttCallback {
 
     private String clientId;
     private int qos;
-    protected int timeout;
+    protected long timeout;
     private MqttConnectionOptions connOpts = new MqttConnectionOptions();
     private MqttAsyncClient client;
     final Thread mainThread = Thread.currentThread();
@@ -54,22 +51,22 @@ public class MqttV5Connection extends Thread implements MqttCallback {
     }
 
     private void setKeepAlive(int keepAlive) {
-        this.connOpts.setKeepAliveInterval(timeout);
+        this.connOpts.setKeepAliveInterval(keepAlive);
     }
 
     private MqttV5Connection() {
         this.connOpts = new MqttConnectionOptions();
-        this.qos = 0;
         this.topics = new ArrayList<String>();
     }
 
     public static final class Builder {
         private String uri;
-        private Optional<String> user;
-        private Optional<String> password;
-        private Optional<Boolean> autoReconnect;
-        private int keepAlive = 5000;
-        private int timeout = 5000;
+        private Optional<String> user = Optional.empty();
+        private Optional<String> password = Optional.empty();
+        private Optional<Boolean> autoReconnect = Optional.empty();
+        private int keepAlive = 60;  //in seconds
+        private long timeout = 5000;
+        private int qos = 0;
         private String clientId;
 
         public Builder uri(String uri) {
@@ -119,6 +116,7 @@ public class MqttV5Connection extends Thread implements MqttCallback {
                 long pid = Thread.currentThread().getId();
                 clientId = "homedaemon-client" + pid;
             }
+            mqttConn.qos = this.qos;
             mqttConn.clientId = clientId;
             return mqttConn;
         }
@@ -162,12 +160,12 @@ public class MqttV5Connection extends Thread implements MqttCallback {
             this.client = new MqttAsyncClient(this.getUris()[0], this.getClientId(), persistence);
             this.client.setCallback(this);
             IMqttToken connectToken = this.client.connect(this.connOpts);
-            connectToken.waitForCompletion(this.timeout);
+            connectToken.waitForCompletion();
             subscribe();
         } catch (MqttException e) {
             e.printStackTrace();
         }
-        System.err.println(String.format("from run Watcher %s - %s", Thread.currentThread(), mainThread));
+        System.err.println(String.format("Mqtt Connection %s - %s", Thread.currentThread(), mainThread));
     }
 
     private void subscribe() {

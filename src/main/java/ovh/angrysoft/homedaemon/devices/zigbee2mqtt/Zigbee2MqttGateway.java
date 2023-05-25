@@ -21,10 +21,10 @@ public class Zigbee2MqttGateway extends BaseDevice implements Gateway {
         Builder connBuilder = MqttV5Connection.builder();
         Map<String, String> args = devInfo.getArgs();
         connBuilder.uri(args.get("uri"));
-        if (args.containsKey("user") && args.containsKey("password")) {
+        if (args.containsKey("user"))
             connBuilder.user(args.get("user"));
+        if (args.containsKey("password"))
             connBuilder.password(args.get("password"));
-        }
         this.connection = connBuilder.build();
         this.connection.start();
     }
