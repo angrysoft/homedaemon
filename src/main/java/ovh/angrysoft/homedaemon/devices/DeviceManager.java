@@ -1,7 +1,7 @@
 package ovh.angrysoft.homedaemon.devices;
 
 import ovh.angrysoft.homedaemon.bus.EventBus;
-import ovh.angrysoft.homedaemon.bus.Events.StatusEvent;
+import ovh.angrysoft.homedaemon.bus.Events.DeviceEvent;
 
 public interface DeviceManager {
     public void loadDeviceInfo();
@@ -10,7 +10,7 @@ public interface DeviceManager {
 
     public void execute(String sid, String cmd, Object args);
 
-    public void update(StatusEvent statusEvent);
+    public void update(DeviceEvent statusEvent);
 
     public <T> T queryStatus(String sid, String attr);
 

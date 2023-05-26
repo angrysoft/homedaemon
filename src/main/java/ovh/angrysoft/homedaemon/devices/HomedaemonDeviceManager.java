@@ -17,7 +17,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import ovh.angrysoft.homedaemon.bus.EventBus;
-import ovh.angrysoft.homedaemon.bus.Events.StatusEvent;
+import ovh.angrysoft.homedaemon.bus.Events.DeviceEvent;
 import ovh.angrysoft.homedaemon.discover.DeviceDiscoverInfo;
 import ovh.angrysoft.homedaemon.discover.DeviceDiscovery;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeReadOnly;
@@ -215,15 +215,15 @@ public class HomedaemonDeviceManager implements DeviceManager {
         this.devices.put(sid, device);
     }
 
-    public void update(StatusEvent statusEvent) {
-        BaseDevice dev = this.devices.get(statusEvent.getSid());
+    public void update(DeviceEvent event) {
+        BaseDevice dev = this.devices.get(event.getSid());
         if (dev != null) {
             try {
-                if (dev.status.update(statusEvent.getName(), statusEvent.getValue())) {
-                    bus.dispatch(statusEvent);
+                if (dev.status.update(event.getName(), event.getValue())) {
+                    bus.dispatch(event);
                 }
             } catch (AttributeReadOnly e) {
-                LOGGER.warning(String.format("Attribute %s is readonly", statusEvent.getName()));
+                LOGGER.warning(String.format("Attribute %s is readonly", event.getName()));
             }
         }
     }

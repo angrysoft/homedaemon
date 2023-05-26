@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import ovh.angrysoft.homedaemon.DummyDevice;
 import ovh.angrysoft.homedaemon.bus.EventBus;
-import ovh.angrysoft.homedaemon.bus.Events.StatusEvent;
+import ovh.angrysoft.homedaemon.bus.Events.DeviceEvent;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeReadOnly;
 
 public class FakeDeviceManager implements DeviceManager {
@@ -33,7 +33,7 @@ public class FakeDeviceManager implements DeviceManager {
         throw new UnsupportedOperationException("Unimplemented method 'execute'");
     }
 
-    public void update(StatusEvent statusEvent) {
+    public void update(DeviceEvent statusEvent) {
         System.out.println(statusEvent.getSid());
 
         BaseDevice dev = this.devices.get(statusEvent.getSid());

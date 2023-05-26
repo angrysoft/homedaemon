@@ -5,7 +5,7 @@ import java.util.HashMap;
 import ovh.angrysoft.homedaemon.bus.Event;
 import ovh.angrysoft.homedaemon.bus.Topic;
 
-public abstract class DeviceEvent implements Event{
+public abstract class DeviceEvent implements Event {
     protected String sid;
     protected String name;
     protected Object value;
