@@ -9,7 +9,7 @@ WorkingDirectory=/usr/local/bin
 Environment=DEVICE_DIR=/etc/homedaemon/devices.d
 Environment=CONFIG_DIR=/etc/homedaemon/configs.d
 Environment=AUTOMATION_DIR=/etc/homedaemon/automations.d
-ExecStart=/usr/bin/java -jar homedaemon-0.1.0-jar-with-dependencies.jar
+ExecStart=/usr/bin/java -jar homedaemon-0.1.1-jar-with-dependencies.jar
 Restart=on-failure
 RestartSec=10
 
