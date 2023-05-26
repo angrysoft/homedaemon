@@ -2,7 +2,6 @@ package ovh.angrysoft.homedaemon.watcher;
 
 import java.util.HashMap;
 
-import ovh.angrysoft.homedaemon.bus.Events.StatusEvent;
 import ovh.angrysoft.homedaemon.devices.HomedaemonDeviceManager;
 
 public class WatcherManager {
@@ -22,7 +21,7 @@ public class WatcherManager {
         if (watchers.containsKey(watcher.getSid())) {
             return;
         }
-        watcher.setHandler((StatusEvent message) -> deviceManager.update(message));
+        watcher.setHandler((message) -> deviceManager.update(message));
         watchers.put(watcher.getSid(), watcher);
         watcher.start();
     }

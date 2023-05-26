@@ -1,7 +1,7 @@
 package ovh.angrysoft.homedaemon.watcher;
 
-import ovh.angrysoft.homedaemon.bus.Events.StatusEvent;
+import ovh.angrysoft.homedaemon.bus.Events.DeviceEvent;
 
 public interface WatcherHandler {
-    void call(StatusEvent message);
+    void call(DeviceEvent message);
 }
