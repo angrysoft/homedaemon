@@ -16,6 +16,7 @@ limitations under the License.
 
 package ovh.angrysoft.homedaemon;
 
+import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,6 +32,8 @@ import ovh.angrysoft.homedaemon.devices.HomedaemonDeviceManager;
 import ovh.angrysoft.homedaemon.io.IOManager;
 
 public class App {
+    static Logger logger = Logger.getLogger("Homedaemon");
+
     public static void main(String[] args) {
         String devDir = System.getenv("DEVICE_DIR");
         String confDir = System.getenv("CONFIG_DIR");
@@ -39,27 +42,30 @@ public class App {
             System.err.println("Add env DEVICE_DIR CONFIG_DIR AUTOMATION_DIR");
             return;
         }
-        Logger logger = Logger.getLogger("Homedaemon");
         Config config = new Config(confDir);
         config.resisterConfigType("homed", new ConfigType<HomedConfig>(HomedConfig.class));
+        
+        ConsoleHandler logHandler = new ConsoleHandler();
         Level logLevel = Level.WARNING;
         String logFormat = "[ %4$s ] %5$s%6$s%n";
+        
         HomedConfig homedConfig = (HomedConfig) config.get("homed");
         if (homedConfig.debug()) {
             logFormat = "%1$tF %1$tT %2$s - %4$s: %5$s%6$s%n";
-            logLevel = Level.FINE;
+            logLevel = Level.FINER;
         }
         System.setProperty("java.util.logging.SimpleFormatter.format", logFormat);
         logger.setLevel(logLevel);
-        // logger.getHandlers()[0].setLevel(logLevel);
-
+        logHandler.setLevel(logLevel);
+        logger.addHandler(logHandler);
+        
         EventBus bus = new EventBus();
         bus.addTrigger(new Trigger(Topic.fromString("status.*"), (Event event) -> {
             logger.info(String.format("handled event: %s with payload: %s", event.getTopic().toString(),
                     event.getPayload()));
         }));
 
-        bus.addTrigger(new Trigger(Topic.fromString("*"), (Event event) -> {
+        bus.addTrigger(new Trigger(Topic.fromString("clock.*"), (Event event) -> {
             logger.fine(String.format("debug msg: %s with payload: %s", event.getTopic().toString(),
                     event.getPayload()));
         }));
