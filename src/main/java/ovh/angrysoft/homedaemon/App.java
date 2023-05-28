@@ -65,10 +65,10 @@ public class App {
                     event.getPayload()));
         }));
 
-        bus.addTrigger(new Trigger(Topic.fromString("clock.*"), (Event event) -> {
-            logger.fine(String.format("debug msg: %s with payload: %s", event.getTopic().toString(),
-                    event.getPayload()));
-        }));
+        // bus.addTrigger(new Trigger(Topic.fromString("*"), (Event event) -> {
+        //     logger.fine(String.format("debug msg: %s with payload: %s", event.getTopic().toString(),
+        //             event.getPayload()));
+        // }));
 
         HomedaemonDeviceManager deviceManager = new HomedaemonDeviceManager(devDir, bus);
         deviceManager.loadDeviceInfo();
@@ -78,7 +78,7 @@ public class App {
         AutomationManager automationManager = new AutomationManager(automationDir, bus, deviceManager);
         automationManager.loadAutomation();
 
-        IOManager ioManager = new IOManager(homedConfig.io(), bus);
+        IOManager ioManager = new IOManager(config, bus);
         ioManager.loadIO();
 
         while (true) {
