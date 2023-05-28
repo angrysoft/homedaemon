@@ -28,7 +28,8 @@ public class Config {
                 .append(".json");
         configType.setFilePath(filePath.toString());
         try {
-            configType.setConfigData(new Gson().fromJson(new FileReader(filePath.toString()), configType.getConfigClass()));
+            configType.setConfigData(
+                    new Gson().fromJson(new FileReader(filePath.toString()), configType.getConfigClass()));
         } catch (FileNotFoundException e) {
             LOGGER.log(Level.ALL, "Config file {0} not found", configType.getFilePath());
         } catch (JsonSyntaxException e) {
@@ -50,9 +51,10 @@ public class Config {
     //     }
     // }
 
+    // TODO what object should i return (Opiional) when config is not loaded
+    // (Filenotfount etc)
     public Record get(String configName) {
-        ConfigType<?>  conf = configs.get(configName);
+        ConfigType<?> conf = configs.get(configName);
         return (Record) conf.getConfigData();
     }
 }
-
