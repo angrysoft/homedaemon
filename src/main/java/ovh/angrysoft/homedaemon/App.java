@@ -19,6 +19,7 @@ package ovh.angrysoft.homedaemon;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import ovh.angrysoft.homedaemon.automation.AutomationManager;
 import ovh.angrysoft.homedaemon.bus.Event;
@@ -57,7 +58,9 @@ public class App {
         System.setProperty("java.util.logging.SimpleFormatter.format", logFormat);
         logger.setLevel(logLevel);
         logHandler.setLevel(logLevel);
+        logHandler.setFormatter(new SimpleFormatter());
         logger.addHandler(logHandler);
+        logger.setUseParentHandlers(false);
         
         EventBus bus = new EventBus();
         bus.addTrigger(new Trigger(Topic.fromString("status.*"), (Event event) -> {
