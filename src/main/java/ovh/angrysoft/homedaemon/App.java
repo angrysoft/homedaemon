@@ -34,6 +34,7 @@ import ovh.angrysoft.homedaemon.io.IOManager;
 
 public class App {
     static Logger logger = Logger.getLogger("Homedaemon");
+    static Config config;
 
     public static void main(String[] args) {
         String devDir = System.getenv("DEVICE_DIR");
@@ -43,35 +44,12 @@ public class App {
             System.err.println("Add env DEVICE_DIR CONFIG_DIR AUTOMATION_DIR");
             return;
         }
-        Config config = new Config(confDir);
-        config.resisterConfigType("homed", new ConfigType<HomedConfig>(HomedConfig.class));
+        HomedConfig homedConfig = setupConfig(confDir);
         
-        ConsoleHandler logHandler = new ConsoleHandler();
-        Level logLevel = Level.WARNING;
-        String logFormat = "[ %4$s ] %5$s%6$s%n";
-        
-        HomedConfig homedConfig = (HomedConfig) config.get("homed");
-        if (homedConfig.debug()) {
-            logFormat = "%1$tF %1$tT %2$s - %4$s: %5$s%6$s%n";
-            logLevel = Level.FINER;
-        }
-        System.setProperty("java.util.logging.SimpleFormatter.format", logFormat);
-        logger.setLevel(logLevel);
-        logHandler.setLevel(logLevel);
-        logHandler.setFormatter(new SimpleFormatter());
-        logger.addHandler(logHandler);
-        logger.setUseParentHandlers(false);
+        setupLogger(homedConfig.debug());
         
         EventBus bus = new EventBus();
-        bus.addTrigger(new Trigger(Topic.fromString("status.*"), (Event event) -> {
-            logger.info(String.format("handled event: %s with payload: %s", event.getTopic().toString(),
-                    event.getPayload()));
-        }));
-
-        // bus.addTrigger(new Trigger(Topic.fromString("*"), (Event event) -> {
-        //     logger.fine(String.format("debug msg: %s with payload: %s", event.getTopic().toString(),
-        //             event.getPayload()));
-        // }));
+        setupDefaultsEvents(bus);
 
         HomedaemonDeviceManager deviceManager = new HomedaemonDeviceManager(devDir, bus);
         deviceManager.loadDeviceInfo();
@@ -91,5 +69,36 @@ public class App {
                 logger.severe(e.getMessage());
             }
         }
+    }
+
+    private static void setupDefaultsEvents(EventBus bus) {
+        bus.addTrigger(new Trigger(Topic.fromString("status.*"), (Event event) -> {
+            logger.info(String.format("handled event: %s with payload: %s", event.getTopic().toString(),
+                    event.getPayload()));
+        }));
+    }
+
+    private static void setupLogger(boolean isDebug) {
+        ConsoleHandler logHandler = new ConsoleHandler();
+        Level logLevel = Level.WARNING;
+        String logFormat = "[ %4$s ] %5$s%6$s%n";
+        
+        if (isDebug) {
+            logFormat = "%1$tF %1$tT %2$s - %4$s: %5$s%6$s%n";
+            logLevel = Level.FINER;
+        }
+        System.setProperty("java.util.logging.SimpleFormatter.format", logFormat);
+        logger.setLevel(logLevel);
+        logHandler.setLevel(logLevel);
+        logHandler.setFormatter(new SimpleFormatter());
+        logger.addHandler(logHandler);
+        logger.setUseParentHandlers(false);
+    }
+
+    private static HomedConfig setupConfig(String confDir) {
+        config = new Config(confDir);
+        config.resisterConfigType("homed", new ConfigType<HomedConfig>(HomedConfig.class));
+        HomedConfig homedConfig = (HomedConfig) config.get("homed");
+        return homedConfig;
     }
 }
