@@ -73,10 +73,9 @@ public class MqttClient extends BaseIo {
                 .append(homeId)
                 .append("/get")
                 .toString();
-        Gson gson = new Gson();
-        String msg = gson.toJson(event.getPayload());
+    
         try {
-            this.connection.publishMessage(msg.getBytes(), 0, false, topic);
+            this.connection.publishMessage(event.toJson().getBytes(), 0, false, topic);
         } catch (MqttException e) {
             LOGGER.log(Level.SEVERE, "Mqtt client : {0}", e.getMessage());
         }

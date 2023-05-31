@@ -7,4 +7,6 @@ public interface Event {
     public HashMap<String, Object> getPayload();
 
     public Topic getTopic();
+
+    public String toJson();
 }
