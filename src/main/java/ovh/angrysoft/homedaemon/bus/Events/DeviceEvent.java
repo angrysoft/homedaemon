@@ -2,6 +2,8 @@ package ovh.angrysoft.homedaemon.bus.Events;
 
 import java.util.HashMap;
 
+import com.google.gson.Gson;
+
 import ovh.angrysoft.homedaemon.bus.Event;
 import ovh.angrysoft.homedaemon.bus.Topic;
 
@@ -41,5 +43,13 @@ public abstract class DeviceEvent implements Event {
 
     public Topic getTopic() {
         return topic;
+    }
+
+    public String toJson() {
+        HashMap<String, Object> data = new HashMap<String, Object>();
+        data.put("sid", this.sid);
+        data.put("payload", getPayload());
+        Gson gson = new Gson();
+        return gson.toJson(data);
     }
 }
