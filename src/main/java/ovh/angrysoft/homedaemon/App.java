@@ -26,6 +26,7 @@ import ovh.angrysoft.homedaemon.bus.Event;
 import ovh.angrysoft.homedaemon.bus.EventBus;
 import ovh.angrysoft.homedaemon.bus.Topic;
 import ovh.angrysoft.homedaemon.bus.Trigger;
+import ovh.angrysoft.homedaemon.bus.Events.StatusEvent;
 import ovh.angrysoft.homedaemon.config.Config;
 import ovh.angrysoft.homedaemon.config.ConfigType;
 import ovh.angrysoft.homedaemon.config.HomedConfig;
@@ -54,13 +55,14 @@ public class App {
         HomedaemonDeviceManager deviceManager = new HomedaemonDeviceManager(devDir, bus);
         deviceManager.loadDeviceInfo();
         deviceManager.setupDevices();
-        logger.info(String.format("HomeDaemon Started thread : %s", Thread.currentThread()));
 
         AutomationManager automationManager = new AutomationManager(automationDir, bus, deviceManager);
         automationManager.loadAutomation();
 
         IOManager ioManager = new IOManager(config, bus);
         ioManager.loadIO();
+
+        bus.dispatch(new StatusEvent("homed", "init", "done"));
 
         while (true) {
             try {
