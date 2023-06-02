@@ -1,7 +1,5 @@
 package ovh.angrysoft.homedaemon.io.mqtt;
 
-import java.lang.reflect.Type;
-import java.util.HashMap;
 import java.util.logging.Level;
 
 import org.eclipse.paho.mqttv5.common.MqttException;
@@ -9,13 +7,12 @@ import org.eclipse.paho.mqttv5.common.MqttException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.ToNumberPolicy;
-import com.google.gson.reflect.TypeToken;
 
 import ovh.angrysoft.homedaemon.bus.Event;
 import ovh.angrysoft.homedaemon.bus.EventBus;
 import ovh.angrysoft.homedaemon.bus.Topic;
 import ovh.angrysoft.homedaemon.bus.Trigger;
-import ovh.angrysoft.homedaemon.bus.Events.ExecuteEvent;
+import ovh.angrysoft.homedaemon.bus.Events.CustomEvent;
 import ovh.angrysoft.homedaemon.config.Config;
 import ovh.angrysoft.homedaemon.config.ConfigType;
 import ovh.angrysoft.homedaemon.config.HomedConfig;
@@ -52,20 +49,15 @@ public class MqttClient extends BaseIo {
         }));
     }
 
-    @SuppressWarnings("unchecked")
     private void onMessage(String topic, String msg) {
         Gson gson = new GsonBuilder().setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE).create();
-        Type mapType = new TypeToken<HashMap<String, Object>>() {
-        }.getType();
-
-        HashMap<String, Object> notify = (HashMap<String, Object>) gson.fromJson(msg, mapType);
-        notify.forEach((k, v) -> {
-            Object value = v;
-            if (v instanceof Long) {
-                value = Integer.parseInt(v.toString());
-            }
-            bus.dispatch(new ExecuteEvent(topic.split("/")[1], k, value));
-        });
+        Msg notify = gson.fromJson(msg, Msg.class);
+        
+        Object value = notify.payload().value();
+        if (value instanceof Long) {
+            value = Integer.parseInt(value.toString());
+        }
+        bus.dispatch(new CustomEvent(notify.sid(), notify.event(), notify.payload().name(), value));
     }
 
     private void sendEvent(Event event) {
@@ -73,7 +65,7 @@ public class MqttClient extends BaseIo {
                 .append(homeId)
                 .append("/get")
                 .toString();
-    
+
         try {
             this.connection.publishMessage(event.toJson().getBytes(), 0, false, topic);
         } catch (MqttException e) {
@@ -87,3 +79,5 @@ public class MqttClient extends BaseIo {
     }
 
 }
+record Payload(String name, Object value) {}
+record Msg(String event, String sid, Payload payload) {}
