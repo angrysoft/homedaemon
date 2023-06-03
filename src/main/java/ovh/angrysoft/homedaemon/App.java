@@ -26,10 +26,12 @@ import ovh.angrysoft.homedaemon.bus.Event;
 import ovh.angrysoft.homedaemon.bus.EventBus;
 import ovh.angrysoft.homedaemon.bus.Topic;
 import ovh.angrysoft.homedaemon.bus.Trigger;
+import ovh.angrysoft.homedaemon.bus.Events.DeviceEvent;
 import ovh.angrysoft.homedaemon.bus.Events.StatusEvent;
 import ovh.angrysoft.homedaemon.config.Config;
 import ovh.angrysoft.homedaemon.config.ConfigType;
 import ovh.angrysoft.homedaemon.config.HomedConfig;
+import ovh.angrysoft.homedaemon.devices.DeviceManager;
 import ovh.angrysoft.homedaemon.devices.HomedaemonDeviceManager;
 import ovh.angrysoft.homedaemon.io.IOManager;
 
@@ -46,15 +48,15 @@ public class App {
             return;
         }
         HomedConfig homedConfig = setupConfig(confDir);
-        
+
         setupLogger(homedConfig.debug());
-        
+
         EventBus bus = new EventBus();
-        setupDefaultsEvents(bus);
 
         HomedaemonDeviceManager deviceManager = new HomedaemonDeviceManager(devDir, bus);
         deviceManager.loadDeviceInfo();
         deviceManager.setupDevices();
+        setupDefaultsEvents(bus, deviceManager);
 
         AutomationManager automationManager = new AutomationManager(automationDir, bus, deviceManager);
         automationManager.loadAutomation();
@@ -73,10 +75,15 @@ public class App {
         }
     }
 
-    private static void setupDefaultsEvents(EventBus bus) {
+    private static void setupDefaultsEvents(EventBus bus, DeviceManager deviceManager) {
         bus.addTrigger(new Trigger(Topic.fromString("status.*"), (Event event) -> {
             logger.info(String.format("handled event: %s with payload: %s", event.getTopic().toString(),
                     event.getPayload()));
+        }));
+
+        bus.addTrigger(new Trigger(Topic.fromString("execute.*"), (Event event) -> {
+            DeviceEvent dEvent = (DeviceEvent) event;
+            deviceManager.execute(dEvent.getSid(), dEvent.getName(), dEvent.getValue());
         }));
     }
 
@@ -84,7 +91,7 @@ public class App {
         ConsoleHandler logHandler = new ConsoleHandler();
         Level logLevel = Level.WARNING;
         String logFormat = "[ %4$s ] %5$s%6$s%n";
-        
+
         if (isDebug) {
             logFormat = "%1$tF %1$tT %2$s - %4$s: %5$s%6$s%n";
             logLevel = Level.FINER;
