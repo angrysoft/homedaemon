@@ -52,12 +52,12 @@ public class MqttClient extends BaseIo {
     private void onMessage(String topic, String msg) {
         Gson gson = new GsonBuilder().setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE).create();
         Msg notify = gson.fromJson(msg, Msg.class);
-        
+
         Object value = notify.payload().value();
         if (value instanceof Long) {
             value = Integer.parseInt(value.toString());
         }
-        bus.dispatch(new CustomEvent(notify.sid(), notify.event(), notify.payload().name(), value));
+        bus.dispatch(new CustomEvent(notify.event(), notify.sid(), notify.payload().name(), value));
     }
 
     private void sendEvent(Event event) {
@@ -79,5 +79,9 @@ public class MqttClient extends BaseIo {
     }
 
 }
-record Payload(String name, Object value) {}
-record Msg(String event, String sid, Payload payload) {}
+
+record Payload(String name, Object value) {
+}
+
+record Msg(String event, String sid, Payload payload) {
+}
