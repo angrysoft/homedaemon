@@ -9,4 +9,6 @@ public interface Event {
     public Topic getTopic();
 
     public String toJson();
+
+    public String getSid();
 }
