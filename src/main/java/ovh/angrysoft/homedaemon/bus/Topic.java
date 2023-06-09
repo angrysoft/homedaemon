@@ -16,7 +16,6 @@ public class Topic {
         if (this.topicParts.contains("*"))
             this.wildCard = true;
 
-        System.err.println("created topic " + this.topicParts.toString());
     }
 
     public static Topic fromString(String topicString) {

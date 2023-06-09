@@ -56,11 +56,7 @@ public class MqttClient extends BaseIo {
         if (value instanceof Long) {
             value = Integer.parseInt(value.toString());
         }
-        //TODO i Value is null then topic fuckt up
-        bus.dispatch(Event.statusEvent(notify.sid(), notify.payload().name() , value));
-
-        // bus.dispatch(new StatusEvent( notify.sid(), notify.payload().name(), value));
-        System.err.println(String.format("onMsg : %s", msg));
+        bus.dispatch(Event.customEvent(notify.event(), notify.sid(), notify.payload().name() , value));
     }
 
     private void sendEvent(Event event) {
