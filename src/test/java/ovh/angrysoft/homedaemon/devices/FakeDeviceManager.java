@@ -1,10 +1,11 @@
 package ovh.angrysoft.homedaemon.devices;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 import ovh.angrysoft.homedaemon.DummyDevice;
+import ovh.angrysoft.homedaemon.bus.Event;
 import ovh.angrysoft.homedaemon.bus.EventBus;
-import ovh.angrysoft.homedaemon.bus.Events.DeviceEvent;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeReadOnly;
 
 public class FakeDeviceManager implements DeviceManager {
@@ -29,11 +30,11 @@ public class FakeDeviceManager implements DeviceManager {
         throw new UnsupportedOperationException("Unimplemented method 'setup'");
     }
 
-    public void execute(String sid, String cmd, Object args) {
+    public void execute(String sid, String cmd, Optional<Object> args) {
         throw new UnsupportedOperationException("Unimplemented method 'execute'");
     }
 
-    public void update(DeviceEvent statusEvent) {
+    public void update(Event statusEvent) {
         System.out.println(statusEvent.getSid());
 
         BaseDevice dev = this.devices.get(statusEvent.getSid());

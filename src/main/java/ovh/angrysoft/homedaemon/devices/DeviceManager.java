@@ -1,16 +1,18 @@
 package ovh.angrysoft.homedaemon.devices;
 
+import java.util.Optional;
+
+import ovh.angrysoft.homedaemon.bus.Event;
 import ovh.angrysoft.homedaemon.bus.EventBus;
-import ovh.angrysoft.homedaemon.bus.Events.DeviceEvent;
 
 public interface DeviceManager {
     public void loadDeviceInfo();
 
     public void setupDevices();
 
-    public void execute(String sid, String cmd, Object args);
+    public void execute(String sid, String cmd, Optional<Object> args);
 
-    public void update(DeviceEvent statusEvent);
+    public void update(Event statusEvent);
 
     public <T> T queryStatus(String sid, String attr);
 

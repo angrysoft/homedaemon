@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -110,16 +111,16 @@ public abstract class BaseDevice {
      * @param methodName method to be executed
      * @param arg        arg optional method argument
      */
-    public void execute(String methodName, Object arg) {
+    public void execute(String methodName, Optional<Object> arg) {
         if (!this.commands.contains(methodName)) {
             LOGGER.warning(String.format("Executing %s of %s is not allowed", methodName, this.getClass()));
             return;
         }
 
         try {
-            if (arg != null) {
-                Method cmd = this.getClass().getMethod(methodName, arg.getClass());
-                cmd.invoke(this, arg);
+            if (arg.isPresent()) {
+                Method cmd = this.getClass().getMethod(methodName, arg.get().getClass());
+                cmd.invoke(this, arg.get());
                 return;
             }
             Method cmd = this.getClass().getMethod(methodName);

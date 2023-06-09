@@ -2,6 +2,7 @@ package ovh.angrysoft.homedaemon.automation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.google.gson.internal.LazilyParsedNumber;
 
@@ -132,7 +133,7 @@ public class AutomationParser {
     private Action parseAction(ActionInfo action) {
         switch (action.getType()) {
             case "execute":
-                return new ActionExecute(action.getSid(), action.getCmd(), action.getArg(), action.isRunInBackground(),
+                return new ActionExecute(action.getSid(), action.getCmd(), Optional.ofNullable(action.getArg()), action.isRunInBackground(),
                         deviceManager);
             case "dispatch":
                 return new ActionDispatch(action.getCmd(), action.getArg(), deviceManager.getBus());

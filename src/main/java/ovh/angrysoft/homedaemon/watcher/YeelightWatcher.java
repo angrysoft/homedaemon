@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import com.google.gson.Gson;
 
-import ovh.angrysoft.homedaemon.bus.Events.StatusEvent;
+import ovh.angrysoft.homedaemon.bus.Event;
 import ovh.angrysoft.homedaemon.connections.TcpConnection;
 import ovh.angrysoft.homedaemon.exceptions.connctions.DeviceConnectionError;
 
@@ -64,7 +64,7 @@ public class YeelightWatcher extends Watcher {
                         default:
                             value = v;
                     }
-                    handler.call(new StatusEvent(sid, k, value));
+                    handler.call(Event.statusEvent(sid, k, value));
                 });
             }
         } catch (DeviceConnectionError e) {

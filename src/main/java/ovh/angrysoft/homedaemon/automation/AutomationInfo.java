@@ -2,6 +2,7 @@ package ovh.angrysoft.homedaemon.automation;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class AutomationInfo {
     private String sid;
@@ -132,7 +133,7 @@ class ActionInfo {
     private String type;
     private String sid;
     private String cmd;
-    private Object arg;
+    private Optional<Object> arg;
     private boolean runInBackground;
 
     /**
@@ -142,7 +143,7 @@ class ActionInfo {
      * @param arg
      * @param runInBackground
      */
-    public ActionInfo(String type, String sid, String cmd, Object arg, boolean runInBackground) {
+    public ActionInfo(String type, String sid, String cmd, Optional<Object> arg, boolean runInBackground) {
         this.type = type;
         this.sid = sid;
         this.cmd = cmd;

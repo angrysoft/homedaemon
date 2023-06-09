@@ -16,6 +16,7 @@ limitations under the License.
 
 package ovh.angrysoft.homedaemon;
 
+import java.util.Optional;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,8 +27,6 @@ import ovh.angrysoft.homedaemon.bus.Event;
 import ovh.angrysoft.homedaemon.bus.EventBus;
 import ovh.angrysoft.homedaemon.bus.Topic;
 import ovh.angrysoft.homedaemon.bus.Trigger;
-import ovh.angrysoft.homedaemon.bus.Events.DeviceEvent;
-import ovh.angrysoft.homedaemon.bus.Events.StatusEvent;
 import ovh.angrysoft.homedaemon.config.Config;
 import ovh.angrysoft.homedaemon.config.ConfigType;
 import ovh.angrysoft.homedaemon.config.HomedConfig;
@@ -64,7 +63,7 @@ public class App {
         IOManager ioManager = new IOManager(config, bus);
         ioManager.loadIO();
 
-        bus.dispatch(new StatusEvent("homed", "init", "done"));
+        bus.dispatch(Event.statusEvent("homed", "init", "done"));
 
         while (true) {
             try {
@@ -82,8 +81,7 @@ public class App {
         }));
 
         bus.addTrigger(new Trigger(Topic.fromString("execute.*"), (Event event) -> {
-            DeviceEvent dEvent = (DeviceEvent) event;
-            deviceManager.execute(dEvent.getSid(), dEvent.getName(), dEvent.getValue());
+            deviceManager.execute(event.getSid(), event.getName(), Optional.ofNullable(event.getValue()));
         }));
     }
 

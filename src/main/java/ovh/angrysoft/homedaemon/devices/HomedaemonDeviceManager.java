@@ -10,14 +10,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
+import ovh.angrysoft.homedaemon.bus.Event;
 import ovh.angrysoft.homedaemon.bus.EventBus;
-import ovh.angrysoft.homedaemon.bus.Events.DeviceEvent;
 import ovh.angrysoft.homedaemon.discover.DeviceDiscoverInfo;
 import ovh.angrysoft.homedaemon.discover.DeviceDiscovery;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeReadOnly;
@@ -110,7 +111,7 @@ public class HomedaemonDeviceManager implements DeviceManager {
                 clockPlace,
                 "software.ClockDevice",
                 new HashMap<>());
-        this.devicesInfoList.add(clockInfo);
+        // this.devicesInfoList.add(clockInfo);
 
         // State
         Map<String, String> stateName = new HashMap<>();
@@ -145,7 +146,8 @@ public class HomedaemonDeviceManager implements DeviceManager {
                         try {
                             device.status.update(entry.getKey(), entry.getValue());
                         } catch (AttributeReadOnly e) {
-                            LOGGER.warning(new StringBuilder("Attribute Read Only - ").append(devInfo.getSid()).append(" - ").append(entry.getKey()).toString());
+                            LOGGER.warning(new StringBuilder("Attribute Read Only - ").append(devInfo.getSid())
+                                    .append(" - ").append(entry.getKey()).toString());
 
                         }
                     }
@@ -215,20 +217,20 @@ public class HomedaemonDeviceManager implements DeviceManager {
         this.devices.put(sid, device);
     }
 
-    public void update(DeviceEvent event) {
+    public void update(Event event) {
+        if (!this.devices.containsKey(event.getSid()))
+            return;
         BaseDevice dev = this.devices.get(event.getSid());
-        if (dev != null) {
-            try {
-                if (dev.status.update(event.getName(), event.getValue())) {
-                    bus.dispatch(event);
-                }
-            } catch (AttributeReadOnly e) {
-                LOGGER.warning(String.format("Attribute %s is readonly", event.getName()));
+        try {
+            if (dev.status.update(event.getName(), event.getValue())) {
+                bus.dispatch(event);
             }
+        } catch (AttributeReadOnly e) {
+            LOGGER.warning(String.format("Attribute %s is readonly", event.getName()));
         }
     }
 
-    public void execute(String sid, String cmd, Object args) {
+    public void execute(String sid, String cmd, Optional<Object> args) {
         if (this.devices.containsKey(sid)) {
             BaseDevice device = this.devices.get(sid);
             device.execute(cmd, args);

@@ -1,7 +1,7 @@
 package ovh.angrysoft.homedaemon.automation.actions;
 
+import ovh.angrysoft.homedaemon.bus.Event;
 import ovh.angrysoft.homedaemon.bus.EventBus;
-import ovh.angrysoft.homedaemon.bus.Events.ActionEvent;
 
 public class ActionDispatch extends Action {
     private EventBus bus;
@@ -16,6 +16,6 @@ public class ActionDispatch extends Action {
 
     @Override
     public void run() {
-        bus.dispatch(new ActionEvent(eventName, eventValue));
+        bus.dispatch(Event.actionEvent(eventName, eventValue));
     }
 }

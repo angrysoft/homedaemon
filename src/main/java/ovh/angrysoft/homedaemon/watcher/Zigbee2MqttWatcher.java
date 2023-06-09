@@ -8,7 +8,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.ToNumberPolicy;
 import com.google.gson.reflect.TypeToken;
 
-import ovh.angrysoft.homedaemon.bus.Events.StatusEvent;
+import ovh.angrysoft.homedaemon.bus.Event;
 import ovh.angrysoft.homedaemon.devices.zigbee2mqtt.Zigbee2MqttGateway;
 
 public class Zigbee2MqttWatcher extends Watcher {
@@ -35,7 +35,7 @@ public class Zigbee2MqttWatcher extends Watcher {
             if (v instanceof Long) {
                 value = Integer.parseInt(v.toString());
             }
-            handler.call(new StatusEvent(getSidFromTopic(topic), k, value));
+            handler.call(Event.statusEvent(getSidFromTopic(topic), k, value));
         });
     }
 

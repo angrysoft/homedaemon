@@ -1,24 +1,26 @@
 package ovh.angrysoft.homedaemon.bus;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Topic {
     private List<String> topicParts;
     private boolean wildCard = false;
 
-    private Topic(String topicString) {
-        this.topicParts = Arrays.asList(topicString.split("\\."));
+    private Topic(String[] topicArray) {
+        this.topicParts = new ArrayList<>();
+        for (String part : topicArray) {
+            if (!part.isEmpty())
+                this.topicParts.add(part);
+        }
         if (this.topicParts.contains("*"))
             this.wildCard = true;
-    }
 
-    private Topic(String[] topicArray) {
-        this.topicParts = Arrays.asList(topicArray);
+        System.err.println("created topic " + this.topicParts.toString());
     }
 
     public static Topic fromString(String topicString) {
-        return new Topic(topicString);
+        return new Topic(topicString.split("\\."));
     }
 
     public static Topic fromArray(String[] topicArray) {

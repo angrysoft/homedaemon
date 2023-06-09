@@ -1,16 +1,16 @@
 
 package ovh.angrysoft.homedaemon;
 
-import org.junit.jupiter.api.Test;
-
-import ovh.angrysoft.homedaemon.devices.DeviceInfo;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import ovh.angrysoft.homedaemon.devices.DeviceInfo;
 
 public class BaseDeviceTest {
     DummyDevice device;
@@ -42,7 +42,7 @@ public class BaseDeviceTest {
     @DisplayName("Execute command")
     void testExecute() {
         assertEquals("off", this.device.query("power"));
-        this.device.execute("on", null);
+        this.device.execute("on", Optional.empty());
         assertEquals("on", this.device.query("power"));
 
     }
@@ -51,7 +51,7 @@ public class BaseDeviceTest {
     @DisplayName("Execute command witch args")
     void testExecuteWitchArgs() {
         assertEquals(0, (Integer) this.device.query("state"));
-        this.device.execute("changeState", 5);
+        this.device.execute("changeState", Optional.of(5));
         assertEquals(5, (Integer) this.device.query("state"));
 
     }
@@ -60,7 +60,7 @@ public class BaseDeviceTest {
     @DisplayName("Execute command not allowed")
     void testExecuteNotAllowed() {
         assertEquals("off", this.device.query("power"));
-        this.device.execute("off", null);
+        this.device.execute("off", Optional.empty());
         assertEquals("off", this.device.query("power"));
 
 

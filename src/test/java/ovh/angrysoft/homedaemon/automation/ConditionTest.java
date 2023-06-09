@@ -11,7 +11,7 @@ import ovh.angrysoft.homedaemon.automation.conditions.Condition;
 import ovh.angrysoft.homedaemon.automation.conditions.NotCondition;
 import ovh.angrysoft.homedaemon.automation.conditions.OrCondition;
 import ovh.angrysoft.homedaemon.automation.conditions.StatusTestCase;
-import ovh.angrysoft.homedaemon.bus.Events.StatusEvent;
+import ovh.angrysoft.homedaemon.bus.Event;
 import ovh.angrysoft.homedaemon.devices.DeviceManager;
 import ovh.angrysoft.homedaemon.devices.FakeDeviceManager;
 
@@ -30,8 +30,8 @@ public class ConditionTest {
         Condition condition = new AndCondition(deviceManager);
         condition.addCase(new StatusTestCase("status", "123", "stringState", "enabled"));
         condition.addCase(new StatusTestCase("status", "123", "state", 4));
-        deviceManager.update(new StatusEvent("123", "stringState", "enabled"));
-        deviceManager.update(new StatusEvent("123", "state", 4));
+        deviceManager.update(Event.statusEvent("123", "stringState", "enabled"));
+        deviceManager.update(Event.statusEvent("123", "state", 4));
         // When
         Boolean conditionResult = condition.check();
         // Then
@@ -44,8 +44,8 @@ public class ConditionTest {
         Condition condition = new AndCondition(deviceManager);
         condition.addCase(new StatusTestCase("status", "123", "stringState", "disabled"));
         condition.addCase(new StatusTestCase("status", "123", "state", 4));
-        deviceManager.update(new StatusEvent("123", "stringState", "enabled"));
-        deviceManager.update(new StatusEvent("123", "state", 4));
+        deviceManager.update(Event.statusEvent("123", "stringState", "enabled"));
+        deviceManager.update(Event.statusEvent("123", "state", 4));
         // When
         Boolean conditionResult = condition.check();
         // Then
@@ -58,8 +58,8 @@ public class ConditionTest {
         Condition condition = new OrCondition(deviceManager);
         condition.addCase(new StatusTestCase("status", "123", "stringState", "enabled"));
         condition.addCase(new StatusTestCase("status", "123", "state", 4));
-        deviceManager.update(new StatusEvent("123", "stringState", "enabled1"));
-        deviceManager.update(new StatusEvent("123", "state", 4));
+        deviceManager.update(Event.statusEvent("123", "stringState", "enabled1"));
+        deviceManager.update(Event.statusEvent("123", "state", 4));
         // When
         Boolean conditionResult = condition.check();
         // Then
@@ -72,8 +72,8 @@ public class ConditionTest {
         Condition condition = new OrCondition(deviceManager);
         condition.addCase(new StatusTestCase("status", "123", "stringState", "enabled"));
         condition.addCase(new StatusTestCase("status", "123", "state", 4));
-        deviceManager.update(new StatusEvent("123", "stringState", "enabled1"));
-        deviceManager.update(new StatusEvent("123", "state", 5));
+        deviceManager.update(Event.statusEvent("123", "stringState", "enabled1"));
+        deviceManager.update(Event.statusEvent("123", "state", 5));
         // When
         Boolean conditionResult = condition.check();
         // Then
@@ -86,8 +86,8 @@ public class ConditionTest {
         Condition condition = new NotCondition(deviceManager);
         condition.addCase(new StatusTestCase("status", "123", "stringState", "enabled"));
         condition.addCase(new StatusTestCase("status", "123", "state", 4));
-        deviceManager.update(new StatusEvent("123", "stringState", "enabled1"));
-        deviceManager.update(new StatusEvent("123", "state", 5));
+        deviceManager.update(Event.statusEvent("123", "stringState", "enabled1"));
+        deviceManager.update(Event.statusEvent("123", "state", 5));
         // When
         Boolean conditionResult = condition.check();
         // Then
@@ -100,8 +100,8 @@ public class ConditionTest {
         Condition condition = new NotCondition(deviceManager);
         condition.addCase(new StatusTestCase("status", "123", "stringState", "enabled"));
         condition.addCase(new StatusTestCase("status", "123", "state", 4));
-        deviceManager.update(new StatusEvent("123", "stringState", "enabled"));
-        deviceManager.update(new StatusEvent("123", "state", 5));
+        deviceManager.update(Event.statusEvent("123", "stringState", "enabled"));
+        deviceManager.update(Event.statusEvent("123", "state", 5));
         // When
         Boolean conditionResult = condition.check();
         // Then
