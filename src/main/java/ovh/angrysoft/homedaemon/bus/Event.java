@@ -17,7 +17,13 @@ public class Event {
         this.name = name;
         this.value = value;
         this.eventName = eventName;
-        this.topic = Topic.fromArray(new String[] { eventName, sid, name, this.value.toString() });
+        String[] topicArray;
+        if (this.value == null) {
+            topicArray = new String[] { eventName, sid, name };
+        } else {
+            topicArray = new String[] { eventName, sid, name, this.value.toString() };
+        }
+        this.topic = Topic.fromArray(topicArray);
     }
 
     public static Event statusEvent(String sid, String name, Object value) {
@@ -36,7 +42,7 @@ public class Event {
         return new Event("action", "automation", actionName, actionValue);
     }
 
-    public static Event customEvent(String eventName, String sid, String name , Object value) {
+    public static Event customEvent(String eventName, String sid, String name, Object value) {
         return new Event(eventName, sid, name, value);
     }
 

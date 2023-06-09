@@ -76,13 +76,16 @@ public class App {
 
     private static void setupDefaultsEvents(EventBus bus, DeviceManager deviceManager) {
         bus.addTrigger(new Trigger(Topic.fromString("status.*"), (Event event) -> {
-            logger.info(String.format("handled event: %s with payload: %s", event.getTopic().toString(),
+            logger.info(String.format("handled event: %s with payload: %s",
+                    event.getTopic().toString(),
                     event.getPayload()));
         }));
 
         bus.addTrigger(new Trigger(Topic.fromString("execute.*"), (Event event) -> {
             deviceManager.execute(event.getSid(), event.getName(), Optional.ofNullable(event.getValue()));
         }));
+
+        
     }
 
     private static void setupLogger(boolean isDebug) {
