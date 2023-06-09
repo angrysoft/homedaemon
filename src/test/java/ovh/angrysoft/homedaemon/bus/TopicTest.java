@@ -12,10 +12,40 @@ public class TopicTest {
         Topic two = Topic.fromString("status.123341421.status.off");
         assertTrue(one.equals(two));
     }
+
+    @Test
+    public void compareTopicFromArrayTrue() {
+        Topic one = Topic.fromArray(new String[] {"status", "123341421", "status", "off"});
+        Topic two = Topic.fromArray(new String[] {"status", "123341421", "status", "off"});
+        assertTrue(one.equals(two));
+    }
+
+    @Test
+    public void compareTopicFromArrayFalse() {
+        Topic one = Topic.fromArray(new String[] {"status", "123341421", "status", "off"});
+        Topic two = Topic.fromArray(new String[] {"status", "123341421", "status", "on"});
+        assertFalse(one.equals(two));
+    }
+
+    @Test
+    public void compareTopicFromArrayToFromStringFalse() {
+        Topic one = Topic.fromArray(new String[] {"status", "123341421", "status", "off"});
+        Topic two = Topic.fromString("status.123341421.status.on");
+        assertFalse(one.equals(two));
+    }
+
+    @Test
+    public void compareTopicFromArrayToFromStringTrue() {
+        Topic one = Topic.fromArray(new String[] {"status", "123341421", "status", "off"});
+        Topic two = Topic.fromString("status.123341421.status.off");
+        assertTrue(one.equals(two));
+    }
+
+
     @Test
     public void compareTopicFalse() {
         Topic one = Topic.fromString("status.123341421.status.off");
-        Topic two = Topic.fromString("status.123341421.power.off");
+        Topic two = Topic.fromString("status.123341421.power.on");
         assertFalse(one.equals(two));
     }
 

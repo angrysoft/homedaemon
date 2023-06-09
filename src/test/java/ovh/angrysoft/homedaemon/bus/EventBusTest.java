@@ -8,8 +8,6 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import ovh.angrysoft.homedaemon.bus.Events.StatusEvent;
-
 public class EventBusTest {
     @Test
     @DisplayName("Test Event bus addTrigger")
@@ -33,7 +31,7 @@ public class EventBusTest {
         EventBus bus = new EventBus();
         bus.addTrigger(trigger);
         assertEquals(bus.triggersSize(), 1);
-        bus.dispatch(new StatusEvent("123341421", "status", "off"));
+        bus.dispatch(Event.statusEvent("123341421", "status", "off"));
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
@@ -65,7 +63,7 @@ public class EventBusTest {
 
         EventBus bus = new EventBus();
         bus.addTrigger(trigger);
-        bus.dispatch(new StatusEvent("123341421", "status", "off"));
+        bus.dispatch(Event.statusEvent("123341421", "status", "off"));
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) {
@@ -84,7 +82,7 @@ public class EventBusTest {
 
         EventBus bus = new EventBus();
         bus.addTrigger(trigger);
-        bus.dispatch(new StatusEvent("123341421", "status", "WildCard"));
+        bus.dispatch(Event.statusEvent("123341421", "status", "WildCard"));
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) {

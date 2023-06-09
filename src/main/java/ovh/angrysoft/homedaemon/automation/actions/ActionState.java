@@ -1,6 +1,6 @@
 package ovh.angrysoft.homedaemon.automation.actions;
 
-import ovh.angrysoft.homedaemon.bus.Events.StatusEvent;
+import ovh.angrysoft.homedaemon.bus.Event;
 import ovh.angrysoft.homedaemon.devices.DeviceManager;
 
 public class ActionState extends Action {
@@ -16,6 +16,6 @@ public class ActionState extends Action {
 
     @Override
     public void run() {
-        deviceManager.update(new StatusEvent("state", attrName, attrValue));
+        deviceManager.update(Event.statusEvent("state", attrName, attrValue));
     }
 }

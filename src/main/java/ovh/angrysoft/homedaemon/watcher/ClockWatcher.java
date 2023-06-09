@@ -2,7 +2,7 @@ package ovh.angrysoft.homedaemon.watcher;
 
 import java.time.LocalTime;
 
-import ovh.angrysoft.homedaemon.bus.Events.TimeEvent;
+import ovh.angrysoft.homedaemon.bus.Event;
 
 public class ClockWatcher extends Watcher {
 
@@ -24,7 +24,7 @@ public class ClockWatcher extends Watcher {
 
         while (true) {
             LocalTime now = LocalTime.now();
-            handler.call(new TimeEvent(sid, "time", String.format("%02d:%02d:%02d", now.getHour(), now.getMinute(), now.getSecond())));
+            handler.call(Event.timeEvent("time", String.format("%02d:%02d:%02d", now.getHour(), now.getMinute(), now.getSecond())));
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {

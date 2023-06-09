@@ -1,15 +1,17 @@
 package ovh.angrysoft.homedaemon.automation.actions;
 
+import java.util.Optional;
+
 import ovh.angrysoft.homedaemon.devices.DeviceManager;
 
 public class ActionExecute extends Action {
     private String sid;
     private String cmd;
-    private Object arg;
+    private Optional<Object> arg;
     private DeviceManager deviceManager;
     private boolean runInBackground;
 
-    public ActionExecute(String sid, String cmd, Object arg, boolean runInBackground, DeviceManager deviceManager) {
+    public ActionExecute(String sid, String cmd, Optional<Object> arg, boolean runInBackground, DeviceManager deviceManager) {
         this.sid = sid;
         this.cmd = cmd;
         this.arg = arg;

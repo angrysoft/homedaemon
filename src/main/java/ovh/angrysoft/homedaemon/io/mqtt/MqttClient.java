@@ -12,7 +12,6 @@ import ovh.angrysoft.homedaemon.bus.Event;
 import ovh.angrysoft.homedaemon.bus.EventBus;
 import ovh.angrysoft.homedaemon.bus.Topic;
 import ovh.angrysoft.homedaemon.bus.Trigger;
-import ovh.angrysoft.homedaemon.bus.Events.CustomEvent;
 import ovh.angrysoft.homedaemon.config.Config;
 import ovh.angrysoft.homedaemon.config.ConfigType;
 import ovh.angrysoft.homedaemon.config.HomedConfig;
@@ -57,7 +56,11 @@ public class MqttClient extends BaseIo {
         if (value instanceof Long) {
             value = Integer.parseInt(value.toString());
         }
-        bus.dispatch(new CustomEvent(notify.event(), notify.sid(), notify.payload().name(), value));
+        //TODO i Value is null then topic fuckt up
+        bus.dispatch(Event.statusEvent(notify.sid(), notify.payload().name() , value));
+
+        // bus.dispatch(new StatusEvent( notify.sid(), notify.payload().name(), value));
+        System.err.println(String.format("onMsg : %s", msg));
     }
 
     private void sendEvent(Event event) {
