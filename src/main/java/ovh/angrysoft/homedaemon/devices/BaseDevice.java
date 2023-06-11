@@ -78,22 +78,30 @@ public abstract class BaseDevice {
         }
     }
 
-    public List<String> getTraits() {
+    private List<String> getAllTraits(Class<?> cls) {
         List<String> ret = new ArrayList<>();
-        for (Class<?> cls : this.getClass().getInterfaces()) {
-            String className = cls.getName();
+        if (!(cls.getSuperclass().getSimpleName().equals("Object"))) {
+            ret.addAll(getAllTraits(cls.getSuperclass()));
+        }
+
+        for (Class<?> c : cls.getInterfaces()) {
+            String className = c.getName();
             int lastDot = className.lastIndexOf(".");
             ret.add(className.substring(++lastDot));
         }
         return ret;
     }
 
+    public List<String> getTraits() {
+        return getAllTraits(this.getClass());
+    }
+
     public <T> T query(String attrName) {
         return this.status.get(attrName);
     }
 
-    public Map<String,Object> getDeviceStatus() {
-        Map<String,Object> attrs = new HashMap<>();
+    public Map<String, Object> getDeviceStatus() {
+        Map<String, Object> attrs = new HashMap<>();
         attrs.putAll(this.status.getAll());
         attrs.put("traits", this.getTraits());
         // return new DeviceStatusResponse(attrs);
