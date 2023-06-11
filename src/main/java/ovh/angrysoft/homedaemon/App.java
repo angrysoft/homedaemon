@@ -75,7 +75,7 @@ public class App {
     }
 
     private static void setupDefaultsEvents(EventBus bus, DeviceManager deviceManager) {
-        bus.addTrigger(new Trigger(Topic.fromString("*"), (Event event) -> {
+        bus.addTrigger(new Trigger(Topic.fromString("status.*"), (Event event) -> {
             logger.info(String.format("handled event: %s with payload: %s",
                     event.getTopic().toString(),
                     event.getPayload()));
