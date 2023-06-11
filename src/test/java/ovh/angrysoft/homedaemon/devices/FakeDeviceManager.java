@@ -1,6 +1,8 @@
 package ovh.angrysoft.homedaemon.devices;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import ovh.angrysoft.homedaemon.DummyDevice;
@@ -58,6 +60,12 @@ public class FakeDeviceManager implements DeviceManager {
     @Override
     public BaseDevice getDevice(String sid) {
         throw new UnsupportedOperationException("Unimplemented method 'getDevice'");
+    }
+
+    @Override
+    public List<Map<String,Object>> getDevicesList() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getDevicesList'");
     }
 
 }

@@ -111,7 +111,7 @@ public class HomedaemonDeviceManager implements DeviceManager {
                 clockPlace,
                 "software.ClockDevice",
                 new HashMap<>());
-        // this.devicesInfoList.add(clockInfo);
+        this.devicesInfoList.add(clockInfo);
 
         // State
         Map<String, String> stateName = new HashMap<>();
@@ -249,6 +249,15 @@ public class HomedaemonDeviceManager implements DeviceManager {
 
     public EventBus getBus() {
         return this.bus;
+    }
+
+    @Override
+    public List<Map<String,Object>> getDevicesList() {
+        List<Map<String,Object>> result = new ArrayList<>();
+        for (Entry<String, BaseDevice> deviceEntry : devices.entrySet()) {
+            result.add(deviceEntry.getValue().getDeviceStatus());
+        }
+        return result;
     }
 
 }

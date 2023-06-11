@@ -67,7 +67,7 @@ public class MqttV5Connection extends Thread implements MqttCallback {
         private int keepAlive = 60;  //in seconds
         private long timeout = 5000;
         private int qos = 0;
-        private String clientId;
+        private Optional<String> clientId = Optional.empty();
 
         public Builder uri(String uri) {
             this.uri = uri;
@@ -100,7 +100,7 @@ public class MqttV5Connection extends Thread implements MqttCallback {
         }
 
         public Builder clientId(String clientId) {
-            this.clientId = clientId;
+            this.clientId = Optional.of(clientId);
             return this;
         }
 
@@ -112,12 +112,8 @@ public class MqttV5Connection extends Thread implements MqttCallback {
             this.autoReconnect.ifPresent(mqttConn::setAutomaticReconnect);
             mqttConn.timeout = timeout;
             mqttConn.setKeepAlive(keepAlive);
-            if (clientId == null || clientId.isEmpty()) {
-                long pid = Thread.currentThread().getId();
-                clientId = "homedaemon-client" + pid;
-            }
+            this.clientId.ifPresent(mqttConn::setClientId);
             mqttConn.qos = this.qos;
-            mqttConn.clientId = clientId;
             return mqttConn;
         }
 
@@ -214,6 +210,10 @@ public class MqttV5Connection extends Thread implements MqttCallback {
 
     public String[] getUris() {
         return this.connOpts.getServerURIs();
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
     }
 
     public String getClientId() {

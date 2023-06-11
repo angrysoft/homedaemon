@@ -92,12 +92,12 @@ public abstract class BaseDevice {
         return this.status.get(attrName);
     }
 
-    public Map<String, String> getDeviceStatus() {
-        HashMap<String, String> ret = new HashMap<>();
-        ret.putAll(this.status.getAll());
-        ret.put("traits", this.getTraits().toString());
-        return ret;
-
+    public Map<String,Object> getDeviceStatus() {
+        Map<String,Object> attrs = new HashMap<>();
+        attrs.putAll(this.status.getAll());
+        attrs.put("traits", this.getTraits());
+        // return new DeviceStatusResponse(attrs);
+        return attrs;
     }
 
     public <T> Boolean updateStatus(String attrName, T attrValue) throws AttributeReadOnly {

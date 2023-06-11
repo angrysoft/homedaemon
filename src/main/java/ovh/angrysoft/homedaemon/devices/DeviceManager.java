@@ -1,5 +1,7 @@
 package ovh.angrysoft.homedaemon.devices;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import ovh.angrysoft.homedaemon.bus.Event;
@@ -19,4 +21,6 @@ public interface DeviceManager {
     public EventBus getBus();
 
     public BaseDevice getDevice(String sid);
+
+    public List<Map<String,Object>> getDevicesList();
 }
