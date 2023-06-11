@@ -33,6 +33,7 @@ public class MqttClient extends BaseIo {
                 .uri(mqttConfig.uri())
                 .user(mqttConfig.user())
                 .password(mqttConfig.password())
+                .autoReconnect(true)
                 .build();
 
         this.connection.addTopic(new StringBuilder("homed/")

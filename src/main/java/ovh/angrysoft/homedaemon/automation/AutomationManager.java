@@ -59,8 +59,10 @@ public class AutomationManager {
 
                 Automation automation = automationParser.parse(automationInfo);
                 this.registerAutomation(automationInfo.getTrigger(), automation);
-            } catch (JsonSyntaxException | JsonIOException | FileNotFoundException e) {
+            } catch (JsonSyntaxException | JsonIOException e) {
                 LOGGER.severe(String.format("%s - %s", automationInfoFile.getName(), e.getMessage()));
+            } catch (FileNotFoundException e) {
+                LOGGER.severe(String.format("File not Found: %s - %s", automationInfoFile.getName(), e.getMessage()));
             }
         }
     }

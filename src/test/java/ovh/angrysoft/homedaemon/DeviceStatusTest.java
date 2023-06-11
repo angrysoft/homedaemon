@@ -89,7 +89,7 @@ public class DeviceStatusTest {
             status.registerAttribute( new DeviceAttribute<>("attr2", 1) );
         } catch ( AttributeAlreadyExist e) {}
 
-        Map<String, String> stringAttrs = status.getAll();
+        Map<String, Object> stringAttrs = status.getAll();
         
         assertEquals("value1", stringAttrs.get("attr1"));
         assertEquals("1", stringAttrs.get("attr2"));

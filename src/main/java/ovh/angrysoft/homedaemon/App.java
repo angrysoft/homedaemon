@@ -75,7 +75,7 @@ public class App {
     }
 
     private static void setupDefaultsEvents(EventBus bus, DeviceManager deviceManager) {
-        bus.addTrigger(new Trigger(Topic.fromString("status.*"), (Event event) -> {
+        bus.addTrigger(new Trigger(Topic.fromString("*"), (Event event) -> {
             logger.info(String.format("handled event: %s with payload: %s",
                     event.getTopic().toString(),
                     event.getPayload()));
@@ -85,7 +85,9 @@ public class App {
             deviceManager.execute(event.getSid(), event.getName(), Optional.ofNullable(event.getValue()));
         }));
 
-        
+        bus.addTrigger(new Trigger(Topic.fromString("request.deviceManager.devices.list"), (Event event) -> {
+            bus.dispatch(Event.statusEvent("deviceManager", "deviceList", deviceManager.getDevicesList()));
+        }));
     }
 
     private static void setupLogger(boolean isDebug) {

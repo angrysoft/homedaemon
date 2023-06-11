@@ -48,12 +48,12 @@ public class DeviceStatus {
         return null;
     }
 
-    public Map<String, String> getAll() {
-        HashMap<String, String> ret = new HashMap<>();
+    public Map<String, Object> getAll() {
+        HashMap<String, Object> ret = new HashMap<>();
         for (Map.Entry<String, DeviceAttribute<?>> attr : attributes.entrySet()) {
             String key = attr.getKey();
             DeviceAttribute<?> value = attr.getValue();
-            ret.put(key, value.getValue().toString());
+            ret.put(key, value.getValue());
         }
         return ret;
     }
