@@ -7,6 +7,7 @@ import ovh.angrysoft.homedaemon.devices.traits.Dimmer;
 import ovh.angrysoft.homedaemon.devices.traits.OnOff;
 import ovh.angrysoft.homedaemon.discover.yeelight.YeelightDiscovery;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
+import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeNotFound;
 import ovh.angrysoft.homedaemon.exceptions.connctions.DeviceConnectionError;
 import ovh.angrysoft.homedaemon.watcher.YeelightWatcher;
 
@@ -19,11 +20,12 @@ public class Mono extends BaseDevice implements OnOff, Dimmer {
         this.discoverEngine = new YeelightDiscovery();
         try {
             this.status.registerAttribute(new DeviceAttribute<String>("power", ""));
+            this.status.addAlias("state", "power");
             this.status.registerAttribute(new DeviceAttribute<Integer>("color_mode", 0));
             this.status.registerAttribute(new DeviceAttribute<Integer>("bright", 0));
             this.status.registerAttribute(new DeviceAttribute<String>("addr", "localhost"));
             this.status.registerAttribute(new DeviceAttribute<Integer>("port", 0));
-        } catch (AttributeAlreadyExist e) {
+        } catch (AttributeAlreadyExist | AttributeNotFound e) {
             LOGGER.warning(e.getMessage());
         }
     }
