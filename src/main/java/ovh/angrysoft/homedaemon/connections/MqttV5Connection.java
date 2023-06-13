@@ -228,13 +228,12 @@ public class MqttV5Connection extends Thread implements MqttCallback {
         } else {
             cause = disconnectResponse.getReasonString();
         }
-        LOGGER.log(Level.FINE,
-                String.format("The connection to the server was lost, cause: %s. Waiting to reconnect.", cause));
+        LOGGER.warning(String.format("The connection to the server was lost, cause: %s. Waiting to reconnect.", cause));
     }
 
     @Override
     public void mqttErrorOccurred(MqttException exception) {
-        LOGGER.log(Level.ALL, String.format("An MQTT error occurred: %s", exception.getMessage()));
+        LOGGER.warning(String.format("An MQTT error occurred: %s", exception.getMessage()));
     }
 
     @Override
@@ -244,13 +243,11 @@ public class MqttV5Connection extends Thread implements MqttCallback {
             this.onMsgHandler.accept(topic, messageContent);
             return;
         }
-        LOGGER.info(messageContent);
-
     }
 
     @Override
     public void deliveryComplete(IMqttToken token) {
-        LOGGER.fine(String.format("Message %d was delivered.", token.getMessageId()));
+        LOGGER.finest(String.format("Message %d was delivered.", token.getMessageId()));
     }
 
     @Override
