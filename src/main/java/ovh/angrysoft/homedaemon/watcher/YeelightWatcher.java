@@ -45,9 +45,11 @@ public class YeelightWatcher extends Watcher {
                 YeelightNotification notify = new Gson().fromJson(rec, YeelightNotification.class);
                 HashMap<String, Object> params = notify.getParams();
                 params.forEach((k, v) -> {
+                    String name = k;
                     Object value;
                     switch (k) {
                         case "power":
+                            name = "state";
                             value = (String) v;
                             break;
                         case "bright":
@@ -64,7 +66,7 @@ public class YeelightWatcher extends Watcher {
                         default:
                             value = v;
                     }
-                    handler.call(Event.statusEvent(sid, k, value));
+                    handler.call(Event.statusEvent(sid, name, value));
                 });
             }
         } catch (DeviceConnectionError e) {
