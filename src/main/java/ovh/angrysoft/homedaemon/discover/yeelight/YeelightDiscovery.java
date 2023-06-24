@@ -36,8 +36,10 @@ public class YeelightDiscovery extends DiscoverEngine {
                 DatagramPacket retPack = new DatagramPacket(buf, buf.length);
                 udp.receive(retPack);
                 ret += new String(retPack.getData(), StandardCharsets.UTF_8);
-            }
-        } catch (SocketTimeoutException e) {
+                System.err.println(ret);
+            }   
+        } catch (SocketTimeoutException ignored) {
+            LOGGER.log(Level.ALL, "Timeout: {0}", ignored.toString());
         } catch (IOException e) {
             LOGGER.log(Level.ALL, "Search problem: {0}", e.toString());
         }
