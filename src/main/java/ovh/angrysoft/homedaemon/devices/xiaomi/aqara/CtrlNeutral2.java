@@ -18,7 +18,8 @@ public class CtrlNeutral2 extends ZigbeeBaseDevice implements DoubleSwitch {
             this.status.registerAttribute(new DeviceAttribute<Integer>("device_temperature", 0));
             this.status.registerAttribute(new DeviceAttribute<String>("operation_mode_left", ""));
             this.status.registerAttribute(new DeviceAttribute<String>("operation_mode_right", ""));
-            this.status.registerAttribute(new DeviceAttribute<String>("action", "", false, AttributeUpdateBehavior.ALWAYS));
+            this.status.registerAttribute(
+                    new DeviceAttribute<String>("action", "", false, AttributeUpdateBehavior.ALWAYS));
         } catch (AttributeAlreadyExist e) {
             LOGGER.warning(e.getMessage());
         }
