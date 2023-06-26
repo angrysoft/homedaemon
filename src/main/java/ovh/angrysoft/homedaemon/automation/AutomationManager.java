@@ -49,7 +49,7 @@ public class AutomationManager {
                 continue;
 
             try {
-                Gson gson = new GsonBuilder().setObjectToNumberStrategy(ToNumberPolicy.LAZILY_PARSED_NUMBER).create();
+                Gson gson = new GsonBuilder().setObjectToNumberStrategy(ToNumberPolicy.BIG_DECIMAL).create();
 
                 AutomationInfo automationInfo = gson.fromJson(new FileReader(automationInfoFile),
                         AutomationInfo.class);

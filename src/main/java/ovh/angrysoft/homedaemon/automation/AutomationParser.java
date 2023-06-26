@@ -1,5 +1,6 @@
 package ovh.angrysoft.homedaemon.automation;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -92,21 +93,19 @@ public class AutomationParser {
     }
 
     private TestCase<?> parseTestCase(TestCaseInfo testCaseInfo) {
+        // TODO: in (gt, lt, eq) is always int value ?
         switch (testCaseInfo.type) {
             case "gt": {
-                LazilyParsedNumber number = (LazilyParsedNumber) testCaseInfo.attrValue;
                 return new IntGtTestCase(testCaseInfo.type, testCaseInfo.sid, testCaseInfo.attrName,
-                        number.intValue());
+                        ((BigDecimal) testCaseInfo.attrValue).intValue());
             }
             case "lt": {
-                LazilyParsedNumber number = (LazilyParsedNumber) testCaseInfo.attrValue;
                 return new IntLtTestCase(testCaseInfo.type, testCaseInfo.sid, testCaseInfo.attrName,
-                        number.intValue());
+                        ((BigDecimal) testCaseInfo.attrValue).intValue());
             }
             case "eq": {
-                LazilyParsedNumber number = (LazilyParsedNumber) testCaseInfo.attrValue;
                 return new IntEqTestCase(testCaseInfo.type, testCaseInfo.sid, testCaseInfo.attrName,
-                        number.intValue());
+                        ((BigDecimal) testCaseInfo.attrValue).intValue());
             }
             case "status": {
                 return new StatusTestCase(testCaseInfo.type, testCaseInfo.sid, testCaseInfo.attrName,
@@ -131,14 +130,24 @@ public class AutomationParser {
     }
 
     private Action parseAction(ActionInfo action) {
+        Object value = action.getArg();
+        if (value instanceof BigDecimal) {
+            BigDecimal num = new BigDecimal(value.toString());
+            if (num.scale() <= 0) {
+                value = num.intValue();
+            } else {
+                value = num.doubleValue();
+            }
+        }
         switch (action.getType()) {
             case "execute":
-                return new ActionExecute(action.getSid(), action.getCmd(), Optional.ofNullable(action.getArg()), action.isRunInBackground(),
+                return new ActionExecute(action.getSid(), action.getCmd(), Optional.ofNullable(value),
+                        action.isRunInBackground(),
                         deviceManager);
             case "dispatch":
-                return new ActionDispatch(action.getCmd(), action.getArg(), deviceManager.getBus());
+                return new ActionDispatch(action.getCmd(), value, deviceManager.getBus());
             case "state":
-                return new ActionState(action.getCmd(), action.getArg(), deviceManager);
+                return new ActionState(action.getCmd(), value, deviceManager);
         }
         return null;
     }
