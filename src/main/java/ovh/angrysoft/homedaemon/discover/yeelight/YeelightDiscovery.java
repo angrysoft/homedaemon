@@ -37,9 +37,13 @@ public class YeelightDiscovery extends DiscoverEngine {
                 udp.receive(retPack);
                 ret += new String(retPack.getData(), StandardCharsets.UTF_8);
             }
-        } catch (SocketTimeoutException e) {
+        } catch (SocketTimeoutException ignored) {
+            LOGGER.log(Level.ALL, "Timeout: {0}", ignored.toString());
         } catch (IOException e) {
             LOGGER.log(Level.ALL, "Search problem: {0}", e.toString());
+        } catch (IllegalArgumentException e) {
+            LOGGER.warning(String.format("Error: %s - %s", e.toString(), e.getMessage()));
+
         }
 
         for (String dev : ret.split("HTTP/1.1 200 OK\r\n")) {
