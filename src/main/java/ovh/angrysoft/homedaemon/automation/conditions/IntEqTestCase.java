@@ -2,7 +2,7 @@ package ovh.angrysoft.homedaemon.automation.conditions;
 
 public class IntEqTestCase extends TestCase<Integer> {
 
-    public IntEqTestCase(String type, String deviceSid, String attrName, Integer attrValue) {
+    public IntEqTestCase(String type, String deviceSid, String attrName, int attrValue) {
         super(type, deviceSid, attrName, attrValue);
     }
 

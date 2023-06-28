@@ -28,12 +28,13 @@ public class Zigbee2MqttWatcher extends Watcher {
         Gson gson = new GsonBuilder().setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE).create();
         Type mapType = new TypeToken<HashMap<String, Object>>() {
         }.getType();
-
         HashMap<String, Object> notify = (HashMap<String, Object>) gson.fromJson(msg, mapType);
         notify.forEach((k, v) -> {
+            if (v == null)
+                return;
             Object value = v;
-            if (v instanceof Long) {
-                value = Integer.parseInt(v.toString());
+            if (v instanceof Number) {
+                value = ((Number)v).intValue();
             }
             handler.call(Event.statusEvent(getSidFromTopic(topic), k, value));
         });

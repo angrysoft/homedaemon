@@ -2,7 +2,7 @@ package ovh.angrysoft.homedaemon.automation.conditions;
 
 public class IntLtTestCase extends TestCase<Integer> {
 
-    public IntLtTestCase(String type, String deviceSid, String attrName, Integer attrValue) {
+    public IntLtTestCase(String type, String deviceSid, String attrName, int attrValue) {
         super(type, deviceSid, attrName, attrValue);
     }
 
@@ -10,7 +10,7 @@ public class IntLtTestCase extends TestCase<Integer> {
     public boolean check(Object value) {
         if (value == null)
             return false;
-        return  (Integer) value < attrValue;
+        return  (int) value < attrValue;
     }
 
 }
