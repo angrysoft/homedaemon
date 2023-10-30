@@ -7,6 +7,7 @@ import ovh.angrysoft.homedaemon.devices.DeviceInfo;
 import ovh.angrysoft.homedaemon.devices.traits.Rgb;
 import ovh.angrysoft.homedaemon.devices.traits.RgbColor;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
+import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeReadOnly;
 
 public class Color extends DeskLamp implements Rgb, RgbColor {
     public Color(DeviceInfo deviceInfo) {
@@ -31,6 +32,10 @@ public class Color extends DeskLamp implements Rgb, RgbColor {
     @Override
     public void setup() {
         super.setup();
+        try {
+            this.status.update("minCt", 1700);
+        } catch (AttributeReadOnly e) {
+        }
         this.api.setMinCt(1700);
     }
 }
