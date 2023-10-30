@@ -1,5 +1,6 @@
 package ovh.angrysoft.homedaemon.bus;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +16,6 @@ public class Topic {
         }
         if (this.topicParts.contains("*"))
             this.wildCard = true;
-
     }
 
     public static Topic fromString(String topicString) {
@@ -24,6 +24,11 @@ public class Topic {
 
     public static Topic fromArray(String[] topicArray) {
         return new Topic(topicArray);
+    }
+
+    public static Topic newTimeTopic(LocalTime time) {
+        return new Topic(new String[] { "time",
+                String.format("%02d:%02d:%02d", time.getHour(), time.getMinute(), time.getSecond()) });
     }
 
     public List<String> getTopicParts() {
