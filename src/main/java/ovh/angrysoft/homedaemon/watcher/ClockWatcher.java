@@ -12,19 +12,11 @@ public class ClockWatcher extends Watcher {
 
     @Override
     public void run() {
-        // LocalTime now = LocalTime.now();
-        // while (now.getSecond() != 0) {
-        //     try {
-        //         Thread.sleep(500);
-        //     } catch (InterruptedException e) {
-        //         e.printStackTrace();
-        //     }
-        //     now = LocalTime.now();
-        // }
 
         while (true) {
             LocalTime now = LocalTime.now();
-            handler.call(Event.timeEvent("time", String.format("%02d:%02d:%02d", now.getHour(), now.getMinute(), now.getSecond())));
+            handler.call(Event.timeEvent("time",
+                    String.format("%02d:%02d:%02d", now.getHour(), now.getMinute(), now.getSecond())));
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
