@@ -4,5 +4,5 @@
 
 ### Added
 
-- New Device Driver tuya.TS0011
+- New Device Driver [TS0011](src/main/java/ovh/angrysoft/homedaemon/devices/tuya/TS0011.java)
 - Delay before and after automation actions
