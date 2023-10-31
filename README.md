@@ -1,2 +1,5 @@
 # homedaemon
-Home automation daemon (rewrite from python to java) 
+Home automation daemon.
+
+## ChangeLog
+[ChangeLog](Changelog.md)
