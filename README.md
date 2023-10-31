@@ -2,4 +2,4 @@
 Home automation daemon.
 
 ## ChangeLog
-[ChangeLog](Changelog.md)
+[ChangeLog](ChangeLog.md)
