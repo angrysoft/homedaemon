@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import ovh.angrysoft.homedaemon.discover.DiscoverEngine;
@@ -24,18 +25,21 @@ public abstract class BaseDevice {
     protected Watcher watcher = null;
     protected boolean gatewayNeeded = false;
 
-    protected final Logger LOGGER = Logger.getLogger("Homedaemon");
+    protected final Logger logger = Logger.getLogger("Homedaemon");
 
     protected BaseDevice(DeviceInfo deviceInfo) {
         this.status = new DeviceStatus();
         this.commands = new HashSet<>();
         this.setupCommandSet();
         try {
-            this.status.registerAttribute(new DeviceAttribute<String>("sid", deviceInfo.getSid(), true));
-            this.status.registerAttribute(new DeviceAttribute<Map<String, String>>("name", deviceInfo.getName()));
-            this.status.registerAttribute(new DeviceAttribute<Map<String, String>>("place", deviceInfo.getPlace()));
+            this.status.registerAttribute(
+                    new DeviceAttribute<String>("sid", deviceInfo.getSid(), true));
+            this.status.registerAttribute(
+                    new DeviceAttribute<Map<String, String>>("name", deviceInfo.getName()));
+            this.status.registerAttribute(
+                    new DeviceAttribute<Map<String, String>>("place", deviceInfo.getPlace()));
         } catch (AttributeAlreadyExist e) {
-            LOGGER.warning(e.getMessage());
+            logger.warning(e.getMessage());
         }
     }
 
@@ -67,7 +71,7 @@ public abstract class BaseDevice {
     }
 
     private void getAllMethods(Class<?> cls) {
-        if (!(cls.getSuperclass().getSimpleName().equals("Object"))) {
+        if (!(cls.getSuperclass() instanceof Object)) {
             getAllMethods(cls.getSuperclass());
         }
 
@@ -80,7 +84,8 @@ public abstract class BaseDevice {
 
     private List<String> getAllTraits(Class<?> cls) {
         List<String> ret = new ArrayList<>();
-        if (!(cls.getSuperclass().getSimpleName().equals("Object"))) {
+        // !(cls.getSuperclass().getSimpleName().equals("Object")
+        if (!(cls.getSuperclass() instanceof Object)) {
             ret.addAll(getAllTraits(cls.getSuperclass()));
         }
 
@@ -104,7 +109,6 @@ public abstract class BaseDevice {
         Map<String, Object> attrs = new HashMap<>();
         attrs.putAll(this.status.getAll());
         attrs.put("traits", this.getTraits());
-        // return new DeviceStatusResponse(attrs);
         return attrs;
     }
 
@@ -113,15 +117,16 @@ public abstract class BaseDevice {
     }
 
     /**
-     * Execute allowed method from device commands
-     * executed method arguments must by not a primitive type
+     * Execute allowed method from device commands executed method arguments must by not a primitive
+     * type
      * 
      * @param methodName method to be executed
-     * @param arg        arg optional method argument
+     * @param arg arg optional method argument
      */
     public void execute(String methodName, Optional<Object> arg) {
         if (!this.commands.contains(methodName)) {
-            LOGGER.warning(String.format("Executing %s of %s is not allowed", methodName, this.getClass()));
+            logger.log(Level.WARNING, "Executing {0} of {1} is not allowed",
+                    new Object[] {methodName, this.getClass()});
             return;
         }
 
@@ -133,11 +138,9 @@ public abstract class BaseDevice {
             }
             Method cmd = this.getClass().getMethod(methodName);
             cmd.invoke(this);
-        } catch (NoSuchMethodException | SecurityException e) {
-            LOGGER.warning(e.getMessage());
-            e.printStackTrace();
-        } catch (InvocationTargetException | IllegalAccessException | IllegalArgumentException e) {
-            LOGGER.warning(e.getMessage());
+        } catch (NoSuchMethodException | SecurityException | InvocationTargetException
+                | IllegalAccessException | IllegalArgumentException e) {
+            logger.warning(e.getMessage());
             e.printStackTrace();
         }
     }

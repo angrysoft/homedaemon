@@ -15,7 +15,7 @@ import ovh.angrysoft.homedaemon.bus.Event;
 import ovh.angrysoft.homedaemon.devices.DeviceManager;
 import ovh.angrysoft.homedaemon.devices.FakeDeviceManager;
 
-public class ConditionTest {
+class ConditionTest {
     private DeviceManager deviceManager;
 
     @BeforeEach
@@ -25,7 +25,7 @@ public class ConditionTest {
     }
 
     @Test
-    public void testAndCondition() {
+    void testAndCondition() {
         // Given
         Condition condition = new AndCondition(deviceManager);
         condition.addCase(new StatusTestCase("status", "123", "stringState", "enabled"));
@@ -39,7 +39,7 @@ public class ConditionTest {
     }
 
     @Test
-    public void testAndConditionFalse() {
+    void testAndConditionFalse() {
         // Given
         Condition condition = new AndCondition(deviceManager);
         condition.addCase(new StatusTestCase("status", "123", "stringState", "disabled"));
@@ -53,7 +53,7 @@ public class ConditionTest {
     }
 
     @Test
-    public void testOrCondition() {
+    void testOrCondition() {
         // Given
         Condition condition = new OrCondition(deviceManager);
         condition.addCase(new StatusTestCase("status", "123", "stringState", "enabled"));
@@ -67,7 +67,7 @@ public class ConditionTest {
     }
 
     @Test
-    public void testOrConditionFalse() {
+    void testOrConditionFalse() {
         // Given
         Condition condition = new OrCondition(deviceManager);
         condition.addCase(new StatusTestCase("status", "123", "stringState", "enabled"));
@@ -81,7 +81,7 @@ public class ConditionTest {
     }
 
     @Test
-    public void testNotCondition() {
+    void testNotCondition() {
         // Given
         Condition condition = new NotCondition(deviceManager);
         condition.addCase(new StatusTestCase("status", "123", "stringState", "enabled"));
@@ -95,7 +95,7 @@ public class ConditionTest {
     }
 
     @Test
-    public void testNotConditionFalse() {
+    void testNotConditionFalse() {
         // Given
         Condition condition = new NotCondition(deviceManager);
         condition.addCase(new StatusTestCase("status", "123", "stringState", "enabled"));

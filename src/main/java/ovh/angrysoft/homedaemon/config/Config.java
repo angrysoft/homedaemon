@@ -51,8 +51,8 @@ public class Config {
     //     }
     // }
 
-    // TODO what object should i return (Opiional) when config is not loaded
-    // (Filenotfount etc)
+    // TODO what object should i return (Optional) when config is not loaded
+    // (FileNotFount etc)
     public Record get(String configName) {
         ConfigType<?> conf = configs.get(configName);
         return (Record) conf.getConfigData();

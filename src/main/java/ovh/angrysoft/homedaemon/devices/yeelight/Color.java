@@ -17,18 +17,18 @@ public class Color extends DeskLamp implements Rgb, RgbColor {
             this.status.registerAttribute(new DeviceAttribute<Integer>("sat", 0));
             this.status.registerAttribute(new DeviceAttribute<Integer>("hue", 0));
         } catch (AttributeAlreadyExist e) {
-            LOGGER.log(Level.ALL, "{0}", e.getMessage());
+            logger.log(Level.ALL, "{0}", e.getMessage());
         }
     }
-    
+
     public void setRgb(Integer red, Integer green, Integer blue) {
         this.api.setRGB(red, green, blue);
     }
-    
+
     public void setColor(Integer rgb) {
         this.api.setColor(rgb);
     }
-    
+
     @Override
     public void setup() {
         super.setup();

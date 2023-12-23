@@ -4,14 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-public class ConfigTest {
-
-    @Test
-    void testRegisterAndLoadConfig() {
-        Config config = new Config("src/test/java/ovh/angrysoft/homedaemon/config");
-
-        config.resisterConfigType("test", new ConfigType<TestConfig>(TestConfig.class));
-    }
+class ConfigTest {
 
     @Test
     void testGet() {
@@ -24,6 +17,7 @@ public class ConfigTest {
         assertEquals(3, conf.four().length);
     }
 }
+
 
 record TestConfig(Integer one, String two, Double three, String[] four) {
 }

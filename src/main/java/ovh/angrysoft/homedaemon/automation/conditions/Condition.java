@@ -9,7 +9,7 @@ public abstract class Condition {
     Set<TestCase<?>> cases;
     DeviceManager deviceManager;
 
-    public Condition(DeviceManager deviceManager) {
+    Condition(DeviceManager deviceManager) {
         this.deviceManager = deviceManager;
         this.cases = new HashSet<>();
     }

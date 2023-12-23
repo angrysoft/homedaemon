@@ -7,13 +7,13 @@ import org.junit.jupiter.api.Test;
 
 import ovh.angrysoft.homedaemon.discover.DeviceDiscoverInfo;
 import ovh.angrysoft.homedaemon.discover.yeelight.YeelightDeviceInfo;
-import ovh.angrysoft.homedaemon.discover.yeelight.YeelightDiscovery;
+import ovh.angrysoft.homedaemon.discover.yeelight.YeelightDiscoveryEngine;
 
 public class YeelightDiscoveryTest {
     @Test
     @Tag("IntegrationTest")
     public void testDiscovery() {
-        YeelightDiscovery discovery = new YeelightDiscovery();
+        YeelightDiscoveryEngine discovery = new YeelightDiscoveryEngine();
         Set<DeviceDiscoverInfo> devInfo = discovery.search();
         for (DeviceDiscoverInfo dev : devInfo) {
             YeelightDeviceInfo yDev = (YeelightDeviceInfo) dev;

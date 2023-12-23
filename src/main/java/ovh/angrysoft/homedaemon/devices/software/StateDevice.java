@@ -14,11 +14,10 @@ public class StateDevice extends BaseDevice {
         try {
             this.status.registerAttribute(deviceAttribute);
         } catch (AttributeAlreadyExist e) {
-            LOGGER.warning(e.getMessage());
+            logger.warning(e.getMessage());
         }
     }
 
     @Override
-    public void setup() {
-    }
+    public void setup() {}
 }

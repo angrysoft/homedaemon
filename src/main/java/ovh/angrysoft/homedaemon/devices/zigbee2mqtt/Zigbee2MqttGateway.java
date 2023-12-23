@@ -45,7 +45,7 @@ public class Zigbee2MqttGateway extends BaseDevice implements Gateway {
         try {
             this.connection.publishMessage(msg.getBytes(), 0, false, topic);
         } catch (MqttException e) {
-            LOGGER.log(Level.SEVERE, "Zigbee2mqtt gateway : {0}", e.getMessage());
+            logger.log(Level.SEVERE, "Zigbee2mqtt gateway : {0}", e.getMessage());
         }
 
     }

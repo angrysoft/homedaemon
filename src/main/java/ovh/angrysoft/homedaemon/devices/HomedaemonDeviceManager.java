@@ -42,7 +42,7 @@ public class HomedaemonDeviceManager implements DeviceManager {
 
     public HomedaemonDeviceManager(String deviceInfoDir, EventBus bus) {
         this.deviceInfoDir = deviceInfoDir;
-        this.devicesInfoList = new ArrayList<DeviceInfo>();
+        this.devicesInfoList = new ArrayList<>();
         this.bus = bus;
         this.devices = new HashMap<>();
         this.drivers = new HashMap<>();
@@ -64,13 +64,12 @@ public class HomedaemonDeviceManager implements DeviceManager {
         }
 
         for (File devInfoFile : devDir.listFiles((File file) -> {
-            if (file.getName().endsWith(".json"))
-                return true;
-            return false;
+            return file.getName().endsWith(".json");
         })) {
             try {
 
-                DeviceInfo deviceInfo = new Gson().fromJson(new FileReader(devInfoFile), DeviceInfo.class);
+                DeviceInfo deviceInfo =
+                        new Gson().fromJson(new FileReader(devInfoFile), DeviceInfo.class);
                 deviceInfo.checkFields();
 
                 String devType = deviceInfo.getType();
@@ -86,10 +85,11 @@ public class HomedaemonDeviceManager implements DeviceManager {
             } catch (FileNotFoundException e) {
                 LOGGER.log(Level.SEVERE, "Device info file {0} not found", devInfoFile.getName());
             } catch (JsonSyntaxException e) {
-                LOGGER.log(Level.SEVERE, "Device info file parse error: {0}", devInfoFile.getName());
+                LOGGER.log(Level.SEVERE, "Device info file parse error: {0}",
+                        devInfoFile.getName());
             } catch (VerifyError e) {
-                LOGGER.log(Level.SEVERE,
-                        String.format("Device info file parse error: %s : %s", devInfoFile.getName(), e.getMessage()));
+                LOGGER.log(Level.SEVERE, String.format("Device info file parse error: %s : %s",
+                        devInfoFile.getName(), e.getMessage()));
             }
         }
     }
@@ -102,15 +102,8 @@ public class HomedaemonDeviceManager implements DeviceManager {
         Map<String, String> clockPlace = new HashMap<>();
         clockPlace.put("pl", "Wszędzie");
         clockPlace.put("en", "everywhere");
-        DeviceInfo clockInfo = new DeviceInfo(
-                "clock",
-                "clock",
-                "homedaemon",
-                "clock",
-                clockName,
-                clockPlace,
-                "software.ClockDevice",
-                new HashMap<>());
+        DeviceInfo clockInfo = new DeviceInfo("clock", "clock", "homedaemon", "clock", clockName,
+                clockPlace, "software.ClockDevice", new HashMap<>());
         this.devicesInfoList.add(clockInfo);
 
         // State
@@ -120,37 +113,21 @@ public class HomedaemonDeviceManager implements DeviceManager {
         Map<String, String> statePlace = new HashMap<>();
         statePlace.put("pl", "Wszędzie");
         statePlace.put("en", "everywhere");
-        DeviceInfo stateInfo = new DeviceInfo(
-                "state",
-                "state",
-                "homedaemon",
-                "state",
-                stateName,
-                statePlace,
-                "software.StateDevice",
-                new HashMap<>());
+        DeviceInfo stateInfo = new DeviceInfo("state", "state", "homedaemon", "state", stateName,
+                statePlace, "software.StateDevice", new HashMap<>());
         this.devicesInfoList.add(stateInfo);
     }
 
     public void setupDevices() {
         for (DeviceInfo devInfo : devicesInfoList) {
-            LOGGER.log(Level.INFO, String.format("load device: %s model : %s", devInfo.getSid(), devInfo.getModel()));
+            LOGGER.log(Level.INFO, "load device: {0} model : {1}",
+                    new Object[] {devInfo.getSid(), devInfo.getModel()});
             try {
                 Class<?> driver = getDriver(devInfo.getDriver());
                 BaseDevice device = initDevice(driver, devInfo);
 
                 if (device.isDiscoverable() && device.getDiscoverEngine() != null) {
-                    DeviceDiscoverInfo discoveryInfo = deviceDiscovery.discover(devInfo.getSid(),
-                            device.getDiscoverEngine());
-                    for (Entry<String, Object> entry : discoveryInfo.entrySet()) {
-                        try {
-                            device.status.update(entry.getKey(), entry.getValue());
-                        } catch (AttributeReadOnly e) {
-                            LOGGER.warning(new StringBuilder("Attribute Read Only - ").append(devInfo.getSid())
-                                    .append(" - ").append(entry.getKey()).toString());
-
-                        }
-                    }
+                    getDiscoveryInfo(devInfo, device);
                 }
 
                 if (device.isGatewayNeeded()) {
@@ -161,41 +138,60 @@ public class HomedaemonDeviceManager implements DeviceManager {
                 device.setup();
 
                 Watcher deviceWatcher = device.getWatcher();
-                if (deviceWatcher != null) {
+                if (deviceWatcher != null)
                     watcherManager.registerWatcher(deviceWatcher);
-                }
 
                 addDevice(devInfo.getSid(), device);
 
             } catch (DeviceNotSupported e) {
-                LOGGER.warning(new StringBuilder("Device not supported - ").append(e.getMessage()).toString());
+                LOGGER.warning(new StringBuilder("Device not supported - ").append(e.getMessage())
+                        .toString());
             } catch (GatewayNotFound e) {
-                LOGGER.warning(new StringBuilder("Gateway not found - ").append(e.getMessage()).toString());
+                LOGGER.warning(new StringBuilder("Gateway not found - ").append(e.getMessage())
+                        .toString());
             } catch (DeviceNotDiscovered e) {
-                LOGGER.warning(new StringBuilder("Device not Discovered - ").append(devInfo.getSid()).toString());
+                LOGGER.warning(new StringBuilder("Device not Discovered - ")
+                        .append(devInfo.getSid()).toString());
             } catch (DeviceInitError e) {
-                LOGGER.warning(new StringBuilder("Device Init - ").append(devInfo.getSid()).toString());
+                LOGGER.warning(
+                        new StringBuilder("Device Init - ").append(devInfo.getSid()).toString());
             }
         }
 
+    }
+
+    private void getDiscoveryInfo(DeviceInfo devInfo, BaseDevice device)
+            throws DeviceNotDiscovered {
+        DeviceDiscoverInfo discoveryInfo =
+                deviceDiscovery.discover(devInfo.getSid(), device.getDiscoverEngine());
+        for (Entry<String, Object> entry : discoveryInfo.entrySet()) {
+            try {
+                device.status.update(entry.getKey(), entry.getValue());
+            } catch (AttributeReadOnly e) {
+                LOGGER.warning(new StringBuilder("Attribute Read Only - ").append(devInfo.getSid())
+                        .append(" - ").append(entry.getKey()).toString());
+
+            }
+        }
     }
 
     private Class<?> getDriver(String driverName) throws DeviceNotSupported {
         if (!drivers.containsKey(driverName)) {
             try {
-                StringBuilder fullDriverNamBuilder = new StringBuilder(driverPackage).append(".").append(driverName);
+                StringBuilder fullDriverNamBuilder =
+                        new StringBuilder(driverPackage).append(".").append(driverName);
                 Class<?> driver = Class.forName(fullDriverNamBuilder.toString());
                 drivers.put(driverName, driver);
                 return driver;
             } catch (ClassNotFoundException e) {
-                throw new DeviceNotSupported(
-                        new StringBuilder(e.getMessage().toString()).append(" ").append(driverName).toString());
+                throw new DeviceNotSupported(new StringBuilder(e.getMessage())
+                        .append(" ").append(driverName).toString());
             }
         }
         return drivers.get(driverName);
     }
 
-    private BaseDevice initDevice(Class<?> driver, DeviceInfo deviceInfo) throws DeviceInitError, GatewayNotFound {
+    private BaseDevice initDevice(Class<?> driver, DeviceInfo deviceInfo) throws DeviceInitError {
         try {
             Constructor<?> deviceConstructor = driver.getConstructors()[0];
             return (BaseDevice) deviceConstructor.newInstance(deviceInfo);
@@ -239,8 +235,7 @@ public class HomedaemonDeviceManager implements DeviceManager {
 
     public <T> T queryStatus(String sid, String attrName) {
         BaseDevice dev = devices.get(sid);
-        T attr = dev.query(attrName);
-        return attr;
+        return dev.query(attrName);
     }
 
     public BaseDevice getDevice(String sid) {
@@ -252,8 +247,8 @@ public class HomedaemonDeviceManager implements DeviceManager {
     }
 
     @Override
-    public List<Map<String,Object>> getDevicesList() {
-        List<Map<String,Object>> result = new ArrayList<>();
+    public List<Map<String, Object>> getDevicesList() {
+        List<Map<String, Object>> result = new ArrayList<>();
         for (Entry<String, BaseDevice> deviceEntry : devices.entrySet()) {
             result.add(deviceEntry.getValue().getDeviceStatus());
         }

@@ -1,6 +1,8 @@
 package ovh.angrysoft.homedaemon.discover.yeelight;
 
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,12 +34,13 @@ public class YeelightDeviceInfo implements DeviceDiscoverInfo {
                     break;
 
                 case "Location":
+                    URI uri;
                     try {
-                        URL url = new URL(value.replace("yeelight", "http"));
-                        info.put("addr", url.getHost());
-                        info.put("port", url.getPort());
-                    } catch (MalformedURLException e) {
-                        System.err.println(e);
+                        uri = new URI(value.replace("yeelight", "http"));
+                        info.put("addr", uri.getHost());
+                        info.put("port", uri.getPort());
+                    } catch (URISyntaxException e) {
+                        e.printStackTrace();
                     }
                     break;
 
@@ -96,7 +99,8 @@ public class YeelightDeviceInfo implements DeviceDiscoverInfo {
         if (!(o instanceof YeelightDeviceInfo))
             return false;
         YeelightDeviceInfo yi = (YeelightDeviceInfo) o;
-        return getDeviceSid().equals(yi.getDeviceSid()) && info.get("model").equals(yi.get("model"));
+        return getDeviceSid().equals(yi.getDeviceSid())
+                && info.get("model").equals(yi.get("model"));
     }
 
     @Override

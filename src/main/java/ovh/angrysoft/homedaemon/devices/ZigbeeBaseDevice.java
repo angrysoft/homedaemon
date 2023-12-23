@@ -9,10 +9,11 @@ public class ZigbeeBaseDevice extends BaseDevice {
         super(deviceInfo);
         this.gatewayNeeded = true;
         try {
-            this.status.registerAttribute(new DeviceAttribute<Integer>("linkquality", 0, false, AttributeUpdateBehavior.IGNORE));
+            this.status.registerAttribute(new DeviceAttribute<Integer>("linkquality", 0, false,
+                    AttributeUpdateBehavior.IGNORE));
             this.status.registerAttribute(new DeviceAttribute<Integer>("voltage", 0));
         } catch (AttributeAlreadyExist e) {
-            LOGGER.warning(e.getMessage());
+            logger.warning(e.getMessage());
         }
     }
 

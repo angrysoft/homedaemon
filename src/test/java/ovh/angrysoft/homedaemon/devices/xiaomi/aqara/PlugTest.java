@@ -19,8 +19,8 @@ public class PlugTest {
 
         HashMap<String, String> args = new HashMap<>();
         args.put("uri", "tcp://192.168.10.4:1883");
-        args.put("user", "homedaemon");
-        args.put("password", "spyb0tk34s");
+        args.put("user", "");
+        args.put("password", "");
         DeviceInfo gatewayInfo = new DeviceInfo("zigbee2mqtt", "gateway", "zigbee2mqtt", null, null, null, "", args);
         Zigbee2MqttGateway gateway = new Zigbee2MqttGateway(gatewayInfo);
         try {

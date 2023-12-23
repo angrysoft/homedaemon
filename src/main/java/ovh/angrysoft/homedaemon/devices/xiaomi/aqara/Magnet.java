@@ -14,7 +14,7 @@ public class Magnet extends ZigbeeBaseDevice implements Contact {
             this.status.registerAttribute(new DeviceAttribute<String>("model", "MCCGQ01LM"));
             this.status.registerAttribute(new DeviceAttribute<Boolean>("contact", false));
         } catch (AttributeAlreadyExist e) {
-            LOGGER.warning(e.getMessage());
+            logger.warning(e.getMessage());
         }
     }
 

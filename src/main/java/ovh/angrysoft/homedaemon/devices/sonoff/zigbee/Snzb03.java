@@ -14,7 +14,7 @@ public class Snzb03 extends ZigbeeBaseDevice implements Motion {
             this.status.registerAttribute(new DeviceAttribute<Boolean>("occupancy", false));
             this.status.registerAttribute(new DeviceAttribute<Boolean>("battery_low", false));
         } catch (AttributeAlreadyExist e) {
-            LOGGER.warning(e.getMessage());
+            logger.warning(e.getMessage());
         }
     }
 

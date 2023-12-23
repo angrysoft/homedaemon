@@ -15,9 +15,10 @@ public class CtrlNeutral extends ZigbeeBaseDevice implements OnOff {
             this.status.registerAttribute(new DeviceAttribute<String>("model", "QBKG04LM"));
             this.status.registerAttribute(new DeviceAttribute<String>("state", ""));
             this.status.registerAttribute(new DeviceAttribute<String>("operation_mode", ""));
-            this.status.registerAttribute(new DeviceAttribute<String>("action", "", false, AttributeUpdateBehavior.ALWAYS));
+            this.status.registerAttribute(new DeviceAttribute<String>("action", "", false,
+                    AttributeUpdateBehavior.ALWAYS));
         } catch (AttributeAlreadyExist e) {
-            LOGGER.warning(e.getMessage());
+            logger.warning(e.getMessage());
         }
 
     }
