@@ -50,6 +50,7 @@ public class MqttClient extends BaseIo {
     }
 
     private void onMessage(String topic, String msg) {
+        
         Gson gson = new GsonBuilder().setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE).create();
         Msg notify = gson.fromJson(msg, Msg.class);
 

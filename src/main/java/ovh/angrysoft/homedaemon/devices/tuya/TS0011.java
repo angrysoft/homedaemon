@@ -16,7 +16,7 @@ public class TS0011 extends ZigbeeBaseDevice implements OnOff, Toggle {
             this.status.registerAttribute(new DeviceAttribute<String>("state", ""));
             this.status.registerAttribute(new DeviceAttribute<String>("power_on_behavior", ""));
         } catch (AttributeAlreadyExist e) {
-            LOGGER.warning(e.getMessage());
+            logger.warning(e.getMessage());
         }
     }
 

@@ -25,7 +25,6 @@ public class FakeDeviceManager implements DeviceManager {
         DeviceInfo deviceInfo = new DeviceInfo("123", "light", "diy", "superLight", name, place, "", new HashMap<>());
         BaseDevice device = new DummyDevice(deviceInfo);
         devices.put("123", device);
-        System.out.println(devices.size());
     }
 
     public void setupDevices() {
@@ -37,7 +36,6 @@ public class FakeDeviceManager implements DeviceManager {
     }
 
     public void update(Event statusEvent) {
-        System.out.println(statusEvent.getSid());
 
         BaseDevice dev = this.devices.get(statusEvent.getSid());
         try {

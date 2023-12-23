@@ -14,7 +14,7 @@ public class Snzb04 extends ZigbeeBaseDevice implements Contact {
             this.status.registerAttribute(new DeviceAttribute<Boolean>("contact", false));
             this.status.registerAttribute(new DeviceAttribute<Boolean>("battery_low", false));
         } catch (AttributeAlreadyExist e) {
-            LOGGER.warning(e.getMessage());
+            logger.warning(e.getMessage());
         }
 
     }

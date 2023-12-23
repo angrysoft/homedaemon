@@ -14,7 +14,7 @@ import java.util.logging.Level;
 import ovh.angrysoft.homedaemon.discover.DeviceDiscoverInfo;
 import ovh.angrysoft.homedaemon.discover.DiscoverEngine;
 
-public class YeelightDiscovery extends DiscoverEngine {
+public class YeelightDiscoveryEngine extends DiscoverEngine {
     public Set<DeviceDiscoverInfo> search() {
         Set<DeviceDiscoverInfo> results = new HashSet<>();
 

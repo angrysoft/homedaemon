@@ -13,7 +13,7 @@ public class ClockDevice extends BaseDevice {
         try {
             this.status.registerAttribute(new DeviceAttribute<String>("time", ""));
         } catch (AttributeAlreadyExist e) {
-            LOGGER.warning(e.getMessage());
+            logger.warning(e.getMessage());
         }
     }
 

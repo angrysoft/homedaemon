@@ -17,9 +17,10 @@ public class Plug extends ZigbeeBaseDevice implements OnOff, Toggle {
             this.status.registerAttribute(new DeviceAttribute<Integer>("power", 0));
             this.status.registerAttribute(new DeviceAttribute<Double>("energy", 0.0));
             this.status.registerAttribute(new DeviceAttribute<Integer>("device_temperature", 0));
-            this.status.registerAttribute(new DeviceAttribute<Boolean>("power_outage_memory", false));
+            this.status
+                    .registerAttribute(new DeviceAttribute<Boolean>("power_outage_memory", false));
         } catch (AttributeAlreadyExist e) {
-            LOGGER.warning(e.getMessage());
+            logger.warning(e.getMessage());
         }
     }
 

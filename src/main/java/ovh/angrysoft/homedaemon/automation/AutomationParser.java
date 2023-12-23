@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.google.gson.internal.LazilyParsedNumber;
-
 import ovh.angrysoft.homedaemon.automation.actions.Action;
 import ovh.angrysoft.homedaemon.automation.actions.ActionDispatch;
 import ovh.angrysoft.homedaemon.automation.actions.ActionExecute;
@@ -47,19 +45,20 @@ public class AutomationParser {
 
         StateDevice stateDevice = (StateDevice) deviceManager.getDevice("state");
         states.forEach((state) -> {
-            System.out.println("registering (" + state.attrType + "): " + state.attrName + "=" + state.attrValue);
+            System.out.println("registering (" + state.attrType + "): " + state.attrName + "="
+                    + state.attrValue);
             switch (state.attrType) {
                 case "bool":
-                    stateDevice.registerStateAttribute(
-                            new DeviceAttribute<Boolean>(state.attrName, (Boolean) state.attrValue));
+                    stateDevice.registerStateAttribute(new DeviceAttribute<Boolean>(state.attrName,
+                            (Boolean) state.attrValue));
                     break;
                 case "str":
                     stateDevice.registerStateAttribute(
                             new DeviceAttribute<String>(state.attrName, (String) state.attrValue));
                     break;
                 case "int":
-                    stateDevice.registerStateAttribute(
-                            new DeviceAttribute<Integer>(state.attrName, (Integer) state.attrValue));
+                    stateDevice.registerStateAttribute(new DeviceAttribute<Integer>(state.attrName,
+                            (Integer) state.attrValue));
                     break;
             }
         });
@@ -79,6 +78,8 @@ public class AutomationParser {
                     break;
                 case "not":
                     condition = new NotCondition(deviceManager);
+                    break;
+                default:
                     break;
             }
 
@@ -108,8 +109,8 @@ public class AutomationParser {
                         ((BigDecimal) testCaseInfo.attrValue).intValue());
             }
             case "status": {
-                return new StatusTestCase(testCaseInfo.type, testCaseInfo.sid, testCaseInfo.attrName,
-                        testCaseInfo.attrValue);
+                return new StatusTestCase(testCaseInfo.type, testCaseInfo.sid,
+                        testCaseInfo.attrName, testCaseInfo.attrValue);
             }
             case "state": {
                 return new StatusTestCase(testCaseInfo.type, "state", testCaseInfo.attrName,
@@ -141,9 +142,8 @@ public class AutomationParser {
         }
         switch (action.getType()) {
             case "execute":
-                return new ActionExecute(action.getSid(), action.getCmd(), Optional.ofNullable(value),
-                        action.isRunInBackground(),
-                        deviceManager);
+                return new ActionExecute(action.getSid(), action.getCmd(),
+                        Optional.ofNullable(value), action.isRunInBackground(), deviceManager);
             case "dispatch":
                 return new ActionDispatch(action.getCmd(), value, deviceManager.getBus());
             case "state":

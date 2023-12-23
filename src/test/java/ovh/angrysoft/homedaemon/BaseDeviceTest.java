@@ -1,18 +1,21 @@
 
 package ovh.angrysoft.homedaemon;
 
+import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
 import ovh.angrysoft.homedaemon.devices.DeviceInfo;
 
-public class BaseDeviceTest {
+class BaseDeviceTest {
     DummyDevice device;
 
     @BeforeEach
@@ -21,21 +24,45 @@ public class BaseDeviceTest {
         name.put("pl", "Lampa");
         HashMap<String, String> place = new HashMap<>();
         name.put("pl", "Salon");
-        DeviceInfo deviceInfo = new DeviceInfo("aaaaaabbb", "light", "diy", "superLight", name, place, "", new HashMap<>());
+        DeviceInfo deviceInfo = new DeviceInfo("aaaaaabbb", "light", "diy", "superLight", name,
+                place, "", new HashMap<>());
         device = new DummyDevice(deviceInfo);
     }
 
     @Test
     @DisplayName("Get Device status")
     void testGetDeviceStatus() {
-        System.out.println(device.getDeviceStatus());
+        List<String> traits = new ArrayList<>();
+        traits.add("OnOff");
+        traits.add("Toggle");
+        Map<String, Object> expected =
+                Map.ofEntries(entry("stringState", ""), entry("name", Map.of("pl", "Salon")),
+                        entry("traits", traits), entry("place", new HashMap<>()),
+                        entry("power", "off"), entry("state", 0), entry("sid", "aaaaaabbb"));
+
+        assertEquals(expected, device.getDeviceStatus());
     }
 
     @Test
-    @DisplayName("Get Device status")
-    void testCommand() {
-        System.out.println(this.device.getCommands());
-        assertEquals(5, this.device.getCommands().size());
+    @DisplayName("Device get Commands")
+    void testGetCommand() {
+        Set<String> expected = new HashSet<>();
+        expected.add("isOn");
+        expected.add("changeState");
+        expected.add("toggle");
+        expected.add("off");
+        expected.add("on");
+        assertEquals(expected, this.device.getCommands());
+    }
+
+    @Test
+    @DisplayName("Device get Traits")
+    void testGetAllTraits() {
+        List<String> expected = new ArrayList<>();
+        expected.add("OnOff");
+        expected.add("Toggle");
+        System.out.println(device.getTraits());
+        assertEquals(expected, this.device.getTraits());
     }
 
     @Test
