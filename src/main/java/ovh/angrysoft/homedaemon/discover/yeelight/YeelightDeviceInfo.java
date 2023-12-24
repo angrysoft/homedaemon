@@ -1,15 +1,12 @@
 package ovh.angrysoft.homedaemon.discover.yeelight;
 
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-
 import ovh.angrysoft.homedaemon.discover.DeviceDiscoverInfo;
 
 public class YeelightDeviceInfo implements DeviceDiscoverInfo {

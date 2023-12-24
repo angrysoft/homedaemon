@@ -10,26 +10,30 @@ public class EwelinkDeviceInfo implements DeviceDiscoverInfo{
     
     @Override
     public String getDeviceSid() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getDeviceSid'");
+        return (String) info.get("sid");
+    }
+
+    public void set(String key, Object value) {
+        this.info.put(key, value);
+    }
+
+    public void setEntry(Entry<String, Object> ent) {
+        info.put(ent.getKey(), ent.getValue());
     }
 
     @Override
     public Object get(String key) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'get'");
+        return info.get(key);
     }
 
     @Override
     public boolean containsKey(String key) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'containsKey'");
+        return info.containsKey(key);
     }
 
     @Override
     public Set<Entry<String, Object>> entrySet() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'entrySet'");
+        return info.entrySet();
     }
     
 }
