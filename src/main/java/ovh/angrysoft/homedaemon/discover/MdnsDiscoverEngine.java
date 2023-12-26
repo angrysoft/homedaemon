@@ -2,8 +2,10 @@ package ovh.angrysoft.homedaemon.discover;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceEvent;
@@ -54,42 +56,33 @@ class DiscoverListener implements ServiceListener {
     @Override
     public void serviceRemoved(ServiceEvent event) {
         // there are no interesting information listen for serviceResoled.
-
-
     }
 
     @Override
     public void serviceResolved(ServiceEvent event) {
         EwelinkDeviceInfo devInfo = new EwelinkDeviceInfo();
-
         ServiceInfo info = event.getInfo();
-        devInfo.set("addr", info.getHostAddresses()[0]);
+        devInfo.set("ip", info.getHostAddresses()[0]);
         devInfo.set("port", info.getPort());
-
         Iterator<String> propertyNames = info.getPropertyNames().asIterator();
         while (propertyNames.hasNext()) {
             String name = propertyNames.next();
-            System.out.print(name);
-            System.out.println(" : " + info.getPropertyString(name));
-            devInfo.set(parseEntry(info.getPropertyString(name)));
+            devInfo.set(name, info.getPropertyString(name));
+        }
+
+        String data = (String) devInfo.get("data1");
+
+        if (Boolean.parseBoolean((String) devInfo.get("encrypt"))) {
+            System.err.println("is enctyrpted");
 
         }
+        System.err.println(data);
 
     }
 
-    Entry<String, Object> parseEntry(String key, Object entry) {
-        switch (key) {
-            case "id":
-                return entry("sid", entry);
-
-            case "data1": {
-                return entry(key, entry);
-            }
-            
-            default:
-                return entry(key, entry);
-        }
+    List<Entry<String, Object>> parseData(String data) {
+        List<Entry<String, Object>> entrys = new ArrayList<>();
+        entrys.add(entry("dupa", "blada"));
+        return entrys;
     }
-
-
 }
