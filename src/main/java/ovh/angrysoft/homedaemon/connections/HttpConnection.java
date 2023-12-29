@@ -32,7 +32,6 @@ public class HttpConnection {
         String result = "";
         HttpRequest httpRequest = HttpRequest.newBuilder().uri(URI.create(uri))
                 .timeout(this.timeout).headers(headers).POST(BodyPublishers.ofString(data)).build();
-        System.out.println(httpRequest.headers());
         try {
             HttpResponse<String> response = hClient.send(httpRequest, BodyHandlers.ofString());
             result = response.body();
