@@ -67,10 +67,7 @@ public class DeviceStatus {
                 return attr.setValue(attrValue);
             }
 
-        } catch (ClassCastException e) {
-            
-        }
+        } catch (ClassCastException e) {}
         return false;
     }
-
 }

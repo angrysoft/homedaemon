@@ -13,13 +13,10 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-
 import ovh.angrysoft.homedaemon.bus.Event;
 import ovh.angrysoft.homedaemon.bus.EventBus;
-import ovh.angrysoft.homedaemon.discover.DeviceDiscoverInfo;
 import ovh.angrysoft.homedaemon.discover.DeviceDiscovery;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeReadOnly;
 import ovh.angrysoft.homedaemon.exceptions.devices.DeviceInitError;
@@ -162,7 +159,7 @@ public class HomedaemonDeviceManager implements DeviceManager {
 
     private void getDiscoveryInfo(DeviceInfo devInfo, BaseDevice device)
             throws DeviceNotDiscovered {
-        DeviceDiscoverInfo discoveryInfo =
+        Map<String, Object> discoveryInfo =
                 deviceDiscovery.discover(devInfo.getSid(), device.getDiscoverEngine());
         for (Entry<String, Object> entry : discoveryInfo.entrySet()) {
             try {
@@ -184,8 +181,8 @@ public class HomedaemonDeviceManager implements DeviceManager {
                 drivers.put(driverName, driver);
                 return driver;
             } catch (ClassNotFoundException e) {
-                throw new DeviceNotSupported(new StringBuilder(e.getMessage())
-                        .append(" ").append(driverName).toString());
+                throw new DeviceNotSupported(new StringBuilder(e.getMessage()).append(" ")
+                        .append(driverName).toString());
             }
         }
         return drivers.get(driverName);

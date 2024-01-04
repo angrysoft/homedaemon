@@ -47,7 +47,7 @@ public final class AuthUtils {
         return null;
     }
 
-    static String[] encryptData(String data, String key) {
+    public static String[] encryptData(String data, String key) {
         String[] result = new String[2];
         try {
             Cipher cipher = Cipher.getInstance(AES);
@@ -65,7 +65,7 @@ public final class AuthUtils {
         return result;
     }
 
-    static String decryptData(String data, String key, String iv) {
+    public static String decryptData(String data, String key, String iv) {
         String result = "";
         try {
             Cipher cipher = Cipher.getInstance(AES);

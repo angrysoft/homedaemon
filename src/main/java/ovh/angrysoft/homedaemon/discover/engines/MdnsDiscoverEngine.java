@@ -1,19 +1,17 @@
-package ovh.angrysoft.homedaemon.discover;
+package ovh.angrysoft.homedaemon.discover.engines;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
-import ovh.angrysoft.homedaemon.discover.ewelink.EwelinkDeviceInfo;
-import static java.util.Map.Entry;
-import static java.util.Map.entry;
+import ovh.angrysoft.homedaemon.discover.DiscoverEngine;
 
 
 public class MdnsDiscoverEngine extends DiscoverEngine {
@@ -24,8 +22,8 @@ public class MdnsDiscoverEngine extends DiscoverEngine {
     }
 
     @Override
-    public Set<DeviceDiscoverInfo> search() {
-        Set<DeviceDiscoverInfo> results = new HashSet<>();
+    public Set<Map<String, Object>> search() {
+        Set<Map<String, Object>> results = new HashSet<>();
         try (JmDNS jmdns = JmDNS.create(InetAddress.getLocalHost())) {
             jmdns.addServiceListener(type, new DiscoverListener(results));
             Thread.sleep(3000);
@@ -42,9 +40,9 @@ public class MdnsDiscoverEngine extends DiscoverEngine {
  * DiscoverListener
  */
 class DiscoverListener implements ServiceListener {
-    Set<DeviceDiscoverInfo> deviceInfo;
+    Set<Map<String, Object>> deviceInfo;
 
-    public DiscoverListener(Set<DeviceDiscoverInfo> deviceInfo) {
+    public DiscoverListener(Set<Map<String, Object>> deviceInfo) {
         this.deviceInfo = deviceInfo;
     }
 
@@ -60,29 +58,15 @@ class DiscoverListener implements ServiceListener {
 
     @Override
     public void serviceResolved(ServiceEvent event) {
-        EwelinkDeviceInfo devInfo = new EwelinkDeviceInfo();
+        Map<String, Object> devInfo = new HashMap<>();
         ServiceInfo info = event.getInfo();
-        devInfo.set("ip", info.getHostAddresses()[0]);
-        devInfo.set("port", info.getPort());
+        devInfo.put("ip", info.getHostAddresses()[0]);
+        devInfo.put("port", info.getPort());
         Iterator<String> propertyNames = info.getPropertyNames().asIterator();
         while (propertyNames.hasNext()) {
             String name = propertyNames.next();
-            devInfo.set(name, info.getPropertyString(name));
+            devInfo.put(name, info.getPropertyString(name));
         }
-
-        String data = (String) devInfo.get("data1");
-
-        if (Boolean.parseBoolean((String) devInfo.get("encrypt"))) {
-            System.err.println("is enctyrpted");
-
-        }
-        System.err.println(data);
-
-    }
-
-    List<Entry<String, Object>> parseData(String data) {
-        List<Entry<String, Object>> entrys = new ArrayList<>();
-        entrys.add(entry("dupa", "blada"));
-        return entrys;
+        deviceInfo.add(devInfo);
     }
 }

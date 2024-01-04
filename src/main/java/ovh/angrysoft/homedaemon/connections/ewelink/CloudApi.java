@@ -109,18 +109,17 @@ public class CloudApi {
         return true;
     }
 
-    public void getDevices() {
+    public DeviceList getDevices() {
         List<String> headers = new ArrayList<>(defaultHeaders);
         headers.add("Authorization");
         headers.add(String.format("Bearer %s", accessToken));
         String callResult =
                 hConnection.get(apiUri + "/device/thing", headers.toArray(new String[0]));
-        System.out.println(callResult);
         DeviceResponse response = json.fromJson(callResult, DeviceResponse.class);
         if (response.error() != 0) {
-            return;
+            return null;
         }
-        System.out.println(response);
+        return response.data();
     }
 }
 
@@ -132,7 +131,7 @@ record UserResponse(int error, String msg, UserProfile data) {
 }
 
 
-record DeviceResponse(int error, String msg, DeviceList data) {
+record UserProfile(User user, String at, String rt, String region) {
 }
 
 
@@ -143,7 +142,7 @@ record User(String countryCode, String phoneNumber, String email, String apikey,
 }
 
 
-record UserProfile(User user, String at, String rt, String region) {
+record DeviceResponse(int error, String msg, DeviceList data) {
 }
 
 
@@ -151,27 +150,18 @@ record DeviceList(List<ThingItem> thingList, int total) {
 }
 
 
-record ThingItem(int itemType, Object itemData, int index) {
+record ThingItem(int itemType, ItemData itemData, int index) {
 }
 
 
-/**
- * DeviceDesc
- */
-record DeviceDesc(String name, String deviceid, Extra extra, String brandName, String brandLogo,
+record ItemData(String name, String deviceid, Extra extra, String brandName, String brandLogo,
         boolean showBrand, String productModel, List<Object> devGroups, Object tags,
-        Object devConfig, Settings settings, Object family, Object sharedBy, List<Object> shareTo,
+        Object devConfig, Object settings, Object family, Object sharedBy, List<Object> shareTo,
         String devicekey, boolean online, Object params, Object gsminfoData) {
 }
 
 
-/**
- * extra
- */
 record Extra(String model, String ui, long uiid, String description, String manufacturer,
         String mac, String apmac, String modelInfo, String brandId, String chidid) {
 }
 
-
-record Settings(int ospNotify, int opsHistory, int alarmNotify) {
-}

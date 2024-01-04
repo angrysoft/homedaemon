@@ -21,7 +21,7 @@ public class WatcherManager {
         if (watchers.containsKey(watcher.getSid())) {
             return;
         }
-        watcher.setHandler((message) -> deviceManager.update(message));
+        watcher.setHandler(message -> deviceManager.update(message));
         watchers.put(watcher.getSid(), watcher);
         watcher.start();
     }

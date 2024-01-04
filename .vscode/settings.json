@@ -6,6 +6,7 @@
         "delayoff",
         "desklamp",
         "DEVDIR",
+        "deviceid",
         "ewelink",
         "Gson",
         "GZCGQ",
@@ -17,6 +18,7 @@
         "spyb",
         "WSDCGQ",
         "WXKG",
+        "zeroconf",
         "ZNCZ",
         "Zwierzchowski"
     ],

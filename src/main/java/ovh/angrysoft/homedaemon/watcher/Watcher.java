@@ -4,7 +4,7 @@ public abstract class Watcher extends Thread {
     protected String sid;
     protected WatcherHandler handler;
 
-    public Watcher(String sid) {
+    Watcher(String sid) {
         this.sid = sid;
     }
 
@@ -12,6 +12,7 @@ public abstract class Watcher extends Thread {
         return sid;
     }
 
+    @Override
     public abstract void run();
 
     public void setHandler(WatcherHandler handler) {
