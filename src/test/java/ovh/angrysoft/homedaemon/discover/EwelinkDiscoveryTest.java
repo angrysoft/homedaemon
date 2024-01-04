@@ -1,18 +1,19 @@
 package ovh.angrysoft.homedaemon.discover;
 
 
-import java.util.Set;
+import java.util.Map;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import ovh.angrysoft.homedaemon.discover.engines.EwelinkDiscoverEngine;
 
 
 class EwelinkDiscoveryTest {
     @Test
     @Tag("IntegrationTest")
     void testDiscovery() {
-        MdnsDiscoverEngine mdns = new MdnsDiscoverEngine("_ewelink._tcp.local.");
-        Set<DeviceDiscoverInfo> devInfo = mdns.search();
-        for (DeviceDiscoverInfo dev : devInfo) {
+       
+        var engine = new EwelinkDiscoverEngine();
+        for (Map<String, Object> dev : engine.search()) {
             System.out.println(dev);
         }
 

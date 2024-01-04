@@ -32,7 +32,7 @@ public class CtrlNeutral extends ZigbeeBaseDevice implements OnOff {
     }
 
     public boolean isOn() {
-        return this.status.get("state").equals("ON");
+        return ((String) this.status.get("state")).equalsIgnoreCase("ON");
     }
 
     public void setDecoupled() {

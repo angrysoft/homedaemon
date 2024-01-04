@@ -1,6 +1,7 @@
 package ovh.angrysoft.homedaemon.watcher;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import com.google.gson.Gson;
 
@@ -16,7 +17,7 @@ class YeelightNotification {
         return method;
     }
 
-    public HashMap<String, Object> getParams() {
+    public Map<String, Object> getParams() {
         return params;
     }
 
@@ -24,6 +25,7 @@ class YeelightNotification {
         return String.format("%s - %s", method, params);
     }
 }
+
 
 public class YeelightWatcher extends Watcher {
     private String ip;
@@ -37,13 +39,12 @@ public class YeelightWatcher extends Watcher {
 
     @Override
     public void run() {
-        System.err.println(ip+":" + port);
-        
+
         try (TcpConnection conn = new TcpConnection(ip, port)) {
             while (true) {
                 String rec = conn.recv();
                 YeelightNotification notify = new Gson().fromJson(rec, YeelightNotification.class);
-                HashMap<String, Object> params = notify.getParams();
+                Map<String, Object> params = notify.getParams();
                 params.forEach((k, v) -> {
                     String name = k;
                     Object value;

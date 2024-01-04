@@ -17,9 +17,7 @@ public class Zigbee2MqttWatcher extends Watcher {
     public Zigbee2MqttWatcher(Zigbee2MqttGateway gateway) {
         super("Zigbee2Mqtt");
         this.gateway = gateway;
-        this.gateway.setOnMsgHandler((String topic, String msg) -> {
-            onMessage(topic, msg);
-        });
+        this.gateway.setOnMsgHandler(this::onMessage);
 
     }
 

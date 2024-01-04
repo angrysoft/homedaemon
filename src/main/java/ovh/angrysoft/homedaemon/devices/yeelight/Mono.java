@@ -5,7 +5,7 @@ import ovh.angrysoft.homedaemon.devices.DeviceAttribute;
 import ovh.angrysoft.homedaemon.devices.DeviceInfo;
 import ovh.angrysoft.homedaemon.devices.traits.Dimmer;
 import ovh.angrysoft.homedaemon.devices.traits.OnOff;
-import ovh.angrysoft.homedaemon.discover.yeelight.YeelightDiscoveryEngine;
+import ovh.angrysoft.homedaemon.discover.engines.YeelightDiscoveryEngine;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeNotFound;
 import ovh.angrysoft.homedaemon.watcher.YeelightWatcher;
@@ -17,6 +17,7 @@ public class Mono extends BaseDevice implements OnOff, Dimmer {
     public Mono(DeviceInfo deviceInfo) {
         super(deviceInfo);
         this.discoverable = true;
+        //TODO: this need to be a Singelton 
         this.discoverEngine = new YeelightDiscoveryEngine();
         try {
             this.status.registerAttribute(new DeviceAttribute<String>(POWER, ""));

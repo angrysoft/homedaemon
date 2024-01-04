@@ -7,23 +7,23 @@ import java.util.Set;
 import ovh.angrysoft.homedaemon.exceptions.discover.DeviceNotDiscovered;
 
 public class DeviceDiscovery {
-    private Map<String, DeviceDiscoverInfo> deviceCache;
+    private Map<String, Map<String, Object>> deviceCache;
 
     public DeviceDiscovery() {
         this.deviceCache = new HashMap<>();
     }
 
-    public DeviceDiscoverInfo discover(String sid, DiscoverEngine engine) throws DeviceNotDiscovered {
+    public Map<String, Object> discover(String sid, DiscoverEngine engine) throws DeviceNotDiscovered {
         if (!this.deviceCache.containsKey(sid)) {
 
-            Set<DeviceDiscoverInfo> devicesInfo = engine.search();
+            Set<Map<String, Object>> devicesInfo = engine.search();
 
-            for (DeviceDiscoverInfo devInfo : devicesInfo) {
-                System.out.println("discover " + devInfo.getDeviceSid());
-                this.deviceCache.put(devInfo.getDeviceSid(), devInfo);
+            for (Map<String, Object> devInfo : devicesInfo) {
+                System.out.println("discover " + devInfo.get("sid"));
+                this.deviceCache.put((String) devInfo.get("sid"), devInfo);
             }
         }
-        DeviceDiscoverInfo result = this.deviceCache.get(sid);
+        Map<String, Object> result = this.deviceCache.get(sid);
         if (result == null)
             throw new DeviceNotDiscovered("Can't discover device: " + sid);
 

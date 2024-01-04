@@ -19,6 +19,11 @@ class CloudApiTest {
     @Test
     @Tag("Online")
     void testGetDevices() {
-        api.getDevices();
+        var devices = api.getDevices();
+        System.out.println(devices.total());
+        for (var thing: devices.thingList()) {
+            System.out.println(thing.itemType());
+            System.out.println(thing.itemData());
+        }
     }
 }
