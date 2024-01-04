@@ -1,6 +1,7 @@
 package ovh.angrysoft.homedaemon.devices.sonoff;
 
 import java.util.HashMap;
+import java.util.Date;
 import java.util.Map;
 import com.google.gson.Gson;
 import ovh.angrysoft.homedaemon.connections.HttpConnection;
@@ -35,6 +36,7 @@ public class EwelinkApi {
         this.ip = ip;
         this.port = port;
         this.sid = sid;
+        this.encrypt = true;
         this.deviceKey = deviceKey;
     }
 
@@ -42,6 +44,12 @@ public class EwelinkApi {
         Map<String, Object> payload = new HashMap<>();
         payload.put("switch", state ? "on" : "off");
         send("zeroconf/switch", payload);
+    }
+
+    public void setLightSwitch(boolean state) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("lightSwitch", state ? "on" : "off");
+        send("zeroconf/lightSwitch", payload);
     }
 
     public void setSwitches(boolean state, int outlet) {
@@ -138,15 +146,17 @@ public class EwelinkApi {
         toSend.put("deviceid", sid);
         if (encrypt) {
             String[] encrypted = AuthUtils.encryptData(json.toJson(payload), deviceKey);
+            Date date = new Date();
+            toSend.put("sequence", ((Long) date.getTime()).toString());
             toSend.put("data", encrypted[0]);
             toSend.put("iv", encrypted[1]);
             toSend.put("encrypt", true);
+            toSend.put("selfApikey", "123");
         } else {
             toSend.put("data", payload);
         }
         String uriString = new StringBuilder().append("http://").append(ip).append(":").append(port)
                 .append("/").append(path).toString();
-        
         return conn.post(uriString, json.toJson(toSend));
     }
 }
