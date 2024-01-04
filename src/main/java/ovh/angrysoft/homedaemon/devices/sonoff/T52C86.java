@@ -75,6 +75,8 @@ public class T52C86 extends BaseDevice implements DoubleSwitch {
         throw new UnsupportedOperationException("Unimplemented method 'toggleRight'");
     }
 
+    
+
     @Override
     public void allOn() {
         left(true);
