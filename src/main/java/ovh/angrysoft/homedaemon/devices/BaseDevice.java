@@ -71,7 +71,7 @@ public abstract class BaseDevice {
     }
 
     private void getAllMethods(Class<?> cls) {
-        if (!(cls.getSuperclass() instanceof Object)) {
+        if (!(cls.getSuperclass().getSimpleName().equals("Object"))) {
             getAllMethods(cls.getSuperclass());
         }
 
@@ -85,7 +85,7 @@ public abstract class BaseDevice {
     private List<String> getAllTraits(Class<?> cls) {
         List<String> ret = new ArrayList<>();
         // !(cls.getSuperclass().getSimpleName().equals("Object")
-        if (!(cls.getSuperclass() instanceof Object)) {
+        if (!(cls.getSuperclass().getSimpleName().equals("Object"))) {
             ret.addAll(getAllTraits(cls.getSuperclass()));
         }
 
