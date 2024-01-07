@@ -74,15 +74,15 @@ public class EwelinkApi {
         Map<String, Object> payload = new HashMap<>();
         String arg = "";
         switch (startup) {
-            case PowerState.ON:
+            case ON:
                 arg = "on";
                 break;
 
-            case PowerState.OFF:
+            case OFF:
                 arg = "off";
                 break;
 
-            case PowerState.STAY:
+            case STAY:
                 arg = "stay";
                 break;
             default:

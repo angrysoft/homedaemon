@@ -7,15 +7,15 @@
 
     <groupId>ovh.angrysoft.homedaemon</groupId>
     <artifactId>homedaemon</artifactId>
-    <version>0.2.0</version>
+    <version>0.3.0</version>
 
     <name>homedaemon</name>
     <url>https://homedaemon.angrysoft.ovh</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
     </properties>
 
     <dependencies>
@@ -85,7 +85,7 @@
                     <artifactId>maven-clean-plugin</artifactId>
                     <version>3.2.0</version>
                 </plugin>
-                <!-- default lifecycle, jar packaging: see
+                <!-- detuyafault lifecycle, jar packaging: see
                 https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
                 <plugin>
                     <artifactId>maven-resources-plugin</artifactId>
