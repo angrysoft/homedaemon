@@ -7,6 +7,7 @@ import ovh.angrysoft.homedaemon.devices.traits.DoubleSwitch;
 import ovh.angrysoft.homedaemon.devices.traits.backlight.Backlight;
 import ovh.angrysoft.homedaemon.discover.engines.EwelinkDiscoverEngine;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
+import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeNotFound;
 import ovh.angrysoft.homedaemon.watcher.EwelinkWatcher;
 
 public class T52C86 extends BaseDevice implements DoubleSwitch, Backlight {
@@ -29,9 +30,11 @@ public class T52C86 extends BaseDevice implements DoubleSwitch, Backlight {
             this.status.registerAttribute(new DeviceAttribute<Integer>("shock", -1));
             this.status.registerAttribute(new DeviceAttribute<String>("outlet0", ""));
             this.status.registerAttribute(new DeviceAttribute<String>("outlet1", ""));
+            this.status.addAlias("left", "outlet0");
+            this.status.addAlias("right", "outlet1");
             this.status.registerAttribute(
                     new DeviceAttribute<String>("token", deviceInfo.getArgs().get("token")));
-        } catch (AttributeAlreadyExist e) {
+        } catch (AttributeAlreadyExist | AttributeNotFound e) {
             logger.warning(e.getMessage());
         }
     }
