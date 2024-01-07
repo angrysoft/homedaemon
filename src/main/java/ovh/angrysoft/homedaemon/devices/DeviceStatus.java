@@ -70,4 +70,21 @@ public class DeviceStatus {
         } catch (ClassCastException e) {}
         return false;
     }
+    // java 21 
+    // public boolean isValueEquals(String attrName, Object value) {
+    //     Object attr = attributes.get(attrName);
+    //     if (attr == null)
+    //         return false;
+
+    //     switch (value) {
+    //         case null -> {
+    //             return false;
+    //         }
+        
+    //         default -> {
+
+    //         }
+    //     }
+    //     return true;
+    // }
 }
