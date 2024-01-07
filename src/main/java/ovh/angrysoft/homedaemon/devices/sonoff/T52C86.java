@@ -4,11 +4,12 @@ import ovh.angrysoft.homedaemon.devices.BaseDevice;
 import ovh.angrysoft.homedaemon.devices.DeviceAttribute;
 import ovh.angrysoft.homedaemon.devices.DeviceInfo;
 import ovh.angrysoft.homedaemon.devices.traits.DoubleSwitch;
+import ovh.angrysoft.homedaemon.devices.traits.backlight.Backlight;
 import ovh.angrysoft.homedaemon.discover.engines.EwelinkDiscoverEngine;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
 import ovh.angrysoft.homedaemon.watcher.EwelinkWatcher;
 
-public class T52C86 extends BaseDevice implements DoubleSwitch {
+public class T52C86 extends BaseDevice implements DoubleSwitch, Backlight {
     EwelinkApi api;
 
     public T52C86(DeviceInfo deviceInfo) {
@@ -75,7 +76,7 @@ public class T52C86 extends BaseDevice implements DoubleSwitch {
         throw new UnsupportedOperationException("Unimplemented method 'toggleRight'");
     }
 
-    
+
 
     @Override
     public void allOn() {
@@ -87,6 +88,21 @@ public class T52C86 extends BaseDevice implements DoubleSwitch {
     public void allOff() {
         left(false);
         right(false);
+    }
+
+    @Override
+    public void backlightState(boolean state) {
+        api.setLightSwitch(state);
+    }
+
+    @Override
+    public boolean isBacklightOn() {
+        return ((String) status.get("lightSwitch")).equalsIgnoreCase("on");
+    }
+
+    @Override
+    public void backlightToggle() {
+        backlightState(! isBacklightOn());
     }
 
 }
