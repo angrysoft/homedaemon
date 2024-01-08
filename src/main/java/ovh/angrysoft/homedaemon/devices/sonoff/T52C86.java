@@ -13,8 +13,8 @@ public class T52C86 extends T586 implements DoubleSwitch {
         try {
             this.status.registerAttribute(new DeviceAttribute<String>("outlet0", ""));
             this.status.registerAttribute(new DeviceAttribute<String>("outlet1", ""));
-            this.status.addAlias("left", "outlet0");
-            this.status.addAlias("right", "outlet1");
+            this.status.addAlias("state_left", "outlet0");
+            this.status.addAlias("state_right", "outlet1");
         } catch (AttributeAlreadyExist | AttributeNotFound e) {
             logger.warning(e.getMessage());
         }
