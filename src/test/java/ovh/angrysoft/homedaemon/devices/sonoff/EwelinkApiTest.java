@@ -40,6 +40,13 @@ class EwelinkApiTest {
 
     @Test
     @Tag("IntegrationTest")
+    void testSetlisthtMode() {
+        EwelinkApi api = new EwelinkApi("192.168.10.11", 8081, "1001f10ae4", deviceKey);
+        api.setLightMode(2);
+    }
+
+    @Test
+    @Tag("IntegrationTest")
     void testSetSwitchesOff() {
         EwelinkApi api = new EwelinkApi("192.168.10.11", 8081, "1001f10ae4", deviceKey);
         api.setSwitches(false, 0);
