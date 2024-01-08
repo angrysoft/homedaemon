@@ -5,7 +5,6 @@ import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import ovh.angrysoft.homedaemon.exceptions.connctions.DeviceConnectionError;
 
 class YeelightApiTest {
     @Test

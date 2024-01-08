@@ -52,6 +52,13 @@ public class EwelinkApi {
         send("zeroconf/lightSwitch", payload);
     }
 
+    public void setLightMode(int sceneNo) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("lightMode", sceneNo);
+        send("zeroconf/lightMode", payload);
+
+    }
+
     public void setSwitches(boolean state, int outlet) {
         Map<String, Object> switches = new HashMap<>();
         Map<String, Object> payload = new HashMap<>();
@@ -132,6 +139,7 @@ public class EwelinkApi {
         // TODO: error codes
 
     }
+
 
     public EwelinkDeviceInfoResponse getInfo() {
         Map<String, Object> payload = new HashMap<>();

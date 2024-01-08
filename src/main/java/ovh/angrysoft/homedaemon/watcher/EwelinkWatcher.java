@@ -12,10 +12,8 @@ import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.ToNumberPolicy;
 import com.google.gson.annotations.SerializedName;
 import ovh.angrysoft.homedaemon.bus.Event;
 import ovh.angrysoft.homedaemon.connections.ewelink.AuthUtils;
@@ -68,9 +66,6 @@ class WatcherListener implements ServiceListener {
     public WatcherListener(Map<String, String> watchedDevice, WatcherHandler handler) {
         this.watchedDevice = watchedDevice;
         this.handler = handler;
-        // GsonBuilder gsonBuilder = new GsonBuilder();
-        // gsonBuilder.setObjectToNumberStrategy(ToNumberPolicy.BIG_DECIMAL);
-        // json = gsonBuilder.create();
     }
 
     @Override
