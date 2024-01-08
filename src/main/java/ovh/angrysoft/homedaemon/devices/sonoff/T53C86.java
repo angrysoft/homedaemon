@@ -12,8 +12,8 @@ public class T53C86 extends T52C86 implements TripleSwitch {
         super(deviceInfo);
         try {
             this.status.registerAttribute(new DeviceAttribute<String>("outlet2", ""));
-            this.status.addAlias("center", "outlet1");
-            this.status.addAlias("right", "outlet2");
+            this.status.addAlias("state_center", "outlet1");
+            this.status.addAlias("state_right", "outlet2");
         } catch (AttributeAlreadyExist | AttributeNotFound e) {
             logger.warning(e.getMessage());
         }

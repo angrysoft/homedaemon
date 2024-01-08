@@ -25,7 +25,7 @@ public class Mini extends BaseDevice implements OnOff {
             this.status.registerAttribute(new DeviceAttribute<String>("ssid", ""));
             this.status.registerAttribute(new DeviceAttribute<String>("sledOnline", ""));
             this.status.registerAttribute(new DeviceAttribute<String>("power", ""));
-            this.status.addAlias("switch", "power");
+            this.status.addAlias("state", "power");
         } catch (AttributeAlreadyExist | AttributeNotFound e) {
             logger.warning(e.getMessage());
         }
