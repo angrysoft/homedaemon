@@ -2,11 +2,11 @@ package ovh.angrysoft.homedaemon.devices.sonoff;
 
 import ovh.angrysoft.homedaemon.devices.DeviceAttribute;
 import ovh.angrysoft.homedaemon.devices.DeviceInfo;
-import ovh.angrysoft.homedaemon.devices.traits.DoubleOutlet;
+import ovh.angrysoft.homedaemon.devices.traits.DoubleSwitch;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeNotFound;
 
-public class T52C86 extends T586 implements DoubleOutlet {
+public class T52C86 extends T586 implements DoubleSwitch {
 
     public T52C86(DeviceInfo deviceInfo) {
         super(deviceInfo);
@@ -21,48 +21,48 @@ public class T52C86 extends T586 implements DoubleOutlet {
     }
 
     @Override
-    public void left(Boolean state) {
+    public void one(Boolean state) {
         api.setSwitches(state, 0);
     }
 
     @Override
-    public void right(Boolean state) {
+    public void two(Boolean state) {
         api.setSwitches(state, 1);
     }
 
     @Override
-    public boolean isLeftOn() {
+    public boolean isOneOn() {
         return status.get("outlet0").equals("on");
     }
 
     @Override
-    public boolean isRightOn() {
+    public boolean isTwoOn() {
         return status.get("outlet1").equals("on");
     }
 
     @Override
-    public void toggleLeft() {
-        left(!isLeftOn());
+    public void toggleOne() {
+        one(!isOneOn());
     }
 
     @Override
-    public void toggleRight() {
-        right(!isRightOn());
+    public void toggleTwo() {
+        two(!isTwoOn());
     }
 
 
 
     @Override
     public void allOn() {
-        left(true);
-        right(true);
+        one(true);
+        two(true);
         api.setLightSwitch(true);
     }
-    
+
     @Override
     public void allOff() {
-        left(false);
-        right(false);
+        one(false);
+        two(false);
         api.setLightSwitch(false);
     }
 

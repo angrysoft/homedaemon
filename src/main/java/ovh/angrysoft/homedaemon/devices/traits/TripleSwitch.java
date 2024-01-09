@@ -1,9 +1,9 @@
 package ovh.angrysoft.homedaemon.devices.traits;
 
 public interface TripleSwitch extends DoubleSwitch {
-    void center(Boolean state);
+    void three(Boolean state);
 
-    boolean isCenterOn();
+    boolean isThreeOn();
 
-    void toggleCenter();
+    void toggleThree();
 }

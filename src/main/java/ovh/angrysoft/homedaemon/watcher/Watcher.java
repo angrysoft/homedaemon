@@ -12,12 +12,12 @@ public abstract class Watcher extends Thread {
         return sid;
     }
 
-    @Override
-    public abstract void run();
-
     public void setHandler(WatcherHandler handler) {
         this.handler = handler;
     }
+
+    @Override
+    public abstract void run();
 
     public WatcherHandler getHandler() {
         return handler;

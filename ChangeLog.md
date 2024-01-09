@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.2] - 2024-01-09
+
+### Changed
+ - zigbee2mqtt state_left etc to outlet
+
+### Added
+ - Device Driver [SONOFF SNZB-02D](src/main/java/ovh/angrysoft/homedaemon/devices/sonoff/zigbee/Snzb02D.java)
+
 ## [0.3.1] - 2024-01-04
 - New Device Drivers SonOff [Tx Ultimate](https://sonoff.tech/product/smart-wall-switches/tx-ultimate/)
     - [T51C86](src/main/java/ovh/angrysoft/homedaemon/devices/sonoff/T51C86.java)
@@ -14,4 +22,3 @@
 ### Added
 
 - New Device Driver [TS0011](src/main/java/ovh/angrysoft/homedaemon/devices/tuya/TS0011.java)
-- Delay before and after automation actions
