@@ -20,8 +20,8 @@ public class T586 extends BaseDevice implements AmbientLight, AmbientLightScenes
         try {
             this.status.registerAttribute(new DeviceAttribute<String>("ip", "localhost"));
             this.status.registerAttribute(new DeviceAttribute<Integer>("port", 0));
-            this.status.registerAttribute(new DeviceAttribute<String>("lightSwitch", ""));
-            this.status.registerAttribute(new DeviceAttribute<Integer>("lightMode", -1));
+            this.status.registerAttribute(new DeviceAttribute<String>("ambientLight", ""));
+            this.status.registerAttribute(new DeviceAttribute<Integer>("ambientLightScene", -1));
             this.status.registerAttribute(new DeviceAttribute<String>("startup", ""));
             this.status.registerAttribute(new DeviceAttribute<String>("pulse", ""));
             this.status.registerAttribute(new DeviceAttribute<String>("pulseWidth", ""));
@@ -29,8 +29,8 @@ public class T586 extends BaseDevice implements AmbientLight, AmbientLightScenes
             this.status.registerAttribute(new DeviceAttribute<String>("ssid", ""));
             this.status.registerAttribute(new DeviceAttribute<Integer>("shock", -1));
             this.status.registerAttribute(
-                    new DeviceAttribute<List<String>>("sceneList", List.of("Night Light", "Party",
-                            "Leisure", "Color", "Childhood", "Wiper", "Fairy", "Starburst")));
+                    new DeviceAttribute<List<String>>("ambientLightSceneList", List.of("Night Light", "Party",
+                            "Leisure", "Color", "Childhood", "Wiper", "Fairy", "Starburst"), true));
             this.status.registerAttribute(
                     new DeviceAttribute<String>("token", deviceInfo.getArgs().get("token")));
         } catch (AttributeAlreadyExist e) {
@@ -53,7 +53,7 @@ public class T586 extends BaseDevice implements AmbientLight, AmbientLightScenes
 
     @Override
     public boolean isAmbientLightOn() {
-        return ((String) status.get("lightSwitch")).equalsIgnoreCase("on");
+        return ((String) status.get("ambientLight")).equalsIgnoreCase("on");
     }
 
     @Override

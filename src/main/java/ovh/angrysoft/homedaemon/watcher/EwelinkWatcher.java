@@ -103,6 +103,7 @@ class WatcherListener implements ServiceListener {
             } else {
                 break;
             }
+            
         }
         String data = dataBuilder.toString();
         if (devInfo.get("encrypt").equals("true")) {
@@ -115,6 +116,7 @@ class WatcherListener implements ServiceListener {
             Object value = null;
             JsonElement element = entry.getValue();
             String key = entry.getKey();
+            String name = key;
             switch (key) {
                 case "switches":
                     element.getAsJsonArray().forEach(switchState -> {
@@ -125,15 +127,20 @@ class WatcherListener implements ServiceListener {
                     });
                     continue;
                 case "lightMode":
+                    name = "ambientLightScene";
                     value = element.getAsInt();
                     break;
+
+                case "lightSwitch":
+                    name = "ambientLight";
+                    value = element.getAsString();
+                    break;
                 default:
-                    value = entry.getValue().getAsString();
+                    value = element.getAsString();
                     break;
             }
-            handler.call(Event.statusEvent(sid, key, value));
+            handler.call(Event.statusEvent(sid, name, value));
         }
-
     }
 
 }

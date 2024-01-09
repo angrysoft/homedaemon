@@ -44,7 +44,7 @@ public class AutomationParser {
             return;
 
         StateDevice stateDevice = (StateDevice) deviceManager.getDevice("state");
-        states.forEach((state) -> {
+        states.forEach(state -> {
             System.out.println("registering (" + state.attrType + "): " + state.attrName + "="
                     + state.attrValue);
             switch (state.attrType) {
@@ -59,6 +59,8 @@ public class AutomationParser {
                 case "int":
                     stateDevice.registerStateAttribute(new DeviceAttribute<Integer>(state.attrName,
                             (Integer) state.attrValue));
+                    break;
+                default:
                     break;
             }
         });
@@ -148,6 +150,8 @@ public class AutomationParser {
                 return new ActionDispatch(action.getCmd(), value, deviceManager.getBus());
             case "state":
                 return new ActionState(action.getCmd(), value, deviceManager);
+            default:
+                break;
         }
         return null;
     }

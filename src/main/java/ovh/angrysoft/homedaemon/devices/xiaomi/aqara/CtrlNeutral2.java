@@ -13,8 +13,8 @@ public class CtrlNeutral2 extends ZigbeeBaseDevice implements DoubleSwitch {
         super(deviceInfo);
         try {
             this.status.registerAttribute(new DeviceAttribute<String>("model", "QBKG03LM"));
-            this.status.registerAttribute(new DeviceAttribute<String>("state_left", ""));
-            this.status.registerAttribute(new DeviceAttribute<String>("state_right", ""));
+            this.status.registerAttribute(new DeviceAttribute<String>("outlet0", ""));
+            this.status.registerAttribute(new DeviceAttribute<String>("outlet1", ""));
             this.status.registerAttribute(new DeviceAttribute<Integer>("device_temperature", 0));
             this.status.registerAttribute(new DeviceAttribute<String>("operation_mode_left", ""));
             this.status.registerAttribute(new DeviceAttribute<String>("operation_mode_right", ""));
@@ -26,28 +26,27 @@ public class CtrlNeutral2 extends ZigbeeBaseDevice implements DoubleSwitch {
 
     }
 
-    public void left(Boolean state) {
+    public void one(Boolean state) {
         this.gateway.sendSet(this.getSid(), "state_left", state ? "ON" : "OFF");
     }
 
-    public void right(Boolean state) {
+    public void two(Boolean state) {
         this.gateway.sendSet(this.getSid(), "state_right", state ? "ON" : "OFF");
     }
 
-    public boolean isLeftOn() {
-        return this.status.get("state_left").equals("ON");
-
+    public boolean isOneOn() {
+        return ((String) this.status.get("outlet0")).equalsIgnoreCase("on");
     }
 
-    public boolean isRightOn() {
-        return this.status.get("state_right").equals("ON");
+    public boolean isTwoOn() {
+        return ((String) this.status.get("outlet1")).equalsIgnoreCase("on");
     }
 
-    public void toggleLeft() {
+    public void toggleOne() {
         this.gateway.sendSet(this.getSid(), "state_left", "toggle");
     }
 
-    public void toggleRight() {
+    public void toggleTwo() {
         this.gateway.sendSet(this.getSid(), "state_right", "toggle");
     }
 
