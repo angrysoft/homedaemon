@@ -2,7 +2,7 @@ package ovh.angrysoft.homedaemon.devices.sonoff;
 
 import ovh.angrysoft.homedaemon.devices.DeviceAttribute;
 import ovh.angrysoft.homedaemon.devices.DeviceInfo;
-import ovh.angrysoft.homedaemon.devices.traits.TripleSwitch;
+import ovh.angrysoft.homedaemon.devices.traits.switches.TripleSwitch;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeNotFound;
 
@@ -16,24 +16,25 @@ public class T53C86 extends T52C86 implements TripleSwitch {
             logger.warning(e.getMessage());
         }
     }
+
     @Override
     public void allOff() {
         super.allOff();
-        three(false);
+        outlet2(false);
     }
-    
+
     @Override
-    public void three(Boolean state) {
+    public void outlet2(Boolean state) {
         api.setSwitches(state, 2);
     }
-    
+
     @Override
-    public boolean isThreeOn() {
+    public boolean isOutlet2On() {
         return status.get("outlet2").equals("on");
     }
-    
+
     @Override
-    public void toggleThree() {
-        three(!isThreeOn());
+    public void toggleOutlet2() {
+        outlet2(!isOutlet2On());
     }
 }

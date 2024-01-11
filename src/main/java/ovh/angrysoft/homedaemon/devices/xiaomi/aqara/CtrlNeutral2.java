@@ -4,7 +4,7 @@ import ovh.angrysoft.homedaemon.devices.AttributeUpdateBehavior;
 import ovh.angrysoft.homedaemon.devices.DeviceAttribute;
 import ovh.angrysoft.homedaemon.devices.DeviceInfo;
 import ovh.angrysoft.homedaemon.devices.ZigbeeBaseDevice;
-import ovh.angrysoft.homedaemon.devices.traits.DoubleSwitch;
+import ovh.angrysoft.homedaemon.devices.traits.switches.DoubleSwitch;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
 
 public class CtrlNeutral2 extends ZigbeeBaseDevice implements DoubleSwitch {
@@ -26,27 +26,27 @@ public class CtrlNeutral2 extends ZigbeeBaseDevice implements DoubleSwitch {
 
     }
 
-    public void one(Boolean state) {
+    public void outlet0(Boolean state) {
         this.gateway.sendSet(this.getSid(), "state_left", state ? "ON" : "OFF");
     }
 
-    public void two(Boolean state) {
+    public void outlet1(Boolean state) {
         this.gateway.sendSet(this.getSid(), "state_right", state ? "ON" : "OFF");
     }
 
-    public boolean isOneOn() {
+    public boolean isOutlet0On() {
         return ((String) this.status.get("outlet0")).equalsIgnoreCase("on");
     }
 
-    public boolean isTwoOn() {
+    public boolean isOutlet1On() {
         return ((String) this.status.get("outlet1")).equalsIgnoreCase("on");
     }
 
-    public void toggleOne() {
+    public void toggleOutlet0() {
         this.gateway.sendSet(this.getSid(), "state_left", "toggle");
     }
 
-    public void toggleTwo() {
+    public void toggleOutlet1() {
         this.gateway.sendSet(this.getSid(), "state_right", "toggle");
     }
 

@@ -45,32 +45,6 @@ public class YeelightWatcher extends Watcher {
         try (TcpConnection conn = new TcpConnection(ip, port)) {
             while (true) {
                 parseData(conn.recv());
-                // YeelightNotification notify = new Gson().fromJson(rec, YeelightNotification.class);
-                // Map<String, Object> params = notify.getParams();
-                // params.forEach((k, v) -> {
-                //     String name = k;
-                //     Object value;
-                //     switch (k) {
-                //         case "power":
-                //             name = "state";
-                //             value = (String) v;
-                //             break;
-                //         case "bright":
-                //         case "ct":
-                //         case "rgb":
-                //         case "hue":
-                //         case "sat":
-                //         case "color_mode":
-                //         case "flowing":
-                //         case "delayoff":
-                //             Double tmp = (double) v;
-                //             value = tmp.intValue();
-                //             break;
-                //         default:
-                //             value = v;
-                //     }
-                //     handler.call(Event.statusEvent(sid, name, value));
-                // });
             }
         } catch (DeviceConnectionError e) {
             e.printStackTrace();
@@ -78,9 +52,9 @@ public class YeelightWatcher extends Watcher {
     }
 
     private void parseData(String data) {
-
         JsonObject yeelightNotify = json.fromJson(data, JsonObject.class);
-        for (Entry<String, JsonElement> entry : yeelightNotify.entrySet()) {
+        for (Entry<String, JsonElement> entry : yeelightNotify.get("params").getAsJsonObject()
+                .entrySet()) {
             Object value = null;
             JsonElement element = entry.getValue();
             String key = entry.getKey();
@@ -102,6 +76,7 @@ public class YeelightWatcher extends Watcher {
                     break;
                 default:
                     value = element.getAsString();
+                    break;
             }
             handler.call(Event.statusEvent(sid, name, value));
         }

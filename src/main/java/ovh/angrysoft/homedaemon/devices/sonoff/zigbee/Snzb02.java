@@ -3,11 +3,11 @@ package ovh.angrysoft.homedaemon.devices.sonoff.zigbee;
 import ovh.angrysoft.homedaemon.devices.DeviceAttribute;
 import ovh.angrysoft.homedaemon.devices.DeviceInfo;
 import ovh.angrysoft.homedaemon.devices.ZigbeeBaseDevice;
-import ovh.angrysoft.homedaemon.devices.traits.Humidity;
-import ovh.angrysoft.homedaemon.devices.traits.Temperature;
+import ovh.angrysoft.homedaemon.devices.traits.humidity.HumidityReport;
+import ovh.angrysoft.homedaemon.devices.traits.temperature.TemperatureReport;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
 
-public class Snzb02 extends ZigbeeBaseDevice implements Temperature, Humidity {
+public class Snzb02 extends ZigbeeBaseDevice implements TemperatureReport, HumidityReport {
     public Snzb02(DeviceInfo deviceInfo) {
         super(deviceInfo);
         try {

@@ -31,7 +31,6 @@ public class EwelinkDiscoverEngine extends DiscoverEngine {
                 info.put(entry.getKey(), entry.getValue());
             }
         }
-        System.out.println(info);
         return info;
     }
 }

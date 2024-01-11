@@ -18,34 +18,13 @@ public class Zigbee2MqttWatcher extends Watcher {
 
     }
 
-    // @SuppressWarnings("unchecked")
-    // private void onMessage(String topic, String msg) {
-    // Gson gson = new
-    // GsonBuilder().setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE).create();
-    // Type mapType = new TypeToken<HashMap<String, Object>>() {
-    // }.getType();
-    // HashMap<String, Object> notify = (HashMap<String, Object>) gson.fromJson(msg, mapType);
-    // notify.forEach((k, v) -> {
-    // if (v == null)
-    // return;
-    // String name = getStatusName(k);
-    // Object value = v;
-    // if (v instanceof Number) {
-    // value = ((Number)v).intValue();
-    // }
-
-    // if (v instanceof String) {
-    // value = ((String)v).toLowerCase();
-    // }
-    // handler.call(Event.statusEvent(getSidFromTopic(topic), name, value));
-    // });
-    // }
-
     void onMessage(String topic, String data) {
         JsonObject ewelinkNotify = json.fromJson(data, JsonObject.class);
         for (Entry<String, JsonElement> entry : ewelinkNotify.entrySet()) {
-            Object value = null;
             JsonElement element = entry.getValue();
+            if (element.isJsonNull())
+                continue;
+            Object value = null;
             String key = entry.getKey();
             String name = key;
             switch (key) {
@@ -84,7 +63,6 @@ public class Zigbee2MqttWatcher extends Watcher {
                 default:
                     value = element.getAsString();
             }
-
             handler.call(Event.statusEvent(getSidFromTopic(topic), name, value));
         }
     }

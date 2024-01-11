@@ -32,8 +32,8 @@ public class CtrlNeutral2Test {
         CtrlNeutral2 ctrl = new CtrlNeutral2(deviceInfo);
         ctrl.setGateway(gateway);
         ctrl.setup();
-        ctrl.one(true);
-        ctrl.two(true);
+        ctrl.outlet0(true);
+        ctrl.outlet1(true);
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
@@ -42,8 +42,8 @@ public class CtrlNeutral2Test {
         // assertTrue(ctrl.isRightOn());
         // assertTrue(ctrl.isLeftOn());
 
-        ctrl.one(false);
-        ctrl.two(false);
+        ctrl.outlet0(false);
+        ctrl.outlet1(false);
 
     }
 }

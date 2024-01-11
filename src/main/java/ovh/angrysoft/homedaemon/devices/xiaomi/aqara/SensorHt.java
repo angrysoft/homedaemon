@@ -3,11 +3,11 @@ package ovh.angrysoft.homedaemon.devices.xiaomi.aqara;
 import ovh.angrysoft.homedaemon.devices.DeviceAttribute;
 import ovh.angrysoft.homedaemon.devices.DeviceInfo;
 import ovh.angrysoft.homedaemon.devices.ZigbeeBaseDevice;
-import ovh.angrysoft.homedaemon.devices.traits.Humidity;
-import ovh.angrysoft.homedaemon.devices.traits.Temperature;
+import ovh.angrysoft.homedaemon.devices.traits.humidity.HumidityReport;
+import ovh.angrysoft.homedaemon.devices.traits.temperature.TemperatureReport;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
 
-public class SensorHt extends ZigbeeBaseDevice implements Temperature, Humidity {
+public class SensorHt extends ZigbeeBaseDevice implements TemperatureReport, HumidityReport {
 
     public SensorHt(DeviceInfo deviceInfo) {
         super(deviceInfo);

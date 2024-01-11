@@ -103,7 +103,7 @@ class WatcherListener implements ServiceListener {
             } else {
                 break;
             }
-            
+
         }
         String data = dataBuilder.toString();
         if (devInfo.get("encrypt").equals("true")) {
@@ -122,7 +122,7 @@ class WatcherListener implements ServiceListener {
                     element.getAsJsonArray().forEach(switchState -> {
                         JsonObject switchInfo = switchState.getAsJsonObject();
                         String outlet = "outlet" + switchInfo.get("outlet");
-                        String state = switchInfo.get("switch").toString();
+                        String state = switchInfo.get("switch").getAsString();
                         handler.call(Event.statusEvent(sid, outlet, state));
                     });
                     continue;

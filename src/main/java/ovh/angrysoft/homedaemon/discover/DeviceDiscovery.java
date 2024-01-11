@@ -13,13 +13,13 @@ public class DeviceDiscovery {
         this.deviceCache = new HashMap<>();
     }
 
-    public Map<String, Object> discover(String sid, DiscoverEngine engine) throws DeviceNotDiscovered {
+    public Map<String, Object> discover(String sid, DiscoverEngine engine)
+            throws DeviceNotDiscovered {
         if (!this.deviceCache.containsKey(sid)) {
 
             Set<Map<String, Object>> devicesInfo = engine.search();
 
             for (Map<String, Object> devInfo : devicesInfo) {
-                System.out.println("discover " + devInfo.get("sid"));
                 this.deviceCache.put((String) devInfo.get("sid"), devInfo);
             }
         }

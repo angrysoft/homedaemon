@@ -3,14 +3,14 @@ package ovh.angrysoft.homedaemon.devices.yeelight;
 import ovh.angrysoft.homedaemon.devices.BaseDevice;
 import ovh.angrysoft.homedaemon.devices.DeviceAttribute;
 import ovh.angrysoft.homedaemon.devices.DeviceInfo;
-import ovh.angrysoft.homedaemon.devices.traits.Dimmer;
+import ovh.angrysoft.homedaemon.devices.traits.Brightness;
 import ovh.angrysoft.homedaemon.devices.traits.OnOff;
 import ovh.angrysoft.homedaemon.discover.engines.YeelightDiscoveryEngine;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeNotFound;
 import ovh.angrysoft.homedaemon.watcher.YeelightWatcher;
 
-public class Mono extends BaseDevice implements OnOff, Dimmer {
+public class Mono extends BaseDevice implements OnOff, Brightness {
     protected YeelightApi api;
     private static final String POWER = "power";
 

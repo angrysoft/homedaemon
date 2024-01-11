@@ -1,5 +1,5 @@
 package ovh.angrysoft.homedaemon.devices.traits;
 
-public interface Motion {
+public interface OccupancySensing {
     public boolean getOccupancy();
 }
