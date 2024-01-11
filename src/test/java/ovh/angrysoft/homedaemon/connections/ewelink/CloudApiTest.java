@@ -23,7 +23,10 @@ class CloudApiTest {
         System.out.println(devices.total());
         for (var thing: devices.thingList()) {
             System.out.println(thing.itemType());
-            System.out.println(thing.itemData());
+            System.out.println(thing.itemData().name());
+            System.out.println(thing.itemData().deviceid());
+            System.out.println(thing.itemData().devicekey());
+            System.out.println(thing.itemData().productModel());
         }
     }
 }

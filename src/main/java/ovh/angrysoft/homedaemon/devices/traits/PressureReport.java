@@ -1,5 +1,5 @@
 package ovh.angrysoft.homedaemon.devices.traits;
 
-public interface Pressure {
+public interface PressureReport {
     public int getPressure();
 }

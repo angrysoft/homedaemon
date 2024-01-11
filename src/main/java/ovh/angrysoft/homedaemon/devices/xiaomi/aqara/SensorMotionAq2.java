@@ -5,10 +5,10 @@ import ovh.angrysoft.homedaemon.devices.DeviceAttribute;
 import ovh.angrysoft.homedaemon.devices.DeviceInfo;
 import ovh.angrysoft.homedaemon.devices.ZigbeeBaseDevice;
 import ovh.angrysoft.homedaemon.devices.traits.Illuminance;
-import ovh.angrysoft.homedaemon.devices.traits.Motion;
+import ovh.angrysoft.homedaemon.devices.traits.OccupancySensing;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
 
-public class SensorMotionAq2 extends ZigbeeBaseDevice implements Motion, Illuminance {
+public class SensorMotionAq2 extends ZigbeeBaseDevice implements OccupancySensing, Illuminance {
 
     public SensorMotionAq2(DeviceInfo deviceInfo) {
         super(deviceInfo);

@@ -3,10 +3,10 @@ package ovh.angrysoft.homedaemon.devices.sonoff.zigbee;
 import ovh.angrysoft.homedaemon.devices.DeviceAttribute;
 import ovh.angrysoft.homedaemon.devices.DeviceInfo;
 import ovh.angrysoft.homedaemon.devices.ZigbeeBaseDevice;
-import ovh.angrysoft.homedaemon.devices.traits.Motion;
+import ovh.angrysoft.homedaemon.devices.traits.OccupancySensing;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
 
-public class Snzb03 extends ZigbeeBaseDevice implements Motion {
+public class Snzb03 extends ZigbeeBaseDevice implements OccupancySensing {
     public Snzb03(DeviceInfo deviceInfo) {
         super(deviceInfo);
         try {
