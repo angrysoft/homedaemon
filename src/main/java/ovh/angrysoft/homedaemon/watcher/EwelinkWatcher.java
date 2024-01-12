@@ -106,7 +106,8 @@ class WatcherListener implements ServiceListener {
 
         }
         String data = dataBuilder.toString();
-        if (devInfo.get("encrypt").equals("true")) {
+
+        if (devInfo.containsKey("encrypt") && devInfo.get("encrypt").equals("true")) {
             data = AuthUtils.decryptData(data, watchedDevice.get(devInfo.get("id")),
                     (String) devInfo.get("iv"));
         }
@@ -126,6 +127,10 @@ class WatcherListener implements ServiceListener {
                         handler.call(Event.statusEvent(sid, outlet, state));
                     });
                     continue;
+                case "switch":
+                    name = "outlet";
+                    value = element.getAsString();
+                    break;
                 case "lightMode":
                     name = "ambientLightScene";
                     value = element.getAsInt();
