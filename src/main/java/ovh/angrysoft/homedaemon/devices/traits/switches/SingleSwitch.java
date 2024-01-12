@@ -8,8 +8,4 @@ public interface SingleSwitch extends Trait {
     boolean isOutletOn();
 
     void toggleOutlet();
-
-    void allOn();
-
-    void allOff();
 }

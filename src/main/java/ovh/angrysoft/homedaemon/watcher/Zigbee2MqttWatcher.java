@@ -60,6 +60,19 @@ public class Zigbee2MqttWatcher extends Watcher {
                     value = element.getAsString().toLowerCase();
                     break;
 
+                case "occupancy":
+                case "contact":
+                    value = element.getAsBoolean();
+                    break;
+
+                case "illuminance":
+                case "illuminance_lux":
+                case "humidity":
+                case "temperature":
+                case "pressure":
+                    value = element.getAsInt();
+                    break;
+
                 default:
                     value = element.getAsString();
             }
