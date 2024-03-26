@@ -4,7 +4,6 @@ import ovh.angrysoft.homedaemon.devices.DeviceAttribute;
 import ovh.angrysoft.homedaemon.devices.DeviceInfo;
 import ovh.angrysoft.homedaemon.devices.traits.switches.TripleSwitch;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
-import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeNotFound;
 
 public class T53C86 extends T52C86 implements TripleSwitch {
 
