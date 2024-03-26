@@ -149,11 +149,11 @@ public class MqttV5Connection extends Thread implements MqttCallback {
         return topics;
     }
 
+    @Override
     public void run() {
 
-        MemoryPersistence persistence = new MemoryPersistence();
         try {
-            this.client = new MqttAsyncClient(this.getUris()[0], this.getClientId(), persistence);
+            this.client = new MqttAsyncClient(this.getUris()[0], this.getClientId(), new MemoryPersistence());
             this.client.setCallback(this);
             IMqttToken connectToken = this.client.connect(this.connOpts);
             connectToken.waitForCompletion();
