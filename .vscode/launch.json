@@ -4,7 +4,13 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-
+        {
+            "type": "java",
+            "name": "JmdnsTest",
+            "request": "launch",
+            "mainClass": "ovh.angrysoft.homedaemon.discover.JmdnsTest",
+            "projectName": "homedaemon"
+        },
         {
             "type": "java",
             "name": "Homedamoen",
@@ -21,7 +27,7 @@
             "name": "App",
             "request": "launch",
             "mainClass": "ovh.angrysoft.homedaemon.App",
-            "projectName": "homedaemon",
+            "projectName": "homedaemon"
         }
     ]
 }

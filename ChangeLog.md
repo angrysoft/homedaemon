@@ -1,5 +1,17 @@
 # Changelog
 
+
+## [0.3.3] - 2024-04-14
+
+### Added
+
+- Device Driver [SONOFF SNZB-06P](src/main/java/ovh/angrysoft/homedaemon/devices/sonoff/zigbee/Snzb06P.java)
+- New Traits OccupancySettingsTimeout, OccupancySettingsSensitive
+
+### Changed
+
+- Change item
+
 ## [0.3.2] - 2024-01-09
 
 ### Changed
