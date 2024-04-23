@@ -11,7 +11,7 @@ import ovh.angrysoft.homedaemon.devices.traits.occupancy.OccupancySettingsTimeou
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
 
 public class Snzb06P extends ZigbeeBaseDevice
-        implements OccupancySensing, OccupancySettingsTimeout, OccupancySettingsSensitivity<String>, Illuminance {
+        implements OccupancySensing, OccupancySettingsTimeout, OccupancySettingsSensitivity<String>, Illuminance<String> {
     public Snzb06P(DeviceInfo deviceInfo) {
         super(deviceInfo);
         try {
@@ -33,7 +33,7 @@ public class Snzb06P extends ZigbeeBaseDevice
     }
 
     @Override
-    public int getIlluminance() {
+    public String getIlluminance() {
         return this.status.get("illuminance");
     }
 
@@ -44,7 +44,10 @@ public class Snzb06P extends ZigbeeBaseDevice
 
     @Override
     public void setOccupancyTimeout(int value) {
-        this.gateway.sendSet(getSid(), "occupancy_timeout", value);
+        int toSet = value;
+        if (value < 15)
+            toSet = 15;
+        this.gateway.sendSet(getSid(), "occupancy_timeout", toSet);
     }
 
     @Override
