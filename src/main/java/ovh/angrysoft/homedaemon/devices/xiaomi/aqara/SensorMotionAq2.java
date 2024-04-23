@@ -8,7 +8,7 @@ import ovh.angrysoft.homedaemon.devices.traits.Illuminance;
 import ovh.angrysoft.homedaemon.devices.traits.occupancy.OccupancySensing;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
 
-public class SensorMotionAq2 extends ZigbeeBaseDevice implements OccupancySensing, Illuminance {
+public class SensorMotionAq2 extends ZigbeeBaseDevice implements OccupancySensing, Illuminance<Integer> {
 
     public SensorMotionAq2(DeviceInfo deviceInfo) {
         super(deviceInfo);
@@ -29,7 +29,7 @@ public class SensorMotionAq2 extends ZigbeeBaseDevice implements OccupancySensin
         return status.get("occupancy");
     }
 
-    public int getIlluminance() {
+    public Integer getIlluminance() {
         return this.status.get("illuminance");
     }
 

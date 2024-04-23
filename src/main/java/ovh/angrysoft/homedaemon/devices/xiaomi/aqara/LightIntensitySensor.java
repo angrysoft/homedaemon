@@ -6,7 +6,7 @@ import ovh.angrysoft.homedaemon.devices.ZigbeeBaseDevice;
 import ovh.angrysoft.homedaemon.devices.traits.Illuminance;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
 
-public class LightIntensitySensor extends ZigbeeBaseDevice implements Illuminance {
+public class LightIntensitySensor extends ZigbeeBaseDevice implements Illuminance<Integer> {
 
     public LightIntensitySensor(DeviceInfo deviceInfo) {
         super(deviceInfo);
@@ -27,7 +27,7 @@ public class LightIntensitySensor extends ZigbeeBaseDevice implements Illuminanc
         this.gateway.sendGet(getSid(), "illuminance_lux", "");
     }
 
-    public int getIlluminance() {
+    public Integer getIlluminance() {
         return this.status.get("illuminance");
     }
 
