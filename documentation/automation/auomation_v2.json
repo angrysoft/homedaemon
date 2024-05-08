@@ -1,0 +1,32 @@
+{
+    "sid": "automation_sid",
+    "type": "actionHandler",
+    "name": {
+        "en": "Kitchen Light",
+        "pl": "Światło w kuchni"
+    },
+    "triggers": [
+        "status.0x00124b00244504ca.voltage.3000"
+    ],
+    "state": [
+        {
+            "attrName": "attrName",
+            "attrType": "bool",
+            "attrValue": false
+        },
+        {
+            "attrName": "attrName",
+            "attrType": "str",
+            "attrValue": "test"
+        },
+        {
+            "attrName": "attrName",
+            "attrType": "int",
+            "attrValue": 0
+        }
+    ],
+    "actions": [
+        "action_name_1",
+        "action_name_2"
+    ]
+}
