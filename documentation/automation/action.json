@@ -1,0 +1,71 @@
+{
+    "conditions": [
+    {
+        "type": "and",
+        "testCases": [
+            {
+                "type": "gt",
+                "sid": "device_sid",
+                "attrName": "device numeric attribute",
+                "attrValue": 10
+            },
+            {
+                "type": "lt",
+                "sid": "device_sid",
+                "attrName": "device numeric attribute",
+                "attrValue": 11
+            },
+            {
+                "type": "eq",
+                "sid": "device_sid",
+                "attrName": "device numeric attribute",
+                "attrValue": 12
+            },
+            {
+                "type": "status",
+                "sid": "device_sid",
+                "attrName": "device attribute",
+                "attrValue": "object"
+            },
+            {
+                "type": "state",
+                "attrName": "occupancy",
+                "attrValue": true
+            }
+        ]
+    },
+    {
+        "type": "or",
+        "testCases": []
+    },
+    {
+        "type": "not",
+        "testCases": []
+    }
+],
+"actions": [
+    {
+        "type": "execute",
+        "sid": "device sid",
+        "cmd": "command Name",
+        "arg": "object",
+        "runInBackground": false,
+        "delayIn": 1000,
+        "delayOut": 1000
+    },
+    {
+        "type": "execute",
+        "sid": "device sid",
+        "cmd": "command Name",
+        "arg": "object",
+        "runInBackground": true
+    },
+    {
+        "type": "dispatch",
+        "sid": "device sid",
+        "cmd": "event to dispatch",
+        "arg": "object"
+    }
+],
+"actionsFalse": []
+}
