@@ -1,4 +1,4 @@
-package ovh.angrysoft.homedaemon.integrations.miio;
+package ovh.angrysoft.homedaemon.devices.xiaomi.miio;
 
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -14,13 +14,15 @@ import javax.crypto.spec.SecretKeySpec;
 /**
  * MioPacket
  */
-public class MiioPacket {
+class MiioPacket {
     private byte[] token;
     private SecretKeySpec key;
     private IvParameterSpec iv;
+    private static final String ALGORITHM = "AES/CBC/PKCS5Padding";
+    private static final byte[] EMPTY_ARRAY = new byte[] {};
 
     public MiioPacket(String token) {
-        this.token = token.getBytes();
+        this.token = this.prepareToken(token);
         byte[] keyMd5sum = md5sum(this.token);
         this.key = new SecretKeySpec(keyMd5sum, "AES");
         byte[] kayAndIv = new byte[keyMd5sum.length + this.token.length];
@@ -28,6 +30,14 @@ public class MiioPacket {
         System.arraycopy(this.token, 0, kayAndIv, keyMd5sum.length, this.token.length);
         this.iv = new IvParameterSpec(md5sum(kayAndIv));
 
+    }
+
+    private byte[] prepareToken(String token) {
+        StringBuilder result = new StringBuilder();
+        for (byte b: token.getBytes()) {
+            result.append(String.format("%02x", b));
+        }
+        return result.toString().getBytes();
     }
 
     private byte[] md5sum(byte[] input) {
@@ -43,35 +53,37 @@ public class MiioPacket {
         return result;
     }
 
-    public byte[] encrypt(byte[] msg) {
+    byte[] encrypt(byte[] msg) {
         if (msg == null)
-            return null;
-            
+            return EMPTY_ARRAY;
+
         Cipher cipher;
         try {
-            cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            cipher.init(cipher.ENCRYPT_MODE, key, iv);
+            cipher = Cipher.getInstance(ALGORITHM);
+            cipher.init(Cipher.ENCRYPT_MODE, key, iv);
             return cipher.doFinal(msg);
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InvalidAlgorithmParameterException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalBlockSizeException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (BadPaddingException e) {
-            // TODO Auto-generated catch block
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
+                | InvalidAlgorithmParameterException | IllegalBlockSizeException
+                | BadPaddingException e) {
             e.printStackTrace();
         }
-        return null;
+        return EMPTY_ARRAY;
     }
 
-    public byte[] decrypt(byte[] msg) {
-        return null;
+    byte[] decrypt(byte[] msg) {
+        if (msg == null)
+            return EMPTY_ARRAY;
+
+        try {
+            Cipher cipher = Cipher.getInstance(ALGORITHM);
+            cipher.init(Cipher.DECRYPT_MODE, key, iv);
+            return cipher.doFinal(msg);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
+                | InvalidAlgorithmParameterException | IllegalBlockSizeException
+                | BadPaddingException e) {
+            e.printStackTrace();
+        }
+
+        return EMPTY_ARRAY;
     }
 }
