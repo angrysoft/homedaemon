@@ -43,7 +43,7 @@
         "testCases": []
     }
 ],
-"actions": [
+"runTrue": [
     {
         "type": "execute",
         "sid": "device sid",
@@ -67,5 +67,5 @@
         "arg": "object"
     }
 ],
-"actionsFalse": []
+"runFalse": []
 }
