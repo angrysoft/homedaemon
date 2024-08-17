@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.3.4] - 2024-08-17
+
+### Added
+
+- Dockerfile
+
+### Changed
+
+- update dependencies
 
 ## [0.3.3] - 2024-04-14
 
