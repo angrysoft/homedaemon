@@ -8,7 +8,6 @@ COPY .mvn .mvn
 COPY pom.xml .
 COPY src src
 RUN ./mvnw clean install -DskipTests
-# RUN java -Djarmode=layertools -jar target/homed-web-backend-0.1.0.jar extract
 
 
 FROM base AS runner
