@@ -6,18 +6,19 @@ Requires=docker.service
 [Service]
 TimeoutStartSec=0
 Restart=always
+EnvironmentFile=/etc/homedaemon/env
 ExecStartPre=-/usr/bin/docker exec %n stop
 ExecStartPre=-/usr/bin/docker rm %n
-ExecStartPre=/usr/bin/docker pull angrysoft/homedaemon:latest
+ExecStartPre=/usr/bin/docker pull angrysoft/homedaemon:${VERSION}
 ExecStart=/usr/bin/docker run \
     --rm \
     --name %n \
-    --env-file=/etc/homedaemon/env.docker \
+    # --env-file=/etc/homedaemon/env.docker \
     # -p 8080:8080 \
     --mount type=bind,source=${DEVICE_DIR},target=/app/devices.d \
     --mount type=bind,source=${CONFIG_DIR},target=/app/configs.d \
     --mount type=bind,source=${AUTOMATION_DIR},target=/app/automations.d \
-    angrysoft/homedaemon:latest
+    angrysoft/homedaemon:${VERSION}
 
 [Install]
 WantedBy=default.target
