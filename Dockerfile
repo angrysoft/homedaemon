@@ -22,4 +22,4 @@ ENV VERSION=${HOMED_VERSION}
 ENV DEVICE_DIR=/app/devices.d
 ENV CONFIG_DIR=/app/configs.d
 ENV AUTOMATION_DIR=/app/automations.d
-ENTRYPOINT ["java", "-jar", "homedaemon-${HOMED_VERSION}-jar-with-dependecies.jar"]
+ENTRYPOINT ["java", "-jar", "homedaemon-${HOMED_VERSION}-jar-with-dependencies.jar"]
