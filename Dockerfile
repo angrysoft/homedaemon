@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21 AS base
+FROM arm64v8/eclipse-temurin:21 AS base
 ARG HOMED_VERSION="0.3.4"
 
 FROM maven:eclipse-temurin AS builder
