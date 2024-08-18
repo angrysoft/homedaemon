@@ -3,11 +3,11 @@ ARG HOMED_VERSION="0.3.4"
 
 FROM base AS builder
 WORKDIR /app
-COPY mvnw .
-COPY .mvn .mvn
+# COPY mvnw .
+# COPY .mvn .mvn
 COPY pom.xml .
 COPY src src
-RUN ./mvnw clean install -DskipTests
+RUN mvn clean install -DskipTests
 
 
 FROM base AS runner
