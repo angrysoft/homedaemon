@@ -34,7 +34,7 @@ class Command {
 }
 
 
-class CommandResult {
+class CommandResponse {
     private int id;
     private Object[] result;
     private ResultError error;
@@ -158,7 +158,7 @@ class YeelightApi {
      */
     public Map<String, Object> getProp(String[] props) {
         HashMap<String, Object> result = new HashMap<>();
-        CommandResult answer = send("get_prop", props);
+        CommandResponse answer = send("get_prop", props);
         if (answer != null && props.length == answer.getResult().length) {
             for (int i = 0; i < props.length; i++) {
                 result.put(props[i], answer.getResult()[i]);
@@ -239,15 +239,15 @@ class YeelightApi {
         send("set_bright", params);
     }
 
-    private CommandResult send(String method, Object[] params) {
+    private CommandResponse send(String method, Object[] params) {
         int id = commandId.getId();
-        CommandResult result = null;
+        CommandResponse result = null;
         try (TcpConnection conn = new TcpConnection(ip, port)) {
             Command cmd = new Command(id, method, params);
             conn.send(new Gson().toJson(cmd));
             conn.send("\r\n");
             String answer = conn.recv();
-            result = new Gson().fromJson(answer, CommandResult.class);
+            result = new Gson().fromJson(answer, CommandResponse.class);
         } catch (DeviceConnectionError e) {
             e.printStackTrace();
         }
