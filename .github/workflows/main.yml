@@ -3,7 +3,7 @@ name: Docker homed backend Image CI
 on:
   push:
     branches:
-      - "main"
+      - "master"
 
 jobs:
   docker:
