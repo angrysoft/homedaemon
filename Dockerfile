@@ -1,13 +1,11 @@
 FROM eclipse-temurin:21 AS base
 ARG HOMED_VERSION="0.3.4"
 
-FROM base AS builder
+FROM maven:eclipse-temurin AS builder
 WORKDIR /app
-# COPY mvnw .
-# COPY .mvn .mvn
 COPY pom.xml .
 COPY src src
-RUN mvn clean install -DskipTests
+RUN mvn clean compile assembly:single -DskipTests
 
 
 FROM base AS runner
@@ -15,6 +13,7 @@ WORKDIR /app
 RUN mkdir devices.d
 RUN mkdir configs.d
 RUN mkdir automations.d
+RUN ls target/
 COPY --from=builder target/homedaemon-${HOMED_VERSION}-jar-with-dependecies.jar .
 # RUN addgroup --system --gid 666 homed-web
 # RUN adduser --system --group --uid 666 homed-web
