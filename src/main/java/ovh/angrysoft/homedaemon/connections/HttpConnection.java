@@ -4,13 +4,12 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.net.http.HttpRequest.BodyPublishers;
+import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.time.Duration;
 
 public class HttpConnection {
-    private HttpClient hClient = HttpClient.newHttpClient();
     private Duration timeout = Duration.ofSeconds(5);
 
     public String get(String uri) {
@@ -40,6 +39,8 @@ public class HttpConnection {
     }
 
     String send(HttpRequest httpRequest) {
+        //FIXME retry
+        HttpClient hClient = HttpClient.newHttpClient();
         String result = "";
         try {
             HttpResponse<String> response = hClient.send(httpRequest, BodyHandlers.ofString());
