@@ -7,4 +7,5 @@ tools/devs
 icons
 www/.pass
 tmp/
-
+.gradle
+build

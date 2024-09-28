@@ -7,7 +7,6 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-
 import ovh.angrysoft.homedaemon.exceptions.connctions.DeviceConnectionError;
 
 public class UdpConnection implements AutoCloseable {
