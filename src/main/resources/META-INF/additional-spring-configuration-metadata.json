@@ -1,0 +1,22 @@
+{"properties": [
+  {
+    "name": "homed.name",
+    "type": "java.lang.String",
+    "description": "A description for 'homed.name'"
+  },
+  {
+    "name": "homed.id",
+    "type": "java.lang.String",
+    "description": "A description for 'homed.id'"
+  },
+  {
+    "name": "homed.io",
+    "type": "java.lang.String",
+    "description": "A description for 'homed.io'"
+  },
+  {
+    "name": "homed.debug",
+    "type": "java.lang.String",
+    "description": "A description for 'homed.debug'"
+  }
+]}
