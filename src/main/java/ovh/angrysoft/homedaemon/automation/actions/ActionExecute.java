@@ -11,7 +11,8 @@ public class ActionExecute extends Action {
     private DeviceManager deviceManager;
     private boolean runInBackground;
 
-    public ActionExecute(String sid, String cmd, Optional<Object> arg, boolean runInBackground, DeviceManager deviceManager) {
+    public ActionExecute(String sid, String cmd, Optional<Object> arg, boolean runInBackground,
+            DeviceManager deviceManager) {
         this.sid = sid;
         this.cmd = cmd;
         this.arg = arg;
@@ -33,15 +34,8 @@ public class ActionExecute extends Action {
     @Override
     public void run() {
         if (runInBackground) {
-            new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    deviceManager.execute(sid, cmd, arg);
-                }
-            }).start();
-            return;
-        }
-        deviceManager.execute(sid, cmd, arg);
+            Thread.ofVirtual().start(() -> deviceManager.execute(sid, cmd, arg));
+        } else
+            deviceManager.execute(sid, cmd, arg);
     }
 }

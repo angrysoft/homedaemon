@@ -3,16 +3,17 @@ package ovh.angrysoft.homedaemon.bus;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 
 public class EventBus {
     private HashMap<String, Trigger> triggers;
-    private ThreadPoolExecutor triggerExecutor;
+    private ExecutorService triggerExecutor;
 
     public EventBus() {
         this.triggers = new HashMap<>();
-        this.triggerExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+        // this.triggerExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+        this.triggerExecutor = Executors.newVirtualThreadPerTaskExecutor();
     }
 
     public synchronized int triggersSize() {
