@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3.5] - 2025-06-22
+### Added
+- Device Driver [DIY Gate](src/main/java/ovh/angrysoft/homedaemon/devices/dig/GateOpener.java)
+
+
 ## [0.3.4] - 2024-08-17
 
 ### Added

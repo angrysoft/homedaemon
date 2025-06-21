@@ -8,6 +8,7 @@ import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.time.Duration;
+import java.util.Optional;
 
 public class HttpConnection {
     private Duration timeout = Duration.ofSeconds(5);
@@ -32,6 +33,18 @@ public class HttpConnection {
         return send(httpRequest);
     }
 
+    public String post(String uri, Optional<String> data) {
+        HttpRequest httpRequest;
+        if (data.isPresent()) {
+            httpRequest = HttpRequest.newBuilder().uri(URI.create(uri)).timeout(this.timeout)
+                    .POST(BodyPublishers.ofString(data.get())).build();
+        } else {
+            httpRequest = HttpRequest.newBuilder().uri(URI.create(uri)).timeout(this.timeout)
+                    .POST(BodyPublishers.noBody()).build();
+        }
+        return send(httpRequest);
+    }
+
     public String post(String uri, String data, String... headers) {
         HttpRequest httpRequest = HttpRequest.newBuilder().uri(URI.create(uri))
                 .timeout(this.timeout).headers(headers).POST(BodyPublishers.ofString(data)).build();
@@ -39,7 +52,7 @@ public class HttpConnection {
     }
 
     String send(HttpRequest httpRequest) {
-        //FIXME retry
+        // FIXME retry
         HttpClient hClient = HttpClient.newHttpClient();
         String result = "";
         try {
