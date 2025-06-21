@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'ovh.angrysoft'
-version = '0.3.7'
+version = '0.3.8'
 
 java {
 	toolchain {

@@ -63,7 +63,7 @@ public class T586 extends BaseDevice implements AmbientLight, AmbientLightScenes
 
     @Override
     public void setScene(String sceneName) {
-        List<String> scenes = status.get("sceneList");
+        List<String> scenes = status.get("ambientLightSceneList");
         if (scenes.contains(sceneName))
             api.setLightMode(scenes.indexOf(sceneName));
     }
