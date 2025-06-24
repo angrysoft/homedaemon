@@ -2,21 +2,22 @@ package ovh.angrysoft.homedaemon.devices;
 
 import java.util.HashMap;
 import java.util.Map;
-
+import java.util.concurrent.ConcurrentHashMap;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeAlreadyExist;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeNotFound;
 import ovh.angrysoft.homedaemon.exceptions.attributes.AttributeReadOnly;
 
 public class DeviceStatus {
-    private final HashMap<String, DeviceAttribute<?>> attributes;
+    private final Map<String, DeviceAttribute<?>> attributes;
 
     public DeviceStatus() {
-        this.attributes = new HashMap<>();
+        this.attributes = new ConcurrentHashMap<>();
     }
 
     public <T> void registerAttribute(DeviceAttribute<T> attr) throws AttributeAlreadyExist {
         if (this.attributes.containsKey(attr.getName())) {
-            throw new AttributeAlreadyExist(String.format("Attribute %s already registered", attr.getName()));
+            throw new AttributeAlreadyExist(
+                    String.format("Attribute %s already registered", attr.getName()));
         }
         this.attributes.put(attr.getName(), attr);
     }
@@ -61,30 +62,31 @@ public class DeviceStatus {
     @SuppressWarnings("unchecked")
     public <T> boolean update(String attrName, T attrValue) throws AttributeReadOnly {
         try {
-            
+
             if (this.attributes.containsKey(attrName)) {
                 DeviceAttribute<T> attr = (DeviceAttribute<T>) this.attributes.get(attrName);
                 return attr.setValue(attrValue);
             }
 
-        } catch (ClassCastException e) {}
+        } catch (ClassCastException e) {
+        }
         return false;
     }
-    // java 21 
+    // java 21
     // public boolean isValueEquals(String attrName, Object value) {
-    //     Object attr = attributes.get(attrName);
-    //     if (attr == null)
-    //         return false;
+    // Object attr = attributes.get(attrName);
+    // if (attr == null)
+    // return false;
 
-    //     switch (value) {
-    //         case null -> {
-    //             return false;
-    //         }
-        
-    //         default -> {
+    // switch (value) {
+    // case null -> {
+    // return false;
+    // }
 
-    //         }
-    //     }
-    //     return true;
+    // default -> {
+
+    // }
+    // }
+    // return true;
     // }
 }
